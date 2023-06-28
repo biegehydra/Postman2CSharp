@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 
@@ -12,6 +13,7 @@ namespace Postman2CSharp.Core.Models.PostmanCollection
         public List<CollectionItem>? Item { get; set; }
         public List<Response>? Response { get; set; }
         public Request? Request { get; set; }
+        public AuthSettings? Auth { get; set; }
         public string? Description { get; set; }
         public bool IsGroupingItem => Request == null && Response == null;
         public bool IsRequestItem => Request != null;

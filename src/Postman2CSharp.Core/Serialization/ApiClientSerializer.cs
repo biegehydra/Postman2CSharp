@@ -63,9 +63,9 @@ public static class ApiClientSerializer
             sb.Append($", ILogger<{apiClientName}> logger");
         }
         if (auth?.EnumType() is PostmanAuthType.apikey or PostmanAuthType.oauth1 or PostmanAuthType.oauth2
-                or PostmanAuthType.awsv4 
+                or PostmanAuthType.awsv4 or PostmanAuthType.bearer or PostmanAuthType.jwt
             || uniqueAuths.Any(x => x.EnumType() is PostmanAuthType.apikey or PostmanAuthType.oauth1 or PostmanAuthType.oauth2
-                or PostmanAuthType.awsv4))
+                or PostmanAuthType.awsv4 or PostmanAuthType.bearer or PostmanAuthType.jwt))
         {
             sb.Append(", IConfiguration config");
         }
@@ -212,7 +212,6 @@ public static class ApiClientSerializer
                     AuthorizationCode(sb, authSettings, indent);
                     sb.AppendLine();
                     Auth(sb, authSettings, indent);
-                    sb.AppendLine();
                 }
 
                 if (grantType == GrantType.Implicit)
@@ -220,7 +219,6 @@ public static class ApiClientSerializer
                     Implicit(sb, authSettings, indent);
                     sb.AppendLine();
                     Auth(sb, authSettings, indent);
-                    sb.AppendLine();
                 }
             }
         }
@@ -230,7 +228,6 @@ public static class ApiClientSerializer
             AuthorizationCode(sb, authSettings, indent);
             sb.AppendLine();
             Auth(sb, authSettings, indent);
-            sb.AppendLine();
         }
 
         sb.AppendLine();
@@ -243,7 +240,7 @@ public static class ApiClientSerializer
             sb.AppendLine(indent + "{");
             indent = Consts.Indent(intIndent + 1);
             var accessToken = "accessToken";
-            sb.AppendLine(indent + $"var {accessToken} = await {OAuth2Functions.GetAccessToken}()");
+            sb.AppendLine(indent + $"var {accessToken} = await {OAuth2Functions.GetAccessToken}();");
             sb.AddDefaultAuthorizationHeader(indent, $"$\"{headerPrefix}\"", accessToken);
             indent = Consts.Indent(intIndent);
             sb.AppendLine(indent + "}");
@@ -277,14 +274,28 @@ public static class ApiClientSerializer
             sb.AppendLine(indent + "var oauthQueryParameters = new OAuth2QueryParameters();");
             sb.AppendLine(indent + "oauthQueryParameters.ResponseType = \"code\";");
             sb.AppendLine(indent + "oauthQueryParameters.ClientId = _clientId;");
-            sb.AppendLine(indent + "oauthQueryParameters.RedirectUrl = _redirectUrl;");
-            sb.AppendLine(indent + "oauthQueryParameters.Scope = _scope;");
-            sb.AppendLine(indent + "oauthQueryParameters.State = _state;");
+            var redirectUrl = VariableOrEmpty(OAuth2Properties.RedirectUrl, OAuth2Config.RedirectUri);
+            sb.AppendLine(indent + $"oauthQueryParameters.RedirectUrl = {redirectUrl};");
+
+            var scope = VariableOrEmpty(OAuth2Properties.Scope, OAuth2Config.Scope);
+            sb.AppendLine(indent + $"oauthQueryParameters.Scope = {scope};");
+
+            var state = VariableOrEmpty(OAuth2Properties.State, OAuth2Config.State);
+            sb.AppendLine(indent + $"oauthQueryParameters.State = {state};");
             auth.TryGetAuth2Config(OAuth2Config.AuthUrl, out var authUrl);
             sb.AppendLine(indent + $"var queryString = QueryHelpers.AddQueryString(\"{authUrl}\", oauthQueryParameters.ToDictionary());");
             sb.AppendLine(indent + $"await _httpClient.GetAsync(queryString);");
             indent = Consts.Indent(intIndent);
             sb.AppendLine(indent + "}");
+
+            string VariableOrEmpty(string str, OAuth2Config config)
+            {
+                if (!auth.TryGetAuth2Config(config, out var _))
+                {
+                    return "string.Empty";
+                }
+                return str;
+            }
         }
         static void Auth(StringBuilder sb, AuthSettings auth, int intIndent)
         {
@@ -298,17 +309,32 @@ public static class ApiClientSerializer
             sb.AppendLine(indent + "{");
             indent = Consts.Indent(2);
             sb.AppendLine(indent + $"var encoded = Convert.ToBase64String(Encoding.GetEncoding(\"ISO-8859-1\").GetBytes({OAuth2Properties.ClientId} + \":\" + {OAuth2Properties.ClientSecret}));");
-            sb.AppendLine(indent + "httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(\"Basic\", encoded);");
+            sb.AppendLine(indent + "_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(\"Basic\", encoded);");
             sb.AppendLine();
             sb.AppendLine(indent + "var oauthQueryParameters = new OAuth2QueryParameters();");
             sb.AppendLine(indent + "oauthQueryParameters.Code = code;");
-            sb.AppendLine(indent + $"oauthQueryParameters.RedirectUrl = {OAuth2Properties.RedirectUrl};");
+
+            var redirectUrl = VariableOrEmpty(OAuth2Properties.RedirectUrl, OAuth2Config.RedirectUri);
+            sb.AppendLine(indent + $"oauthQueryParameters.RedirectUrl = {redirectUrl};");
+
             sb.AppendLine(indent + "oauthQueryParameters.GrantType = \"authorization_code\";");
-            sb.AppendLine(indent + $"oauthQueryParameters.State = {OAuth2Properties.State};");
+
+            var state = VariableOrEmpty(OAuth2Properties.State, OAuth2Config.State);
+            sb.AppendLine(indent + $"oauthQueryParameters.State = {state};");
+
             auth.TryGetAuth2Config(OAuth2Config.AccessTokenUrl, out var accessTokenUrl);
-            sb.AppendLine(indent + $"var response = _httpClient.PostAsync(\"{accessTokenUrl}\", new FormUrlEncodedContent(oauthQueryParameters.ToDictionary());");
+            sb.AppendLine(indent + $"var response = _httpClient.PostAsync(\"{accessTokenUrl}\", new FormUrlEncodedContent(oauthQueryParameters.ToDictionary()));");
             indent = Consts.Indent(intIndent);
             sb.AppendLine(indent + "}");
+
+            string VariableOrEmpty(string str, OAuth2Config config)
+            {
+                if (!auth.TryGetAuth2Config(config, out var _))
+                {
+                    return "string.Empty";
+                }
+                return str;
+            }
         }
     }
 

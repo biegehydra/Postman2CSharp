@@ -102,7 +102,8 @@ public class ApiClientGenerator
                     var newRootItem = new CollectionItem()
                     {
                         Name = splitItem.Key,
-                        Item = splitItem.Value
+                        Item = splitItem.Value,
+                        Auth = rootItem.Auth
                     };
                     var splitApiClient = await CreateApiClient(newRootItem, variableUsages);
                     apiClients.Add(splitApiClient);
@@ -288,7 +289,7 @@ public class ApiClientGenerator
         var leastPossibleUri = FindLeastPossibleUri(rootItem);
         var commonHeaders = GetCommonHeaders(rootItem);
         var httpCalls = await GetHttpCalls(rootItem, commonHeaders, nameSpace);
-        var auth = PostmanCollection.Auth;
+        var auth = rootItem.Auth ?? PostmanCollection.Auth;
 
         var apiClient = new ApiClient(name, rootItem.Description, nameSpace, leastPossibleUri, httpCalls, commonHeaders, auth, variableUsages,
             Options.ApiClientOptions.EnsureResponseIsSuccessStatusCode, Options.ApiClientOptions.XmlCommentTypes, Options.ApiClientOptions.CatchExceptionTypes,

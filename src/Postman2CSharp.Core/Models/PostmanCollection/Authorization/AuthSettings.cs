@@ -178,8 +178,8 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Authorization
         public const string AuthUrl = "_authUrl";
         public const string ClientId = "_clientId";
         public const string ClientSecret = "_clientSecret";
-        public const string Scope = "_state";
-        public const string State = "_scope";
+        public const string Scope = "_scope";
+        public const string State = "_state";
     }
     public class OAuth2Functions
     {

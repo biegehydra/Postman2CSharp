@@ -86,7 +86,6 @@
 
     private void OnPanelChanged(int panelInex)
     {
-        var http = new HttpClient();
         if(SelectedApiClient == null) return;
         var httpCall = SelectedApiClient.HttpCalls[panelInex];
         var allClassNames = new List<string?>();
