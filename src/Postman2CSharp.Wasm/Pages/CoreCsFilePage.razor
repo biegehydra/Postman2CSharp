@@ -1,0 +1,32 @@
+﻿@page "/CoreFiles/{FileName}"
+@inherits MainLayoutComponent
+
+<BreadCrumbs Items="@_breadCrumbs"></BreadCrumbs>
+
+@if (!string.IsNullOrWhiteSpace(FileName))
+{
+    <pre><code @key="FileName" class="language-csharp">@CoreCsFile.Dict[FileName]</code></pre>
+}
+@code {
+    [Parameter] public string? FileName { get; set; }
+
+    private List<BreadcrumbItem> _breadCrumbs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(CoreCsFile.Dict.Keys.All(x => x != FileName))
+        {
+            FileName = null;
+            Navigate.Value.ToHome();
+            return;
+        }
+        await TabsService.Value.AddCoreCsFileTab(FileName!);
+        _breadCrumbs = new()
+        {
+            new("Home", "/", icon: Icons.Home),
+            new("Core Files", "/CoreFiles", icon: Icons.FileCopy),
+            new(FileName, $"/CoreFiles/{FileName}", true)
+        };
+    }
+
+}

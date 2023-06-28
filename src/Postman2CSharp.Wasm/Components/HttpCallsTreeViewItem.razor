@@ -1,0 +1,53 @@
+﻿@if (ApiClientId != null && ApiCollectionId != null && HttpCall != null && _shouldRender)
+{
+    @if (!string.IsNullOrWhiteSpace(HttpCall.RequestSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.QueryParameterSourceCode)
+         || !string.IsNullOrWhiteSpace(HttpCall.FormDataSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.ResponseSourceCode))
+    {
+        <MudTreeViewItem Value="@HttpCall.Name" @bind-Expanded="Expanded" >
+            <Content>
+                <MudTreeViewItemToggleButton Visible="true" @bind-Expanded="Expanded"/>
+                <MudIcon Icon="@IconHelpers.Folder(Expanded)" Style="margin-right: 15px;"></MudIcon>
+                <MudText Style="user-select: none;">@HttpCall.Name</MudText>
+            </Content>
+            <ChildContent>
+                <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.RequestClassName" SourceCode="@HttpCall.RequestSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
+                <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.QueryParameterClassName" SourceCode="@HttpCall.QueryParameterSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
+                <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.FormDataClassName" SourceCode="@HttpCall.FormDataSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
+                <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.ResponseClassName" SourceCode="@HttpCall.ResponseSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
+            </ChildContent>
+        </MudTreeViewItem>
+    }
+}
+
+@code {
+    private bool Expanded { get; set; }
+    [Parameter, EditorRequired] public string? ApiCollectionId { get; set; }
+    [Parameter, EditorRequired] public string? ApiClientId { get; set; }
+    [Parameter, EditorRequired] public HttpCall? HttpCall { get; set; }
+    [Parameter, EditorRequired] public bool IsParentExpanded { get; set; }
+
+    private string? _cachedApiCollectionId;
+    private string? _cachedApiClientId;
+    private HttpCall? _cachedHttpCallId;
+    private bool _cachedExpanded;
+
+    private bool _shouldRender;
+    protected override bool ShouldRender()
+    {
+        if (!IsParentExpanded)
+        {
+            return false;
+        }
+        _shouldRender = Expanded != _cachedExpanded || ApiCollectionId != _cachedApiCollectionId
+               || ApiClientId != _cachedApiClientId || HttpCall != _cachedHttpCallId;
+        if (_shouldRender)
+        {
+            _cachedExpanded = Expanded;
+            _cachedApiCollectionId = ApiCollectionId!;
+            _cachedApiClientId = ApiClientId!;
+            _cachedHttpCallId = HttpCall;
+        }
+        return _shouldRender;
+    }
+
+}

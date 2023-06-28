@@ -1,0 +1,55 @@
+﻿@typeparam TEnum where TEnum : struct, Enum
+<div class="enum-select-container">
+    <MudSelect @ref="_select" T="string" Label="@Label" MultiSelection="true" @bind-SelectedValues="SelectedValues">
+        @foreach (var enumType in Enum.GetValues<TEnum>())
+        {
+            <MudSelectItem T="string" Value="@enumType.ToString()">@enumType.ToString()</MudSelectItem>
+        }
+    </MudSelect>
+</div>
+
+@code {
+    private MudSelect<string>? _select;
+    private List<string> _selectedValues = new List<string>();
+
+    [Parameter, EditorRequired] public string Label { get; set; } = null!;
+    [Parameter] public bool ForbidNoValue { get; set; }
+    #pragma warning disable BL0007
+    [Parameter]
+    public IEnumerable<string> SelectedValues
+    {
+        get => _selectedValues;
+        set
+        {
+            if (ForbidNoValue && !value.Any())
+            {
+                if (_select != null)
+                {
+                    #pragma warning disable BL0005
+                    _select.SelectedValues = _selectedValues;
+                    #pragma warning restore BL0005
+                }
+                return;
+            }
+            if (_selectedValues.SequenceEqual(value)) return;
+            _selectedValues = value.ToList();
+            SelectedValuesChanged.InvokeAsync(value);
+        } 
+    }
+    #pragma warning restore BL0007
+
+    private List<TEnum> _value = new ();
+    #pragma warning disable BL0007
+    [Parameter]
+    public List<TEnum> Value
+    { 
+        get => _value;
+        set 
+        { 
+            _value = value;
+            SelectedValues = _value.Select(x => x.ToString());
+        }
+    }
+    #pragma warning restore BL0007
+    [Parameter] public EventCallback<IEnumerable<string>> SelectedValuesChanged { get; set; }
+}

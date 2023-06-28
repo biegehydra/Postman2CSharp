@@ -1,0 +1,23 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Preferences
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @DialogContent
+    </DialogContent>
+    <DialogActions>
+        <MudCheckBox Label="Don't ask me again" @bind-Checked="_dontAskAgain"></MudCheckBox>
+        <MudButton OnClick="Cancel">No</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Yes</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] public MudDialogInstance? MudDialog { get; set; }
+    [Parameter] public string DialogContent { get; set; } = "";
+    private bool _dontAskAgain;
+
+    void Submit() => MudDialog?.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog?.Cancel();
+}

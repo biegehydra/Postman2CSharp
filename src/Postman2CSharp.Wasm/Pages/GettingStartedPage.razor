@@ -1,0 +1,32 @@
+﻿@page "/"
+@page "/GettingStarted"
+@inherits MainLayoutComponent
+<PageHeader Keywords="@_title" SubTitle="Convert Postman Collections to C# classes online. Postman2CSharp is a free tool that will help you make ApiClients faster."
+             Title="@_title" ></PageHeader>
+
+<BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
+
+<MudText Typo="Typo.h1" Class="mt-4" >Getting Started</MudText>
+<br/>
+
+<GettingStarted />
+
+@code 
+{
+    private string _title => Navigate.Value.BaseUrl == Navigate.Value.CurrentUrl ? "Home" : "Getting Started";
+    private static readonly List<BreadcrumbItem> BreadCrumbs = new()
+    {
+        new("Home", "/", true, Icons.Rocket),
+    };
+
+    protected override void OnInitialized()
+    {
+        TabsService.Value.SetHome(null);
+    }
+
+    private async Task OnSuccessfulUpload(ApiCollection apiCollection)
+    {
+        await Layout.AddApiCollection(apiCollection);
+        Navigate.Value.ToCollection(apiCollection.Id);
+    }
+}

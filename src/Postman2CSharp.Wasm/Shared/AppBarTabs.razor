@@ -1,0 +1,57 @@
+﻿@implements IDisposable
+<style>
+    .display-none {
+        display: none;
+    }
+
+    .dynamic-tabs .mud-tab.mud-ripple {
+        height: 4em;
+        max-width: 150px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        display: inline-block;
+        padding: 20px 32px 0px 14px !important;
+        text-transform: none;
+    }
+    .mud-toolbar.mud-toolbar-appbar {
+        flex-wrap: nowrap;
+    }
+
+    .mud-dynamic-tabs .mud-tabs-toolbar .mud-tab .mud-icon-button {
+        margin-inline-end: -28px;
+        transform: translate(0px, -26px);
+    }
+</style>
+
+<MudDynamicTabs Class="dynamic-tabs" Style="margin-left: 15px; max-width: 55vw;" @ref="@TabsService.DynamicTabs" @bind-ActivePanelIndex="@TabService!.ApiClientIndex"
+                CloseTab="@CloseTabCallback" Color="Color.Dark" AddIconClass="display-none" SliderColor="Color.Primary"
+                CloseIconToolTip="Close tab."
+                Elevation="3" Rounded ApplyEffectsToContainer >
+    @foreach (var tab in TabsService.Tabs ?? new ())
+    {
+        <MudTabPanel ID="@tab.Id" Text="@tab.Label" ShowCloseIcon="@tab.ShowCloseIcon" />
+    }
+</MudDynamicTabs>
+@code {
+    [Inject] private Navigate? Navigate { get; set; }
+    [Inject] private TabsService? TabService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        TabsService.TabsChanged += InvokeStateHasChanged;
+    }
+
+    void CloseTabCallback(MudTabPanel panel) => TabService?.RemoveTab((string)panel.ID);
+
+    private async Task InvokeStateHasChanged()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        TabsService.TabsChanged -= InvokeStateHasChanged;
+    }
+
+}

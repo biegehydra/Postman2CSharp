@@ -1,0 +1,47 @@
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+// Root myDeserializedClass = JsonSerializer.Deserialize<GeolocateRequest>(myJsonResponse);
+
+namespace Geolocate{
+
+    public class CellTower
+    {
+        public string CellId { get; set; }
+        public string LocationAreaCode { get; set; }
+        public string MobileCountryCode { get; set; }
+        public string MobileNetworkCode { get; set; }
+        public string Age { get; set; }
+        public string SignalStrength { get; set; }
+        public string TimingAdvance { get; set; }
+    }
+
+}
+
+namespace Geolocate{
+
+    public class GeolocateRequest
+    {
+        public string HomeMobileCountryCode { get; set; }
+        public string HomeMobileNetworkCode { get; set; }
+        public string RadioType { get; set; }
+        public string Carrier { get; set; }
+        public string ConsiderIp { get; set; }
+        public List<CellTower> CellTowers { get; set; }
+        public List<WifiAccessPoint> WifiAccessPoints { get; set; }
+    }
+
+}
+
+namespace Geolocate{
+
+    public class WifiAccessPoint
+    {
+        public string MacAddress { get; set; }
+        public string SignalStrength { get; set; }
+        public string SignalToNoiseRatio { get; set; }
+        public string Age { get; set; }
+        public string Channel { get; set; }
+    }
+
+}

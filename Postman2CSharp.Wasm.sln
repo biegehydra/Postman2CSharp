@@ -1,0 +1,53 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31717.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postman2CSharp.Wasm", "src\Postman2CSharp.Wasm\Postman2CSharp.Wasm.csproj", "{7EEAF4A3-F2F8-4BA9-8E84-6A8D4523ED29}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postman2CSharp.Core", "src\Postman2CSharp.Core\Postman2CSharp.Core.csproj", "{44F7E75A-3267-4332-BCDB-D6E53F2A30B0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonClassGeneratorLib", "src\Json2CSharpCodeGenerator-master\JsonClassGeneratorLib\JsonClassGeneratorLib.csproj", "{9FC51FEF-B28F-4351-A7CC-8B12906B5115}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5B0754FA-B6A8-4C59-BAA5-6B7594D9F51B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postman2CSharp.Tests", "src\Postman2CSharp.Tests\Postman2CSharp.Tests.csproj", "{4BCDB0DD-CC04-4059-86EB-111F702D4776}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObjectInitializerGenerator", "src\ObjectInitializerGenerator\ObjectInitializerGenerator.csproj", "{81B9DEC4-F065-493F-A7DC-956BDBDB29ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7EEAF4A3-F2F8-4BA9-8E84-6A8D4523ED29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EEAF4A3-F2F8-4BA9-8E84-6A8D4523ED29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EEAF4A3-F2F8-4BA9-8E84-6A8D4523ED29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EEAF4A3-F2F8-4BA9-8E84-6A8D4523ED29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44F7E75A-3267-4332-BCDB-D6E53F2A30B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44F7E75A-3267-4332-BCDB-D6E53F2A30B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44F7E75A-3267-4332-BCDB-D6E53F2A30B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44F7E75A-3267-4332-BCDB-D6E53F2A30B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FC51FEF-B28F-4351-A7CC-8B12906B5115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FC51FEF-B28F-4351-A7CC-8B12906B5115}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FC51FEF-B28F-4351-A7CC-8B12906B5115}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FC51FEF-B28F-4351-A7CC-8B12906B5115}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BCDB0DD-CC04-4059-86EB-111F702D4776}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BCDB0DD-CC04-4059-86EB-111F702D4776}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BCDB0DD-CC04-4059-86EB-111F702D4776}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BCDB0DD-CC04-4059-86EB-111F702D4776}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81B9DEC4-F065-493F-A7DC-956BDBDB29ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81B9DEC4-F065-493F-A7DC-956BDBDB29ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81B9DEC4-F065-493F-A7DC-956BDBDB29ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81B9DEC4-F065-493F-A7DC-956BDBDB29ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4BCDB0DD-CC04-4059-86EB-111F702D4776} = {5B0754FA-B6A8-4C59-BAA5-6B7594D9F51B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {310EC170-335B-42DB-9F0D-6E595B491D68}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,40 @@
+﻿@inherits MainLayoutComponent
+
+@if (SelectedApiClient != null && CollectionId != null)
+{
+    <div class="f-row-column" style="gap: 20px;" >
+        <div >
+            <ApiClientDetails ApiClient="SelectedApiClient"></ApiClientDetails>
+        </div>
+        <MudGrid  Spacing="3">
+            <MudItem Class="f-row aic" Style="gap: 12px;" md="6">
+                <p>Download api client project</p>
+                <MudIconButton Size="Size.Medium" OnClick="() => Interop.Value.DownloadApiClient(SelectedApiClient)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+            </MudItem>
+            <MudItem Class="f-row aic" Style="gap: 12px;" md="6">
+                <p>Download tests class</p>
+                <MudIconButton Color="@Color.Tertiary" Size="Size.Medium" Icon="@Icons.Download" Variant="Variant.Filled" OnClick="() => Interop.Value.DownloadFile(SelectedApiClient.TestClassName, SelectedApiClient.TestClassSourceCode)"></MudIconButton>
+            </MudItem>
+            <MudItem Class="f-row aic" Style="gap: 12px;" md="6">
+                <p>View test class</p>
+                <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientTests(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
+            </MudItem>
+            <MudItem Class="f-row aic" Style="gap: 12px;" md="6">
+                <p>View All Generated Classes</p>
+                <OpenInNewTab NavigateAction="() => Navigate.Value.ToHttpCalls(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
+            </MudItem>
+            <MudItem Class="f-row aic"  md="6">
+                <p>View interface</p>
+                <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientInterface(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
+            </MudItem>
+        </MudGrid>
+    </div>
+    <br />
+
+    <pre><code @key="@SelectedApiClient.Id" class="language-csharp">@SelectedApiClient.SourceCode</code></pre>
+}
+
+@code {
+    [Parameter] public string? CollectionId { get; set; }
+    [Parameter] public ApiClient? SelectedApiClient { get; set; }
+}

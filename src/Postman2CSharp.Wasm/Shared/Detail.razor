@@ -1,0 +1,33 @@
+﻿<div class="f-row" style="@($"font-size:{FontSizeStr()}")" >
+    <p><b>@Key:</b>&emsp;@Value</p>
+</div>
+
+@code {
+    [Parameter] public bool Flip { get; set; }
+
+    [EditorRequired, Parameter]
+    public string? Key { get; set; }
+
+    [EditorRequired, Parameter]
+    public string? Value { get; set; }
+
+    [EditorRequired, Parameter]
+    public FontSize FontSize { get; set; }
+
+    public string FontSizeStr()
+    {
+        return FontSize switch 
+        {
+            FontSize.XXSmall => "xx-small",
+            FontSize.XSmall => "x-small",
+            FontSize.Smaller => "smaller",
+            FontSize.Small => "small",
+            FontSize.Medium => "medium",
+            FontSize.Large => "large",
+            FontSize.Larger => "larger",
+            FontSize.XLarge => "x-large",
+            FontSize.XXLarge => "xx-large",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+}

@@ -1,0 +1,54 @@
+﻿@page "/Collection/{CollectionId}/ApiClient/{ApiClientId}"
+@inherits MainLayoutComponent
+
+<PageTitle>@SelectedApiClient?.Name</PageTitle>
+
+<BreadCrumbs Items="@_breadCrumbs"></BreadCrumbs>
+
+<br />
+
+<ApiClientComponent SelectedApiClient="SelectedApiClient" CollectionId="@CollectionId" ></ApiClientComponent>
+
+@code {
+    private List<BreadcrumbItem> _breadCrumbs = new();
+
+    [Parameter] public string? ApiClientId { get; set; }
+    [Parameter] public string? CollectionId { get; set; }
+
+    private ApiClient? SelectedApiClient { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!GetApiClientFromParameters()) return;
+        await TabsService.Value.AddApiClientTab(CollectionId!, ApiClientId!, SelectedApiClient!.Name);
+    }
+    protected override void OnParametersSet()
+    {
+        if (!GetApiClientFromParameters()) return;
+
+        _breadCrumbs = new()
+        {
+            new("Home", "/", icon: Icons.Home),
+            new("Collection", $"/Collection/{CollectionId}", icon: NavMenu.FavIcon),
+            new(SelectedApiClient!.Name, $"/Collection/{CollectionId}/ApiClient/{ApiClientId}", true),
+        };
+
+    }
+
+    private bool GetApiClientFromParameters()
+    {
+        if (ApiCollections == null || ApiClientId == null || CollectionId == null)
+        {
+            SnackBar.Value?.Add("Something went wrong", Severity.Error);
+            return false;
+        }
+        SelectedApiClient = ApiCollections?.FirstOrDefault(x => x.Id == CollectionId)?
+            .ApiClients.FirstOrDefault(x => x.Id == ApiClientId);
+        if (SelectedApiClient == null)
+        {
+            SnackBar.Value?.Add("Something went wrong", Severity.Error);
+            return false;
+        }
+        return true;
+    }
+}

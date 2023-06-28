@@ -1,0 +1,103 @@
+﻿@page "/Collection/{CollectionId}/ApiClient/{ApiClientId}/HttpCalls/{HttpCallName}/{ClassName}"
+@inherits MainLayoutComponent
+
+<PageTitle>@ClassName</PageTitle>
+
+<BreadCrumbs Items="@_breadCrumbs"></BreadCrumbs>
+
+@if(_sourceCode != null)
+{
+    <pre><code class="language-csharp" @key="ClassName">@_sourceCode</code></pre>
+}
+else
+{
+    <p style="color: red;">Something went wrong</p>
+}
+
+@code {
+    private List<BreadcrumbItem> _breadCrumbs = new();
+
+    [Parameter]
+    public string? ApiClientId { get; set; }
+
+    [Parameter]
+    public string? CollectionId { get; set; }
+
+    [Parameter]
+    public string? ClassName { get; set; }
+
+    [Parameter]
+    public string? HttpCallName { get; set; }
+
+    private string? _sourceCode;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!GetSourceCodeFromParameters()) return;
+        await TabsService.Value.AddHttpCallClass(CollectionId!, ApiClientId!, HttpCallName!, ClassName!);
+    }
+
+    protected override void OnParametersSet()
+    {
+
+        if (!GetSourceCodeFromParameters()) return;
+
+        _breadCrumbs = new()
+        {
+            new("Home", "/", icon: Icons.Home),
+            new("Collection", $"/Collection/{CollectionId}", icon: NavMenu.FavIcon),
+            new(_selectedApiClientName, $"/Collection/{CollectionId}/ApiClient/{ApiClientId}"),
+            new("Http Calls", $"/Collection/{CollectionId}/ApiClient/{ApiClientId}/HttpCalls"),
+            new(ClassName, $"Collection/{CollectionId}/ApiClient/{ApiClientId}/HttpCalls/{HttpCallName}/{ClassName}", true),
+        };
+    }
+
+    private string? _selectedApiClientName;
+
+    private bool GetSourceCodeFromParameters()
+    {
+        if (ApiCollections == null) return false;
+        var selectedApiClient = ApiCollections?.FirstOrDefault(x => x.Id == CollectionId)?
+            .ApiClients.FirstOrDefault(x => x.Id == ApiClientId);
+        if (selectedApiClient == null)
+        {
+            SnackBar.Value?.Add("Something went wrong", Severity.Error);
+            return false;
+        }
+
+        _selectedApiClientName = selectedApiClient.Name;
+
+        if (string.IsNullOrWhiteSpace(HttpCallName))
+        {
+            SnackBar.Value?.Add("Http Call name cannot be empty", Severity.Error);
+            return false;
+        }
+        var selectedHttpCall = selectedApiClient.HttpCalls.FirstOrDefault(x => x.Name == HttpCallName);
+        if (selectedHttpCall == null)
+        {
+            SnackBar.Value?.Add("Something went wrong", Severity.Error);
+            return false;
+        }
+
+        if (selectedHttpCall.QueryParameterClassName == ClassName)
+        {
+            _sourceCode = selectedHttpCall.QueryParameterSourceCode;
+        }
+        if (selectedHttpCall.FormDataClassName == ClassName)
+        {
+            _sourceCode = selectedHttpCall.FormDataSourceCode;
+        }
+        if (selectedHttpCall.RequestClassName == ClassName)
+        {
+            _sourceCode = selectedHttpCall.RequestSourceCode;
+        }
+        if (selectedHttpCall.ResponseClassName == ClassName)
+        {
+            _sourceCode = selectedHttpCall.ResponseSourceCode;
+        }
+        if (_sourceCode == null) return false;
+
+        return true;
+    }
+
+}

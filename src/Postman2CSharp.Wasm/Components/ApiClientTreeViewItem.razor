@@ -1,0 +1,212 @@
+﻿@inherits MainLayoutComponent
+
+@if (ApiClient != null && UserAttributes != null && ApiCollection != null)
+{
+    <MudTreeViewItem UserAttributes="UserAttributes" Class="file-tree-item" Value="@ApiClient.NameSpace" @bind-Expanded="Expanded" >
+        <Content>
+            <MudTreeViewItemToggleButton Visible="true" @bind-Expanded="@Expanded"/>
+            <MudIcon Icon="@IconHelpers.Folder(Expanded)" Style="margin-right: 15px;" ></MudIcon>
+            @if (ShowEdit)
+            {
+                <div @onclick:stopPropagation="true" @onclick:preventDefault="true" class="mud-treeview-item-content cursor-pointer">
+                    <MudTooltip Text="The name you give here will determine the namespace, apiclient name, and api client interface name.">
+                        <div @onfocus:stopPropagation="true" @onfocus:preventDefault="true" @onfocusin:stopPropagation="true" @onfocusin:preventDefault="true"  >
+                            <MudTextField Style="margin-top: 0; z-index: 10;" @bind-Value="@ApiClient.NameSpace" OnKeyUp="OnEditingApiClientNamespaceKeyUp" AutoFocus Clearable Label="ApiClient name" HelperText="Press enter to confirm"/>
+                        </div>
+                    </MudTooltip>
+                    <MudIconButton Icon="@Icons.Cancel" Class="ml-0 mr-2" OnClick="CancelEditingApiClientNamespace" Color="@Color.Default"/>
+                    <MudIconButton Icon="@Icons.Check" Class="ml-0 mr-2" OnClick="ConfirmApiClientNamespace" Color="@Color.Default"/>
+                </div>
+            }
+            else
+            {
+                <MudText Class="file-tree-text" >@ApiClient.NameSpace</MudText>
+                <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                    <MudIconButton Icon="@Icons.Edit" Class="ml-0 mr-2" OnClick="() => BeginEditingApiClientNamespace()" Color="@Color.Default"/>
+                </div>
+            }
+            <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadApiClient(ApiClient)"></MudIconButton>
+        </Content>
+        <ChildContent>
+            @foreach (var httpCall in ApiClient.HttpCalls)
+            {
+                <HttpCallsTreeViewItem ApiCollectionId="@ApiCollection.Id" ApiClientId="@ApiClient.Id" HttpCall="httpCall" IsParentExpanded="@Expanded"></HttpCallsTreeViewItem>
+            }
+            <MudTreeViewItem Value="@ApiClient.Name">
+                <Content>
+                    <MudTreeViewItemToggleButton Visible="false"/>
+                    <MudText Style="user-select: none;">@ApiClient.Name</MudText>
+                    <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.Name, ApiClient.SourceCode)"></MudIconButton>
+                    <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClient(ApiCollection.Id, ApiClient.Id)"/>
+                </Content>
+            </MudTreeViewItem>
+            <MudTreeViewItem Value="@ApiClient.InterfaceName">
+                <Content>
+                    <MudTreeViewItemToggleButton Visible="false"/>
+                    <MudText Style="user-select: none;">@ApiClient.InterfaceName</MudText>
+                    <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.InterfaceName, ApiClient.InterfaceSourceCode)"></MudIconButton>
+                    <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientInterface(ApiCollection.Id, ApiClient.Id)"/>
+                </Content>
+            </MudTreeViewItem>
+            @if (ShowCoreCsvFiles)
+            {
+                @foreach (var coreCsFile in CoreCsFile.Dict.Keys)
+                {
+                    <MudTreeViewItem Class="file-tree-item" Value="@coreCsFile">
+                        <Content>
+                            <MudTreeViewItemToggleButton Visible="false"/>
+                            <MudText Style="user-select: none;">@coreCsFile</MudText>
+                            <OpenInNewTab NavigateAction="() => Navigate.Value.ToCoreCsFile(coreCsFile)"/>
+                        </Content>
+                    </MudTreeViewItem>
+                }
+            }
+        </ChildContent>
+    </MudTreeViewItem>
+}
+@code {
+    [CascadingParameter] public CollectionTreeView CollectionTreeView { get; set; } = null!;
+    [Parameter, EditorRequired] public ApiCollection? ApiCollection { get; set; }
+    [Parameter, EditorRequired] public ApiClient? ApiClient { get; set; }
+    [Parameter] public bool ShowCoreCsvFiles { get; set; }
+
+    private readonly string _guid = Guid.NewGuid().ToString();
+
+
+    private bool Expanded { get; set; }
+    private bool ShowEdit { get; set; }
+    private Dictionary<string, object>? UserAttributes { get; set; }
+
+    protected override void OnInitialized()
+    {
+        UserAttributes = new Dictionary<string, object>() { { "id", _guid } };
+        CollectionTreeView.ApiClientTreeViewGuidDict[ApiClient!.Id] = this;
+        SetCache();
+    }
+
+    private ApiClient? _cachedApiClient;
+    protected override void OnParametersSet()
+    {
+        if (_cachedApiClient == ApiClient) return;
+        _cachedApiClient = ApiClient;
+        Reset();
+    }
+
+    private void Reset()
+    {
+        Expanded = false;
+        ShowEdit = false;
+    }
+
+    private bool _expandedAtStartEdit;
+    private string? _cachedApiClientNamespace = null;
+    public async Task BeginEditingApiClientNamespace(bool scroll = false)
+    {
+        if (_cachedApiClientNamespace != null || ApiClient == null) return;
+        _expandedAtStartEdit = Expanded;
+        _cachedApiClientNamespace = ApiClient.NameSpace;
+        ShowEdit = true;
+
+        if (scroll)
+        {
+            await Interop.Value.ScrollToSection(_guid, 900);
+            await Task.Delay(100);
+        }
+        if (_cachedApiClientNamespace == Consts.Postman2CSharp)
+        {
+            Expanded = true;
+            ApiClient.NameSpace = string.Empty;
+        }
+        StateHasChanged();
+    }
+
+    private async Task OnEditingApiClientNamespaceKeyUp(KeyboardEventArgs obj)
+    {
+        if (obj.Code == "Enter")
+        {
+            await ConfirmApiClientNamespace();
+        }
+    }
+
+    private async Task ConfirmApiClientNamespace()
+    {
+        if (ApiClient!.NameSpace == Consts.Postman2CSharp)
+        {
+            ShowEdit = false;
+            _cachedApiClientNamespace = null;
+            return;
+        }
+        if (WarnWhenCachedNamespaceIsEmpty()) return;
+        if (string.IsNullOrWhiteSpace(ApiClient.NameSpace))
+        {
+            SnackBar.Value?.Add("Namespace cannot be empty.", Severity.Warning);
+            return;
+        }
+        ApiClient.Name = ApiClient.NameSpace + "ApiClient";
+        ApiClient.GenerateSourceCode();
+        ApiClient.FixNamespaces(_cachedApiClientNamespace!, ApiClient.NameSpace);
+        ShowEdit = false;
+
+        if (_cachedApiClientNamespace == Consts.Postman2CSharp && CollectionTreeView.NextApiClientWithDefaultNameSpaceId(ApiClient) is { } nextApiClientId)
+        {
+            Expanded = false;
+            StateHasChanged();
+            await Task.Delay(100);
+            await CollectionTreeView.StartEditingNextApiClientNameSpace(nextApiClientId);
+        }
+
+        _cachedApiClientNamespace = null;
+    }
+
+    private void CancelEditingApiClientNamespace()
+    {
+        if (WarnWhenCachedNamespaceIsEmpty()) return;
+        if (_cachedApiClientNamespace == Consts.Postman2CSharp && !_expandedAtStartEdit)
+        {
+            Expanded = false;
+        }
+        ApiClient!.NameSpace = _cachedApiClientNamespace!;
+        ShowEdit = false;
+        _cachedApiClientNamespace = null;
+    }
+
+    private bool WarnWhenCachedNamespaceIsEmpty()
+    {
+        if (string.IsNullOrWhiteSpace(_cachedApiClientNamespace))
+        {
+            SnackBar.Value?.Add("Something went wrong. Cached namespace was empty.", Severity.Warning);
+            return true;
+        }
+        return false;
+    }
+
+    private string? _cachedApiCollectionId;
+    private string? _cachedApiClientId;
+    private bool _cachedExpanded;
+    private bool _cachedShowEdit;
+    private bool _cachedShowCoreCsvFiles;
+
+    private bool _shouldRender;
+    protected override bool ShouldRender()
+    {
+        _shouldRender = Expanded != _cachedExpanded || 
+                        ShowEdit != _cachedShowEdit ||
+                        (ShowCoreCsvFiles != _cachedShowCoreCsvFiles && Expanded) ||
+                        ApiCollection?.Id != _cachedApiCollectionId || 
+                        ApiClient?.Id != _cachedApiClientId;
+        if (_shouldRender)
+        {
+            SetCache();
+        }
+        return _shouldRender;
+    }
+
+    private void SetCache()
+    {
+        _cachedExpanded = Expanded;
+        _cachedShowEdit = ShowEdit;
+        _cachedShowCoreCsvFiles = ShowCoreCsvFiles;
+        _cachedApiCollectionId = ApiCollection!.Id;
+        _cachedApiClientId = ApiClient!.Id!;
+    }
+}

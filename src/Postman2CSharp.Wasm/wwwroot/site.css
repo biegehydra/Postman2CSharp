@@ -1,0 +1,236 @@
+﻿.link-normal {
+    color: #5d5db8;
+    text-decoration: underline;
+    cursor: pointer; 
+}
+
+strong, b {
+    color: #dbdbdb;
+}
+
+.link-normal:hover {
+    text-decoration: none; 
+}
+a.normal,
+.normal a {
+    color: #0056b3;
+    text-decoration: underline;
+    cursor: pointer;
+}
+a.normal:hover,
+.normal a:hover {
+    text-decoration: none;
+}
+
+.f-row {
+    display: flex !important;
+    flex-direction: row !important;
+}
+
+.f-row-column {
+    display: flex !important;
+    flex-direction: row !important;
+}
+.start-end {
+    align-items: start !important;
+}
+.end-start {
+    align-items: end !important;
+}
+
+.aic {
+    align-items: center !important;
+}
+
+.jcc {
+    justify-content: center !important;
+}
+
+.f-column {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+root {
+    --mud-palette-action-default-hover: rgba(0, 0, 0, 0.20) !important;
+}
+ul {
+    display: block;
+    list-style-type: disc;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 40px;
+}
+li {
+    display: list-item;
+}
+
+.toolbar-class {
+    gap: 15px;
+}
+
+.appbar-divider {
+    height: 50%;
+    align-self: center;
+}
+
+.no-min-width {
+    min-width: 0px !important;
+}
+.file-tree-text {
+    user-select: none;
+    max-width: 11em;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.file-tree-item .mud-treeview-item-label {
+    user-select: none;
+}
+.file-tree-item p {
+    max-width: 13.5em;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.mud-input-control {
+    flex: unset;
+}
+
+.enum-select-container .mud-input-control {
+    flex: 1 1 auto;
+}
+
+
+.file-tree-item .mud-input-label-inputcontrol {
+    transform: translate(0,-7.5px) scale(.75) !important;
+}
+.mud-typography-h1 {
+    font-size: 2.8em;
+    font-weight: 400;
+    color: rgba(250, 250, 250, 1); /* Almost white */
+    text-shadow: 2px 2px 2px rgba(190, 190, 230, 0.5); /* Very light bluish shadow, half transparent */
+}
+.mud-typography-h2 {
+    font-size: 1.9em;
+}
+
+.splashscreen-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: rgba(109, 98, 216, 1);
+    font-family: Roboto;
+    overflow: hidden;
+}
+
+    .splashscreen-container:before,
+    .splashscreen-container:after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        min-width: 300vw;
+        min-height: 300vw;
+        background-color:  rgba(37, 32, 72, 1);
+        animation-name: rotate;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+
+.splashscreen-container:before {
+    bottom: 15vh;
+    border-radius: 45%;
+    animation-duration: 10s;
+}
+
+.splashscreen-container:after {
+    bottom: 12vh;
+    opacity: .5;
+    border-radius: 47%;
+    animation-duration: 10s;
+}
+
+@keyframes rotate {
+    0% {
+        transform: translate(-50%, 0) rotateZ(0deg);
+    }
+
+    50% {
+        transform: translate(-50%, -2%) rotateZ(180deg);
+    }
+
+    100% {
+        transform: translate(-50%, 0%) rotateZ(360deg);
+    }
+}
+
+.splashscreen {
+    width: 30em;
+    height: 30em;
+    z-index: 1;
+}
+.code-writing-options-contianer {
+    padding: 0px 50px 15px 0px;
+}
+
+.paper-reset-small {
+    display: none !important;
+}
+
+.paper-reset {
+    align-items: end;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .splashscreen {
+        width: 22em;
+    }
+    .paper-reset {
+        display: none !important;
+    }
+    .paper-reset-small {
+        display: flex !important;
+    }
+    .code-writing-options-contianer {
+        padding: 0px 0px 15px 0px;
+    }
+    .collection-tree-root {
+        grid-template-columns: 1fr !important;
+    }
+    .file-tree-item p {
+        max-width: 11.5em;
+    }
+    .f-row-column {
+        flex-direction: column !important;
+    }
+    .start-end {
+        align-items: end !important;
+    }
+
+    .end-start {
+        align-items: start !important;
+    }
+}
+@media (max-width: 500px) {
+    .file-tree-item p {
+        max-width: 8em;
+    }
+    .splashscreen {
+        width: 14.5em;
+        height: 20em;
+    }
+}
+.advanced-settings-tooltip {
+    width: 100%;
+}
+
+.collection-tree-root {
+    display: grid;
+    overflow-x: hidden;
+    grid-template-columns: 1fr 1fr 1fr;
+}

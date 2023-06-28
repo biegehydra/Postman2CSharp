@@ -1,0 +1,31 @@
+﻿@typeparam TEnum where TEnum : struct, Enum
+<div class="enum-select-container" >
+    <MudSelect T="TEnum" Label="@Label" @bind-Value="Value">
+        @foreach (var enumValue in Enum.GetValues<TEnum>())
+        {
+            <MudSelectItem T="TEnum" Value="@enumValue">@enumValue.ToString()</MudSelectItem>
+        }
+    </MudSelect>
+</div>
+@code {
+    [Parameter, EditorRequired] public required string Label { get; set; }
+
+    [Parameter] public EventCallback<TEnum> ValueChanged { get; set; }
+
+    [Parameter] public bool AlwaysShowAllEnumValues { get; set; } = true;
+
+    #pragma warning disable BL0007
+    private TEnum _value;
+    [Parameter]
+    public TEnum Value
+    {
+        get => _value;
+        set
+        {
+            if (_value.Equals(value)) return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+    #pragma warning restore BL0007
+}

@@ -1,0 +1,59 @@
+﻿@page "/Collection/{CollectionId}/ApiClient/{ApiClientId}/Interface"
+@inherits MainLayoutComponent
+
+<PageTitle>@SelectedApiClient?.InterfaceName</PageTitle>
+
+<BreadCrumbs Items="@_breadCrumbs"></BreadCrumbs>
+
+<br />
+
+@if (SelectedApiClient != null)
+{
+    <pre><code @key="SelectedApiClient.Id" class="language-csharp">@SelectedApiClient.InterfaceSourceCode</code></pre>
+}
+
+@code {
+    private List<BreadcrumbItem> _breadCrumbs = new();
+
+    [Parameter] public string? ApiClientId { get; set; }
+    [Parameter] public string? CollectionId { get; set; }
+
+    private ApiClient? SelectedApiClient { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!GetApiClientFromParameters()) return;
+        if (ApiClientId == null || CollectionId == null) return;
+        await TabsService.Value.AddApiClientInterfaceTab(CollectionId, ApiClientId, SelectedApiClient!.InterfaceName);
+    }
+    protected override void OnParametersSet()
+    {
+        if (!GetApiClientFromParameters()) return;
+
+        _breadCrumbs = new()
+        {
+            new("Home", "/", icon: Icons.Home),
+            new("Collection", $"/Collection/{CollectionId}", icon: NavMenu.FavIcon),
+            new(SelectedApiClient!.Name, $"/Collection/{CollectionId}/ApiClient/{ApiClientId}"),
+            new(SelectedApiClient!.InterfaceName, $"/Collection/{CollectionId}/ApiClient/{ApiClientId}/Interface", true),
+        };
+
+    }
+
+    private bool GetApiClientFromParameters()
+    {
+        if (ApiCollections == null || ApiClientId == null || CollectionId == null)
+        {
+            SnackBar.Value?.Add("Something went wrong", Severity.Error);
+            return false;
+        }
+        SelectedApiClient = ApiCollections?.FirstOrDefault(x => x.Id == CollectionId)?
+            .ApiClients.FirstOrDefault(x => x.Id == ApiClientId);
+        if (SelectedApiClient == null)
+        {
+            SnackBar.Value?.Add("Something went wrong", Severity.Error);
+            return false;
+        }
+        return true;
+    }
+}

@@ -1,0 +1,16 @@
+// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+    public class Root
+    {
+        [JsonProperty("test")]
+        public string test { get; set; }
+
+        [JsonProperty("test-test")]
+        public string testtest { get; set; }
+
+        [JsonProperty("continue")]
+        public string @continue { get; set; }
+
+        [JsonProperty("class")]
+        public string @class { get; set; }
+    }
+

@@ -1,0 +1,286 @@
+﻿@implements IDisposable
+@using Postman2CSharp.Wasm.Pages
+@inherits LayoutComponentBase
+@inject IWebAssemblyHostEnvironment HostEnv
+
+<MudThemeProvider IsDarkMode="true" Theme="_theme" />
+<MudDialogProvider />
+
+@if (SiteSettings.Instance.ShowSnackbarPopups)
+{
+    <MudSnackbarProvider />
+}
+
+<MudLayout>
+    <MudAppBar Class="appbar" Elevation="0" ToolBarClass="toolbar-class">
+        <MudIconButton Icon="@Icons.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(DrawerToggle)"/>
+        <AppBarTabs ></AppBarTabs>
+        <MudSpacer></MudSpacer>
+        @if (SiteSettings.Instance.ShowSnackbarPopups)
+        {
+            <MudTooltip Text="Toggle snackbar popups off">
+                <MudIconButton Icon="@Icons.NotificationsActive" OnClick="() => SiteSettings.Instance.ShowSnackbarPopups = false" Color="Color.Inherit" Edge="Edge.End" ></MudIconButton>
+            </MudTooltip>
+        }
+        else
+        {
+            <MudTooltip Text="Toggle snackbar popups on">
+                <MudIconButton Icon="@Icons.NotificationsOff" OnClick="() => SiteSettings.Instance.ShowSnackbarPopups = true" Color="Color.Inherit" Edge="Edge.End"></MudIconButton>
+            </MudTooltip>
+        }
+        <MudTooltip Text="View project on GitHub">
+            <MudIconButton Icon="@MudBlazor.Icons.Custom.Brands.GitHub" OnClick="() => Navigate?.OpenBlank(GitHubUrls.BaseUrl)" Color="Color.Inherit" Edge="Edge.End"></MudIconButton>
+        </MudTooltip>
+
+        <MudDivider Vertical="true" Class="appbar-divider" />
+        <MudTooltip Text="Save workspace.">
+            <MudIconButton Color="Color.Tertiary" Icon="@Icons.Save" OnClick="SaveWorkspace" Variant="Variant.Filled" />
+        </MudTooltip>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" Style="overflow: hidden;" Width="250px">
+        <MudDrawerHeader Class="f-row aic" Style="gap: 15px; padding: 12px 24px 12px 10px;">
+            <MudImage Src="postman2csharp.png" Height="32" Width="32" ></MudImage>
+            <MudText Typo="Typo.h6" Style="font-size: 1.66em; font-weight: 300;">
+                <span Style="background: linear-gradient(to right, rgba(108, 93, 247, 1), rgba(84, 44, 63, 1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Postman2CSharp</span>
+            </MudText>
+        </MudDrawerHeader>
+        <CascadingValue Value="this">
+            <NavMenu ApiCollections="ApiCollections"/>
+        </CascadingValue>
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="px-4 py-4">
+            <CascadingValue Value="this">
+                <CascadingValue Value="ApiCollections">
+                    @Body
+                </CascadingValue>
+            </CascadingValue>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    public static event Action? OnSettingsChanged;
+    [Inject] private LazyLoader LazyLoader { get; set; } = null!;
+    [Inject] private TabsService TabsService { get; set; } = null!;
+    [Inject] private ISnackbar? SnackBar { get; set; }
+    [Inject] private Navigate? Navigate { get; set; }
+    [Inject] private IJSRuntime JsRuntime { get; set; } = null!;
+
+    private static List<ApiCollection>? ApiCollections { get; set; }
+    bool _drawerOpen = true;
+    
+    #region ThemeManager
+
+    private MudTheme _theme = new ()
+    {
+        LayoutProperties = new LayoutProperties()
+        {
+            DefaultBorderRadius = "6px",
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Tertiary = new MudColor("#634978ff"),
+            Secondary = new MudColor("#542c3fff"),
+            Primary = new MudColor("#6c5df7ff"),
+            AppbarBackground = "#252048ff"
+        },
+        PseudoCss = new PseudoCss()
+        {
+
+        },
+        Shadows = new Shadow()
+        {
+
+        },
+        Typography = new Typography()
+        {
+            Default = new Default()
+            {
+                FontFamily = new string[] { "Ubuntu" },
+            },
+        },
+        ZIndex = new ZIndex()
+        {
+
+        }
+
+    };
+
+    protected override void OnInitialized()
+    {
+        StateHasChanged();
+        SiteSettings.OnSettingsChanged += OnSiteSettingsChanged;
+    }
+
+    private void OnSiteSettingsChanged(SiteSettings siteSettings)
+    {
+        StateHasChanged();
+    }
+
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HostEnv.Environment == "Prerendering") return;
+        try
+        {
+            await JsRuntime.InvokeVoidAsync("setupPrismObserver");
+            if (ApiCollections?.Count > 0) return;
+            ApiCollections = new();
+            var apiCollectionIds = await JsRuntime.InvokeAsync<List<string>?>("getLocalStorage", "apiCollectionIds");
+            foreach (var apiCollectionId in apiCollectionIds ?? new ())
+            {
+                var apiCollection = await JsRuntime.InvokeAsync<ApiCollection>("getLocalStorage", apiCollectionId);
+                ApiCollections.Add(apiCollection);
+            }
+            await GetSiteSettings();
+        }
+        catch (Exception ex)
+        {
+            SnackBar?.Add(ex.GetBaseException().Message, Severity.Error);
+        }
+    }
+
+    private async Task GetSiteSettings()
+    {
+        var siteSettings = await JsRuntime.InvokeAsync<SiteSettings?>("getLocalStorage", "siteSettings");
+        if (siteSettings != null)
+        {
+            SiteSettings.Instance = siteSettings;
+        }
+        var codeWritingConfig = await JsRuntime.InvokeAsync<CSharpCodeWriterConfigInputModel?>("getLocalStorage", "codeWriterConfig");
+        if (codeWritingConfig != null)
+        {
+            CSharpCodeWriterOptionsComponent.LastSavedInputModel = codeWritingConfig;
+        }
+        var apiClientOptions = await JsRuntime.InvokeAsync<ApiClientOptions?>("getLocalStorage", "apiClientOptions");
+        if (apiClientOptions != null)
+        {
+            AdvancedSettings.SetApiClientOptions(apiClientOptions);
+        }
+        OnSettingsChanged?.Invoke();
+    }
+
+    private async Task SetSiteSettings()
+    {
+        var siteSettings = await JsRuntime.InvokeAsync<SiteSettings?>("setLocalStorage", "siteSettings", SiteSettings.Instance);
+        if (siteSettings != null)
+        {
+            SiteSettings.Instance = siteSettings;
+        }
+        var codeWritingConfig = await JsRuntime.InvokeAsync<CSharpCodeWriterConfigInputModel?>("setLocalStorage", "codeWriterConfig", CSharpCodeWriterOptionsComponent.LastSavedInputModel);
+        if (codeWritingConfig != null)
+        {
+            CSharpCodeWriterOptionsComponent.LastSavedInputModel = codeWritingConfig;
+        }
+        var apiClientOptions = await JsRuntime.InvokeAsync<ApiClientOptions?>("setLocalStorage", "apiClientOptions", AdvancedSettings.ApiClientOptions);
+        if (apiClientOptions != null)
+        {
+            AdvancedSettings.SetApiClientOptions(apiClientOptions);
+        }
+    }
+
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    public async Task AddApiCollection(ApiCollection apiCollection)
+    {
+        ApiCollections ??= new();
+        ApiCollections.Add(apiCollection);
+        StateHasChanged();
+        await SaveApiCollectionToLocalStore(apiCollection.Id);
+    }
+    private void StripApiCollections()
+    {
+        if (ApiCollections == null) return;
+        foreach (var apiCollection in ApiCollections)
+        {
+            foreach (var successResponse in apiCollection.ApiClients.SelectMany(x => x.HttpCalls)
+                .Where(x => x.SuccessResponse?.Body != null)
+                .Select(x => x.SuccessResponse))
+            {
+                successResponse!.Body = null;
+            }
+            foreach (var requestBody in apiCollection.ApiClients.SelectMany(x => x.HttpCalls)
+                .Where(x => x.Request.Body?.Raw != null)
+                .Select(x => x.Request.Body))
+            {
+                requestBody!.Raw = null;
+            }
+        }
+    }
+
+    private async Task SaveWorkspace()
+    {
+        await SaveApiCollectionToLocalStore();
+        await SetSiteSettings();
+    }
+
+    private async Task SaveApiCollectionToLocalStore(string? apiCollectionId = null)
+    {
+        if (ApiCollections == null) return;
+        if (!SiteSettings.Instance.SaveCollectionsToLocalStorage)
+        {
+            SnackBar?.Add("Saving to local storage is disabled.", Severity.Warning);
+            return;
+        }
+        if (!LazyLoader.UploadLoaded)
+        {
+            try
+            {
+                await LazyLoader.LoadUploadAssemblies();
+            }
+            catch (Exception ex)
+            {
+                #if DEBUG
+                SnackBar?.Add(ex.ToString(), Severity.Error);
+                #endif
+            }
+        }
+        StripApiCollections();
+        try
+        {
+            var apiCollectionIds = ApiCollections.Select(x => x.Id).ToList();
+            await JsRuntime.InvokeVoidAsync("setLocalStorage", "apiCollectionIds", apiCollectionIds);
+            foreach (var apiCollection in ApiCollections.Where(x => apiCollectionId == null || x.Id == apiCollectionId))
+            {
+                await JsRuntime.InvokeVoidAsync("setLocalStorage", apiCollection.Id, apiCollection);
+            }
+            SnackBar?.Add("Saved workspace successfully.", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            if (ex.Message.Contains("exceeded the quota"))
+            {
+                SnackBar?.Add("Storage full. Workspace couldn't be saved. Remove duplicate or larger collections if you would like your workspace to save.", Severity.Error);
+            }
+            else
+            {
+                SnackBar?.Add(ex.GetBaseException().Message, Severity.Error);
+            }
+        }
+    }
+
+    public async Task DeleteApiCollection(ApiCollection apiCollection)
+    {
+        if (TabsService.ActiveCollectionId == apiCollection.Id)
+        {
+            TabsService.SetHome(null);
+            Navigate!.ToHome();
+            StateHasChanged();
+        }
+        ApiCollections?.Remove(apiCollection);
+        await JsRuntime.InvokeVoidAsync("deleteLocalStorage", apiCollection.Id);
+    }
+
+    public async void Dispose()
+    {
+        await JsRuntime.InvokeVoidAsync("removePrismObserver");
+        SiteSettings.OnSettingsChanged -= OnSiteSettingsChanged;
+    }
+
+}

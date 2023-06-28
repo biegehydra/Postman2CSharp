@@ -1,0 +1,26 @@
+{
+
+"testobject" : [
+   { 
+     "test" : 1,
+     "teststring" : "sdfasdf",
+     "teststringbla" : {
+            "testinginner" : 12,
+            "testingdd" : 12
+        }
+   }
+]
+,
+
+"testparent": {
+    
+"testobject" : [
+   { 
+        "test" : 1,
+        "teststring" : "sdfasdf"
+   }
+]
+    
+}
+    
+}

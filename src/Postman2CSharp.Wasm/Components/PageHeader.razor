@@ -1,0 +1,39 @@
+﻿<PageTitle>@(GetTitle())</PageTitle>
+<HeadContent>
+    <meta Name="keywords" Content="@GetKeywords()" />
+    <meta Property="og:title" Content="@GetTitle()" />
+    <meta Name="twitter:title" Content="@GetTitle()" />
+    @if (!string.IsNullOrEmpty(SubTitle))
+    {
+        <meta Name="description" Content="@(SubTitle)" />
+        <meta Property="og:description" Content="@SubTitle" />
+        <meta Name="twitter:description" Content="@SubTitle" />
+    }
+</HeadContent>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? SubTitle { get; set; }
+    [Parameter, EditorRequired] public string Keywords { get; set; } = null!;
+
+    string GetTitle() => Title == null ? "Postman2CSharp" : $"{Title} - Postman2CSharp";
+
+    string GetSubTitle()
+    {
+        if (string.IsNullOrEmpty(SubTitle))
+            return "";
+        return SubTitle.TrimEnd('.') + ".";
+    }
+
+    string GetKeywords()
+    {
+        var keywords = new HashSet<string>(Keywords.Split(",").Select(x => x.Trim()));
+        keywords.Add(Title ?? "");
+        keywords.Add("postman2csharp");
+        keywords.Add("csharp");
+        keywords.Add("c#");
+        keywords.Add("apiclient");
+        keywords.Add("httpclient");
+        return string.Join(", ", keywords.Where(x => !string.IsNullOrWhiteSpace(x)));
+    }
+}

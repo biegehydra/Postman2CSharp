@@ -1,0 +1,98 @@
+﻿@page "/SupportedFeatures"
+
+<PageHeader Title="Supported Features"
+            SubTitle="Postman2CSharp supports a wide range of features including FormData, requests, responses, and query parameters."
+            Keywords="supported features, formdata, requests, responses, query parameters, C#, HttpClient" />
+
+<BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
+
+<MudText Typo="Typo.h1" Class="mt-4">Supported Features</MudText>
+
+<br />
+
+<p>
+    I have added all the features need to get you started on your ApiClient. You should be able to generate at least a very good starting point.
+    However, if that's not the case and there is a feature that you would like supported, feel free to create an
+    <a class="link-normal" href="@GitHubUrls.Issues" target="_blank">issue</a> on GitHub detailing the functionality you would like.
+    You are also more than welcome to create the feature yourself and submit a <a class="link-normal" href="@GitHubUrls.Pulls" target="_blank">pull request</a>.
+    The generator <b>and</b> website are open source.
+</p>
+
+<MudTreeView T="string" Style="padding: 25px;" Hover ExpandOnClick>
+    <MudTreeViewItem T="string" Value="@("Authorization Types")">
+        @FeatureTreeItem("Inherited From Parent", true)
+        @FeatureTreeItem("No Auth", true)
+        @FeatureTreeItem("Basic Auth", true)
+        @FeatureTreeItem("Api Key", true)
+        @FeatureTreeItem("Bearer", true)
+        @FeatureTreeItem("OAuth2", null)
+        @FeatureTreeItem("JWT Bearer", null)
+        @FeatureTreeItem("AWS Signature", null)
+        @FeatureTreeItem("OAuth", false)
+        @FeatureTreeItem("Digest", false)
+        @FeatureTreeItem("Hawk", false)
+        @FeatureTreeItem("NTLM", false)
+        @FeatureTreeItem("Akamai EdgeGrid", false)
+    </MudTreeViewItem>
+    <MudTreeViewItem Value="@("Request Parts")">
+        <MudTreeViewItem Value="@("Body")">
+            <MudTreeViewItem Value="@("Raw")">
+                @FeatureTreeItem("Text", true)
+                @FeatureTreeItem("Json", true)
+                @FeatureTreeItem("Html", true)
+                @FeatureTreeItem("Xml", true)
+                @FeatureTreeItem("Javascript", false)
+            </MudTreeViewItem>
+            @FeatureTreeItem("Form Data", true)
+            @FeatureTreeItem("Form Url Encoded", true)
+            @FeatureTreeItem("GraphQL", true)
+            @FeatureTreeItem("Binary", true)
+        </MudTreeViewItem>
+        @FeatureTreeItem("Query Parameters", true)
+        @FeatureTreeItem("Headers", true)
+        @FeatureTreeItem("Cookies", false)
+    </MudTreeViewItem>
+    <MudTreeViewItem Value="@("Response Parts")">
+        <MudTreeViewItem Value="@("Body")">
+            @FeatureTreeItem("Json", true)
+            @FeatureTreeItem("All other types", null)
+        </MudTreeViewItem>
+        @FeatureTreeItem("Headers", false)
+    </MudTreeViewItem>
+    <MudTreeViewItem Value="@("Variables")">
+        <MudTreeViewItem Value="@("Location")">
+            @FeatureTreeItem("Host", true)
+            @FeatureTreeItem("Path", true)
+            @FeatureTreeItem("Headers", true)
+            @FeatureTreeItem("Query Parameters", true)
+            @FeatureTreeItem("Authorization", true)
+            @FeatureTreeItem("Body", false)
+        </MudTreeViewItem>
+        @FeatureTreeItem("Collection Variables", true)
+        @FeatureTreeItem("Environment Variables", null)
+        @FeatureTreeItem("Global Variables", null)
+        @FeatureTreeItem("Data Variables", null)
+        @FeatureTreeItem("Local Variables", null)
+    </MudTreeViewItem>
+</MudTreeView>
+
+@code {
+    [Inject] private TabsService TabsService { get; set; } = null!;
+    private static readonly List<BreadcrumbItem> BreadCrumbs = new()
+    {
+        new("Home", "/", icon: Icons.Home),
+        new("Supported Features", "/", true, Icons.ContactSupport)
+    };
+
+    protected override void OnInitialized()
+    {
+        TabsService.SetHome(null);
+    }
+
+    public static RenderFragment FeatureTreeItem(string feature, bool? supported)
+    {
+        var icon = !supported.HasValue ? Icons.Warning : supported.Value ? Icons.Check : Icons.Cancel;
+        var color = !supported.HasValue ? Color.Warning : supported.Value ? Color.Success : Color.Error;
+        return @<MudTreeViewItem Value="feature" IconColor="color" Icon="@icon"></MudTreeViewItem>;
+    }
+}

@@ -1,0 +1,64 @@
+﻿@inherits MainLayoutComponent
+@page "/Upload"
+@implements IDisposable
+
+<PageHeader Title="Upload"
+            SubTitle="Upload your Postman collections and transform them into C# HttpClients with Postman2CSharp"
+            Keywords="upload, generator, postman collections, transform, C# HttpClient" />
+
+<BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
+
+<MudText Style="padding-left: 8px;" Typo="Typo.h1" Class="mt-4">Upload your Postman Collections</MudText>
+
+<br/>
+
+@if (LazyLoader.UploadLoaded)
+{
+    <div class="code-writing-options-contianer">
+        <CSharpCodeWriterOptionsComponent></CSharpCodeWriterOptionsComponent>
+    </div>
+
+    <CollectionUpload SuccessfulUpload="OnSuccessfulUpload"></CollectionUpload>
+}
+
+
+@code {
+    [Inject] private LazyLoader? LazyAssemblyLoader { get; set; }
+    private static readonly List<BreadcrumbItem> BreadCrumbs = new()
+    {
+        new("Home", "/", icon: Icons.Home),
+        new("Upload", "/Upload", true, Icons.UploadFile)
+    };
+
+    protected override void OnInitialized()
+    {
+        TabsService.Value.SetHome(null);
+        if (!LazyLoader.UploadLoaded)
+        {
+            throw new Exception("Something went wrong. Reload the page.");
+        }
+        LazyLoader.UploadLoadedChanged += OnUploadLoaded;
+    }
+
+    private async Task OnSuccessfulUpload(ApiCollection apiCollection)
+    {
+        await Layout.AddApiCollection(apiCollection);
+        Navigate.Value.ToCollection(apiCollection.Id);
+        NavMenu.CollectionsExpanded = true;
+    }
+
+    private async Task OnUploadLoaded(bool loaded)
+    {
+        if (loaded)
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+
+    public void Dispose()
+    {
+        LazyLoader.UploadLoadedChanged -= OnUploadLoaded;
+    }
+
+}

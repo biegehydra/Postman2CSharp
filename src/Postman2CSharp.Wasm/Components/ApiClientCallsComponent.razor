@@ -1,0 +1,69 @@
+﻿@if (SelectedApiClient != null)
+{
+    <MudTabs @key="SelectedApiClient.Id" Rounded ApplyEffectsToContainer ActivePanelIndexChanged="OnPanelChanged" >
+        @foreach (var httpCall in SelectedApiClient.HttpCalls)
+        {
+            <MudTabPanel Text="@httpCall.Name">
+                <br/>
+                @if (AllClassNames.Count > 1)
+                {
+                    <MudSelect Style="min-width: 16em;" T="string" Label="Select a class" @bind-Value="SelectedClassName">
+                        @foreach (var className in AllClassNames)
+                        {
+                            <MudSelectItem Value="@className">@className</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+                else if (AllClassNames.Count == 1)
+                {
+                    <MudText Typo="Typo.body1">@AllClassNames.First()</MudText>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body1">No classes exist for this call</MudText>
+                }
+                <br/>
+                @if (SelectedClassName?.Contains(Consts.Request) ?? false)
+                {
+                    <pre><code class="language-csharp">@httpCall.RequestSourceCode</code></pre>
+                }
+                @if (SelectedClassName?.Contains(Consts.Response) ?? false)
+                {
+                    <pre><code class="language-csharp">@httpCall.ResponseSourceCode</code></pre>
+                }
+                @if (SelectedClassName?.Contains(Consts.Parameters) ?? false)
+                {
+                    <pre><code class="language-csharp">@httpCall.QueryParameterSourceCode</code></pre>
+                }
+                @if (SelectedClassName?.Contains(Consts.FormData) ?? false)
+                {
+                    <pre><code class="language-csharp">@httpCall.FormDataSourceCode</code></pre>
+                }
+            </MudTabPanel>
+        }
+    </MudTabs>
+}
+@code {
+    [Parameter] public ApiClient? SelectedApiClient { get; set; }
+    private string? SelectedClassName { get; set; } = null!;
+    private List<string> AllClassNames { get; set; } = new();
+
+    protected override void OnParametersSet()
+    {
+        OnPanelChanged(0);
+    }
+
+    private void OnPanelChanged(int panelInex)
+    {
+        if(SelectedApiClient == null) return;
+        var httpCall = SelectedApiClient.HttpCalls[panelInex];
+        var allClassNames = new List<string?>();
+        allClassNames.Add(httpCall.RequestClassName);
+        allClassNames.Add(httpCall.ResponseClassName);
+        allClassNames.Add(httpCall.QueryParameterClassName);
+        allClassNames.Add(httpCall.FormDataClassName);
+        AllClassNames = allClassNames.Where(x => !string.IsNullOrWhiteSpace(x)).ToList()!;
+        SelectedClassName = httpCall.RequestClassName ?? httpCall.ResponseClassName ?? httpCall.QueryParameterClassName ?? httpCall.FormDataClassName;
+    }
+
+}

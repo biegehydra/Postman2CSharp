@@ -1,0 +1,18 @@
+﻿<MudItem xs="12" sm="6" md="4" lg="3" Style="display: flex; align-items: center;">
+    <div style="width: 100%">
+        @ChildContent
+    </div>
+    <MudTooltip Delay="400" Duration="300">
+        <ChildContent>
+            <MudIcon Icon="@Icons.HelpOutline" Size="Size.Small"></MudIcon>
+        </ChildContent>
+        <TooltipContent>
+            <MudText Typo="Typo.body2" Style="max-width: 15em;">@ToolTip</MudText>
+        </TooltipContent>
+    </MudTooltip>
+</MudItem>
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter, EditorRequired] public string ToolTip { get; set; } = null!;
+
+}

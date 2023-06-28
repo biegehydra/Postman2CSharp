@@ -1,0 +1,110 @@
+﻿@using Postman2CSharp.Wasm.Dialogs
+@inherits MainLayoutComponent
+
+@if (ApiClientGroups != null)
+{
+    <MudTreeView T="string" Class="collection-tree-root" Hover ExpandOnClick>
+        <CascadingValue Value="this">
+            @foreach (var group in ApiClientGroups)
+            {
+                <div class="f-column" >
+                    @foreach (var apiClient in group)
+                    {
+                        <ApiClientTreeViewItem ApiClient="apiClient" ShowCoreCsvFiles="ShowCoreCsvFiles" ApiCollection="ApiCollection"/>
+                    }
+                </div>
+            }
+        </CascadingValue>
+    </MudTreeView>
+}
+
+@code {
+    [Parameter]
+    public bool ShowCoreCsvFiles { get; set; }
+
+    [Parameter]
+    public ApiCollection? ApiCollection { get; set; }
+
+    public Dictionary<string, ApiClientTreeViewItem> ApiClientTreeViewGuidDict { get; set; } = new();
+
+    private List<List<ApiClient>>? ApiClientGroups { get; set; }
+
+    private bool? _cachedShowCoreCsvFiles;
+    private ApiCollection? _cachedApiCollection;
+    protected override void OnParametersSet()
+    {
+        if (ApiCollection == _cachedApiCollection && _cachedShowCoreCsvFiles == ShowCoreCsvFiles)
+        {
+            _shouldRender = false;
+            return;
+        }
+        ApiClientGroups = GroupEqually(ApiCollection?.ApiClients ?? new(), 3);
+        _shouldRender = true;
+        _cachedApiCollection = ApiCollection;
+        _cachedShowCoreCsvFiles = ShowCoreCsvFiles;
+    }
+
+    public string? NextApiClientWithDefaultNameSpaceId(ApiClient lastEditedApiClient)
+    {
+        var apiClients = ApiCollection?.ApiClients;
+        if (apiClients is not {Count: > 0}) return null;
+
+        var lastEditedIndex = ApiCollection?.ApiClients.FindIndex(x => x.Id == lastEditedApiClient.Id) ?? -1;
+        if (lastEditedIndex < 0) return null;
+        if (FindApiClientAfter() is {} nextApiClient)
+        {
+            _shouldRender = false;
+            return nextApiClient.Id;
+        }
+        else if (FindApiClientBefore() is { } beforeApiClient)
+        {
+            _shouldRender = false;
+            return beforeApiClient.Id;
+        }
+        return null;
+        ApiClient? FindApiClientAfter()
+        {
+            return apiClients!.Skip(lastEditedIndex).FirstOrDefault(x => x.NameSpace == Consts.Postman2CSharp);
+        }
+        ApiClient? FindApiClientBefore()
+        {
+            for (var i = lastEditedIndex - 1; i >= 0; i--)
+            {
+                if (apiClients![i].NameSpace == Consts.Postman2CSharp)
+                {
+                    return apiClients[i];
+                }
+            }
+            return null;
+        }
+    }
+
+    public async Task StartEditingNextApiClientNameSpace(string nextApiClientId)
+    {
+        _shouldRender = true;
+        SnackBar.Value?.Add("Began editing next namespace with default value.");
+        await ApiClientTreeViewGuidDict[nextApiClientId].BeginEditingApiClientNamespace(true);
+    }
+
+    private bool _shouldRender = true;
+    protected override bool ShouldRender()
+    {
+        return _shouldRender;
+    }
+
+    private static List<List<T>> GroupEqually<T>(List<T> list, int numberOfGroups)
+    {
+        int itemsPerGroup = (int)Math.Ceiling((double)list.Count / numberOfGroups);
+        List<List<T>> groupedLists = new List<List<T>>();
+
+        for (int i = 0; i < list.Count; i += itemsPerGroup)
+        {
+            List<T> group = list.Skip(i).Take(itemsPerGroup).ToList();
+            groupedLists.Add(group);
+        }
+
+        return groupedLists;
+    }
+
+}
+
