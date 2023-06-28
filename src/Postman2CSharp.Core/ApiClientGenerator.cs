@@ -350,7 +350,7 @@ public class ApiClientGenerator
                 var json = requestItem.Request!.Body!.Raw ?? "";
                 if (string.IsNullOrWhiteSpace(json))
                 {
-                    requestDataType = DataType.QueryOnly;
+                    requestClassName = "EmptyRequest";
                 }
                 else
                 {
@@ -361,8 +361,7 @@ public class ApiClientGenerator
                     }
                     catch (JsonException)
                     {
-                        requestDataType = DataType.QueryOnly;
-                        requestClassName = null;
+                        requestClassName = "EmptyRequest";
                         requestSourceCode = null;
                         requestTypes = null;
                     }
@@ -411,7 +410,7 @@ public class ApiClientGenerator
                 var json = successResponse!.Body ?? string.Empty;
                 if (string.IsNullOrWhiteSpace(json))
                 {
-                    responseDataType = DataType.Null;
+                    responseClassName = "EmptyResponse";
                 }
                 else
                 {
@@ -421,9 +420,8 @@ public class ApiClientGenerator
                     }
                     catch (JsonException)
                     {
-                        responseDataType = DataType.Null;
+                        responseClassName = "EmptyResponse";
                         responseSourceCode = null;
-                        responseClassName = null;
                         responseTypes = null;
                     }
                 }

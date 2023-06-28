@@ -255,9 +255,9 @@ public static class ApiClientSerializer
             sb.AppendLine(indent + "var oauthQueryParameters = new OAuth2QueryParameters();");
             sb.AppendLine(indent + "oauthQueryParameters.ResponseType = \"token\";");
             sb.AppendLine(indent + "oauthQueryParameters.ClientId = _clientId;");
-            sb.AppendLine(indent + "oauthQueryParameters.RedirectUrl = _redirectUrl;");
-            sb.AppendLine(indent + "oauthQueryParameters.Scope = _scope;");
-            sb.AppendLine(indent + "oauthQueryParameters.State = _state;");
+
+            sb.AddCommonApiClientInstanceAuthVariablesToOAuthQueryParameters(auth, indent);
+
             auth.TryGetAuth2Config(OAuth2Config.AuthUrl, out var authUrl);
             sb.AppendLine(indent + $"var queryString = QueryHelpers.AddQueryString(\"{authUrl}\", oauthQueryParameters.ToDictionary());");
             sb.AppendLine(indent + $"await _httpClient.GetAsync(queryString);");
@@ -274,28 +274,14 @@ public static class ApiClientSerializer
             sb.AppendLine(indent + "var oauthQueryParameters = new OAuth2QueryParameters();");
             sb.AppendLine(indent + "oauthQueryParameters.ResponseType = \"code\";");
             sb.AppendLine(indent + "oauthQueryParameters.ClientId = _clientId;");
-            var redirectUrl = VariableOrEmpty(OAuth2Properties.RedirectUrl, OAuth2Config.RedirectUri);
-            sb.AppendLine(indent + $"oauthQueryParameters.RedirectUrl = {redirectUrl};");
 
-            var scope = VariableOrEmpty(OAuth2Properties.Scope, OAuth2Config.Scope);
-            sb.AppendLine(indent + $"oauthQueryParameters.Scope = {scope};");
+            sb.AddCommonApiClientInstanceAuthVariablesToOAuthQueryParameters(auth, indent);
 
-            var state = VariableOrEmpty(OAuth2Properties.State, OAuth2Config.State);
-            sb.AppendLine(indent + $"oauthQueryParameters.State = {state};");
             auth.TryGetAuth2Config(OAuth2Config.AuthUrl, out var authUrl);
             sb.AppendLine(indent + $"var queryString = QueryHelpers.AddQueryString(\"{authUrl}\", oauthQueryParameters.ToDictionary());");
             sb.AppendLine(indent + $"await _httpClient.GetAsync(queryString);");
             indent = Consts.Indent(intIndent);
             sb.AppendLine(indent + "}");
-
-            string VariableOrEmpty(string str, OAuth2Config config)
-            {
-                if (!auth.TryGetAuth2Config(config, out var _))
-                {
-                    return "string.Empty";
-                }
-                return str;
-            }
         }
         static void Auth(StringBuilder sb, AuthSettings auth, int intIndent)
         {
@@ -313,17 +299,12 @@ public static class ApiClientSerializer
             sb.AppendLine();
             sb.AppendLine(indent + "var oauthQueryParameters = new OAuth2QueryParameters();");
             sb.AppendLine(indent + "oauthQueryParameters.Code = code;");
-
-            var redirectUrl = VariableOrEmpty(OAuth2Properties.RedirectUrl, OAuth2Config.RedirectUri);
-            sb.AppendLine(indent + $"oauthQueryParameters.RedirectUrl = {redirectUrl};");
-
             sb.AppendLine(indent + "oauthQueryParameters.GrantType = \"authorization_code\";");
 
-            var state = VariableOrEmpty(OAuth2Properties.State, OAuth2Config.State);
-            sb.AppendLine(indent + $"oauthQueryParameters.State = {state};");
+            sb.AddCommonApiClientInstanceAuthVariablesToOAuthQueryParameters(auth, indent);
 
             auth.TryGetAuth2Config(OAuth2Config.AccessTokenUrl, out var accessTokenUrl);
-            sb.AppendLine(indent + $"var response = _httpClient.PostAsync(\"{accessTokenUrl}\", new FormUrlEncodedContent(oauthQueryParameters.ToDictionary()));");
+            sb.AppendLine(indent + $"var response = await _httpClient.PostAsync(\"{accessTokenUrl}\", new FormUrlEncodedContent(oauthQueryParameters.ToDictionary()));");
             indent = Consts.Indent(intIndent);
             sb.AppendLine(indent + "}");
 
@@ -335,6 +316,32 @@ public static class ApiClientSerializer
                 }
                 return str;
             }
+        }
+    }
+
+    private static void AddCommonApiClientInstanceAuthVariablesToOAuthQueryParameters(this StringBuilder sb, AuthSettings auth, string indent)
+    {
+        VariableOrEmpty(OAuth2Properties.RedirectUrl, OAuth2Config.RedirectUri, out var redirectUrl);
+        sb.AppendLine(indent + $"oauthQueryParameters.RedirectUrl = {redirectUrl};");
+
+        if (VariableOrEmpty(OAuth2Properties.Scope, OAuth2Config.Scope, out var scope))
+        {
+            sb.AppendLine(indent + $"oauthQueryParameters.Scope = {scope};");
+        }
+
+        if (VariableOrEmpty(OAuth2Properties.State, OAuth2Config.State, out var state))
+        {
+            sb.AppendLine(indent + $"oauthQueryParameters.State = {state};");
+        }
+        bool VariableOrEmpty(string str, OAuth2Config config, out string value)
+        {
+            if (!auth.TryGetAuth2Config(config, out var _))
+            {
+                value = "string.Empty";
+                return false;
+            }
+            value = str;
+            return true;
         }
     }
 

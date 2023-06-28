@@ -270,6 +270,8 @@ public static class HttpClientJsonExtensions
     }
 
     class IgnoreResponse { }
-}";
+}
+public class EmptyRequest { }
+public class EmptyResponse { }";
     }
 }
