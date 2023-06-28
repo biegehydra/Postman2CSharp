@@ -324,11 +324,11 @@ public static class HttpCallSerializer
                     var keyValue = auth.TryGetApiKeyConfig(ApiKeyConfig.Key, out var key) ? key : "api_key";
                     if (requestHasQueryString)
                     {
-                        sb.AppendLine(indent + $@"parametersDict.Add($""{keyValue}"", _apiKey);");
+                        sb.AppendLine(indent + $@"parametersDict.Add($""{keyValue}"", {Consts._apiKey});");
                     }
                     else
                     {
-                        sb.AppendLine(indent + $@"var parametersDict = new Dictionary<string, string>() {{ {{ ""{keyValue}"", apiKey }} }};");
+                        sb.AppendLine(indent + $@"var parametersDict = new Dictionary<string, string>() {{ {{ ""{keyValue}"", {Consts._apiKey} }} }};");
                         requestHasQueryString = true;
                     }
                 }

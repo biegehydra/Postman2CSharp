@@ -3,6 +3,9 @@
     text-decoration: underline;
     cursor: pointer; 
 }
+.main-container {
+    padding: 5px 16px;
+}
 
 strong, b {
     color: #dbdbdb;
@@ -199,9 +202,6 @@ li {
     .code-writing-options-contianer {
         padding: 0px 0px 15px 0px;
     }
-    .collection-tree-root {
-        grid-template-columns: 1fr !important;
-    }
     .file-tree-item p {
         max-width: 11.5em;
     }
@@ -223,6 +223,26 @@ li {
     .splashscreen {
         width: 14.5em;
         height: 20em;
+    }
+    .collection-tree-root {
+        grid-template-columns: 1fr !important;
+        transform: translate(-50px, 0px);
+        width: 200%;
+    }
+
+    .mud-treeview-item-content {
+        transform: scale(0.87, 0.95);
+    }
+    .main-container {
+        padding: 5px 12px;
+    }
+}
+@media (max-width: 270px) {
+    .mud-treeview-item-content {
+        transform: scale(0.80, 0.84);
+    }
+    .collection-tree-root {
+        transform: translate(-60px, 0px);
     }
 }
 .advanced-settings-tooltip {

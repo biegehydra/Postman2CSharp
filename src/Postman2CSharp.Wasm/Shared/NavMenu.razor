@@ -19,7 +19,7 @@
         {
             <div class="mud-nav-item mud-ripple">
                 <MudNavLink Href="@($"Collection/{apiCollection.Id}")" Match="NavLinkMatch.Prefix" Style="display: flex; align-items: center;">
-                    @apiCollection.CollectionInfo.Name
+                    @apiCollection?.CollectionInfo?.Name
                 </MudNavLink>
                 <MudMenu Icon="@Icons.MoreVert" Size="Size.Medium" Dense="true" Color="Color.Tertiary" Style="position: absolute; right: 0; top: -5%; z-index: 99999999999;">
                     <MudMenuItem Icon="@Icons.DeleteForever" OnClick="() => DeleteApiCollection(apiCollection)">Delete</MudMenuItem>
@@ -37,9 +37,9 @@
 {
     public static bool CollectionsExpanded { get; set; }
 
-    private string GettingStartedHref => Navigate.CurrentUrl == Navigate.BaseUrl ? "/" : "/GettingStarted";
+    private string GettingStartedHref => Navigate?.CurrentUrl == Navigate?.BaseUrl ? "/" : "/GettingStarted";
 
-    [Inject] private Navigate Navigate { get; set; } = null!;
+    [Inject] private Navigate? Navigate { get; set; }
 
     [Inject] private Interop? Interop { get; set; }
 
@@ -64,6 +64,7 @@
 
     private async Task DeleteApiCollection(ApiCollection collection)
     {
-        await Layout!.DeleteApiCollection(collection);
+        if (Layout == null) return;
+        await Layout.DeleteApiCollection(collection);
     }
 }

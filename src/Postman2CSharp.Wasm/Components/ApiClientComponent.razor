@@ -1,22 +1,31 @@
 ﻿@inherits MainLayoutComponent
-
+<style>
+    .api-client-grid {
+        max-width: 40%;
+    }
+    @@media (max-width: 600px) {
+        .api-client-grid {
+            max-width: 100%;
+        }
+    }
+</style>
 @if (SelectedApiClient != null && CollectionId != null)
 {
-    <div class="f-row-column" style="gap: 20px;" >
+    <div class="f-row-column" style="gap: 20px; justify-content: space-between;" >
         <div >
             <ApiClientDetails ApiClient="SelectedApiClient"></ApiClientDetails>
         </div>
-        <MudGrid  Spacing="3">
+        <MudGrid  Spacing="3" Class="api-client-grid" >
             <MudItem Class="f-row aic" Style="gap: 12px;" md="6">
-                <p>Download api client project</p>
+                <p>Download ApiClient Project</p>
                 <MudIconButton Size="Size.Medium" OnClick="() => Interop.Value.DownloadApiClient(SelectedApiClient)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
             </MudItem>
             <MudItem Class="f-row aic" Style="gap: 12px;" md="6">
-                <p>Download tests class</p>
+                <p>Download Test Class</p>
                 <MudIconButton Color="@Color.Tertiary" Size="Size.Medium" Icon="@Icons.Download" Variant="Variant.Filled" OnClick="() => Interop.Value.DownloadFile(SelectedApiClient.TestClassName, SelectedApiClient.TestClassSourceCode)"></MudIconButton>
             </MudItem>
             <MudItem Class="f-row aic" Style="gap: 12px;" md="6">
-                <p>View test class</p>
+                <p>View Test Class</p>
                 <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientTests(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
             </MudItem>
             <MudItem Class="f-row aic" Style="gap: 12px;" md="6">
@@ -24,7 +33,7 @@
                 <OpenInNewTab NavigateAction="() => Navigate.Value.ToHttpCalls(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
             </MudItem>
             <MudItem Class="f-row aic"  md="6">
-                <p>View interface</p>
+                <p>View Interface</p>
                 <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientInterface(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
             </MudItem>
         </MudGrid>

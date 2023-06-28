@@ -41,7 +41,6 @@
     {
         if (ApiCollections == null || ApiClientId == null || CollectionId == null)
         {
-            SnackBar.Value?.Add("Something went wrong", Severity.Error);
             return false;
         }
         SelectedApiClient = ApiCollections?.FirstOrDefault(x => x.Id == CollectionId)?

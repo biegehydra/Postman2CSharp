@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+	  <Title>Postman2CSharp.Core</Title>
+	  <Authors>Connor Hallman</Authors>
+	  <Company>Connor Hallman</Company>
+	  <TargetFramework>net7.0</TargetFramework>
     <nullable>enable</nullable>
   </PropertyGroup>
 

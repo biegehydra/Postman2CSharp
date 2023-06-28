@@ -4,7 +4,10 @@
         <Content>
             <MudTreeViewItemToggleButton Visible="false" />
             <MudText Style="user-select: none;">@ClassName</MudText>
-            <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="DownloadFile" ></MudIconButton>
+            @if (SiteSettings.Instance.ShowDownloadInTreeView)
+            {
+                <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="DownloadFile" ></MudIconButton>
+            }
             <OpenInNewTab NavigateAction="() => Navigate.ToHttpCallClass(ApiCollectionId, ApiClientId, HttpCallName, ClassName)" />
         </Content>
     </MudTreeViewItem>

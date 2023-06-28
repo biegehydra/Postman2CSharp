@@ -36,5 +36,17 @@
             }
         }
 
+        private bool _showDownloadInTreeView;
+
+        public bool ShowDownloadInTreeView
+        {
+            get => _showDownloadInTreeView;
+            set
+            {
+                _showDownloadInTreeView = value;
+                OnSettingsChanged?.Invoke(this);
+            }
+        }
+
     }
 }

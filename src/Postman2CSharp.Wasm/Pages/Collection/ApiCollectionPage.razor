@@ -31,11 +31,7 @@
     </li>
 </ul>
 <div class="f-row-column" style="justify-content: end; gap: 15px;">
-    <MudSwitch Color="Color.Primary" Label="Show Core CSV Files" @bind-Checked="ShowCoreCsvFiles" ></MudSwitch>
-    @if (SelectedApiCollection?.ApiClients.Count > 1)
-    {
-        <MudButton Style="max-width: fit-content;" Variant="Variant.Filled" IconSize="Size.Medium" EndIcon="@Icons.Download" Color="Color.Info" OnClick="DownloadAllApiClients">Download All ApiClients</MudButton>
-    }
+    <MudSwitch Color="Color.Primary" Label="Show Core Files" @bind-Checked="ShowCoreCsvFiles" ></MudSwitch>
 </div>
 <br/>
 <CollectionTreeView ShowCoreCsvFiles="ShowCoreCsvFiles" ApiCollection="SelectedApiCollection"></CollectionTreeView>

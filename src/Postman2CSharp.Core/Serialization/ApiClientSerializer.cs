@@ -111,7 +111,7 @@ public static class ApiClientSerializer
         }
 
         var importantHeaders = headers.Where(Header.IsImportant).ToList();
-        if (authTypeDoesNotEqualNoAuth || anyUniqueAuthTypeDoesNotEqualNoAuth)
+        if (importantHeaders.Count > 0)
         {
             sb.AppendLine();
         }

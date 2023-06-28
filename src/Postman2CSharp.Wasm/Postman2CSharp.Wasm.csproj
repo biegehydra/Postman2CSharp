@@ -1,6 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
+		<Title>Postman2CSharp</Title>
+		<Authors>Connor Hallman</Authors>
+		<Company>Connor Hallman</Company>
 		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>

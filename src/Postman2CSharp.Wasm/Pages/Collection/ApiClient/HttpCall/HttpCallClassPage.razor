@@ -61,7 +61,6 @@ else
             .ApiClients.FirstOrDefault(x => x.Id == ApiClientId);
         if (selectedApiClient == null)
         {
-            SnackBar.Value?.Add("Something went wrong", Severity.Error);
             return false;
         }
 
