@@ -118,6 +118,9 @@ li {
 .mud-typography-h2 {
     font-size: 1.9em;
 }
+.mud-typography-h3 {
+    font-size: 1.5em;
+}
 
 .splashscreen-container {
     position: relative;
@@ -217,6 +220,10 @@ li {
     }
 }
 @media (max-width: 500px) {
+    .mud-breadcrumb-item .mud-icon-root {
+        display: none !important;
+    }
+
     .file-tree-item p {
         max-width: 8em;
     }

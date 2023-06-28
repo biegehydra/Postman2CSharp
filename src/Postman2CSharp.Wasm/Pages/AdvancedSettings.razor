@@ -3,8 +3,13 @@
 
 <PageHeader Keywords="Settings, Options, Config, Configuration, Errors, Exceptions, Logging, Remove" Title="Advanced Settings" SubTitle="Take even more control over your Api Clients by configuring ApiClient Generation Options."></PageHeader>
 
-<MudText Style="padding-left: 10px;" Typo="Typo.h1" Class="mt-4">Advanced Settings</MudText>
+<BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
 
+<MudText Typo="Typo.h1" Class="mt-4">Advanced Settings</MudText>
+<br/>
+<p>
+    For an in depth explanation on how the settings work, see the <a class="link-normal" href="/Advanced-Settings/Explanations">Advanced Settings Explanation</a> page.
+</p>
 <br/>
 <div id="Advanced-Settings">
     @if (LazyLoader.AdvancedSettingsLoaded)
@@ -12,7 +17,7 @@
         <MudPaper Style="padding: 16px;">
             <div class="f-row">
                 <div class="f-row-column" style="width: 90%;">
-                    <h2>ApiClient Generation Options</h2><span style="font-size: small">Don't forget to save changes.</span>
+                    <h2>ApiClient Generation Options</h2>
                 </div>
                 <div>
                     @if (!Equals(ApiClientOptions, new ApiClientOptions()))
@@ -121,7 +126,7 @@
                     <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.SaveCollectionsToLocalStorage">Save Collections to Local Storage</MudSwitch>
                 </MudItem>
                 <MudItem>
-                    <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowDownloadInTreeView">Save Collections to Local Storage</MudSwitch>
+                    <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowDownloadInTreeView">Show Download Button In Tree View</MudSwitch>
                 </MudItem>
             </MudGrid>
         </MudPaper>
@@ -133,6 +138,12 @@
     [Inject] private LazyLoader? LazyLoader { get; set; }
     public static ApiClientOptions ApiClientOptions { get; private set; } = new();
     public static ApiClientOptions LastSavedApiClientOptions { get; private set; } = new();
+
+    private static readonly List<BreadcrumbItem> BreadCrumbs = new()
+    {
+        new("Home", "/", icon: Icons.Home),
+        new("Advanced Settings", "/Advanced-Settings", true, Icons.Settings)
+    };
 
     public static void SetApiClientOptions(ApiClientOptions options)
     {

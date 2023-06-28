@@ -1,0 +1,255 @@
+﻿@page "/Advanced-Settings/Explanations"
+<PageHeader Keywords="Explanations, Explained, Configure" Title="How Advanced Settings Affect ApiClient Generation" SubTitle="Take even more control over your Api Clients by configuring ApiClient Generation Options."></PageHeader>
+
+<BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
+
+<MudText Typo="Typo.h1" Class="mt-4">How Advanced Settings Affect ApiClient Generation</MudText>
+<br/>
+@Explanation("Remove Duplicate Classes", RemoveDuplicateClasses_False, RemoveDuplicateClasses_True, RemoveDuplicateClasses_Description)
+
+<br/>
+
+@Explanation("Ensure Response Status Code", EnsureResponseStatusCode_False, EnsureResponseStatusCode_True)
+
+<br />
+@Explanation("Make Path Collection Variables Function Parameters", MakePathCollectionVariablesFunctionParameters_False, MakePathCollectionVariablesFunctionParameters_True, MakePathCollectionVariablesFunctionParameters_Description)
+
+<br />
+
+<div>
+    <MudText Typo="Typo.h3">Error Handling Strategy</MudText>
+    <br/>
+    <p>None - Request will be with no catch clause.</p>
+    <br/>
+    <pre><code class="language-csharp">@ErrorHandlingStrategy_ThrowException</code></pre>
+    <hr/>
+    <pre><code class="language-csharp" >@ErrorHandlingStrategy_ReturnDefault</code></pre>
+</div>
+
+<br/>
+
+<div>
+    <MudText Typo="Typo.h3">Catch Exception Types</MudText>
+    
+    <br/>
+    <p>Each catch type chosen will be caught. Only takes affect if Error Handling Strategy is not None</p>
+    <br/>
+    <pre><code class="language-csharp">@CatchExceptionTypes_Example</code></pre>
+</div>
+
+<br/>
+
+<div>
+    <MudText Typo="Typo.h3">Error Handling Sinks</MudText>
+
+    <br />
+    <pre><code class="language-csharp">@ErrorHandlingSinks_Example</code></pre>
+</div>
+
+<br/>
+
+<div>
+    <MudText Typo="Typo.h3">Root Definition</MudText>
+
+    <br />
+    <p>Warning: It is almost never advisable to change this.</p>
+    <br/>
+    <p>
+        Api Clients are generated for each root in the Collection. By default a root is defined by any folder that has a request.
+        Also by default, if there are requests that have different authority in a root, they will be split up into different Api Clients;
+        Enabling this settings triggers a complete reorganization of the structure to put all requests with the same authority in the same root.
+        This can cause unexpected behaviour including the loss of authorization types, as such it is not recommended to change this setting.
+    </p>
+</div>
+
+<br/>
+<br/>
+@code
+{
+    private static readonly List<BreadcrumbItem> BreadCrumbs = new()
+    {
+        new("Home", "/", icon: Icons.Home),
+        new("Advanced Settings", "/Advanced-Settings", icon: Icons.Settings),
+        new("Explanations", "/Advanced-Settings/Explanations", true)
+    };
+
+    #region RemoveDuplicateClasses
+    private const string RemoveDuplicateClasses_False =
+    @"// RemoveDuplicateClasses = false
+
+// Request 1
+public class Person
+{
+    public string FirstName { get; set; }
+    public string LasteName { get; set; }
+}
+
+public class GetPersonByIdRequest
+{
+    public string Id { get; set; }
+    public Person Person { get; set; }
+}
+
+// Request 2
+public class Person2
+{
+    public string FirstName { get; set; }
+    public string LasteName { get; set; }
+}
+
+public class GetItemByNameRequest
+{
+    public string Name { get; set; }
+    public Person2 Person { get; set; }
+}";
+
+
+    private const string RemoveDuplicateClasses_True =
+@"// RemoveDuplicateClasses = true
+
+// Request 1
+public class Person
+{
+    public string FirstName { get; set; }
+    public string LasteName { get; set; }
+}
+
+public class GetPersonByIdRequest
+{
+    public string Id { get; set; }
+    public Person Person { get; set; }
+}
+
+// Request 2
+public class GetItemByNameRequest
+{
+    public string Name { get; set; }
+    public Person Person { get; set; }
+}";
+
+    public const string RemoveDuplicateClasses_Description =
+    @"Imagine the follow scenario. You are interacting with an endpoint that returns
+the same object types in multiple endpoints. Endpoint1 returns a response that includes
+a Person object and Endpoint2 returns does too. By default, a Person class will be generated
+for each of these objects (Person and Person2). Sometimes this is what you want, but most of the time it is not.
+Enabling this setting will remove the duplicate classes and use the existing one. The matching is done
+by whether or not the class name and all properties match. If they do, the duplicate is removed.";
+    #endregion
+
+    #region EnsureResponseStatusCode
+private const string EnsureResponseStatusCode_False =
+@"// EnsureResponseStatusCode = false
+
+var response = await _httpClient.GetAsync(queryString);
+return await response.Content.ReadAsStreamAsync();";
+
+    private const string EnsureResponseStatusCode_True =
+@"// EnsureResponseStatusCode = true
+
+var response = await _httpClient.GetAsync(queryString);
+response.EnsureSuccessStatusCode();
+return await response.Content.ReadAsStreamAsync();";
+    #endregion
+
+    #region MakePathCollectionVariablesFunctionParameters
+
+    public const string MakePathCollectionVariablesFunctionParameters_Description =
+@"By default, path parameters become function parameters and collection variables in paths become instance variables of the ApiClient.
+This changes that and makes collection variables function parameters.";
+
+    public const string MakePathCollectionVariablesFunctionParameters_False =
+@"// MakePathCollectionVariablesFunctionParameters = false
+
+private readonly string _someVariable; // Collection Variable
+public async Task<Stream> GetTickets()
+{
+    var response = await _httpClient.GetAsync(""{_someVariable}/ticket.php"");
+    return await response.Content.ReadAsStreamAsync();
+}";
+    
+    public const string MakePathCollectionVariablesFunctionParameters_True = 
+@"// MakePathCollectionVariablesFunctionParameters = true
+
+// No collection Variable
+public async Task<Stream> GetTickets(string someVariable) // Now a function parameter
+{
+    var response = await _httpClient.GetAsync(""{someVariable}/ticket.php"");
+    return await response.Content.ReadAsStreamAsync();
+}";
+    #endregion
+
+    #region ErrorHandlingStrategy
+
+    public const string ErrorHandlingStrategy_ReturnDefault =
+@"// Return Default
+try
+{
+    // Request body
+}
+catch (HttpRequestException ex)
+{
+    // Error Handling Sinks
+    return default;
+}";
+
+    public const string ErrorHandlingStrategy_ThrowException =
+@"// Thrown Exception
+try
+{
+    // Request body
+}
+catch (HttpRequestException ex)
+{
+    // Error Handling Sinks
+    throw;
+}";
+    #endregion
+
+    #region CatchExceptionTypes
+
+    public const string CatchExceptionTypes_Example =
+@"// HttpRequestException and Exception
+try
+{
+    // Request body
+}
+catch (HttpRequestException ex)
+{
+    // Error Handling Sinks
+    throw;
+}
+catch (Exception ex)
+{
+    // Error Handling Sinks
+    throw;
+}";
+
+    #endregion
+
+    public const string ErrorHandlingSinks_Example =
+@"catch (// CatchExceptionType ex)
+{
+    _logger.LogError(ex); // Log Exception
+    Console.WriteLine(ex); // Console Writeline
+    Debug.WriteLine(ex); // Debug Writeline
+    // Error Handling Strategy
+}";
+
+    public static RenderFragment Explanation(string title, string falsee, string truee, string? description = null)
+    {
+        return @<div>
+                   <MudText Typo="Typo.h3">@title</MudText>
+                   @if (description != null)
+                   {
+                       <br/>
+                       <p>
+                           @description
+                       </p>
+                   }
+                   <br/>
+                   <pre><code class="language-csharp" >@falsee</code></pre>
+                   <hr/>
+                   <pre><code class="language-csharp">@truee</code></pre>
+               </div>;
+    }
+}

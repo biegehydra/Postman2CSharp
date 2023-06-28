@@ -89,12 +89,24 @@
         if(SelectedApiClient == null) return;
         var httpCall = SelectedApiClient.HttpCalls[panelInex];
         var allClassNames = new List<string?>();
-        allClassNames.Add(httpCall.RequestClassName);
-        allClassNames.Add(httpCall.ResponseClassName);
-        allClassNames.Add(httpCall.QueryParameterClassName);
-        allClassNames.Add(httpCall.FormDataClassName);
+        if (httpCall.RequestSourceCode != null)
+        {
+            allClassNames.Add(httpCall.RequestClassName);
+        }
+        if (httpCall.ResponseSourceCode != null)
+        {
+            allClassNames.Add(httpCall.ResponseClassName);
+        }
+        if (httpCall.QueryParameterSourceCode != null)
+        {
+            allClassNames.Add(httpCall.QueryParameterClassName);
+        }
+        if (httpCall.FormDataSourceCode != null)
+        {
+            allClassNames.Add(httpCall.FormDataClassName);
+        }
         AllClassNames = allClassNames.Where(x => !string.IsNullOrWhiteSpace(x)).ToList()!;
-        SelectedClassName = httpCall.RequestClassName ?? httpCall.ResponseClassName ?? httpCall.QueryParameterClassName ?? httpCall.FormDataClassName;
+        SelectedClassName = AllClassNames.FirstOrDefault();
     }
 
 }
