@@ -3,7 +3,7 @@
     <MudTreeViewItem Class="file-tree-item" Value="@ClassName" >
         <Content>
             <MudTreeViewItemToggleButton Visible="false" />
-            <MudText Style="user-select: none;">@ClassName</MudText>
+            <MudText Style="user-select: none;">@ClassName.Replace(HttpCallName, string.Empty)</MudText>
             @if (SiteSettings.Instance.ShowDownloadInTreeView)
             {
                 <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="DownloadFile" ></MudIconButton>

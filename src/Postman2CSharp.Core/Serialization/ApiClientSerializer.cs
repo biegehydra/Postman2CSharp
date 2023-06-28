@@ -307,15 +307,6 @@ public static class ApiClientSerializer
             sb.AppendLine(indent + $"var response = await _httpClient.PostAsync(\"{accessTokenUrl}\", new FormUrlEncodedContent(oauthQueryParameters.ToDictionary()));");
             indent = Consts.Indent(intIndent);
             sb.AppendLine(indent + "}");
-
-            string VariableOrEmpty(string str, OAuth2Config config)
-            {
-                if (!auth.TryGetAuth2Config(config, out var _))
-                {
-                    return "string.Empty";
-                }
-                return str;
-            }
         }
     }
 

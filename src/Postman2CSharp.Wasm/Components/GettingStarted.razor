@@ -1,50 +1,75 @@
-﻿<MudText>Follow the steps below to convert your Postman collection to a C# API client.</MudText>
-<MudList>
-    <MudListItem>
-        <MudText>
-            <strong>Step 1:</strong> Open Postman and hover over the collection (root folder) you want to export. Click on the ellipsis (...), scroll down, and then select 'Export'.
-        </MudText>
-    </MudListItem>
-    <MudListItem>
-        <MudText>
-            <strong>Step 2:</strong> In the 'Export Collection' dialog box, select version 'Collection v2.1'.
-        </MudText>
-    </MudListItem>
-    <MudListItem>
-        <MudText>
-            <strong>Step 3:</strong> Click 'Export' and choose the location where you want to save the file.
-        </MudText>
-    </MudListItem>
-    <MudListItem>
-        <MudText>
-            <strong>Step 4:</strong> Now you can upload the exported JSON file on our platform to generate your C# API client.
-        </MudText>
-    </MudListItem>
-</MudList>
+﻿<style>
+    .getting-started-container {
+        max-width: 80%;
+    }
+    @@media (max-width: 600px) {
+        .getting-started-container {
+            max-width: 100%;
+        }
+    }
+</style>
+<div class="getting-started-container">
+    <MudText>Follow the steps below to convert your Postman collection to a C# API client.</MudText>
+    <MudList>
+        <MudListItem>
+            <MudText>
+                <strong>Step 1:</strong> Open Postman and hover over the collection (root folder) you want to export. Click on the ellipsis (...), scroll down, and then select 'Export'.
+            </MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText>
+                <strong>Step 2:</strong> In the 'Export Collection' dialog box, select version 'Collection v2.1'.
+            </MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText>
+                <strong>Step 3:</strong> Click 'Export' and choose the location where you want to save the file.
+            </MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText>
+                <strong>Step 4:</strong> Now you can <a class="link-normal" href="/Upload">Upload</a> the exported JSON file on our platform to generate your C# API client.
+            </MudText>
+        </MudListItem>
+    </MudList>
 
-<MudText Typo="Typo.h2" GutterBottom="true">Best Practices</MudText>
-<MudText>
-    To ensure optimal conversion of your Postman collection, we recommend the following practices:
-</MudText>
-<MudList>
-    <MudListItem>
-        <MudText>
-            <strong>Save responses for all requests:</strong> This provides a reference point and allows us to generate classes for json responses.
-        </MudText>
-    </MudListItem>
-    <MudListItem>
-        <MudText>
-            <strong>Use inherited authorization:</strong> This helps maintain consistency and will generate the best results.
-        </MudText>
-    </MudListItem>
-    <MudListItem>
-        <MudText>
-            <strong>Remove unused parameters:</strong> To ensure clean and optimized generated code, it is advisable to remove parameters that are not being used.
-        </MudText>
-    </MudListItem>
-    <MudListItem>
-        <MudText>
-            <strong>Use collection variables instead of other types of variables:</strong> Collection variables allow us to do more code generation for you because their values are included in the json.
-        </MudText>
-    </MudListItem>
-</MudList>
+    <MudText Typo="Typo.h2" GutterBottom="true">Best Practices</MudText>
+    <MudText>
+        To ensure optimal conversion of your Postman collection, we recommend the following practices:
+    </MudText>
+    <MudList>
+        <MudListItem>
+            <MudText>
+                <strong>Save responses for all requests:</strong> This provides a reference point and allows us to generate classes for json responses.
+            </MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText>
+                <strong>Use inherited authorization:</strong> This helps maintain consistency and will generate the best results.
+            </MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText>
+                <strong>Remove unused parameters:</strong> To ensure clean and optimized generated code, it is advisable to remove parameters that are not being used.
+            </MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText>
+                <strong>Use collection variables instead of other types of variables:</strong> Collection variables allow us to do more code generation for you because their values are included in the json.
+            </MudText>
+        </MudListItem>
+    </MudList>
+
+    <MudText Typo="Typo.h2" GutterBottom="true">Configuration</MudText>
+    <MudText>
+        There are some configurations for how classes for Json are generated on the Upload page.
+        For the full list of settings visting the <a class="link-normal" href="/Advanced-Settings">Advanced Settings</a> page. Explanations
+        for each setting can be found at the <a class="link-normal" href="/Advanced-Settings/Explanations">Advanced Settings Explanations</a>
+        page.
+    </MudText>
+    <br />
+    <br />
+    <br />
+    <br />
+</div>
+

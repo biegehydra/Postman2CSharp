@@ -2,16 +2,18 @@
 <MudPaper Style="padding: 16px;">
     <div class="f-row-column" style="gap: 10px;" >
         <div style="width: 90%;">
-            <h2>CSharp Code Writing Options</h2>
-            <p>Applies to classes generated for requests, responses, and query parameters. <u>Does not apply to form data or query parameter classes.</u></p>
-            <p>Use default settings for best results.</p>
+            <h2>Json Class Generation Options</h2>
+            <br />
+            <p>Applies to classes generated for requests and responses that have a Json body. Use default settings for best results.</p>
+            <p><u>Does not apply to form data or query parameter classes.</u></p>
         </div>
         <div class="f-column end-start" style="gap: 25px;" >
             <MudTooltip Text="Rests settings to default values">
-                    <MudButton Style="white-space: nowrap;" Color="Color.Error" Disabled="InputModel.Equals(InputModelWithDefaults())" Variant="Variant.Filled" OnClick="SetInputModelToDefault">Reset To Default</MudButton>
+                <MudButton Style="white-space: nowrap;" Color="Color.Error" Disabled="InputModel.Equals(InputModelWithDefaults())" Variant="Variant.Filled" OnClick="SetInputModelToDefault">Reset To Default</MudButton>
             </MudTooltip>
         </div>
     </div>
+    <br />
     <MudGrid>
         <MudItem xs="12" sm="6" md="4" lg="3">
             <EnumSelectComponent @bind-Value="InputModel.CollectionType" Label="Collection Type"></EnumSelectComponent>
