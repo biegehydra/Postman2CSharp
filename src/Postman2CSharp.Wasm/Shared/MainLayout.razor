@@ -133,8 +133,11 @@
             var apiCollectionIds = await JsRuntime.InvokeAsync<List<string>?>("getLocalStorage", "apiCollectionIds");
             foreach (var apiCollectionId in apiCollectionIds ?? new ())
             {
-                var apiCollection = await JsRuntime.InvokeAsync<ApiCollection>("getLocalStorage", apiCollectionId);
-                ApiCollections.Add(apiCollection);
+                var apiCollection = await JsRuntime.InvokeAsync<ApiCollection?>("getLocalStorage", apiCollectionId);
+                if (apiCollection != null)
+                {
+                    ApiCollections.Add(apiCollection);
+                }
             }
             await GetSiteSettings();
         }
@@ -277,6 +280,8 @@
         }
         ApiCollections?.Remove(apiCollection);
         await JsRuntime.InvokeVoidAsync("deleteLocalStorage", apiCollection.Id);
+        var apiCollectionIds = ApiCollections?.Select(x => x.Id).ToList() ?? new ();
+        await JsRuntime.InvokeVoidAsync("setLocalStorage", "apiCollectionIds", apiCollectionIds);
     }
 
     public async void Dispose()

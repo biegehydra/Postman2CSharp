@@ -1,10 +1,15 @@
-﻿<style>
+﻿@using System.Diagnostics.Tracing
+<style>
     .mud-collapse-entered {
         max-height: 40vh;
         overflow: auto;
     }
     .mud-nav-link-text {
         width: 80% !important;
+    }
+    .mud-dialog-title {
+        padding-bottom: 0 !important;
+        margin-top: 10px !important;
     }
 </style>
 
@@ -19,11 +24,11 @@
         {
             <div class="mud-nav-item mud-ripple">
                 <MudNavLink Href="@($"Collection/{apiCollection.Id}")" Match="NavLinkMatch.Prefix" Style="display: flex; align-items: center;">
-                    @apiCollection?.CollectionInfo?.Name
+                    @apiCollection.CollectionInfo.Name
                 </MudNavLink>
                 <MudMenu Icon="@Icons.MoreVert" Size="Size.Medium" Dense="true" Color="Color.Tertiary" Style="position: absolute; right: 0; top: -5%; z-index: 99999999999;">
+                    <MudMenuItem Icon="@Icons.Edit" IconSize="Size.Small" OnClick="() => BeginEditName(apiCollection)">Rename</MudMenuItem>
                     <MudMenuItem Icon="@Icons.DeleteForever" OnClick="() => DeleteApiCollection(apiCollection)">Delete</MudMenuItem>
-                    <MudMenuItem Icon="@Icons.Share" IconSize="Size.Small">Share</MudMenuItem>
                 </MudMenu>
             </div>
         }
@@ -32,12 +37,29 @@
     <MudNavLink Href="/SupportedFeatures" Match="NavLinkMatch.Prefix" Icon="@Icons.ContactSupport">Supported Features</MudNavLink>
     <MudNavLink Href="/Advanced-Settings" Match="NavLinkMatch.Prefix" Icon="@Icons.Settings">Advanced Settings</MudNavLink>
 </MudNavMenu>
-
+<MudDialog IsVisible="_selectedApiCollection != null" >
+    <TitleContent>
+        <MudText Typo="Typo.h3">Rename Collection</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="_newCollectionName" Clearable></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CancelEditName">Cancel</MudButton>
+        <MudButton Color="@Color.Primary" Variant="Variant.Filled" OnClick="ConfirmEditName">Confirm</MudButton>
+    </DialogActions>
+</MudDialog>
 @code
 {
+    private string? _newCollectionName;
+    private ApiCollection? _selectedApiCollection;
     public static bool CollectionsExpanded { get; set; }
 
     private string GettingStartedHref => Navigate?.CurrentUrl == Navigate?.BaseUrl ? "/" : "/GettingStarted";
+    
+    [Inject] private ISnackbar? Snackbar { get; set; }
+
+    [Inject] private LazyLoader LazyLoader { get; set; } = default!;
 
     [Inject] private Navigate? Navigate { get; set; }
 
@@ -66,5 +88,49 @@
     {
         if (Layout == null) return;
         await Layout.DeleteApiCollection(collection);
+    }
+
+    private static string? _cachedName;
+    private async Task BeginEditName(ApiCollection collection)
+    {
+        if (Layout == null) return;
+        if (!LazyLoader.AdvancedSettingsLoaded)
+        {
+            try
+            {
+                await LazyLoader.LoadAdvancedSettingsAssemblies();
+            }
+            catch { }
+        }
+        if (!LazyLoader.AdvancedSettingsLoaded)
+        {
+            Snackbar?.Add("Something went wrong. Try again.", Severity.Warning);
+            return;
+        }
+        _selectedApiCollection = collection;
+        _cachedName = collection.CollectionInfo.Name;
+        _newCollectionName = collection.CollectionInfo.Name;
+    }
+
+    private void ConfirmEditName()
+    {
+        if (_newCollectionName != null && _selectedApiCollection != null)
+        {
+            _selectedApiCollection.CollectionInfo.Name = _newCollectionName;
+        }
+        _selectedApiCollection = null;
+        _cachedName = null;
+        _newCollectionName = null;
+    }
+
+    private void CancelEditName()
+    {
+        if (_cachedName != null && _selectedApiCollection != null)
+        {
+            _selectedApiCollection.CollectionInfo.Name = _cachedName;
+        }
+        _cachedName = null;
+        _selectedApiCollection = null;
+        _newCollectionName = null;
     }
 }

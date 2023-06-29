@@ -77,7 +77,7 @@ namespace Postman2CSharp.Wasm.Services
             UploadLoadedChanged?.Invoke(UploadLoaded);
         }
 
-        private async Task LoadAdvancedSettingsAssemblies()
+        public async Task LoadAdvancedSettingsAssemblies()
         {
             if (AdvancedSettingsLoaded) return;
             await _lazyAssemblyLoader.LoadAssembliesAsync(AdvancedSettingsAssemblies);
