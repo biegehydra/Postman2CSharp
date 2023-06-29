@@ -13,24 +13,30 @@
 
 <MudLayout>
     <MudAppBar Class="appbar" Elevation="0" ToolBarClass="toolbar-class">
-        <MudIconButton Icon="@Icons.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(DrawerToggle)"/>
-        <AppBarTabs ></AppBarTabs>
-        <MudSpacer></MudSpacer>
-        @if (SiteSettings.Instance.ShowSnackbarPopups)
-        {
-            <MudTooltip Text="Toggle snackbar popups off">
-                <MudIconButton Icon="@Icons.NotificationsActive" OnClick="() => SiteSettings.Instance.ShowSnackbarPopups = false" Color="Color.Inherit" Edge="Edge.End" ></MudIconButton>
-            </MudTooltip>
-        }
-        else
-        {
-            <MudTooltip Text="Toggle snackbar popups on">
-                <MudIconButton Icon="@Icons.NotificationsOff" OnClick="() => SiteSettings.Instance.ShowSnackbarPopups = true" Color="Color.Inherit" Edge="Edge.End"></MudIconButton>
-            </MudTooltip>
-        }
+    <MudIconButton Icon="@Icons.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(DrawerToggle)"/>
+    <AppBarTabs ></AppBarTabs>
+    <MudSpacer></MudSpacer>
+    @if (SiteSettings.Instance.ShowSnackbarPopups)
+    {
+        <MudTooltip Text="Toggle snackbar popups off">
+            <MudIconButton Icon="@Icons.NotificationsActive" OnClick="() => SiteSettings.Instance.ShowSnackbarPopups = false" Color="Color.Inherit" Edge="Edge.End"></MudIconButton>
+        </MudTooltip>
+    }
+    else
+    {
+        <MudTooltip Text="Toggle snackbar popups on">
+            <MudIconButton Icon="@Icons.NotificationsOff" OnClick="() => SiteSettings.Instance.ShowSnackbarPopups = true" Color="Color.Inherit" Edge="Edge.End"></MudIconButton>
+        </MudTooltip>
+    }
+    @{
+     #pragma warning disable CS8603
+    }
         <MudTooltip Text="View project on GitHub">
             <MudIconButton Icon="@MudBlazor.Icons.Custom.Brands.GitHub" OnClick="() => Navigate?.OpenBlank(GitHubUrls.BaseUrl)" Color="Color.Inherit" Edge="Edge.End"></MudIconButton>
         </MudTooltip>
+    @{
+        #pragma warning restore CS8603
+    }
 
         <MudDivider Vertical="true" Class="appbar-divider" />
         <MudTooltip Text="Save workspace.">
@@ -51,13 +57,16 @@
         </CascadingValue>
     </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="main-container">
-            <CascadingValue Value="this">
-                <CascadingValue Value="ApiCollections">
-                    @Body
+        <div style="display: flex; flex-direction: column; min-height: calc(100vh - var(--mud-appbar-height));">
+            <MudContainer MaxWidth="MaxWidth.Large" Class="main-container">
+                <CascadingValue Value="this">
+                    <CascadingValue Value="ApiCollections">
+                        @Body
+                    </CascadingValue>
                 </CascadingValue>
-            </CascadingValue>
-        </MudContainer>
+            </MudContainer>
+            <Footer/>
+        </div>
     </MudMainContent>
 </MudLayout>
 
@@ -169,21 +178,9 @@
 
     private async Task SetSiteSettings()
     {
-        var siteSettings = await JsRuntime.InvokeAsync<SiteSettings?>("setLocalStorage", "siteSettings", SiteSettings.Instance);
-        if (siteSettings != null)
-        {
-            SiteSettings.Instance = siteSettings;
-        }
-        var codeWritingConfig = await JsRuntime.InvokeAsync<CSharpCodeWriterConfigInputModel?>("setLocalStorage", "codeWriterConfig", CSharpCodeWriterOptionsComponent.LastSavedInputModel);
-        if (codeWritingConfig != null)
-        {
-            CSharpCodeWriterOptionsComponent.LastSavedInputModel = codeWritingConfig;
-        }
-        var apiClientOptions = await JsRuntime.InvokeAsync<ApiClientOptions?>("setLocalStorage", "apiClientOptions", AdvancedSettings.ApiClientOptions);
-        if (apiClientOptions != null)
-        {
-            AdvancedSettings.SetApiClientOptions(apiClientOptions);
-        }
+        await JsRuntime.InvokeVoidAsync("setLocalStorage", "siteSettings", SiteSettings.Instance);
+        await JsRuntime.InvokeVoidAsync("setLocalStorage", "codeWriterConfig", CSharpCodeWriterOptionsComponent.LastSavedInputModel);
+        await JsRuntime.InvokeVoidAsync("setLocalStorage", "apiClientOptions", AdvancedSettings.ApiClientOptions);
     }
 
 
@@ -196,6 +193,8 @@
     {
         ApiCollections ??= new();
         ApiCollections.Add(apiCollection);
+        SiteSettings.Instance.TotalApiClientsSaved += 1;
+        await JsRuntime.InvokeVoidAsync("setLocalStorage", "siteSettings", SiteSettings.Instance);
         StateHasChanged();
         await SaveApiCollectionToLocalStore(apiCollection.Id);
     }

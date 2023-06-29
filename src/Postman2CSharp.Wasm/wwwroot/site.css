@@ -5,6 +5,7 @@
 }
 .main-container {
     padding: 5px 16px;
+    flex-grow: 1;
 }
 
 strong, b {
