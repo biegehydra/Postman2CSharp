@@ -13,7 +13,7 @@ namespace Postman2CSharp.Core.Serialization;
 
 public static class HttpCallSerializer
 {
-    public static void SerializeHttpCall(StringBuilder sb, AuthSettings? auth, string? baseUrl, HttpCall call, bool allRequestsHaveSameAuth,
+    public static void SerializeHttpCall(StringBuilder sb, AuthSettings? auth, string? baseUrl, HttpCall call, bool constructorHasAuthHeader,
         bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
         ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary)
     {
@@ -37,7 +37,7 @@ public static class HttpCallSerializer
 
         if (errorHandlingStrategy == ErrorHandlingStrategy.None)
         {
-            HttpCallBody(sb, auth, call, allRequestsHaveSameAuth, indent, relativePath, ensureSuccessStatusCode, jsonLibrary);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, indent, relativePath, ensureSuccessStatusCode, jsonLibrary);
         }
         else
         {
@@ -48,7 +48,7 @@ public static class HttpCallSerializer
             sb.AppendLine(indent + "try");
             sb.AppendLine(indent + "{");
             indent = Consts.Indent(3);
-            HttpCallBody(sb, auth, call, allRequestsHaveSameAuth, indent, relativePath, ensureSuccessStatusCode, jsonLibrary);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, indent, relativePath, ensureSuccessStatusCode, jsonLibrary);
             indent = Consts.Indent(2);
             sb.AppendLine(indent + "}");
             foreach (var catchExceptionType in catchExceptionTypes)
@@ -156,10 +156,10 @@ public static class HttpCallSerializer
         sb.AppendLine(indent + "}");
     }
 
-    private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool allRequestsHaveSameAuth,
+    private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool authHasHeader,
         string indent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary)
     {
-        sb.AddAuthorizationHeader(call.Request.Auth, indent, allRequestsHaveSameAuth);
+        sb.AddAuthorizationHeader(call.Request.Auth, indent, authHasHeader);
         UniqueHeaders(sb, call, indent);
 
         if (call.UniqueHeaders.Where(Header.IsImportant).Any())

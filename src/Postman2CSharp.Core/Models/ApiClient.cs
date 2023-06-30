@@ -24,7 +24,7 @@ public class ApiClient
             var firstAuth = HttpCalls.First().Request.Auth;
             if (firstAuth == null)
             {
-                return false;
+                return _allRequestsHaveSameAuth ??= false;
             }
             return _allRequestsHaveSameAuth ??= HttpCalls.All(x => x.Request.Auth != null && x.Request.Auth.EnumType() != PostmanAuthType.noauth && x.Request.Auth.EnumType() == firstAuth.EnumType());
         }
@@ -53,9 +53,22 @@ public class ApiClient
     public required List<XmlCommentTypes> CommentTypes { get; set; }
 
     private List<AuthSettings>? _uniqueAuths;
-    public List<AuthSettings> UniqueAuths => _uniqueAuths ??= HttpCalls.Select(x => x.Request.Auth)
-        .Where(x => (x?.EnumType() ?? PostmanAuthType.noauth) != PostmanAuthType.noauth)
-        .DistinctBy(x => x!.EnumType()).ToList()!;
+    public List<AuthSettings> UniqueAuths => _uniqueAuths ??= GetUniqueAuths();
+
+    private List<AuthSettings> GetUniqueAuths()
+    {
+        var allRequestAuths = HttpCalls.Select(x => x.Request.Auth).ToList();
+        if (AnyRequestInheritsAuth)
+        {
+            allRequestAuths.Add(CollectionAuth);
+        }
+        return allRequestAuths
+            .Where(x => (x?.EnumType() ?? PostmanAuthType.noauth) != PostmanAuthType.noauth)
+            .DistinctBy(x => x!.EnumType()).ToList()!;
+    }
+
+    private bool? _anyRequestInheritsAuth;
+    private bool AnyRequestInheritsAuth => _anyRequestInheritsAuth ??= HttpCalls.Any(x => x.Request.Auth == null);
 
     [JsonConstructor]
     [SetsRequiredMembers]

@@ -36,7 +36,9 @@ public static class ApiClientSerializer
         {
             AuthProperties(otherUniqueAuth, sb, indent);
         }
-        ApiClientConstructor(sb, client.CommonHeaders, client.UniqueAuths, client.CollectionAuth, client.Name, client.BaseUrl, client.AllRequestsInheritAuth, client.AllRequestsHaveSameAuth, logsExceptions);
+        var addAuthHeaderToConstructor = client.AllRequestsInheritAuth || client.AllRequestsHaveSameAuth;
+        ApiClientConstructor(sb, client.CommonHeaders, client.UniqueAuths, client.Name, client.BaseUrl,
+            addAuthHeaderToConstructor, logsExceptions);
         if (client.CollectionAuth?.EnumType() == PostmanAuthType.oauth2)
         {
             sb.AppendLine();
@@ -47,25 +49,23 @@ public static class ApiClientSerializer
         {
             AddOAuth2Methods(sb, uniqueAuthOAuth2, client.BaseUrl, 1);
         }
-        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, client.AllRequestsHaveSameAuth, client.EnsureSuccessStatusCode, client.CommentTypes, client.CatchExceptionTypes, client.ErrorHandlingSinks, client.ErrorHandlingStrategy, client.LogLevel, client.JsonLibrary);
+        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: addAuthHeaderToConstructor, client.EnsureSuccessStatusCode,
+            client.CommentTypes, client.CatchExceptionTypes, client.ErrorHandlingSinks, client.ErrorHandlingStrategy, client.LogLevel, client.JsonLibrary);
         sb.AppendLine();
         sb.AppendLine("}");
         return sb.ToString();
     }
 
-    private static void ApiClientConstructor(StringBuilder sb, List<Header> headers, List<AuthSettings> uniqueAuths, AuthSettings? auth, string apiClientName, string? leastPossibleUri, bool allRequestsInheritAuth, bool allRequestsHaveSameAuth, bool logsExceptions)
+    private static void ApiClientConstructor(StringBuilder sb, List<Header> headers, List<AuthSettings> uniqueAuths, string apiClientName, 
+        string? leastPossibleUri, bool addAuthHeaderToConstructor, bool logsExceptions)
     {
-        var authTypeDoesNotEqualNoAuth = auth?.EnumType() != null && auth.EnumType() != PostmanAuthType.noauth;
-        var anyUniqueAuthTypeDoesNotEqualNoAuth = uniqueAuths.Any(x => x.EnumType() != PostmanAuthType.noauth);
         var indent = Consts.Indent(1);
         sb.Append(indent + $"public {apiClientName}(HttpClient httpClient");
         if (logsExceptions)
         {
             sb.Append($", ILogger<{apiClientName}> logger");
         }
-        if (auth?.EnumType() is PostmanAuthType.apikey or PostmanAuthType.oauth1 or PostmanAuthType.oauth2
-                or PostmanAuthType.awsv4 or PostmanAuthType.bearer or PostmanAuthType.jwt
-            || uniqueAuths.Any(x => x.EnumType() is PostmanAuthType.apikey or PostmanAuthType.oauth1 or PostmanAuthType.oauth2
+        if (uniqueAuths.Any(x => x.EnumType() is PostmanAuthType.apikey or PostmanAuthType.oauth1 or PostmanAuthType.oauth2
                 or PostmanAuthType.awsv4 or PostmanAuthType.bearer or PostmanAuthType.jwt))
         {
             sb.Append(", IConfiguration config");
@@ -88,27 +88,22 @@ public static class ApiClientSerializer
             sb.AppendLine(indent + "_logger = logger;");
         }
 
-        if (authTypeDoesNotEqualNoAuth || anyUniqueAuthTypeDoesNotEqualNoAuth)
+        if (uniqueAuths.Count > 0)
         {
             sb.AppendLine();
         }
 
-        if (allRequestsInheritAuth)
+        if (addAuthHeaderToConstructor)
         {
+            var auth = uniqueAuths.Single();
             sb.AddAuthToConstructor(auth, indent, true);
-        }
-        else if (allRequestsHaveSameAuth)
-        {
-            var sharedAuth = uniqueAuths.Single();
-            sb.AddAuthToConstructor(sharedAuth, indent, true);
         }
         else
         {
-            foreach (var uniqueAuth in uniqueAuths)
+            foreach (var unique in uniqueAuths)
             {
-                sb.AddAuthToConstructor(uniqueAuth, indent, false);
+                sb.AddAuthToConstructor(unique, indent, false);
             }
-
         }
 
         var importantHeaders = headers.Where(Header.IsImportant).ToList();
@@ -126,14 +121,14 @@ public static class ApiClientSerializer
         sb.AppendLine(indent + "}");
     }
 
-    private static void ApiClientCalls(StringBuilder sb, AuthSettings? auth, string? baseUrl, List<HttpCall> calls, bool allRequestsHaveSameAuth, 
+    private static void ApiClientCalls(StringBuilder sb, AuthSettings? auth, string? baseUrl, List<HttpCall> calls, bool constructorHasAuthHeader, 
         bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
         ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary)
     {
         foreach (var call in calls)
         {
             sb.AppendLine();
-            HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, allRequestsHaveSameAuth, ensureSuccessStatusCode, commentTypes, catchExceptionTypes,
+            HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, constructorHasAuthHeader, ensureSuccessStatusCode, commentTypes, catchExceptionTypes,
                 errorHandlingSinks, errorHandlingStrategy, logLevel, jsonLibrary);
             sb.AppendLine();
         }

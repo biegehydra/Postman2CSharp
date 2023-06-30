@@ -7,7 +7,7 @@ namespace Postman2CSharp.Core.Serialization
 {
     public static class AuthSerializer
     {
-        public static void AddAuthToConstructor(this StringBuilder sb, AuthSettings? auth, string indent, bool allRequestsInheritAuth)
+        public static void AddAuthToConstructor(this StringBuilder sb, AuthSettings? auth, string indent, bool addHeader)
         {
             switch (auth?.EnumType())
             {
@@ -17,7 +17,7 @@ namespace Postman2CSharp.Core.Serialization
                     sb.AssignVariableToConfig(indent, "var username", "UserName");
                     sb.AssignVariableToConfig(indent, "var password", "Password");
                     sb.AppendLine(indent + $@"{Consts._encodedCredentials} = Convert.ToBase64String(Encoding.ASCII.GetBytes($""{{username}}:{{password}}""));");
-                    if (allRequestsInheritAuth)
+                    if (addHeader)
                     {
                         sb.AddAuthorizationHeader(auth, indent, false);
                     }
@@ -60,7 +60,7 @@ namespace Postman2CSharp.Core.Serialization
                     break;
                 case PostmanAuthType.bearer:
                     sb.AssignVariableToConfig(indent, Consts._bearerToken, "BearToken");
-                    if (allRequestsInheritAuth)
+                    if (addHeader)
                     {
                         sb.AddAuthorizationHeader(auth, indent, false);
                     }
@@ -68,7 +68,7 @@ namespace Postman2CSharp.Core.Serialization
                 case PostmanAuthType.jwt:
                     sb.AppendLine(indent + "// TODO: JWT will not generally be put in your appsettings.json. Consider this a placeholder.");
                     sb.AssignVariableToConfig(indent, Consts._jwt, "Jwt");
-                    if (allRequestsInheritAuth)
+                    if (addHeader)
                     {
                         sb.AddAuthorizationHeader(auth, indent, false);
                     }
@@ -78,7 +78,7 @@ namespace Postman2CSharp.Core.Serialization
                     break;
                 case PostmanAuthType.apikey:
                     sb.AssignVariableToConfig(indent, Consts._apiKey, "ApiKey");
-                    if (allRequestsInheritAuth)
+                    if (addHeader)
                     {
                         sb.AddAuthorizationHeader(auth, indent, false);
                     }
@@ -86,7 +86,7 @@ namespace Postman2CSharp.Core.Serialization
                     break;
                 case PostmanAuthType.awsv4:
                     sb.AssignVariableToConfig(indent, Consts._awsSignature, "AwsSignature");
-                    if (allRequestsInheritAuth)
+                    if (addHeader)
                     {
                         sb.AddAuthorizationHeader(auth, indent, false);
                     }
@@ -102,9 +102,9 @@ namespace Postman2CSharp.Core.Serialization
             }
         }
 
-        public static void AddAuthorizationHeader(this StringBuilder sb, AuthSettings? auth, string indent, bool allRequestHaveSameAuth)
+        public static void AddAuthorizationHeader(this StringBuilder sb, AuthSettings? auth, string indent, bool constructorHasHeader)
         {
-            if (allRequestHaveSameAuth) return;
+            if (constructorHasHeader) return;
             switch (auth?.EnumType())
             {
                 case PostmanAuthType.noauth:
