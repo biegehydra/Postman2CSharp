@@ -9,12 +9,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Serialization
 {
     public static class ApiClientExportExtensions
     {
-        private static readonly List<string> HttpExtensionsNamespaces = new () { "System.Text", "System.Text.Json" };
+        private static readonly List<string> NewtonsoftHttpExtensionsNamespaces = new() { "System.Text", "System.Net.Http", "System.Threading.Tasks", "Newtonsoft.Json" };
+        private static readonly List<string> HttpExtensionsNamespaces = new () { "System.Text", "System.Net.Http", "System.Threading.Tasks", "System.Text.Json" };
         private static readonly List<string> QueryHelperNamespaces = new () { "System.Text", "System.Text.Encodings.Web" };
 
         public static Dictionary<string, (string? HttpCall, string SourceCode)>? ExportToDict(this ApiClient? apiClient)
@@ -37,7 +39,19 @@ namespace Postman2CSharp.Core.Serialization
             var helperExtensionsSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.HelperExtensions, true);
             var interfacesSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.Interfaces);
             var queryHelpersSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.QueryHelpers, true, QueryHelperNamespaces);
-            var httpExtensions = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.HttpJsonExtensions, true, HttpExtensionsNamespaces);
+
+            string? httpExtensionsSourceCode;
+            string? httpExtensionsClassName;
+            if (apiClient.JsonLibrary == JsonLibrary.SystemTextJson)
+            {
+                httpExtensionsSourceCode = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.HttpJsonExtensions, true, HttpExtensionsNamespaces);
+                httpExtensionsClassName = nameof(CoreCsFile.HttpJsonExtensions);
+            }
+            else
+            {
+                httpExtensionsSourceCode = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.NewtonsoftHttpJsonExtensions, true, NewtonsoftHttpExtensionsNamespaces);
+                httpExtensionsClassName = nameof(CoreCsFile.NewtonsoftHttpJsonExtensions);
+            }
 
             AddToDictionary(apiClientSc, apiClient.Name);
             AddToDictionary(apiClient.InterfaceSourceCode, apiClient.InterfaceName);
@@ -45,7 +59,7 @@ namespace Postman2CSharp.Core.Serialization
             AddToDictionary(helperExtensionsSc, nameof(CoreCsFile.HelperExtensions));
             AddToDictionary(interfacesSc, nameof(CoreCsFile.Interfaces));
             AddToDictionary(queryHelpersSc, nameof(CoreCsFile.QueryHelpers));
-            AddToDictionary(httpExtensions, nameof(CoreCsFile.HttpJsonExtensions));
+            AddToDictionary(httpExtensionsSourceCode, httpExtensionsClassName);
 
             foreach (var (fileName, detail) in dict)
             {

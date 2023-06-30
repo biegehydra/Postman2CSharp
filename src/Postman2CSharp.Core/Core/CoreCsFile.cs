@@ -1,9 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Text.Json;
-using System.Text;
-
-using System.Threading.Tasks;
 
 namespace Postman2CSharp.Core.Core
 {
@@ -324,80 +319,80 @@ public class EmptyResponse { }";
 /// </summary>
 public static class NewtonsoftHttpClientJsonExtensions
 {
-    private static readonly JsonSerializerOptions JsonSerializerOptions = new(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings();
     /// <summary>
     /// Sends a GET request to the specified URI, and parses the JSON response body
     /// to create an object of the generic type.
     /// </summary>
-    /// <typeparam name=""""""""""""""""T"""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
-    /// <param name=""""""""""""""""httpClient"""""""""""""""">The <see cref=""""""""""""""""HttpClient""""""""""""""""/>.</param>
-    /// <param name=""""""""""""""""requestUri"""""""""""""""">The URI that the request will be sent to.</param>
+    /// <typeparam name=""""""""""""""""""""""""""""""""T"""""""""""""""""""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
+    /// <param name=""""""""""""""""""""""""""""""""httpClient"""""""""""""""""""""""""""""""">The <see cref=""""""""""""""""""""""""""""""""HttpClient""""""""""""""""""""""""""""""""/>.</param>
+    /// <param name=""""""""""""""""""""""""""""""""requestUri"""""""""""""""""""""""""""""""">The URI that the request will be sent to.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
     public static Task<T> GetNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content)
         => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Get, requestUri, content);
 
 
     /// <summary>
-    /// Sends a POST request to the specified URI, including the specified <paramref name=""""""""""""""""content""""""""""""""""/>
+    /// Sends a POST request to the specified URI, including the specified <paramref name=""""""""""""""""""""""""""""""""content""""""""""""""""""""""""""""""""/>
     /// in JSON-encoded format, and parses the JSON response body to create an object of the generic type.
     /// </summary>
-    /// <typeparam name=""""""""""""""""T"""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
-    /// <param name=""""""""""""""""httpClient"""""""""""""""">The <see cref=""""""""""""""""HttpClient""""""""""""""""/>.</param>
-    /// <param name=""""""""""""""""requestUri"""""""""""""""">The URI that the request will be sent to.</param>
-    /// <param name=""""""""""""""""content"""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
+    /// <typeparam name=""""""""""""""""""""""""""""""""T"""""""""""""""""""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
+    /// <param name=""""""""""""""""""""""""""""""""httpClient"""""""""""""""""""""""""""""""">The <see cref=""""""""""""""""""""""""""""""""HttpClient""""""""""""""""""""""""""""""""/>.</param>
+    /// <param name=""""""""""""""""""""""""""""""""requestUri"""""""""""""""""""""""""""""""">The URI that the request will be sent to.</param>
+    /// <param name=""""""""""""""""""""""""""""""""content"""""""""""""""""""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
     public static Task<T> PatchNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content)
         => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Patch, requestUri, content);
 
     /// <summary>
-    /// Sends a POST request to the specified URI, including the specified <paramref name=""""""""""""""""content""""""""""""""""/>
+    /// Sends a POST request to the specified URI, including the specified <paramref name=""""""""""""""""""""""""""""""""content""""""""""""""""""""""""""""""""/>
     /// in JSON-encoded format, and parses the JSON response body to create an object of the generic type.
     /// </summary>
-    /// <typeparam name=""""""""""""""""T"""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
-    /// <param name=""""""""""""""""httpClient"""""""""""""""">The <see cref=""""""""""""""""HttpClient""""""""""""""""/>.</param>
-    /// <param name=""""""""""""""""requestUri"""""""""""""""">The URI that the request will be sent to.</param>
-    /// <param name=""""""""""""""""content"""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
+    /// <typeparam name=""""""""""""""""""""""""""""""""T"""""""""""""""""""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
+    /// <param name=""""""""""""""""""""""""""""""""httpClient"""""""""""""""""""""""""""""""">The <see cref=""""""""""""""""""""""""""""""""HttpClient""""""""""""""""""""""""""""""""/>.</param>
+    /// <param name=""""""""""""""""""""""""""""""""requestUri"""""""""""""""""""""""""""""""">The URI that the request will be sent to.</param>
+    /// <param name=""""""""""""""""""""""""""""""""content"""""""""""""""""""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
     public static Task<T> DeleteNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content)
         => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Delete, requestUri, content);
 
     /// <summary>
-    /// Sends a POST request to the specified URI, including the specified <paramref name=""""""""""""""""content""""""""""""""""/>
+    /// Sends a POST request to the specified URI, including the specified <paramref name=""""""""""""""""""""""""""""""""content""""""""""""""""""""""""""""""""/>
     /// in JSON-encoded format, and parses the JSON response body to create an object of the generic type.
     /// </summary>
-    /// <typeparam name=""""""""""""""""T"""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
-    /// <param name=""""""""""""""""httpClient"""""""""""""""">The <see cref=""""""""""""""""HttpClient""""""""""""""""/>.</param>
-    /// <param name=""""""""""""""""requestUri"""""""""""""""">The URI that the request will be sent to.</param>
-    /// <param name=""""""""""""""""content"""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
+    /// <typeparam name=""""""""""""""""""""""""""""""""T"""""""""""""""""""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
+    /// <param name=""""""""""""""""""""""""""""""""httpClient"""""""""""""""""""""""""""""""">The <see cref=""""""""""""""""""""""""""""""""HttpClient""""""""""""""""""""""""""""""""/>.</param>
+    /// <param name=""""""""""""""""""""""""""""""""requestUri"""""""""""""""""""""""""""""""">The URI that the request will be sent to.</param>
+    /// <param name=""""""""""""""""""""""""""""""""content"""""""""""""""""""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
     public static Task<T> PostNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content)
         => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Post, requestUri, content);
 
     /// <summary>
-    /// Sends a PUT request to the specified URI, including the specified <paramref name=""""""""""""""""content""""""""""""""""/>
+    /// Sends a PUT request to the specified URI, including the specified <paramref name=""""""""""""""""""""""""""""""""content""""""""""""""""""""""""""""""""/>
     /// in JSON-encoded format, and parses the JSON response body to create an object of the generic type.
     /// </summary>
-    /// <typeparam name=""""""""""""""""T"""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
-    /// <param name=""""""""""""""""httpClient"""""""""""""""">The <see cref=""""""""""""""""HttpClient""""""""""""""""/>.</param>
-    /// <param name=""""""""""""""""requestUri"""""""""""""""">The URI that the request will be sent to.</param>
-    /// <param name=""""""""""""""""content"""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
+    /// <typeparam name=""""""""""""""""""""""""""""""""T"""""""""""""""""""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
+    /// <param name=""""""""""""""""""""""""""""""""httpClient"""""""""""""""""""""""""""""""">The <see cref=""""""""""""""""""""""""""""""""HttpClient""""""""""""""""""""""""""""""""/>.</param>
+    /// <param name=""""""""""""""""""""""""""""""""requestUri"""""""""""""""""""""""""""""""">The URI that the request will be sent to.</param>
+    /// <param name=""""""""""""""""""""""""""""""""content"""""""""""""""""""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
     public static Task<T> PutJsonNewtonsoftAsync<T>(this HttpClient httpClient, string requestUri, object content)
         => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Put, requestUri, content);
 
     /// <summary>
-    /// Sends an HTTP request to the specified URI, including the specified <paramref name=""""""""""""""""content""""""""""""""""/>
+    /// Sends an HTTP request to the specified URI, including the specified <paramref name=""""""""""""""""""""""""""""""""content""""""""""""""""""""""""""""""""/>
     /// in JSON-encoded format, and parses the JSON response body to create an object of the generic type.
     /// </summary>
-    /// <typeparam name=""""""""""""""""T"""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
-    /// <param name=""""""""""""""""httpClient"""""""""""""""">The <see cref=""""""""""""""""HttpClient""""""""""""""""/>.</param>
-    /// <param name=""""""""""""""""method"""""""""""""""">The HTTP method.</param>
-    /// <param name=""""""""""""""""requestUri"""""""""""""""">The URI that the request will be sent to.</param>
-    /// <param name=""""""""""""""""content"""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
+    /// <typeparam name=""""""""""""""""""""""""""""""""T"""""""""""""""""""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
+    /// <param name=""""""""""""""""""""""""""""""""httpClient"""""""""""""""""""""""""""""""">The <see cref=""""""""""""""""""""""""""""""""HttpClient""""""""""""""""""""""""""""""""/>.</param>
+    /// <param name=""""""""""""""""""""""""""""""""method"""""""""""""""""""""""""""""""">The HTTP method.</param>
+    /// <param name=""""""""""""""""""""""""""""""""requestUri"""""""""""""""""""""""""""""""">The URI that the request will be sent to.</param>
+    /// <param name=""""""""""""""""""""""""""""""""content"""""""""""""""""""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
     public static async Task<T> SendNewtonsoftJsonAsync<T>(this HttpClient httpClient, HttpMethod method, string requestUri, object content)
     {
-        var requestJson = JsonConvert.SerializeObject(content);
+        var requestJson = JsonConvert.SerializeObject(content, JsonSerializerSettings);
         var response = await httpClient.SendAsync(new HttpRequestMessage(method, requestUri)
         {
             Content = new StringContent(requestJson, Encoding.UTF8, ""application/json"")
@@ -436,18 +431,18 @@ public static class NewtonsoftHttpClientJsonExtensions
         => httpClient.SendAsNewtonsoftJsonAsync(HttpMethod.Patch, requestUri, content);
 
     /// <summary>
-    /// Sends an HTTP request to the specified URI, including the specified <paramref name=""""""""""""""""content""""""""""""""""/>
+    /// Sends an HTTP request to the specified URI, including the specified <paramref name=""""""""""""""""""""""""""""""""content""""""""""""""""""""""""""""""""/>
     /// in JSON-encoded format, and parses the JSON response body to create an object of the generic type.
     /// </summary>
-    /// <typeparam name=""""""""""""""""T"""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
-    /// <param name=""""""""""""""""httpClient"""""""""""""""">The <see cref=""""""""""""""""HttpClient""""""""""""""""/>.</param>
-    /// <param name=""""""""""""""""method"""""""""""""""">The HTTP method.</param>
-    /// <param name=""""""""""""""""requestUri"""""""""""""""">The URI that the request will be sent to.</param>
-    /// <param name=""""""""""""""""content"""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
+    /// <typeparam name=""""""""""""""""""""""""""""""""T"""""""""""""""""""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
+    /// <param name=""""""""""""""""""""""""""""""""httpClient"""""""""""""""""""""""""""""""">The <see cref=""""""""""""""""""""""""""""""""HttpClient""""""""""""""""""""""""""""""""/>.</param>
+    /// <param name=""""""""""""""""""""""""""""""""method"""""""""""""""""""""""""""""""">The HTTP method.</param>
+    /// <param name=""""""""""""""""""""""""""""""""requestUri"""""""""""""""""""""""""""""""">The URI that the request will be sent to.</param>
+    /// <param name=""""""""""""""""""""""""""""""""content"""""""""""""""""""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
     private static async Task<HttpResponseMessage> SendAsNewtonsoftJsonAsync(this HttpClient httpClient, HttpMethod method, string requestUri, object content)
     {
-        var requestJson = JsonConvert.SerializeObject(content);
+        var requestJson = JsonConvert.SerializeObject(content, JsonSerializerSettings);
         var response = await httpClient.SendAsync(new HttpRequestMessage(method, requestUri)
         {
             Content = new StringContent(requestJson, Encoding.UTF8, ""application/json"")
@@ -474,14 +469,14 @@ public static class NewtonsoftHttpClientJsonExtensions
 
 
     /// <summary>
-    /// Sends an HTTP request to the specified URI, including the specified <paramref name=""""""""""""""""content""""""""""""""""/>
+    /// Sends an HTTP request to the specified URI, including the specified <paramref name=""""""""""""""""""""""""""""""""content""""""""""""""""""""""""""""""""/>
     /// in JSON-encoded format, and parses the JSON response body to create an object of the generic type.
     /// </summary>
-    /// <typeparam name=""""""""""""""""T"""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
-    /// <param name=""""""""""""""""httpClient"""""""""""""""">The <see cref=""""""""""""""""HttpClient""""""""""""""""/>.</param>
-    /// <param name=""""""""""""""""method"""""""""""""""">The HTTP method.</param>
-    /// <param name=""""""""""""""""requestUri"""""""""""""""">The URI that the request will be sent to.</param>
-    /// <param name=""""""""""""""""content"""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
+    /// <typeparam name=""""""""""""""""""""""""""""""""T"""""""""""""""""""""""""""""""">A type into which the response body can be JSON-deserialized.</typeparam>
+    /// <param name=""""""""""""""""""""""""""""""""httpClient"""""""""""""""""""""""""""""""">The <see cref=""""""""""""""""""""""""""""""""HttpClient""""""""""""""""""""""""""""""""/>.</param>
+    /// <param name=""""""""""""""""""""""""""""""""method"""""""""""""""""""""""""""""""">The HTTP method.</param>
+    /// <param name=""""""""""""""""""""""""""""""""requestUri"""""""""""""""""""""""""""""""">The URI that the request will be sent to.</param>
+    /// <param name=""""""""""""""""""""""""""""""""content"""""""""""""""""""""""""""""""">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
     private static async Task<T> SendFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, HttpMethod method, string requestUri, HttpContent content)
     {
@@ -497,7 +492,7 @@ public static class NewtonsoftHttpClientJsonExtensions
     public static async Task<T> ReadNewtonsoftJsonAsync<T>(this HttpResponseMessage response)
     {
         var stringContent = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<T>(stringContent);
+        return JsonConvert.DeserializeObject<T>(stringContent, JsonSerializerSettings);
     }
 
     class IgnoreResponse { }
