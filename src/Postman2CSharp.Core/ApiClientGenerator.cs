@@ -456,7 +456,7 @@ public class ApiClientGenerator
 
             var uniqueHeaders = requestItem.Request.Header.Except(commonHeaders).ToList() ?? new ();
 
-            var httpClientFunction = Helpers.HttpClientCall(requestItem.Request.Method, requestDataType, responseDataType, Options.ApiClientOptions.EnsureResponseIsSuccessStatusCode, Options.CSharpCodeWriterConfig.AttributeLibrary);
+            var httpClientFunction = Helpers.HttpClientCall(requestItem.Request.Method, requestDataType, responseDataType, Options.CSharpCodeWriterConfig.AttributeLibrary);
 
 
             httpCalls.Add(new ()

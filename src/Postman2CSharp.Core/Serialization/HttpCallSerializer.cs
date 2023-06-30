@@ -196,32 +196,17 @@ public static class HttpCallSerializer
             GraphQlString(sb, call.Request.Body!.Graphql, indent);
         }
 
-        bool httpClientCallReturnsResponse;
         // We need to use the HttpRequestMessage
-        if (ensureSuccessStatusCode)
-        {
-            if (call.HttpClientFunction.Contains("Json") && !(call.HttpClientFunction.Contains("AsJson") || call.HttpClientFunction.Contains("AsNewtonsoftJson")))
-            {
-                if (jsonLibrary == JsonLibrary.SystemTextJson)
-                {
-                    call.HttpClientFunction = call.HttpClientFunction.Replace("Json", "AsJson");
-                }
-                else
-                {
-                    call.HttpClientFunction = call.HttpClientFunction.Replace("NewtonsoftJson", "AsNewtonsoftJson");
-                }
-            }
-            httpClientCallReturnsResponse = false;
-        }
-        else
-        {
-            httpClientCallReturnsResponse = call.ResponseClassName != null && call.HttpClientFunction.Contains("Json") && !(call.HttpClientFunction.Contains("AsJson") || call.HttpClientFunction.Contains("AsNewtonsoftJson"));
-        }
+
+        var httpClientCallReturnsResponse = call.ResponseClassName != null && 
+                                            call.HttpClientFunction.Contains("Json") && 
+                                            !(call.HttpClientFunction.Contains("AsJson") || call.HttpClientFunction.Contains("AsNewtonsoftJson"));
+  
         ReturnOrVarResponse(sb, httpClientCallReturnsResponse, indent);
 
         HttpClientRequest(sb, call, httpClientCallReturnsResponse, requestHasQueryString, relativePath);
 
-        if (ensureSuccessStatusCode)
+        if (!httpClientCallReturnsResponse && ensureSuccessStatusCode)
         {
             sb.AppendLine(indent + "response.EnsureSuccessStatusCode();");
         }

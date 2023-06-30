@@ -77,84 +77,66 @@ public static class Helpers
 
         return result;
     }
-    public static string HttpClientCall(string httpMethod, DataType requestDataType, DataType responseDataType, bool ensureResponseIsSuccessStatusCode, JsonLibrary jsonLibrary)
+
+    public static string HttpClientCall(string httpMethod, DataType requestDataType, DataType responseDataType, JsonLibrary jsonLibrary)
     {
         string function;
+        var suffix = jsonLibrary == JsonLibrary.SystemTextJson ? "Json" : "NewtonsoftJson";
         if (requestDataType == DataType.Json)
         {
-            if (responseDataType == DataType.Json && !ensureResponseIsSuccessStatusCode)
+            if (responseDataType == DataType.Json)
             {
-                if (jsonLibrary == JsonLibrary.SystemTextJson)
+                function = httpMethod.ToUpper() switch
                 {
-                    function = httpMethod.ToUpper() switch
-                    {
-                        // TODO: Update core csv files with GetJsonAsync
-                        "GET" => "GetJsonAsync",
-                        "PUT" => "PutJsonAsync",
-                        "PATCH" => "PatchJsonAsync",
-                        "POST" => "PostJsonAsync",
-                        "DELETE" => "DeleteJsonAsync",
-                        _ => throw new NotImplementedException(),
-                    };
-                }
-                else
-                {
-                    function = httpMethod.ToUpper() switch
-                    {
-                        // TODO: Update core csv files with GetJsonAsync
-                        "GET" => "GetNewtonsoftJsonAsync",
-                        "PUT" => "PutNewtonsoftJsonAsync",
-                        "PATCH" => "PatchNewtonsoftJsonAsync",
-                        "POST" => "PostNewtonsoftJsonAsync",
-                        "DELETE" => "DeleteNewtonsoftJsonAsync",
-                        _ => throw new NotImplementedException(),
-                    };
-                }
+                    "GET" => $"Get{suffix}Async",
+                    "PUT" => $"Put{suffix}Async",
+                    "POST" => $"Post{suffix}Async",
+                    "PATCH" => $"Patch{suffix}Async",
+                    "DELETE" => $"Delete{suffix}Async",
+                    _ => throw new NotImplementedException(),
+                };
             }
             else
             {
-                if (jsonLibrary == JsonLibrary.SystemTextJson)
+                function = httpMethod.ToUpper() switch
                 {
-                    function = httpMethod.ToUpper() switch
-                    {
-                        "GET" => "GetAsJsonAsync",
-                        "PUT" => "PutAsJsonAsync",
-                        "POST" => "PostAsJsonAsync",
-                        "PATCH" => "PatchAsJsonAsync",
-                        "DELETE" => "DeleteAsJsonAsync",
-                        _ => throw new NotImplementedException(),
-                    };
-                }
-                else
-                {
-                    function = httpMethod.ToUpper() switch
-                    {
-                        "GET" => "GetAsNewtonsoftJsonAsync",
-                        "PUT" => "PutAsNewtonsoftJsonAsync",
-                        "PATCH" => "PatchAsNewtonsoftJsonAsync",
-                        "POST" => "PostAsNewtonsoftJsonAsync",
-                        "DELETE" => "DeleteAsNewtonsoftJsonAsync",
-                        _ => throw new NotImplementedException(),
-                    };
-                }
+                    "GET" => $"GetAs{suffix}Async",
+                    "PUT" => $"PutAs{suffix}Async",
+                    "POST" => $"PostAs{suffix}Async",
+                    "PATCH" => $"PatchAs{suffix}Async",
+                    "DELETE" => $"DeleteAs{suffix}Async",
+                    _ => throw new NotImplementedException(),
+                };
             }
         }
         else
         {
-            function = httpMethod.ToUpper() switch
+            if (responseDataType == DataType.Json)
             {
-                "GET" => "GetAsync",
-                "PUT" => "PutAsync",
-                "PATCH" => "PatchAsync",
-                "POST" => "PostAsync",
-                "DELETE" => "DeleteAsync",
-                _ => throw new NotImplementedException(),
-            };
+                function = httpMethod.ToUpper() switch
+                {
+                    "GET" => $"GetFrom{suffix}Async",
+                    "PUT" => $"PutFrom{suffix}Async",
+                    "POST" => $"PostFrom{suffix}Async",
+                    "PATCH" => $"PatchFrom{suffix}Async",
+                    "DELETE" => $"DeleteFrom{suffix}Async",
+                    _ => throw new NotImplementedException(),
+                };
+            }
+            else
+            {
+                function = httpMethod.ToUpper() switch
+                {
+                    "GET" => "GetAsync",
+                    "PUT" => "PutAsync",
+                    "POST" => "PostAsync",
+                    "PATCH" => "PatchAsync",
+                    "DELETE" => "DeleteAsync",
+                    _ => throw new NotImplementedException(),
+                };
+            }
         }
-        if (requestDataType is not DataType.Json)
-        {
-            function = function.Replace("NewtonsoftJson", string.Empty).Replace("Json", string.Empty);
-        }
+
         return function;
     }
 
