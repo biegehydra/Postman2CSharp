@@ -193,11 +193,45 @@
     {
         ApiCollections ??= new();
         ApiCollections.Add(apiCollection);
-        SiteSettings.Instance.TotalApiClientsSaved += 1;
+
+        SiteSettings.Instance.TotalApiClientsGenerated += 1;
         await JsRuntime.InvokeVoidAsync("setLocalStorage", "siteSettings", SiteSettings.Instance);
+        NotifyIfGeneratedIsCheckpoint();
+
         StateHasChanged();
         await SaveApiCollectionToLocalStore(apiCollection.Id);
     }
+
+    private void NotifyIfGeneratedIsCheckpoint()
+    {
+        string? message = null;
+        message ="Congratulations on generating ApiClients for 10 collections. If your enjoying Postman2CSharp, please consider donating to support the project.";
+        if (SiteSettings.Instance.TotalApiClientsGenerated == 10) 
+            message ="Congratulations on generating ApiClients for 10 collections. If your enjoying Postman2CSharp, please consider donating to support the project.";
+
+        if (SiteSettings.Instance.TotalApiClientsGenerated == 50)
+            message = "Congratulations on generating ApiClients for 50 collections. If your enjoying Postman2CSharp, please consider donating to support the project.";
+
+        if (SiteSettings.Instance.TotalApiClientsGenerated == 100)
+            message = "Congratulations on generating ApiClients for 100 collections. If your enjoying Postman2CSharp, please consider donating to support the project.";
+
+        if (message != null)
+        {
+            SnackBar?.Add<BuyMeACoffeePopup>(new Dictionary<string, object>()
+            {
+                {"Message", message }
+            }, Severity.Normal, configure =>
+            {
+                configure.ActionVariant = Variant.Text;
+                configure.CloseAfterNavigation = false;
+                configure.HideIcon = true;
+                configure.ShowCloseIcon = false;
+                configure.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
+                configure.VisibleStateDuration = 100000;
+            });
+        }
+    }
+
     private void StripApiCollections()
     {
         if (ApiCollections == null) return;

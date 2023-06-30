@@ -27,10 +27,10 @@
                     @apiCollection.CollectionInfo.Name
                 </MudNavLink>
                 <MudMenu Icon="@Icons.MoreVert" Size="Size.Medium" Dense="true" Color="Color.Tertiary" Style="position: absolute; right: 0; top: -5%; z-index: 99999999999;">
-                    <MudMenuItem Icon="@Icons.Edit" IconSize="Size.Small" OnClick="() => BeginEditName(apiCollection)">Rename</MudMenuItem>
-                    <MudMenuItem Icon="@Icons.DeleteForever" OnClick="() => DeleteApiCollection(apiCollection)">Delete</MudMenuItem>
+                    <MudMenuItem Icon="@Icons.Edit" IconSize="Size.Small" ontouchstart="event.preventDefault();" OnTouch="() => BeginEditName(apiCollection)" OnClick="() => BeginEditName(apiCollection)">Rename</MudMenuItem>
+                    <MudMenuItem Icon="@Icons.DeleteForever" ontouchstart="event.preventDefault();" OnTouch="() => DeleteApiCollection(apiCollection)" OnClick="() => DeleteApiCollection(apiCollection)">Delete</MudMenuItem>
                 </MudMenu>
-            </div>
+        </div>
         }
     </MudNavGroup>
     <MudNavLink Href="/CoreFiles" Match="NavLinkMatch.Prefix" Icon="@Icons.FileCopy">Core Files</MudNavLink>
@@ -110,6 +110,7 @@
         _selectedApiCollection = collection;
         _cachedName = collection.CollectionInfo.Name;
         _newCollectionName = collection.CollectionInfo.Name;
+        StateHasChanged();
     }
 
     private void ConfirmEditName()
@@ -121,6 +122,7 @@
         _selectedApiCollection = null;
         _cachedName = null;
         _newCollectionName = null;
+        StateHasChanged(); 
     }
 
     private void CancelEditName()
@@ -132,5 +134,6 @@
         _cachedName = null;
         _selectedApiCollection = null;
         _newCollectionName = null;
+        StateHasChanged();
     }
 }

@@ -47,6 +47,6 @@
                 OnSettingsChanged?.Invoke(this);
             }
         }
-
+        public int TotalApiClientsGenerated { get; set; }
     }
 }

@@ -117,7 +117,7 @@
         apiClientGenerator.ProgressCallback += options.InvokeProgressCallback;
         apiClientGenerator.OnStageChanged += options.InvokeStageChangedCallback;
 
-        var snackBar = SnackBar.Value?.Add<ApiClientGeneratorProgressPopup>(new Dictionary<string, object>()
+        var snackBar = SnackBar.Value?.Add<ProgressPopup>(new Dictionary<string, object>()
         {
             {"Options", options }
         }, Severity.Normal, configure =>

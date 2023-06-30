@@ -76,7 +76,7 @@ namespace Postman2CSharp.Wasm.Services
             var options = new ProgressPopupOptions("Downloading ApiClients...", "Downloaded All ApiClients!");
             FileProgressCallback += options.InvokeProgressCallback;
 
-            var snackBar = _snackBar.Value?.Add<ApiClientGeneratorProgressPopup>(new Dictionary<string, object>()
+            var snackBar = _snackBar.Value?.Add<ProgressPopup>(new Dictionary<string, object>()
             {
                 {"Options", options }
             }, Severity.Normal, configure =>

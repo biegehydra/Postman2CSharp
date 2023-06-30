@@ -193,9 +193,18 @@ li {
     gap: 20px;
 }
 
+@media (max-width: 1500px) {
+    .splashscreen {
+        width: 26em;
+        height: 26em;
+    }
+}
+
+
 @media (max-width: 768px) {
     .splashscreen {
-        width: 22em;
+        width: 23em;
+        height: 23em;
     }
     .paper-reset {
         display: none !important;
