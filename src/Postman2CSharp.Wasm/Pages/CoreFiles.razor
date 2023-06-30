@@ -53,7 +53,8 @@
         { nameof(CoreCsFile.HelperExtensions), "This is one extension method that acts as last minute insurance to make sure duplicate query parameters aren't added." },
         { nameof(CoreCsFile.OAuth2QueryParameters), "If your API client uses OAuth2 and uses query parameters, you're Api client will be shipped with this " },
         { nameof(CoreCsFile.Interfaces), "These are the interfaces that query parameters classes and form data classes will use." },
-        { nameof(CoreCsFile.HttpExtensions), "These are the extension methods used to facilitate api calls that use JSON." },
+        { nameof(CoreCsFile.HttpJsonExtensions), "These are the extension methods used to facilitate api calls that use JSON (System.Text.Json)." },
+        { nameof(CoreCsFile.NewtonsoftHttpExtensions), "These are the extension methods used to facilitate api calls that use JSON (Newtonsoft.Json)." },
     };
 
     protected override void OnInitialized()
