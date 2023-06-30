@@ -80,7 +80,7 @@
 
     private static List<ApiCollection>? ApiCollections { get; set; }
     bool _drawerOpen = true;
-    
+
     #region ThemeManager
 
     private MudTheme _theme = new ()
@@ -139,16 +139,24 @@
             await JsRuntime.InvokeVoidAsync("setupPrismObserver");
             if (ApiCollections?.Count > 0) return;
             ApiCollections = new();
-            var apiCollectionIds = await JsRuntime.InvokeAsync<List<string>?>("getLocalStorage", "apiCollectionIds");
-            foreach (var apiCollectionId in apiCollectionIds ?? new ())
+            var newVersionDetected = await GetSiteSettings();
+            if (newVersionDetected)
             {
-                var apiCollection = await JsRuntime.InvokeAsync<ApiCollection?>("getLocalStorage", apiCollectionId);
-                if (apiCollection != null)
+                await JsRuntime.InvokeVoidAsync("clearLocalStorage");
+                SnackBar?.Add($"New website version detected. Your workspace has been reset.", Severity.Info);
+            }
+            else
+            {
+                var apiCollectionIds = await JsRuntime.InvokeAsync<List<string>?>("getLocalStorage", "apiCollectionIds");
+                foreach (var apiCollectionId in apiCollectionIds ?? new ())
                 {
-                    ApiCollections.Add(apiCollection);
+                    var apiCollection = await JsRuntime.InvokeAsync<ApiCollection?>("getLocalStorage", apiCollectionId);
+                    if (apiCollection != null)
+                    {
+                        ApiCollections.Add(apiCollection);
+                    }
                 }
             }
-            await GetSiteSettings();
         }
         catch (Exception ex)
         {
@@ -156,11 +164,16 @@
         }
     }
 
-    private async Task GetSiteSettings()
+    /// <returns>Whether or not a new version was detected</returns>
+    private async Task<bool> GetSiteSettings()
     {
         var siteSettings = await JsRuntime.InvokeAsync<SiteSettings?>("getLocalStorage", "siteSettings");
         if (siteSettings != null)
         {
+            if (siteSettings.Version != SiteSettings.CurrentVersion)
+            {
+                return true;
+            }
             SiteSettings.Instance = siteSettings;
         }
         var codeWritingConfig = await JsRuntime.InvokeAsync<CSharpCodeWriterConfigInputModel?>("getLocalStorage", "codeWriterConfig");
@@ -174,6 +187,7 @@
             AdvancedSettings.SetApiClientOptions(apiClientOptions);
         }
         OnSettingsChanged?.Invoke();
+        return false;
     }
 
     private async Task SetSiteSettings()
@@ -196,16 +210,15 @@
 
         SiteSettings.Instance.TotalApiClientsGenerated += 1;
         await JsRuntime.InvokeVoidAsync("setLocalStorage", "siteSettings", SiteSettings.Instance);
-        NotifyIfGeneratedIsCheckpoint();
+        NotifyIfCheckpointIsHit();
 
         StateHasChanged();
         await SaveApiCollectionToLocalStore(apiCollection.Id);
     }
 
-    private void NotifyIfGeneratedIsCheckpoint()
+    private void NotifyIfCheckpointIsHit()
     {
         string? message = null;
-        message ="Congratulations on generating ApiClients for 10 collections. If your enjoying Postman2CSharp, please consider donating to support the project.";
         if (SiteSettings.Instance.TotalApiClientsGenerated == 10) 
             message ="Congratulations on generating ApiClients for 10 collections. If your enjoying Postman2CSharp, please consider donating to support the project.";
 
@@ -227,7 +240,7 @@
                 configure.HideIcon = true;
                 configure.ShowCloseIcon = false;
                 configure.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
-                configure.VisibleStateDuration = 100000;
+                configure.VisibleStateDuration = 30000;
             });
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace Postman2CSharp.Wasm
+﻿using Microsoft.Extensions.Primitives;
+
+namespace Postman2CSharp.Wasm
 {
     public class SiteSettings
     {
@@ -48,5 +50,8 @@
             }
         }
         public int TotalApiClientsGenerated { get; set; }
+        public string Version { get; set; } = CurrentVersion;
+
+        public const string CurrentVersion = "0.1";
     }
 }
