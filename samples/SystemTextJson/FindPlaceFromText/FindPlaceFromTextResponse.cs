@@ -5,6 +5,12 @@ using System.Text.Json;
 // Root myDeserializedClass = JsonSerializer.Deserialize<FindPlaceFromTextResponse>(myJsonResponse);
 namespace SystemTextJson
 {
+    public class FindPlaceFromTextResponse
+    {
+        public List<Candidates> Candidates { get; set; }
+        public string Status { get; set; }
+    }
+
     public class Candidates
     {
         public string FormattedAddress { get; set; }
@@ -12,12 +18,6 @@ namespace SystemTextJson
         public string Name { get; set; }
         public OpeningHours2 OpeningHours { get; set; }
         public double Rating { get; set; }
-    }
-
-    public class FindPlaceFromTextResponse
-    {
-        public List<Candidates> Candidates { get; set; }
-        public string Status { get; set; }
     }
 
     public class OpeningHours2

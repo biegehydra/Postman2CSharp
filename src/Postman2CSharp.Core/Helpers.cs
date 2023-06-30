@@ -53,6 +53,33 @@ public static class Helpers
         return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis();
     }
 
+    public static string ReorderClasses(string sourceCode, string rootName)
+    {
+        var tree = CSharpSyntaxTree.ParseText(sourceCode);
+        var root = tree.GetRoot();
+
+        var namespaceDeclaration = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>().First();
+
+        var classes = namespaceDeclaration.Members.OfType<ClassDeclarationSyntax>().ToList();
+        var orderedClasses = classes
+            .OrderBy(c => c.Identifier.Text != rootName) // RootName class first
+            .ThenByDescending(c => c.Members.OfType<PropertyDeclarationSyntax>().Count() + c.Members.OfType<FieldDeclarationSyntax>().Count()); // Then order by property and field count
+
+        var newNamespaceDeclaration = namespaceDeclaration.RemoveNodes(classes, SyntaxRemoveOptions.KeepNoTrivia);
+
+        // Add the ordered classes to the namespace.
+        newNamespaceDeclaration = newNamespaceDeclaration?.AddMembers(orderedClasses.ToArray());
+
+        if (newNamespaceDeclaration == null)
+        {
+            return string.Empty;
+        }
+
+        root = root.ReplaceNode(namespaceDeclaration, newNamespaceDeclaration);
+
+        return root.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis();
+    }
+
     public static string NormalizeToCsharpPropertyName(string? input, CsharpPropertyType propertyType = CsharpPropertyType.Public)
     {
         if (input == null)

@@ -505,7 +505,7 @@ public class ApiClientGenerator
                 jsonClassGenerator.CodeWriter = new CSharpCodeWriter(codeWriterClone, writeComments);
             }
             jsonClassGenerator.SetDescriptionDict(descriptionDict);
-            sourceCode = GenerateClasses(jsonClassGenerator, json, ref types);
+            sourceCode = GenerateClasses(jsonClassGenerator, json, ref types, className);
             if (sourceCode == string.Empty)
             {
                 if (JsonSerializer.Deserialize<List<string>>(json) is { })
@@ -611,7 +611,7 @@ public class ApiClientGenerator
         return new CSharpCodeWriter(Options.CSharpCodeWriterConfig, writeComments);
     }
 
-    private static string GenerateClasses(JsonClassGenerator jsonClassGenerator, string json, ref List<ClassType>? types)
+    private static string GenerateClasses(JsonClassGenerator jsonClassGenerator, string json, ref List<ClassType>? types, string rootClassName)
     {
         var sb = jsonClassGenerator.GenerateClasses(json, out var errorMessage);
         types = jsonClassGenerator.Types?.Select(x => new ClassType()
@@ -623,7 +623,8 @@ public class ApiClientGenerator
                 JsonMemberName = y.JsonMemberName
             }).ToList()
         }).ToList();
-        return Helpers.ConsolidateNamespaces(sb.ToString());
+        var consolidated = Helpers.ConsolidateNamespaces(sb.ToString());
+        return Helpers.ReorderClasses(consolidated, rootClassName);
     }
 
     private static string? GenerateFormDataClass(string? formClassName, List<Parameter>? parameters, string nameSpace, Dictionary<string, string?> descriptionDict, bool writeFormDataComments)

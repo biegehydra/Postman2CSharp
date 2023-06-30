@@ -13,7 +13,7 @@ namespace SystemTextJson
         public SystemTextJsonApiClient(HttpClient httpClient, IConfiguration config)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("https://maps.googleapis.com/maps/api/place/");
+            _httpClient.BaseAddress = new Uri($"https://maps.googleapis.com/maps/api/place/");
     
             _apiKey = config["Path:ToApiKey"];
         }
