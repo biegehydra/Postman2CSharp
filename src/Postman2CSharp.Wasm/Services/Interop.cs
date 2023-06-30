@@ -46,7 +46,7 @@ namespace Postman2CSharp.Wasm.Services
 
             var fileNamePathDict = new Dictionary<string, string>();
 
-            foreach (var fileName in sourceCodeDict.Keys.ToList())
+            foreach (var fileName in sourceCodeDict.Keys.ToList().Where(x => !x.Contains(nameof(CoreCsFile.OAuth2QueryParameters))))
             {
                 var specialFileEnding = SpecialFileEndings.FirstOrDefault(fileName.EndsWith);
                 if (specialFileEnding == null) continue;

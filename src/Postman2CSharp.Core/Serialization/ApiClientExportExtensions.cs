@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Serialization
@@ -61,7 +62,10 @@ namespace Postman2CSharp.Core.Serialization
 
             AddToDictionary(apiClientSc, apiClient.Name);
             AddToDictionary(apiClient.InterfaceSourceCode, apiClient.InterfaceName);
-            AddToDictionary(oauth2QueryParamsSc, nameof(CoreCsFile.OAuth2QueryParameters));
+            if (apiClient.UniqueAuths.Any(x => x.EnumType() == PostmanAuthType.oauth2))
+            {
+                AddToDictionary(oauth2QueryParamsSc, nameof(CoreCsFile.OAuth2QueryParameters));
+            }
             AddToDictionary(helperExtensionsSc, nameof(CoreCsFile.HelperExtensions));
             AddToDictionary(interfacesSc, nameof(CoreCsFile.Interfaces));
             AddToDictionary(queryHelpersSc, nameof(CoreCsFile.QueryHelpers));
