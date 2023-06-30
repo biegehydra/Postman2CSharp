@@ -81,7 +81,7 @@ public static class ApiClientSerializer
             {
                 leastPossibleUri += "/";
             }
-            sb.AppendLine(indent + $"_httpClient.BaseAddress = new Uri(\"{leastPossibleUri}\");");
+            sb.AppendLine(indent + $"_httpClient.BaseAddress = new Uri($\"{leastPossibleUri}\");");
         }
         if (logsExceptions)
         {
