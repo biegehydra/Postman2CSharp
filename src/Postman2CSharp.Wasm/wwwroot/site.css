@@ -160,6 +160,9 @@ li {
     border-radius: 47%;
     animation-duration: 10s;
 }
+.hang-tight-text {
+    font-weight: 100;
+}
 
 @keyframes rotate {
     0% {
@@ -252,6 +255,9 @@ li {
     }
     .main-container {
         padding: 5px 12px;
+    }
+    .hang-tight-text {
+        font-size: 1.17em;
     }
 }
 @media (max-width: 270px) {
