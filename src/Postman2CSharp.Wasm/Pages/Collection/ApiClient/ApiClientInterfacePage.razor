@@ -1,7 +1,7 @@
-﻿@page "/Collection/{CollectionId}/ApiClient/{ApiClientId}/Tests"
+﻿@page "/Collection/{CollectionId}/ApiClient/{ApiClientId}/Interface"
 @inherits MainLayoutComponent
 
-<PageTitle>@SelectedApiClient?.TestClassName</PageTitle>
+<PageTitle>@SelectedApiClient?.InterfaceName</PageTitle>
 
 <BreadCrumbs Items="@_breadCrumbs"></BreadCrumbs>
 
@@ -9,7 +9,7 @@
 
 @if (SelectedApiClient != null)
 {
-    <pre><code @key="@SelectedApiClient.Id" class="language-csharp">@SelectedApiClient.TestClassSourceCode</code></pre>
+    <pre><code @key="SelectedApiClient.Id" class="language-csharp">@SelectedApiClient.InterfaceSourceCode</code></pre>
 }
 
 @code {
@@ -24,7 +24,7 @@
     {
         if (!GetApiClientFromParameters()) return;
         if (ApiClientId == null || CollectionId == null) return;
-        await TabsService.Value.AddApiClientTestsTab(CollectionId, ApiClientId, SelectedApiClient!.TestClassName);
+        await TabsService.Value.AddApiClientInterfaceTab(CollectionId, ApiClientId, SelectedApiClient!.InterfaceName);
     }
     protected override void OnParametersSet()
     {
@@ -35,7 +35,7 @@
             new("Home", "/", icon: Icons.Home),
             new("Collection", $"/Collection/{CollectionId}", icon: NavMenu.FavIcon),
             new(SelectedApiClient!.Name, $"/Collection/{CollectionId}/ApiClient/{ApiClientId}"),
-            new(SelectedApiClient!.TestClassName, $"/Collection/{CollectionId}/ApiClient/{ApiClientId}/Tests", true),
+            new(SelectedApiClient!.InterfaceName, $"/Collection/{CollectionId}/ApiClient/{ApiClientId}/Interface", true),
         };
 
     }

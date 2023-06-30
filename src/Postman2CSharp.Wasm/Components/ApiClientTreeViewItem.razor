@@ -9,7 +9,7 @@
             @if (ShowEdit)
             {
                 <div @onclick:stopPropagation="true" @onclick:preventDefault="true" class="mud-treeview-item-content cursor-pointer">
-                    <MudTooltip Text="The name you give here will determine the namespace, apiclient name, and api client interface name.">
+                    <MudTooltip Text="The name you give here will determine the namespace, apiclient name, and interface name.">
                         <div @onfocus:stopPropagation="true" @onfocus:preventDefault="true" @onfocusin:stopPropagation="true" @onfocusin:preventDefault="true"  >
                             <MudTextField Style="margin-top: 0; z-index: 10;" @bind-Value="@ApiClient.NameSpace" OnKeyUp="OnEditingApiClientNamespaceKeyUp" AutoFocus Clearable Label="ApiClient name" HelperText="Press enter to confirm"/>
                         </div>
@@ -25,11 +25,14 @@
                     <MudIconButton Icon="@Icons.Edit" Class="ml-0 mr-2" OnClick="() => BeginEditingApiClientNamespace()" Color="@Color.Default"/>
                 </div>
             }
-            @if (SiteSettings.Instance.ShowDownloadInTreeView)
+            @if (SiteSettings.Instance.ShowDownloadInTreeView && !ShowEdit)
             {
                 <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadApiClient(ApiClient)"></MudIconButton>
             }
-            <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClient(ApiCollection.Id, ApiClient.Id)"/>
+            @if (!ShowEdit)
+            {
+                <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClient(ApiCollection.Id, ApiClient.Id)"/>
+            }
         </Content>
         <ChildContent>
             @foreach (var httpCall in ApiClient.HttpCalls)

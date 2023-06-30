@@ -15,9 +15,13 @@ namespace Postman2CSharp.Core.Serialization
 {
     public static class ApiClientExportExtensions
     {
+        private static readonly List<string> ImplicitOAuth2QueryParametersNamespaces = new() { "System.Collections.Generic" };
+        private static readonly List<string> ImplicitHelperExtensionNamespaces = new() {"System.Collections.Generic"};
+        private static readonly List<string> ImplicitInterfacesNamespaces = new() {"System.Collections.Generic", "System.Net.Http" };
         private static readonly List<string> NewtonsoftHttpExtensionsNamespaces = new() { "System.Text", "System.Net.Http", "System.Threading.Tasks", "Newtonsoft.Json" };
         private static readonly List<string> HttpExtensionsNamespaces = new () { "System.Text", "System.Net.Http", "System.Threading.Tasks", "System.Text.Json" };
         private static readonly List<string> QueryHelperNamespaces = new () { "System.Text", "System.Text.Encodings.Web" };
+        private static readonly List<string> ImplicitQueryHelperNamespaces = new() {"System", "System.Collections.Generic"};
 
         public static Dictionary<string, (string? HttpCall, string SourceCode)>? ExportToDict(this ApiClient? apiClient)
         {
@@ -35,10 +39,12 @@ namespace Postman2CSharp.Core.Serialization
             }
 
             var apiClientSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, apiClient.SourceCode, true, apiClient.NameSpaces());
-            var oauth2QueryParamsSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.OAuth2QueryParameters, true);
-            var helperExtensionsSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.HelperExtensions, true);
-            var interfacesSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.Interfaces);
-            var queryHelpersSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.QueryHelpers, true, QueryHelperNamespaces);
+            var oauth2QueryParamsSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.OAuth2QueryParameters, true, ImplicitOAuth2QueryParametersNamespaces);
+            var helperExtensionsSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.HelperExtensions, true, ImplicitHelperExtensionNamespaces);
+            var interfacesSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.Interfaces, namespaces: ImplicitInterfacesNamespaces);
+            var allQueryParameterNamespaces = new List<string>(QueryHelperNamespaces);
+            allQueryParameterNamespaces.AddRange(ImplicitQueryHelperNamespaces);
+            var queryHelpersSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.QueryHelpers, true, allQueryParameterNamespaces);
 
             string? httpExtensionsSourceCode;
             string? httpExtensionsClassName;

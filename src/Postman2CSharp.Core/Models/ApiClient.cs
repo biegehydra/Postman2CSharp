@@ -12,6 +12,7 @@ namespace Postman2CSharp.Core.Models;
 
 public class ApiClient
 {
+    private static readonly List<string> ImplicitNamespaces = new() {"System", "System.IO", "System.Net.Http", "System.Threading.Tasks"};
     private static readonly List<string> DefaultApiClientNamespaces = new() { "System.Net.Http.Headers", "System.Text" };
 
     private bool? _allRequestsInheritAuth;
@@ -106,6 +107,7 @@ public class ApiClient
     public List<string> NameSpaces()
     {
         var namespaces = new List<string>(DefaultApiClientNamespaces);
+        namespaces.AddRange(ImplicitNamespaces);
         if (HttpCalls.Any(x => x.HttpClientFunction.ToLower().Contains("asjson")))
         {
             namespaces.Add("System.Net.Http.Json");

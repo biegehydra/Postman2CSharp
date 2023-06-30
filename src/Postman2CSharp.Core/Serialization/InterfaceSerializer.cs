@@ -10,7 +10,8 @@ public static class InterfaceSerializer
     public static string CreateInterface(List<HttpCall> httpsCalls, string nameSpace, string apiClientName)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("using System;");
+        sb.AppendLine("using System.IO;");
+        sb.AppendLine("using System.Threading.Tasks;");
         sb.AppendLine($"namespace {nameSpace}");
         sb.AppendLine("{");
         var indent = Consts.Indent(1);

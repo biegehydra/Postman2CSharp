@@ -125,12 +125,16 @@ public static class ApiClientSerializer
         bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
         ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary)
     {
+        var last = calls.Last();
         foreach (var call in calls)
         {
             sb.AppendLine();
             HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, constructorHasAuthHeader, ensureSuccessStatusCode, commentTypes, catchExceptionTypes,
                 errorHandlingSinks, errorHandlingStrategy, logLevel, jsonLibrary);
-            sb.AppendLine();
+            if (!Equals(call, last))
+            {
+                sb.AppendLine();
+            }
         }
     }
 
