@@ -4,7 +4,7 @@ namespace Postman2CSharp.Wasm
 {
     public class SiteSettings
     {
-        private static SiteSettings _instance = new ();
+        private static SiteSettings _instance = new () { Version = CurrentVersion };
         public static SiteSettings Instance
         {
             get => _instance;
@@ -50,8 +50,8 @@ namespace Postman2CSharp.Wasm
             }
         }
         public int TotalApiClientsGenerated { get; set; }
-        public string Version { get; set; } = CurrentVersion;
+        public string? Version { get; set; }
 
-        public const string CurrentVersion = "0.1";
+        public const string CurrentVersion = "0.2";
     }
 }

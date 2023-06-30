@@ -170,7 +170,7 @@
         var siteSettings = await JsRuntime.InvokeAsync<SiteSettings?>("getLocalStorage", "siteSettings");
         if (siteSettings != null)
         {
-            if (siteSettings.Version != SiteSettings.CurrentVersion)
+            if (siteSettings.Version != null && siteSettings.Version != SiteSettings.CurrentVersion)
             {
                 return true;
             }
