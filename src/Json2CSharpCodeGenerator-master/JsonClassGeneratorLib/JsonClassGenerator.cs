@@ -2,10 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 
 using Newtonsoft.Json;
@@ -13,7 +11,6 @@ using Newtonsoft.Json.Linq;
 
 using Xamasoft.JsonClassGenerator.CodeWriters;
 
-using Humanizer;
 using Xamasoft.JsonClassGenerator.Models;
 
 namespace Xamasoft.JsonClassGenerator

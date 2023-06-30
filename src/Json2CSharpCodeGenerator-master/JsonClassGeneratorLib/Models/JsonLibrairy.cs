@@ -13,9 +13,6 @@ namespace Xamasoft.JsonClassGenerator.Models
 
         /// <summary>Use the <c>[JsonPropertyName]</c> attribute on generated C# class properties.</summary>
         SystemTextJson,
-
-        /// <summary>Use the <c>[JsonPropertyName]</c> and <c>[JsonProperty]</c>  attribute on generated C# class properties.</summary>
-        NewtonsoftAndSystemTextJson
     }
 
 }

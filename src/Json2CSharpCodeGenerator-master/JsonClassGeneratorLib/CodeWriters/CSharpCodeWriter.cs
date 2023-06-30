@@ -77,11 +77,11 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
                 case JsonLibrary.SystemTextJson:
                     importNamespaces.Add("System.Text.Json");
                     break;
-                case JsonLibrary.NewtonsoftAndSystemTextJson:
-                        importNamespaces.Add("Newtonsoft.Json");
-                        importNamespaces.Add("Newtonsoft.Json.Linq");
-                        importNamespaces.Add("System.Text.Json");
-                    break;
+                //case JsonLibrary.NewtonsoftAndSystemTextJson:
+                //        importNamespaces.Add("Newtonsoft.Json");
+                //        importNamespaces.Add("Newtonsoft.Json.Linq");
+                //        importNamespaces.Add("System.Text.Json");
+                //    break;
 
                 }
 
@@ -574,14 +574,14 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
                     case JsonLibrary.SystemTextJson:
                         return $"[{attributeTarget}JsonPropertyName(\"{field.JsonMemberName}\")]";
 
-                    case JsonLibrary.NewtonsoftAndSystemTextJson:
-                        {
-                            string newtonsoftAttribute =  $"[{attributeTarget}JsonProperty(\"{field.JsonMemberName}\")]";
-                            if (config.NullValueHandlingIgnore) {
-                                newtonsoftAttribute = $"[{attributeTarget}JsonProperty(\"{field.JsonMemberName}\", NullValueHandling = NullValueHandling.Ignore)]";
-                            }
-                                return newtonsoftAttribute + Environment.NewLine + $"        [{attributeTarget}JsonPropertyName(\"{field.JsonMemberName}\")]";
-                        }
+                    //case JsonLibrary.NewtonsoftAndSystemTextJson:
+                    //    {
+                    //        string newtonsoftAttribute =  $"[{attributeTarget}JsonProperty(\"{field.JsonMemberName}\")]";
+                    //        if (config.NullValueHandlingIgnore) {
+                    //            newtonsoftAttribute = $"[{attributeTarget}JsonProperty(\"{field.JsonMemberName}\", NullValueHandling = NullValueHandling.Ignore)]";
+                    //        }
+                    //            return newtonsoftAttribute + Environment.NewLine + $"        [{attributeTarget}JsonPropertyName(\"{field.JsonMemberName}\")]";
+                    //    }
 
                     default:
                         throw new InvalidOperationException("Unrecognized " + nameof(config.AttributeLibrary) + " value: " + config.AttributeLibrary);
