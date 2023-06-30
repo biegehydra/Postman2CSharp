@@ -367,7 +367,7 @@ public static class NewtonsoftHttpClientJsonExtensions
         }
         else
         {
-            return await response.ReadJsonAsync<T>();
+            return await response.ReadNewtonsoftJsonAsync<T>();
         }
     }
 
@@ -413,10 +413,10 @@ public static class NewtonsoftHttpClientJsonExtensions
         return response;
     }
 
-    public static async Task<T> ReadJsonAsync<T>(this HttpResponseMessage response)
+    public static async Task<T> ReadNewtonsoftJsonAsync<T>(this HttpResponseMessage response)
     {
         var stringContent = await response.Content.ReadAsStringAsync();
-        return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(stringContent);
+        return JsonConvert.DeserializeObject<T>(stringContent);
     }
 
     class IgnoreResponse { }

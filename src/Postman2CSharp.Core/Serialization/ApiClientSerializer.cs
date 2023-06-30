@@ -6,6 +6,7 @@ using Postman2CSharp.Core.Core;
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
+using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Serialization;
 
@@ -46,7 +47,7 @@ public static class ApiClientSerializer
         {
             AddOAuth2Methods(sb, uniqueAuthOAuth2, client.BaseUrl, 1);
         }
-        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, client.AllRequestsHaveSameAuth, client.EnsureSuccessStatusCode, client.CommentTypes, client.CatchExceptionTypes, client.ErrorHandlingSinks, client.ErrorHandlingStrategy, client.LogLevel);
+        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, client.AllRequestsHaveSameAuth, client.EnsureSuccessStatusCode, client.CommentTypes, client.CatchExceptionTypes, client.ErrorHandlingSinks, client.ErrorHandlingStrategy, client.LogLevel, client.JsonLibrary);
         sb.AppendLine();
         sb.AppendLine("}");
         return sb.ToString();
@@ -126,12 +127,14 @@ public static class ApiClientSerializer
     }
 
     private static void ApiClientCalls(StringBuilder sb, AuthSettings? auth, string? baseUrl, List<HttpCall> calls, bool allRequestsHaveSameAuth, 
-        bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks, ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel)
+        bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
+        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary)
     {
         foreach (var call in calls)
         {
             sb.AppendLine();
-            HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, allRequestsHaveSameAuth, ensureSuccessStatusCode, commentTypes, catchExceptionTypes, errorHandlingSinks, errorHandlingStrategy, logLevel);
+            HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, allRequestsHaveSameAuth, ensureSuccessStatusCode, commentTypes, catchExceptionTypes,
+                errorHandlingSinks, errorHandlingStrategy, logLevel, jsonLibrary);
             sb.AppendLine();
         }
     }

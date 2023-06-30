@@ -7,13 +7,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Serialization;
 
 public static class HttpCallSerializer
 {
     public static void SerializeHttpCall(StringBuilder sb, AuthSettings? auth, string? baseUrl, HttpCall call, bool allRequestsHaveSameAuth,
-        bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks, ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel)
+        bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
+        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary)
     {
         string relativePath;
         try
@@ -35,7 +37,7 @@ public static class HttpCallSerializer
 
         if (errorHandlingStrategy == ErrorHandlingStrategy.None)
         {
-            HttpCallBody(sb, auth, call, allRequestsHaveSameAuth, indent, relativePath, ensureSuccessStatusCode);
+            HttpCallBody(sb, auth, call, allRequestsHaveSameAuth, indent, relativePath, ensureSuccessStatusCode, jsonLibrary);
         }
         else
         {
@@ -46,7 +48,7 @@ public static class HttpCallSerializer
             sb.AppendLine(indent + "try");
             sb.AppendLine(indent + "{");
             indent = Consts.Indent(3);
-            HttpCallBody(sb, auth, call, allRequestsHaveSameAuth, indent, relativePath, ensureSuccessStatusCode);
+            HttpCallBody(sb, auth, call, allRequestsHaveSameAuth, indent, relativePath, ensureSuccessStatusCode, jsonLibrary);
             indent = Consts.Indent(2);
             sb.AppendLine(indent + "}");
             foreach (var catchExceptionType in catchExceptionTypes)
@@ -155,7 +157,7 @@ public static class HttpCallSerializer
     }
 
     private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool allRequestsHaveSameAuth,
-        string indent, string relativePath, bool ensureSuccessStatusCode)
+        string indent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary)
     {
         sb.AddAuthorizationHeader(call.Request.Auth, indent, allRequestsHaveSameAuth);
         UniqueHeaders(sb, call, indent);
@@ -198,15 +200,22 @@ public static class HttpCallSerializer
         // We need to use the HttpRequestMessage
         if (ensureSuccessStatusCode)
         {
-            if (call.HttpClientFunction.Contains("Json") && !call.HttpClientFunction.Contains("AsJson"))
+            if (call.HttpClientFunction.Contains("Json") && !(call.HttpClientFunction.Contains("AsJson") || call.HttpClientFunction.Contains("AsNewtonsoftJson")))
             {
-                call.HttpClientFunction = call.HttpClientFunction.Replace("Json", "AsJson");
+                if (jsonLibrary == JsonLibrary.SystemTextJson)
+                {
+                    call.HttpClientFunction = call.HttpClientFunction.Replace("Json", "AsJson");
+                }
+                else
+                {
+                    call.HttpClientFunction = call.HttpClientFunction.Replace("NewtonsoftJson", "AsNewtonsoftJson");
+                }
             }
             httpClientCallReturnsResponse = false;
         }
         else
         {
-            httpClientCallReturnsResponse = call.ResponseClassName != null && call.HttpClientFunction.Contains("Json") && !call.HttpClientFunction.Contains("AsJson");
+            httpClientCallReturnsResponse = call.ResponseClassName != null && call.HttpClientFunction.Contains("Json") && !(call.HttpClientFunction.Contains("AsJson") || call.HttpClientFunction.Contains("AsNewtonsoftJson"));
         }
         ReturnOrVarResponse(sb, httpClientCallReturnsResponse, indent);
 
@@ -219,16 +228,23 @@ public static class HttpCallSerializer
 
         if (!httpClientCallReturnsResponse)
         {
-            ReturnIfRequestDidNotReturnEarlier(sb, call, indent);
+            ReturnIfRequestDidNotReturnEarlier(sb, call, jsonLibrary, indent);
         }
     }
 
-    private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, HttpCall call, string indent)
+    private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, HttpCall call, JsonLibrary jsonLibrary, string indent)
     {
         sb.Append(indent + "return ");
         if (call.ResponseClassName != null)
         {
-            sb.AppendLine($"await response.ReadJsonAsync<{call.ResponseClassName}>();");
+            if (jsonLibrary == JsonLibrary.SystemTextJson)
+            {
+                sb.AppendLine($"await response.ReadJsonAsync<{call.ResponseClassName}>();");
+            }
+            else
+            {
+                sb.AppendLine($"await response.ReadNewtonsoftJsonAsync<{call.ResponseClassName}>();");
+            }
         }
         else
         {

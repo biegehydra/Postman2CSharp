@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json.Linq;
 using Postman2CSharp.Core.Core;
+using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core;
 
@@ -76,36 +77,66 @@ public static class Helpers
 
         return result;
     }
-    public static string HttpClientCall(string httpMethod, DataType requestDataType, DataType responseDataType, bool ensureResponseIsSuccessStatusCode)
+    public static string HttpClientCall(string httpMethod, DataType requestDataType, DataType responseDataType, bool ensureResponseIsSuccessStatusCode, JsonLibrary jsonLibrary)
     {
         string function;
         if (requestDataType == DataType.Json)
         {
             if (responseDataType == DataType.Json && !ensureResponseIsSuccessStatusCode)
             {
-                function = httpMethod.ToUpper() switch
+                if (jsonLibrary == JsonLibrary.SystemTextJson)
                 {
-                    // TODO: Update core csv files with GetJsonAsync
-                    "GET" => "GetJsonAsync",
-                    "PUT" => "PutJsonAsync",
-                    "PATCH" => "PatchJsonAsync",
-                    "POST" => "PostJsonAsync",
-                    "DELETE" => "DeleteJsonAsync",
-                    _ => throw new NotImplementedException(),
-                };
+                    function = httpMethod.ToUpper() switch
+                    {
+                        // TODO: Update core csv files with GetJsonAsync
+                        "GET" => "GetJsonAsync",
+                        "PUT" => "PutJsonAsync",
+                        "PATCH" => "PatchJsonAsync",
+                        "POST" => "PostJsonAsync",
+                        "DELETE" => "DeleteJsonAsync",
+                        _ => throw new NotImplementedException(),
+                    };
+                }
+                else
+                {
+                    function = httpMethod.ToUpper() switch
+                    {
+                        // TODO: Update core csv files with GetJsonAsync
+                        "GET" => "GetNewtonsoftJsonAsync",
+                        "PUT" => "PutNewtonsoftJsonAsync",
+                        "PATCH" => "PatchNewtonsoftJsonAsync",
+                        "POST" => "PostNewtonsoftJsonAsync",
+                        "DELETE" => "DeleteNewtonsoftJsonAsync",
+                        _ => throw new NotImplementedException(),
+                    };
+                }
             }
             else
             {
-                function = httpMethod.ToUpper() switch
+                if (jsonLibrary == JsonLibrary.SystemTextJson)
                 {
-                    "GET" => "GetAsJsonAsync",
-                    "PUT" => "PutAsJsonAsync",
-                    "PATCH" => "PatchAsJsonAsync",
-                    "POST" => "PostAsJsonAsync",
-                    "DELETE" => "DeleteAsJsonAsync",
-                    _ => throw new NotImplementedException(),
-                };
-
+                    function = httpMethod.ToUpper() switch
+                    {
+                        "GET" => "GetAsJsonAsync",
+                        "PUT" => "PutAsJsonAsync",
+                        "POST" => "PostAsJsonAsync",
+                        "PATCH" => "PatchAsJsonAsync",
+                        "DELETE" => "DeleteAsJsonAsync",
+                        _ => throw new NotImplementedException(),
+                    };
+                }
+                else
+                {
+                    function = httpMethod.ToUpper() switch
+                    {
+                        "GET" => "GetAsNewtonsoftJsonAsync",
+                        "PUT" => "PutAsNewtonsoftJsonAsync",
+                        "PATCH" => "PatchAsNewtonsoftJsonAsync",
+                        "POST" => "PostAsNewtonsoftJsonAsync",
+                        "DELETE" => "DeleteAsNewtonsoftJsonAsync",
+                        _ => throw new NotImplementedException(),
+                    };
+                }
             }
         }
         else
@@ -122,7 +153,7 @@ public static class Helpers
         }
         if (requestDataType is not DataType.Json)
         {
-            function = function.Replace("Json", string.Empty);
+            function = function.Replace("NewtonsoftJson", string.Empty).Replace("Json", string.Empty);
         }
         return function;
     }

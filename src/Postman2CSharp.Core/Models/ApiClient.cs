@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Serialization;
+using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Models;
 
@@ -47,6 +48,7 @@ public class ApiClient
     public required List<ErrorHandlingSinks> ErrorHandlingSinks { get; set; }
     public required List<CatchExceptionTypes> CatchExceptionTypes { get; set; }
     public required LogLevel LogLevel { get; set; }
+    public required JsonLibrary JsonLibrary { get; set; }
     public required bool EnsureSuccessStatusCode { get; set; }
     public required List<XmlCommentTypes> CommentTypes { get; set; }
 
@@ -61,7 +63,8 @@ public class ApiClient
     public ApiClient(string name, string? description, string nameSpace, string? baseUrl, List<HttpCall> httpCalls,
 #pragma warning restore CS8618
         List<Header> commonHeaders, AuthSettings? collectionAuth, List<VariableUsage> variableUsages,
-        bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks, ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel)
+        bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
+        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary)
     {
         Name = name;
         Description = description;
@@ -77,6 +80,7 @@ public class ApiClient
         ErrorHandlingSinks = errorHandlingSinks;
         ErrorHandlingStrategy = errorHandlingStrategy;
         LogLevel = logLevel;
+        JsonLibrary = jsonLibrary;
     }
 
     public void GenerateSourceCode()
