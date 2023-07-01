@@ -174,7 +174,7 @@ namespace Postman2CSharp.Core.Serialization
                         });
 
                     // This drove me insane. I couldn't figure out how to get the newlines to work properly.
-                    return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis();
+                    return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
                 }
                 case "IFormData": break;
                 case "IMultipartFormData": break;

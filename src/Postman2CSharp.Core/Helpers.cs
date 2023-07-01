@@ -50,7 +50,7 @@ public static class Helpers
             newRoot = newRoot.AddMembers(consolidatedNamespace);
         }
 
-        return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis();
+        return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
     }
 
     public static string ReorderClasses(string sourceCode, string rootName)
@@ -77,7 +77,7 @@ public static class Helpers
 
         root = root.ReplaceNode(namespaceDeclaration, newNamespaceDeclaration);
 
-        return root.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis();
+        return root.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
     }
 
     public static string NormalizeToCsharpPropertyName(string? input, CsharpPropertyType propertyType = CsharpPropertyType.Public)
@@ -340,9 +340,9 @@ public static class Helpers
         return text;
     }
      
-    public static string FixXmlCommentsAfterCodeAnalysis(this string sourceCode)
+    public static string FixXmlCommentsAfterCodeAnalysis(this string sourceCode, int indent)
     {
-        return ReplaceExceptFirst(sourceCode, "/// <summary>", Environment.NewLine + Consts.Indent(2) + "/// <summary>");
+        return ReplaceExceptFirst(sourceCode, "/// <summary>", Environment.NewLine + Consts.Indent(indent) + "/// <summary>");
     }
 
     private static string ReplaceExceptFirst(string sourceCode, string oldValue, string newValue)
