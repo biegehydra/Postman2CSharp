@@ -102,7 +102,7 @@ public class ApiClient
     public void GenerateSourceCode()
     {
         SourceCode = ApiClientSerializer.SerializeApiClient(this);
-        InterfaceSourceCode = InterfaceSerializer.CreateInterface(HttpCalls, NameSpace, Name);
+        InterfaceSourceCode = InterfaceSerializer.CreateInterface(HttpCalls, NameSpace, Name, UseCancellationTokens);
         TestClassSourceCode = TestSerializer.SerializeTestClass(this);
     }
 
@@ -110,10 +110,6 @@ public class ApiClient
     {
         var namespaces = new List<string>(DefaultApiClientNamespaces);
         namespaces.AddRange(ImplicitNamespaces);
-        if (HttpCalls.Any(x => x.HttpClientFunction.ToLower().Contains("asjson")))
-        {
-            namespaces.Add("System.Net.Http.Json");
-        }
         return namespaces;
     }
 

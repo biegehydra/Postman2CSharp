@@ -209,22 +209,43 @@ public static class Helpers
         str = str.Replace("rightcurly", "}");
         str = str.Replace("%7B", "{"); // Add brackets back in if they got replaced in the process
         str = str.Replace("%7D", "}");
+
+        // Replace any character with '-' in front of it with its uppercase version
+        str = Regex.Replace(str, @"(\{[^}]*?)-([a-z])([^}]*?\})", m =>
+        {
+            var start = m.Groups[1].Value;
+            var letter = m.Groups[2].Value.ToUpperInvariant();
+            var end = m.Groups[3].Value;
+            return start + letter + end;
+        });
         return str;
     }
+
+    // The regex is to ensure variables in curly brackets don't become lower cased.
     public static string ReplaceBrackets(this string str)
     {
-        str = str.Replace("{", "leftcurly"); // better way to do this?
+        // Find uppercase letters between brackets and add '-' before them
+        str = Regex.Replace(str, @"(\{[^}]*)([A-Z])([^}]*\})", m =>
+        {
+            var start = m.Groups[1].Value;
+            var letter = m.Groups[2].Value;
+            var end = m.Groups[3].Value;
+            return start + "-" + letter.ToLowerInvariant() + end;
+        });
+
+        str = str.Replace("{", "leftcurly");
         str = str.Replace("}", "rightcurly");
+
         return str;
     }
 
 
     /// <summary>
-    /// Gets the largest common base from a list of strings
-    /// </summary>
-    /// <param name="strings"></param>
-    /// <returns></returns>
-    public static string? GetCommonBase(List<string> strings)
+        /// Gets the largest common base from a list of strings
+        /// </summary>
+        /// <param name="strings"></param>
+        /// <returns></returns>
+        public static string? GetCommonBase(List<string> strings)
     {
         if (!strings.Any() || strings.Any(string.IsNullOrWhiteSpace))
             return null;

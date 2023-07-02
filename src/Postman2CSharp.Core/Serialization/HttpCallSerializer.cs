@@ -217,11 +217,11 @@ public static class HttpCallSerializer
 
         if (!httpClientCallReturnsResponse)
         {
-            ReturnIfRequestDidNotReturnEarlier(sb, call, jsonLibrary, indent);
+            ReturnIfRequestDidNotReturnEarlier(sb, call, jsonLibrary, indent, useCancellationTokens);
         }
     }
 
-    private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, HttpCall call, JsonLibrary jsonLibrary, string indent)
+    private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, HttpCall call, JsonLibrary jsonLibrary, string indent, bool useCancellationTokens)
     {
         sb.Append(indent + "return ");
         if (call.ResponseClassName != null)
@@ -237,7 +237,14 @@ public static class HttpCallSerializer
         }
         else
         {
-            sb.AppendLine("await response.Content.ReadAsStreamAsync();");
+            if (useCancellationTokens)
+            {
+                sb.AppendLine("await response.Content.ReadAsStreamAsync(cancellationToken);");
+            }
+            else
+            {
+                sb.AppendLine("await response.Content.ReadAsStreamAsync();");
+            }
         }
     }
 
@@ -277,7 +284,14 @@ public static class HttpCallSerializer
             }
             if (useCancellationToken)
             {
-                list.Add("cancellationToken");
+                if (hasHeaders)
+                {
+                    list.Add("cancellationToken");
+                }
+                else
+                {
+                    list.Add("cancellationToken: cancellationToken");
+                }
             }
             return list;
         }

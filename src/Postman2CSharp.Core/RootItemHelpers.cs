@@ -115,7 +115,6 @@ namespace Postman2CSharp.Core
 
             var uriData = uris.Where(x => x != null).Select(u => new Uri(u!.ReplaceBrackets())).ToList();
             var commonAuthority = uriData[0].Authority;
-
             if (uriData.Any(uri => uri.Authority != commonAuthority))
             {
                 return null;
@@ -131,7 +130,7 @@ namespace Postman2CSharp.Core
                 if (uriSegments.All(us => us.Length > i && us[i] == currentSegment) && !currentSegment.StartsWith(":") &&
                     !(withBrackets.Contains("{") && withBrackets.Contains("}"))) // Don't want the least possible uri to include path variables.
                 {
-                    leastPossibleUriSegments.Add(currentSegment.AddBackBrackets());
+                    leastPossibleUriSegments.Add(withBrackets);
                 }
                 else
                 {

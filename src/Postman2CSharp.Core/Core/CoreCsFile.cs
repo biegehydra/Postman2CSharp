@@ -227,15 +227,15 @@ public static class HttpClientJsonExtensions
 
 
     public static Task<HttpResponseMessage> GetAsJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers, CancellationToken cancellationToken)
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
         => httpClient.SendAsJsonAsync(HttpMethod.Get, requestUri, content, headers, cancellationToken);
 
     public static Task<HttpResponseMessage> DeleteAsJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers, CancellationToken cancellationToken)
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
         => httpClient.SendAsJsonAsync(HttpMethod.Delete, requestUri, content, headers, cancellationToken);
 
     public static Task<HttpResponseMessage> PostAsJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers, CancellationToken cancellationToken)
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
         => httpClient.SendAsJsonAsync(HttpMethod.Post, requestUri, content, headers, cancellationToken);
 
     public static Task<HttpResponseMessage> PutAsJsonAsync(this HttpClient httpClient, string requestUri,
