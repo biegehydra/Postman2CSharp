@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Postman2CSharp.Core.Core;
+using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;

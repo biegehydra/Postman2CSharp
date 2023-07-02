@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Postman2CSharp.Core.Core;
+using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
+using Postman2CSharp.Core.Utilities;
 using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Serialization;
@@ -171,7 +172,7 @@ public static class ApiClientSerializer
     {
         foreach (var variableUsage in variableUsages.Where(x => !x.Original.StartsWith(":")))
         {
-            var normalizedKey = Helpers.NormalizeToCsharpPropertyName(variableUsage.CSPropertyUsage, CsharpPropertyType.Private);
+            var normalizedKey = Utils.NormalizeToCsharpPropertyName(variableUsage.CSPropertyUsage, CsharpPropertyType.Private);
             var valueLiteral = string.IsNullOrWhiteSpace(variableUsage.Value) ? "string.Empty" : $"\"{variableUsage.Value}\"";
             sb.AppendLine(indent + $"private string {normalizedKey} = {valueLiteral};");
         }

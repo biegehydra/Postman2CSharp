@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json.Linq;
-using Postman2CSharp.Core.Core;
+using Postman2CSharp.Core.Infrastructure;
+using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
+using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
+using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Xamasoft.JsonClassGenerator.Models;
 
-namespace Postman2CSharp.Core;
+namespace Postman2CSharp.Core.Utilities;
 
 public enum CsharpPropertyType
 {
@@ -18,68 +18,8 @@ public enum CsharpPropertyType
     Local,
     Private
 }
-public static class Helpers
+public static class Utils
 {
-    public static string ConsolidateNamespaces(string sourceCode)
-    {
-        var tree = CSharpSyntaxTree.ParseText(sourceCode);
-        var root = tree.GetCompilationUnitRoot();
-
-        var namespaces = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>().GroupBy(n => n.Name.ToString());
-
-        // Create a new root without any namespace
-        var newRoot = SyntaxFactory.CompilationUnit()
-            .WithExterns(root.Externs)
-            .WithUsings(root.Usings)
-            .WithAttributeLists(root.AttributeLists)
-            .WithLeadingTrivia(root.GetLeadingTrivia())
-            .WithTrailingTrivia(root.GetTrailingTrivia())
-            .WithMembers(new SyntaxList<MemberDeclarationSyntax>());
-
-        foreach (var namespaceGroup in namespaces)
-        {
-            var consolidatedNamespace = namespaceGroup.First();
-
-            // Add all members from duplicate namespaces to the first one
-            foreach (var duplicateNamespace in namespaceGroup.Skip(1))
-            {
-                consolidatedNamespace = consolidatedNamespace.AddMembers(duplicateNamespace.Members.ToArray());
-            }
-
-            // Add consolidated namespace to the new root
-            newRoot = newRoot.AddMembers(consolidatedNamespace);
-        }
-
-        return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
-    }
-
-    public static string ReorderClasses(string sourceCode, string rootName)
-    {
-        var tree = CSharpSyntaxTree.ParseText(sourceCode);
-        var root = tree.GetRoot();
-
-        var namespaceDeclaration = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>().First();
-
-        var classes = namespaceDeclaration.Members.OfType<ClassDeclarationSyntax>().ToList();
-        var orderedClasses = classes
-            .OrderBy(c => c.Identifier.Text != rootName) // RootName class first
-            .ThenByDescending(c => c.Members.OfType<PropertyDeclarationSyntax>().Count() + c.Members.OfType<FieldDeclarationSyntax>().Count()); // Then order by property and field count
-
-        var newNamespaceDeclaration = namespaceDeclaration.RemoveNodes(classes, SyntaxRemoveOptions.KeepNoTrivia);
-
-        // Add the ordered classes to the namespace.
-        newNamespaceDeclaration = newNamespaceDeclaration?.AddMembers(orderedClasses.ToArray());
-
-        if (newNamespaceDeclaration == null)
-        {
-            return string.Empty;
-        }
-
-        root = root.ReplaceNode(namespaceDeclaration, newNamespaceDeclaration);
-
-        return root.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
-    }
-
     public static string NormalizeToCsharpPropertyName(string? input, CsharpPropertyType propertyType = CsharpPropertyType.Public)
     {
         if (input == null)
@@ -93,7 +33,7 @@ public static class Helpers
 
         var result = string.Join(string.Empty, words);
 
-        if (propertyType != CsharpPropertyType.Public  && !string.IsNullOrEmpty(result))
+        if (propertyType != CsharpPropertyType.Public && !string.IsNullOrEmpty(result))
         {
             result = char.ToLowerInvariant(result[0]) + result[1..];
             if (propertyType == CsharpPropertyType.Private)
@@ -241,11 +181,11 @@ public static class Helpers
 
 
     /// <summary>
-        /// Gets the largest common base from a list of strings
-        /// </summary>
-        /// <param name="strings"></param>
-        /// <returns></returns>
-        public static string? GetCommonBase(List<string> strings)
+    /// Gets the largest common base from a list of strings
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static string? GetCommonBase(List<string> strings)
     {
         if (!strings.Any() || strings.Any(string.IsNullOrWhiteSpace))
             return null;
@@ -360,7 +300,7 @@ public static class Helpers
 
         return text;
     }
-     
+
     public static string FixXmlCommentsAfterCodeAnalysis(this string sourceCode, int indent)
     {
         return ReplaceExceptFirst(sourceCode, "/// <summary>", Environment.NewLine + Consts.Indent(indent) + "/// <summary>");
@@ -382,5 +322,84 @@ public static class Helpers
         }
 
         return sourceCode[..nextPos] + sourceCode[nextPos..].Replace(oldValue, newValue);
+    }
+
+    public static string NormalizeWhitespace(string sourceCode)
+    {
+        sourceCode = sourceCode.TrimEnd();
+
+        sourceCode = sourceCode.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
+        return sourceCode;
+    }
+
+    public static DataType GetRequestDataType(Request request)
+    {
+        if (request.Body is { Mode: "raw", Options.Raw.Language: "json" })
+        {
+            return DataType.Json;
+        }
+        else if (request.Body is { Mode: "raw", Options: null })
+        {
+            return DataType.Json;
+        }
+        if (request.Body is { Mode: "raw", Options.Raw.Language: "xml" })
+        {
+            return DataType.Xml;
+        }
+        if (request.Body is { Mode: "raw", Options.Raw.Language: "html" })
+        {
+            return DataType.Html;
+        }
+        if (request.Body is { Mode: "raw", Options.Raw.Language: "text" })
+        {
+            return DataType.Text;
+        }
+        if (request.Body is { Mode: "urlencoded", Urlencoded.Count: > 0 })
+        {
+            return DataType.SimpleFormData;
+        }
+        if (request.Body is { Mode: "formdata", Formdata.Count: > 0 })
+        {
+            return request.Body.Formdata.Any(x => x.FormDataType == FormDataType.File || x.Src != null) ? DataType.ComplexFormData : DataType.SimpleFormData;
+        }
+        else if (request.Body is { Mode: "formdata", Formdata.Count: 0 })
+        {
+            return DataType.QueryOnly;
+        }
+        if (request.Body == null)
+        {
+            return DataType.QueryOnly;
+        }
+        if (request.Body.Mode == "file")
+        {
+            return DataType.Binary;
+        }
+
+        if (request.Body.Mode == "graphql")
+        {
+            return DataType.GraphQl;
+        }
+        else
+        {
+            if (request.Body.Mode == null)
+            {
+                throw new ArgumentException(nameof(request.Body.Mode), $"Request mode not supported for request {request.Url.Raw}: null");
+            }
+            else
+            {
+                throw new ArgumentException(nameof(request.Body.Mode), $"Request mode not supported for request {request.Url.Raw}: {request.Body.Mode}");
+            }
+        }
+    }
+
+    private static readonly List<string> PossibleJsonContentTypes = new() { "application/json", "text" };
+    public static DataType GetResponseDataType(Response? response)
+    {
+        if (response?.Header?.Any(x => x.Key.ToLower() == "content-type" && PossibleJsonContentTypes.Any(type => x.Value.ToLower().Contains(type))) ?? false)
+        {
+            return DataType.Json;
+        }
+
+        return DataType.Null;
     }
 }

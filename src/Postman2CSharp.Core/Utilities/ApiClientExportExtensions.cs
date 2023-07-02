@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
-using Postman2CSharp.Core.Core;
 using Postman2CSharp.Core.Models;
 using System.Collections.Generic;
 using System.IO;
@@ -11,18 +10,19 @@ using System;
 using System.Linq;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Xamasoft.JsonClassGenerator.Models;
+using Postman2CSharp.Core.Infrastructure;
 
-namespace Postman2CSharp.Core.Serialization
+namespace Postman2CSharp.Core.Utilities
 {
     public static class ApiClientExportExtensions
     {
         private static readonly List<string> ImplicitOAuth2QueryParametersNamespaces = new() { "System.Collections.Generic" };
-        private static readonly List<string> ImplicitHelperExtensionNamespaces = new() {"System.Collections.Generic"};
-        private static readonly List<string> ImplicitInterfacesNamespaces = new() {"System.Collections.Generic", "System.Net.Http" };
+        private static readonly List<string> ImplicitHelperExtensionNamespaces = new() { "System.Collections.Generic" };
+        private static readonly List<string> ImplicitInterfacesNamespaces = new() { "System.Collections.Generic", "System.Net.Http" };
         private static readonly List<string> NewtonsoftHttpExtensionsNamespaces = new() { "System.Text", "System.Net.Http", "System.Threading.Tasks", "Newtonsoft.Json" };
-        private static readonly List<string> HttpExtensionsNamespaces = new () { "System.Text", "System.Net.Http", "System.Threading.Tasks", "System.Text.Json" };
-        private static readonly List<string> QueryHelperNamespaces = new () { "System.Text", "System.Text.Encodings.Web" };
-        private static readonly List<string> ImplicitQueryHelperNamespaces = new() {"System", "System.Collections.Generic"};
+        private static readonly List<string> HttpExtensionsNamespaces = new() { "System.Text", "System.Net.Http", "System.Threading.Tasks", "System.Text.Json" };
+        private static readonly List<string> QueryHelperNamespaces = new() { "System.Text", "System.Text.Encodings.Web" };
+        private static readonly List<string> ImplicitQueryHelperNamespaces = new() { "System", "System.Collections.Generic" };
 
         public static Dictionary<string, (string? HttpCall, string SourceCode)>? ExportToDict(this ApiClient? apiClient)
         {
@@ -73,7 +73,7 @@ namespace Postman2CSharp.Core.Serialization
 
             foreach (var (fileName, detail) in dict)
             {
-                dict[fileName] = new (detail.HttpCall, NormalizeWhitespace(detail.SourceCode));
+                dict[fileName] = new(detail.HttpCall, Utils.NormalizeWhitespace(detail.SourceCode));
             }
 
             return dict;
@@ -126,7 +126,7 @@ namespace Postman2CSharp.Core.Serialization
             }
             sb.Append($"namespace {nameSpace}\n");
             sb.Append("{\n");
-            sb.Append(padLeft ? Helpers.PadLeft(sourceCode) : sourceCode);
+            sb.Append(padLeft ? Utils.PadLeft(sourceCode) : sourceCode);
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -137,58 +137,50 @@ namespace Postman2CSharp.Core.Serialization
             switch (interfaceName)
             {
                 case Consts.Interfaces.IQueryParameters:
-                {
-                    if (input.Contains(Consts.Interfaces.IQueryParameters)) return input;
+                    {
+                        if (input.Contains(Consts.Interfaces.IQueryParameters)) return input;
 
-                    SyntaxTree tree = CSharpSyntaxTree.ParseText(input);
-                    var root = (CompilationUnitSyntax)tree.GetRoot();
+                        SyntaxTree tree = CSharpSyntaxTree.ParseText(input);
+                        var root = (CompilationUnitSyntax)tree.GetRoot();
 
-                    var rootType = classTypes.FirstOrDefault(x => x.AssignedName == className);
-                    // Visit all nodes in the syntax tree
-                    var newRoot = root.ReplaceNodes(root.DescendantNodes().OfType<ClassDeclarationSyntax>(),
-                        (node, _) =>
-                        {
-                            if (node.Identifier.Text == className)
+                        var rootType = classTypes.FirstOrDefault(x => x.AssignedName == className);
+                        // Visit all nodes in the syntax tree
+                        var newRoot = root.ReplaceNodes(root.DescendantNodes().OfType<ClassDeclarationSyntax>(),
+                            (node, _) =>
                             {
-                                // Add the interface
-                                node = node.AddBaseListTypes(SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(Consts.Interfaces.IQueryParameters)));
+                                if (node.Identifier.Text == className)
+                                {
+                                    // Add the interface
+                                    node = node.AddBaseListTypes(SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(Consts.Interfaces.IQueryParameters)));
 
-                                var props = node.DescendantNodes().OfType<PropertyDeclarationSyntax>().ToList();
-                                var propTypes = props
-                                    .ToDictionary(x => x, x => rootType?.Fields
-                                        .FirstOrDefault(y => y.MemberName.ToString().ToLower().Replace("_", string.Empty) == x.Identifier.Text.ToLower())?.JsonMemberName);
+                                    var props = node.DescendantNodes().OfType<PropertyDeclarationSyntax>().ToList();
+                                    var propTypes = props
+                                        .ToDictionary(x => x, x => rootType?.Fields
+                                            .FirstOrDefault(y => y.MemberName.ToString().ToLower().Replace("_", string.Empty) == x.Identifier.Text.ToLower())?.JsonMemberName);
 
-                                // Create method
-                                var toDictionaryMethod = SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("Dictionary<string, string?>"), "ToDictionary")
-                                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                                    .WithBody(SyntaxFactory.Block(SyntaxFactory.ParseStatement("return new Dictionary<string, string?>\n{\n" +
-                                        string.Join(",\n", node.DescendantNodes().OfType<PropertyDeclarationSyntax>()
-                                            .Select(prop => $"{{ \"{propTypes[prop]}\", {prop.Identifier.Text} }}")) +
-                                        "\n};")));
+                                    // Create method
+                                    var toDictionaryMethod = SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("Dictionary<string, string?>"), "ToDictionary")
+                                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                                        .WithBody(SyntaxFactory.Block(SyntaxFactory.ParseStatement("return new Dictionary<string, string?>\n{\n" +
+                                            string.Join(",\n", node.DescendantNodes().OfType<PropertyDeclarationSyntax>()
+                                                .Select(prop => $"{{ \"{propTypes[prop]}\", {prop.Identifier.Text} }}")) +
+                                            "\n};")));
 
-                                // Add the dictionary method
-                                node = node.AddMembers(toDictionaryMethod);
-                            }
+                                    // Add the dictionary method
+                                    node = node.AddMembers(toDictionaryMethod);
+                                }
 
-                            return node;
-                        });
+                                return node;
+                            });
 
-                    // This drove me insane. I couldn't figure out how to get the newlines to work properly.
-                    return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
-                }
+                        // This drove me insane. I couldn't figure out how to get the newlines to work properly.
+                        return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
+                    }
                 case "IFormData": break;
                 case "IMultipartFormData": break;
             }
 
             return input;
-        }
-
-        private static string NormalizeWhitespace(string sourceCode)
-        {
-            sourceCode = sourceCode.TrimEnd();
-
-            sourceCode = sourceCode.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
-            return sourceCode;
         }
     }
 }

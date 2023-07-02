@@ -1,5 +1,5 @@
 ﻿using Postman2CSharp.Core.Models.PostmanCollection;
-using Postman2CSharp.Core;
+using Postman2CSharp.Core.Utilities;
 
 namespace Postman2CSharp.Tests;
 

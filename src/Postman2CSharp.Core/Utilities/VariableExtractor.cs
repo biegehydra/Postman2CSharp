@@ -6,7 +6,7 @@ using Postman2CSharp.Core.Models.PostmanCollection;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
 
-namespace Postman2CSharp.Core
+namespace Postman2CSharp.Core.Utilities
 {
     public static class VariableExtractor
     {
@@ -23,15 +23,15 @@ namespace Postman2CSharp.Core
             // Initialize the dictionary with collection variables
             foreach (var collectionVariable in collectionVariables)
             {
-                var csPropertyUsage = Helpers.NormalizeToCsharpPropertyName(collectionVariable.Key, CsharpPropertyType.Private);
-                collectionVariableUsages.Add(new (collectionVariable.Key, csPropertyUsage, collectionVariable.Value));
+                var csPropertyUsage = Utils.NormalizeToCsharpPropertyName(collectionVariable.Key, CsharpPropertyType.Private);
+                collectionVariableUsages.Add(new(collectionVariable.Key, csPropertyUsage, collectionVariable.Value));
             }
 
             var usedVariables = new List<(string Original, string CSPropertyUsage)>();
 
             foreach (var requestItem in rootItem.RequestItems()!)
             {
-                if (requestItem.Request is not {} request) continue;
+                if (requestItem.Request is not { } request) continue;
 
                 if (request.Url is { } url)
                 {
@@ -81,7 +81,7 @@ namespace Postman2CSharp.Core
                     usedVariables.AddRange(result.Variables);
                 }
 
-                if (request.Header is {Count: > 0})
+                if (request.Header is { Count: > 0 })
                 {
                     // Check Header properties for variables
                     foreach (var header in request.Header)
@@ -104,7 +104,7 @@ namespace Postman2CSharp.Core
                 {
                     continue;
                 }
-                collectionVariableUsages.Add(new (original, csPropertyUsage, null));
+                collectionVariableUsages.Add(new(original, csPropertyUsage, null));
             }
 
             // Remove any unused variables from the dictionary. This is necessary for collection variables that aren't used / we don't care about
@@ -165,18 +165,18 @@ namespace Postman2CSharp.Core
             foreach (Match match in matches)
             {
                 var variable = match.Groups[1].Value;
-                if (collectionVariables.FirstOrDefault(x => x.Key == variable) is {} variableUsage)
+                if (collectionVariables.FirstOrDefault(x => x.Key == variable) is { } variableUsage)
                 {
                     var value = variableUsage.Value;
                     if (string.IsNullOrEmpty(variableUsage.Value))
                     {
-                        value = Helpers.NormalizeToCsharpPropertyName(variable);
+                        value = Utils.NormalizeToCsharpPropertyName(variable);
                     }
                     input = input.Replace($"{{{{{variable}}}}}", value);
                 }
                 else
                 {
-                    var value = Helpers.NormalizeToCsharpPropertyName(variable);
+                    var value = Utils.NormalizeToCsharpPropertyName(variable);
                     input = input.Replace($"{{{{{variable}}}}}", value);
                 }
             }
@@ -203,12 +203,12 @@ namespace Postman2CSharp.Core
                     // of api client member variables and we don't want that
                     continue;
                 }
-                var csPropertyUsage = Helpers.NormalizeToCsharpPropertyName(variable, CsharpPropertyType.Private);
+                var csPropertyUsage = Utils.NormalizeToCsharpPropertyName(variable, CsharpPropertyType.Private);
 
                 // Replace the variable with the C# interpolated usage
                 input = input.Replace($"{{{{{variable}}}}}", $"{{{csPropertyUsage}}}");
 
-                variables.Add(new (variable, csPropertyUsage));
+                variables.Add(new(variable, csPropertyUsage));
             }
 
             return (input, variables);

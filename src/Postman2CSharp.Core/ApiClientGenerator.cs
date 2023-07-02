@@ -7,19 +7,17 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Newtonsoft.Json.Linq;
-using Postman2CSharp.Core.Core;
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Models.PostmanCollection;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
-using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
-using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 using Xamasoft.JsonClassGenerator;
 using Xamasoft.JsonClassGenerator.CodeWriters;
 using JsonSerializer = System.Text.Json.JsonSerializer;
-using System.Text.RegularExpressions;
 using Xamasoft.JsonClassGenerator.CodeWriterConfiguration;
 using Xamasoft.JsonClassGenerator.Models;
-using Parameter = Postman2CSharp.Core.Models.PostmanCollection.Http.Parameter;
+using Postman2CSharp.Core.Infrastructure;
+using Postman2CSharp.Core.Utilities;
+using IFormData = Postman2CSharp.Core.Models.PostmanCollection.Http.IFormData;
 
 namespace Postman2CSharp.Core;
 
@@ -153,11 +151,11 @@ public class ApiClientGenerator
         RootItemHelpers.NormalizeRequestItemNames(rootItem);
 
         var allCallNames = rootItem.RequestItems()?.Select(x => x.Name).ToList() ?? new ();
-        var commonBase = Helpers.GetCommonBase(allCallNames);
-        commonBase ??= Helpers.GetLongestSubstring(allCallNames);
+        var commonBase = Utils.GetCommonBase(allCallNames);
+        commonBase ??= Utils.GetLongestSubstring(allCallNames);
 
-        var name = Helpers.NormalizeToCsharpPropertyName(commonBase ?? Options.CSharpCodeWriterConfig.Namespace) + "ApiClient";
-        var nameSpace = Helpers.NormalizeToCsharpPropertyName(commonBase ?? Options.CSharpCodeWriterConfig.Namespace);
+        var name = Utils.NormalizeToCsharpPropertyName(commonBase ?? Options.CSharpCodeWriterConfig.Namespace) + "ApiClient";
+        var nameSpace = Utils.NormalizeToCsharpPropertyName(commonBase ?? Options.CSharpCodeWriterConfig.Namespace);
         var leastPossibleUri = rootItem.FindLeastPossibleUri();
         var commonHeaders = rootItem.GetCommonHeaders();
         var httpCalls = await GetHttpCalls(rootItem, commonHeaders, nameSpace);
@@ -184,8 +182,8 @@ public class ApiClientGenerator
         var jsonClassGenerator = ClassGenerator();
         foreach (var requestItem in requestItems)
         {
-            var requestDataType = GetRequestDataType(requestItem.Request!);
-            var normalizedName = Helpers.NormalizeToCsharpPropertyName(requestItem.Name);
+            var requestDataType = Utils.GetRequestDataType(requestItem.Request!);
+            var normalizedName = Utils.NormalizeToCsharpPropertyName(requestItem.Name);
 
             string? requestSourceCode = null;
             string? requestClassName = null;
@@ -231,7 +229,8 @@ public class ApiClientGenerator
                             group => group.Key,
                             group => group.First().Description?.HtmlToPlainText()
                         );
-                    formClassSourceCode = GenerateFormDataClass(formClassName, requestItem.Request!.Body!.Formdata, requestDataType, nameSpace, descriptionDict, writeFormDataComments);
+                    var iFormData = requestItem.Request!.Body!.Formdata.Cast<IFormData>().ToList();
+                    formClassSourceCode = GenerateFormDataClass(formClassName, iFormData, requestDataType, nameSpace, descriptionDict, writeFormDataComments);
                 }
                 else if (requestItem.Request!.Body!.Urlencoded != null)
                 {
@@ -241,12 +240,13 @@ public class ApiClientGenerator
                             group => group.Key,
                             group => group.First().Description?.HtmlToPlainText()
                         );
-                    formClassSourceCode = GenerateFormDataClass(formClassName, requestItem.Request!.Body!.Urlencoded, nameSpace, descriptionDict, writeFormDataComments);
+                    var iFormData = requestItem.Request!.Body!.Urlencoded.Cast<IFormData>().ToList();
+                    formClassSourceCode = GenerateFormDataClass(formClassName, iFormData, DataType.SimpleFormData, nameSpace, descriptionDict, writeFormDataComments);
                 }
             }
 
             var successResponse = requestItem.Response?.FirstOrDefault(x => x.Code == 200);
-            var responseDataType = GetResponseDataType(successResponse);
+            var responseDataType = Utils.GetResponseDataType(successResponse);
             string? responseSourceCode = null;
             string? responseClassName = null;
             List<ClassType>? responseTypes = null;
@@ -278,14 +278,8 @@ public class ApiClientGenerator
             if (requestItem.Request!.Url.Query is {Count: > 0})
             {
                 var jObject = new JObject();
-
                 foreach (var queryParameter in requestItem.Request.Url.Query)
                 {
-                    //if (queryParameter.Disabled.HasValue && queryParameter.Disabled.Value)
-                    //{
-                    //    continue; // TODO Option to skip disabled parameters
-                    //}
-
                     jObject[queryParameter.Key] = "test";
                 }
 
@@ -301,7 +295,7 @@ public class ApiClientGenerator
 
             var uniqueHeaders = requestItem.Request.Header.Except(commonHeaders).ToList() ?? new ();
 
-            var httpClientFunction = Helpers.HttpClientCall(requestItem.Request.Method, requestDataType, responseDataType, Options.CSharpCodeWriterConfig.AttributeLibrary);
+            var httpClientFunction = Utils.HttpClientCall(requestItem.Request.Method, requestDataType, responseDataType, Options.CSharpCodeWriterConfig.AttributeLibrary);
 
 
             httpCalls.Add(new ()
@@ -333,24 +327,24 @@ public class ApiClientGenerator
         }
         return httpCalls;
 
-        void ProcessItem(JsonClassGenerator jsonClassGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, ref List<ClassType>? types, Dictionary<string, string?>? descriptionDict = null)
+        void ProcessItem(JsonClassGenerator classGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, ref List<ClassType>? types, Dictionary<string, string?>? descriptionDict = null)
         {
             className = itemName + itemType;
             var writeComments = Options.ApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.QueryParameters);
-            jsonClassGenerator.SetRootName(className);
+            classGenerator.SetRootName(className);
             if (itemType == Consts.Parameters)
             {
-                jsonClassGenerator.CodeWriter = ParametersConfig(className, nameSpace, writeComments);
+                classGenerator.CodeWriter = ParametersConfig(className, nameSpace, writeComments);
             }
             else
             {
                 var codeWriterClone = Options.CSharpCodeWriterConfig.Clone();
                 codeWriterClone.Namespace = nameSpace;
                 codeWriterClone.RootClassName = className;
-                jsonClassGenerator.CodeWriter = new CSharpCodeWriter(codeWriterClone, writeComments);
+                classGenerator.CodeWriter = new CSharpCodeWriter(codeWriterClone, writeComments);
             }
-            jsonClassGenerator.SetDescriptionDict(descriptionDict);
-            sourceCode = GenerateClasses(jsonClassGenerator, json, ref types, className);
+            classGenerator.SetDescriptionDict(descriptionDict);
+            sourceCode = GenerateClasses(classGenerator, json, ref types, className);
             if (sourceCode == string.Empty)
             {
                 if (JsonSerializer.Deserialize<List<string>>(json) is { })
@@ -372,79 +366,7 @@ public class ApiClientGenerator
                 return new CSharpCodeWriter(config, writeDescriptions);
             }
         }
-
-        static DataType GetRequestDataType(Request request)
-        {
-            if (request.Body is {Mode: "raw", Options.Raw.Language: "json"})
-            {
-                return DataType.Json;
-            }
-            else if (request.Body is { Mode: "raw", Options: null })
-            {
-                return DataType.Json;
-            }
-            if (request.Body is { Mode: "raw", Options.Raw.Language: "xml" })
-            {
-                return DataType.Xml;
-            }
-            if (request.Body is { Mode: "raw", Options.Raw.Language: "html" })
-            {
-                return DataType.Html;
-            }
-            if (request.Body is { Mode: "raw", Options.Raw.Language: "text" })
-            {
-                return DataType.Text;
-            }
-            if (request.Body is { Mode: "urlencoded", Urlencoded.Count: > 0 })
-            {
-                return DataType.SimpleFormData;
-            }
-            if (request.Body is {Mode: "formdata", Formdata.Count: > 0})
-            {
-                return request.Body.Formdata.Any(x => x.FormDataType == FormDataType.File || x.Src != null) ? DataType.ComplexFormData : DataType.SimpleFormData;
-            }
-            else if (request.Body is { Mode: "formdata", Formdata.Count: 0 })
-            {
-                return DataType.QueryOnly;
-            }
-            if (request.Body == null)
-            {
-                return DataType.QueryOnly;
-            }
-            if (request.Body.Mode == "file")
-            {
-                return DataType.Binary;
-            }
-
-            if (request.Body.Mode == "graphql")
-            {
-                return DataType.GraphQl;
-            }
-            else
-            {
-                if (request.Body.Mode == null)
-                {
-                    throw new ArgumentException(nameof(request.Body.Mode), $"Request mode not supported for request {request.Url.Raw}: null");
-                }
-                else
-                {
-                    throw new ArgumentException(nameof(request.Body.Mode), $"Request mode not supported for request {request.Url.Raw}: {request.Body.Mode}");
-                }
-            }
-        }
-
-        static DataType GetResponseDataType(Response? response)
-        {
-            if (response?.Header?.Any(x => x.Key.ToLower() == "content-type" && PossibleJsonContentTypes.Any(type => x.Value.ToLower().Contains(type))) ?? false)
-            {
-                return DataType.Json;
-            }
-
-            return DataType.Null;
-        }
     }
-
-    private static readonly List<string> PossibleJsonContentTypes = new () { "application/json", "text" };
 
     private JsonClassGenerator ClassGenerator()
     {
@@ -469,81 +391,11 @@ public class ApiClientGenerator
                 JsonMemberName = y.JsonMemberName
             }).ToList()
         }).ToList();
-        var consolidated = Helpers.ConsolidateNamespaces(sb.ToString());
-        return Helpers.ReorderClasses(consolidated, rootClassName);
+        var consolidated = CodeAnalysisUtils.ConsolidateNamespaces(sb.ToString());
+        return CodeAnalysisUtils.ReorderClasses(consolidated, rootClassName);
     }
 
-    private static string? GenerateFormDataClass(string? formClassName, List<Parameter>? parameters, string nameSpace, Dictionary<string, string?> descriptionDict, bool writeFormDataComments)
-    {
-        if (formClassName == null || parameters == null) return null;
-
-        var usings = @$"
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-";
-
-        var namespaceDeclaration = $"namespace {nameSpace}";
-
-        SyntaxTree tree = CSharpSyntaxTree.ParseText(usings + $@"
-{namespaceDeclaration}
-{{
-    public class {formClassName} : IFormData
-    {{
-    }}
-}}");
-
-        var root = (CompilationUnitSyntax)tree.GetRoot();
-
-        var newRoot = root.ReplaceNodes(root.DescendantNodes().OfType<ClassDeclarationSyntax>(),
-            (node, _) =>
-            {
-                if (node.Identifier.Text == formClassName)
-                {
-                    // Adding properties
-                    foreach (var parameter in parameters)
-                    {
-                        string comment = "";
-
-                        if (writeFormDataComments && descriptionDict.TryGetValue(parameter.Key, out var value))
-                        {
-                            if (!string.IsNullOrWhiteSpace(value))
-                            {
-                                comment = XmlCommentHelpers.ToXmlComment(value, Consts.Indent(3));
-                            }
-                        }
-
-                        var prop = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("string"), parameter.CsPropertyName)
-                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                            .AddAccessorListAccessors(
-                                SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
-                                SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))
-                            .WithLeadingTrivia(SyntaxFactory.ParseLeadingTrivia(comment));
-
-                        node = node.AddMembers(prop);
-                    }
-
-                    // Create method
-                    var toFormDataMethod = SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("FormUrlEncodedContent"), "ToFormData")
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                        .WithBody(SyntaxFactory.Block(SyntaxFactory.ParseStatement(
-                            $@"return new FormUrlEncodedContent(new KeyValuePair<string, string>[]
-                        {{
-                            {string.Join(",\n", parameters.Select(x => $"new (\"{x.Key}\", {x.CsPropertyName})"))}
-                        }});"
-                        )));
-
-                    // Add the form data method
-                    node = node.AddMembers(toFormDataMethod);
-                }
-
-                return node;
-            });
-        var indent = Consts.Indent(2);
-        return newRoot.NormalizeWhitespace().ToFullString().Replace(indent + "/// <summary>", Environment.NewLine + indent + "/// <summary>"); ;
-    }
-
-    private static string? GenerateFormDataClass (string? formClassName, List<Formdata>? formdatas, DataType? dataType, string nameSpace, Dictionary<string, string?> descriptionDict, bool writeFormDataComments)
+    private static string? GenerateFormDataClass (string? formClassName, List<IFormData>? formdatas, DataType? dataType, string nameSpace, Dictionary<string, string?> descriptionDict, bool writeFormDataComments)
     {
         if (formClassName == null || formdatas == null || dataType == null) return null;
 

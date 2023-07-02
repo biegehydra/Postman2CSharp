@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using ObjectInitializerGenerator;
-using Postman2CSharp.Core.Core;
+using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models;
+using Postman2CSharp.Core.Utilities;
 
 namespace Postman2CSharp.Core.Serialization
 {
@@ -21,7 +22,7 @@ namespace Postman2CSharp.Core.Serialization
             sb.AppendLine(indent + $"public class {apiclient.TestClassName}");
             sb.AppendLine(indent + "{");
             indent = Consts.Indent(2);
-            var _apiClient = Helpers.NormalizeToCsharpPropertyName(apiclient.Name, CsharpPropertyType.Private);
+            var _apiClient = Utils.NormalizeToCsharpPropertyName(apiclient.Name, CsharpPropertyType.Private);
             sb.AppendLine(indent + $"private readonly {apiclient.InterfaceName} {_apiClient};");
             sb.AppendLine(indent + "[ClassInitialize]");
             sb.AppendLine(indent + "public void Setup()");
@@ -87,7 +88,7 @@ namespace Postman2CSharp.Core.Serialization
             var generator = new Generator(new CSharpWriter());
             generator.Analyse(sourceCode);
             var queryParameterInitializer = generator.Write(className);
-            sb.AppendLine(Helpers.PadLeft(queryParameterInitializer, 3));
+            sb.AppendLine(Utils.PadLeft(queryParameterInitializer, 3));
         }
     }
 }

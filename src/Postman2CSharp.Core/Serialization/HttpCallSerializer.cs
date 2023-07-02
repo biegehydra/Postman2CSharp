@@ -1,7 +1,8 @@
-﻿using Postman2CSharp.Core.Core;
+﻿using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
+using Postman2CSharp.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,7 +21,7 @@ public static class HttpCallSerializer
         string relativePath;
         try
         {
-            relativePath = Helpers.ExtractRelativePath(baseUrl ?? "", call.Request.Url.Raw);
+            relativePath = Utils.ExtractRelativePath(baseUrl ?? "", call.Request.Url.Raw);
         }
         catch (ArgumentException)
         {

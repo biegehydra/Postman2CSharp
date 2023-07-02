@@ -1,4 +1,4 @@
-﻿namespace Postman2CSharp.Core.Core
+﻿namespace Postman2CSharp.Core.Infrastructure
 {
     public enum DataType
     {

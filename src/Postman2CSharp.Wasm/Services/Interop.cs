@@ -1,8 +1,8 @@
 ﻿using Microsoft.JSInterop;
 using MudBlazor;
-using Postman2CSharp.Core.Core;
+using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models;
-using Postman2CSharp.Core.Serialization;
+using Postman2CSharp.Core.Utilities;
 using Postman2CSharp.Wasm.Components;
 using Postman2CSharp.Wasm.Models;
 

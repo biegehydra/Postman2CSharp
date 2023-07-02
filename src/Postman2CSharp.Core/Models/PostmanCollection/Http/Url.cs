@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
+using Postman2CSharp.Core.Utilities;
 
 namespace Postman2CSharp.Core.Models.PostmanCollection.Http
 {
@@ -41,7 +42,7 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Http
     public class Path
     {
         public string? Value { get; set; }
-        public string LocalVariableName => Helpers.NormalizeToCsharpPropertyName(Value, CsharpPropertyType.Local);
+        public string LocalVariableName => Utils.NormalizeToCsharpPropertyName(Value, CsharpPropertyType.Local);
         public bool IsVariable()
         {
             return Value != null && Value.StartsWith(":");

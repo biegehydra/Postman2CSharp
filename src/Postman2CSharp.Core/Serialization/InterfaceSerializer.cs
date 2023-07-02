@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using Postman2CSharp.Core.Core;
+using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models;
 
 namespace Postman2CSharp.Core.Serialization;

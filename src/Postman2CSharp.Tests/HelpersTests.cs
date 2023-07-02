@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
-using Postman2CSharp.Core;
+using Postman2CSharp.Core.Utilities;
 
 namespace Postman2CSharp.Tests;
 
@@ -24,7 +24,7 @@ public class HelpersTests
     {
         var unconsolidatedNamespaces = ReadFile("MultipleNamespaces.txt");
 
-        var consolidated = Helpers.ConsolidateNamespaces(unconsolidatedNamespaces);
+        var consolidated = CodeAnalysisUtils.ConsolidateNamespaces(unconsolidatedNamespaces);
 
         var tree = CSharpSyntaxTree.ParseText(consolidated);
         var root = tree.GetCompilationUnitRoot();
@@ -39,7 +39,7 @@ public class HelpersTests
     {
         var input = "valid_input";
 
-        var actualResult = Helpers.NormalizeToCsharpPropertyName(input);
+        var actualResult = Utils.NormalizeToCsharpPropertyName(input);
 
         var expectedResult = "ValidInput";
         Assert.AreEqual(expectedResult, actualResult);
@@ -50,7 +50,7 @@ public class HelpersTests
     {
         var input = "invalid*&^%$^input";
 
-        var actualResult = Helpers.NormalizeToCsharpPropertyName(input);
+        var actualResult = Utils.NormalizeToCsharpPropertyName(input);
 
         var expectedResult = "Invalidinput";
         Assert.AreEqual(expectedResult, actualResult);
@@ -61,7 +61,7 @@ public class HelpersTests
     {
         var input = "valid_input";
 
-        var actualResult = Helpers.NormalizeToCsharpPropertyName(input, CsharpPropertyType.Private);
+        var actualResult = Utils.NormalizeToCsharpPropertyName(input, CsharpPropertyType.Private);
 
         var expectedResult = "_validInput";
         Assert.AreEqual(expectedResult, actualResult);
@@ -72,7 +72,7 @@ public class HelpersTests
     {
         string? input = null;
 
-        var actualResult = Helpers.NormalizeToCsharpPropertyName(input);
+        var actualResult = Utils.NormalizeToCsharpPropertyName(input);
 
         var expectedResult = string.Empty;
         Assert.AreEqual(expectedResult, actualResult);
@@ -85,7 +85,7 @@ public class HelpersTests
     [DataRow("https://fulluri.com/", "https://fulluri.com/path1/{path2}", "path1/{path2}")]
     public void ExtractRelativePath_ValidInput_ReturnsExpected(string baseUri, string fullUri, string expected)
     {
-        var actual = Helpers.ExtractRelativePath(baseUri, fullUri);
+        var actual = Utils.ExtractRelativePath(baseUri, fullUri);
 
         Assert.AreEqual(expected, actual);
     }
@@ -101,7 +101,7 @@ public class HelpersTests
     {
         try
         {
-            Helpers.ExtractRelativePath(baseUri, fullUri);
+            Utils.ExtractRelativePath(baseUri, fullUri);
 
             if (expectException)
             {
@@ -123,7 +123,7 @@ public class HelpersTests
     [DataRow(new[] { "Justin", "Just", "Justine", "jus" }, null)]
     public void GetCommonBase_Should_Return_Expected_CommonBase(string[] strings, string expectedCommonBase)
     {
-        var result = Helpers.GetCommonBase(new List<string>(strings));
+        var result = Utils.GetCommonBase(new List<string>(strings));
         Assert.AreEqual(expectedCommonBase, result);
     }
 
@@ -134,7 +134,7 @@ public class HelpersTests
     [DataRow(new[] { " 123", null, "123" })]
     public void GetCommonBase_Should_Return_Null(string[] strings)
     {
-        var result = Helpers.GetCommonBase(new List<string>(strings));
+        var result = Utils.GetCommonBase(new List<string>(strings));
         Assert.IsNull(result);
     }
 
@@ -150,7 +150,7 @@ public class HelpersTests
     [DataRow(new string[] { "ThisIsABiggerLongerString", "ThisNotABiggerLonger", "ThisIsABiggerLongerString123" }, "ABiggerLonger")]
     public void GetLongestSubstring_ReturnsCorrectSubstring_WhenGivenListOfStrings(string[] strings, string expected)
     {
-        var actual = Helpers.GetLongestSubstring(strings.ToList());
+        var actual = Utils.GetLongestSubstring(strings.ToList());
 
         Assert.AreEqual(expected, actual);
     }

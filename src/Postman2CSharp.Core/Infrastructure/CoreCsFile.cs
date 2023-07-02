@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Postman2CSharp.Core.Core
+namespace Postman2CSharp.Core.Infrastructure
 {
     public static class CoreCsFile
     {

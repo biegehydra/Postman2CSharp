@@ -1,7 +1,7 @@
 ﻿using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using System;
 using System.Text;
-using Postman2CSharp.Core.Core;
+using Postman2CSharp.Core.Infrastructure;
 
 namespace Postman2CSharp.Core.Serialization
 {

@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Postman2CSharp.Core.Core;
 using Xamasoft.JsonClassGenerator.CodeWriterConfiguration;
 
 namespace Postman2CSharp.Core

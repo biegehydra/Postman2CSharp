@@ -7,7 +7,7 @@ using System;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using System.Text.RegularExpressions;
 
-namespace Postman2CSharp.Core
+namespace Postman2CSharp.Core.Utilities
 {
     public static class RootItemHelpers
     {
@@ -19,7 +19,7 @@ namespace Postman2CSharp.Core
         {
             foreach (var requestItem in rootItem.RequestItems() ?? new List<CollectionItem>())
             {
-                requestItem.Name = Helpers.NormalizeToCsharpPropertyName(requestItem.Name);
+                requestItem.Name = Utils.NormalizeToCsharpPropertyName(requestItem.Name);
             }
         }
 
@@ -234,7 +234,7 @@ namespace Postman2CSharp.Core
             {
                 var newRootItem = new CollectionItem()
                 {
-                    Name = Helpers.NormalizeToCsharpPropertyName(key),
+                    Name = Utils.NormalizeToCsharpPropertyName(key),
                     Item = value
                 };
                 newRoots.Add(newRootItem);
