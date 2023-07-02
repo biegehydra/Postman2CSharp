@@ -9,7 +9,7 @@
                 <div class="f-column" >
                     @foreach (var apiClient in group)
                     {
-                        <ApiClientTreeViewItem ApiClient="apiClient" ShowCoreCsvFiles="ShowCoreCsvFiles" ApiCollection="ApiCollection"/>
+                        <ApiClientTreeItem ApiClient="apiClient" ShowCoreCsvFiles="ShowCoreCsvFiles" ApiCollection="ApiCollection"/>
                     }
                 </div>
             }
@@ -24,7 +24,7 @@
     [Parameter]
     public ApiCollection? ApiCollection { get; set; }
 
-    public Dictionary<string, ApiClientTreeViewItem> ApiClientTreeViewGuidDict { get; set; } = new();
+    public Dictionary<string, ApiClientTreeItem> ApiClientTreeViewGuidDict { get; set; } = new();
 
     private List<List<ApiClient>>? ApiClientGroups { get; set; }
 

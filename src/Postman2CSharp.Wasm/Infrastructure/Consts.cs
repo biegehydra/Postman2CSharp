@@ -1,4 +1,4 @@
-﻿namespace Postman2CSharp.Wasm;
+﻿namespace Postman2CSharp.Wasm.Infrastructure;
 
 public static class GitHubUrls
 {

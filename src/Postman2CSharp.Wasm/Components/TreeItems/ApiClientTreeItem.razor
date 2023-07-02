@@ -37,7 +37,7 @@
         <ChildContent>
             @foreach (var httpCall in ApiClient.HttpCalls)
             {
-                <HttpCallsTreeViewItem ApiCollectionId="@ApiCollection.Id" ApiClientId="@ApiClient.Id" HttpCall="httpCall" IsParentExpanded="@Expanded"></HttpCallsTreeViewItem>
+                <HttpCallsTreeItem ApiCollectionId="@ApiCollection.Id" ApiClientId="@ApiClient.Id" HttpCall="httpCall" IsParentExpanded="@Expanded"></HttpCallsTreeItem>
             }
             <MudTreeViewItem Value="@ApiClient.Name">
                 <Content>
@@ -78,7 +78,7 @@
     </MudTreeViewItem>
 }
 @code {
-    [CascadingParameter] public CollectionTreeView CollectionTreeView { get; set; } = null!;
+    [CascadingParameter] public CollectionTreeItem CollectionTreeItem { get; set; } = null!;
     [Parameter, EditorRequired] public ApiCollection? ApiCollection { get; set; }
     [Parameter, EditorRequired] public ApiClient? ApiClient { get; set; }
     [Parameter] public bool ShowCoreCsvFiles { get; set; }
@@ -93,7 +93,7 @@
     protected override void OnInitialized()
     {
         UserAttributes = new Dictionary<string, object>() { { "id", _guid } };
-        CollectionTreeView.ApiClientTreeViewGuidDict[ApiClient!.Id] = this;
+        CollectionTreeItem.ApiClientTreeViewGuidDict[ApiClient!.Id] = this;
         SetCache();
     }
 
@@ -160,12 +160,12 @@
         ApiClient.FixNamespaces(_cachedApiClientNamespace!, ApiClient.NameSpace);
         ShowEdit = false;
 
-        if (_cachedApiClientNamespace == Consts.Postman2CSharp && CollectionTreeView.NextApiClientWithDefaultNameSpaceId(ApiClient) is { } nextApiClientId)
+        if (_cachedApiClientNamespace == Consts.Postman2CSharp && CollectionTreeItem.NextApiClientWithDefaultNameSpaceId(ApiClient) is { } nextApiClientId)
         {
             Expanded = false;
             StateHasChanged();
             await Task.Delay(100);
-            await CollectionTreeView.StartEditingNextApiClientNameSpace(nextApiClientId);
+            await CollectionTreeItem.StartEditingNextApiClientNameSpace(nextApiClientId);
         }
 
         _cachedApiClientNamespace = null;

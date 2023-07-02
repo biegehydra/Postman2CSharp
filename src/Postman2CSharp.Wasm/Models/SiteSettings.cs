@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Primitives;
 
-namespace Postman2CSharp.Wasm
+namespace Postman2CSharp.Wasm.Models
 {
     public class SiteSettings
     {
-        private static SiteSettings _instance = new () { Version = CurrentVersion };
+        private static SiteSettings _instance = new() { Version = CurrentVersion };
         public static SiteSettings Instance
         {
             get => _instance;
@@ -31,7 +31,7 @@ namespace Postman2CSharp.Wasm
         public bool SaveCollectionsToLocalStorage
         {
             get => _saveCollectionsToLocalStorage;
-            set 
+            set
             {
                 _saveCollectionsToLocalStorage = value;
                 OnSettingsChanged?.Invoke(this);

@@ -1,7 +1,6 @@
-﻿
-using Icons = MudBlazor.Icons.Material.Filled;
+﻿using Icons = MudBlazor.Icons.Material.Filled;
 
-namespace Postman2CSharp.Wasm
+namespace Postman2CSharp.Wasm.Infrastructure
 {
     public static class IconHelpers
     {

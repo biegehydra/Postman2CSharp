@@ -4,6 +4,7 @@ using Postman2CSharp.Core.Core;
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Serialization;
 using Postman2CSharp.Wasm.Components;
+using Postman2CSharp.Wasm.Models;
 
 namespace Postman2CSharp.Wasm.Services
 {

@@ -1,6 +1,6 @@
 ﻿using MudBlazor;
 
-namespace Postman2CSharp.Wasm
+namespace Postman2CSharp.Wasm.Models
 {
     public class ProgressPopupOptions
     {
