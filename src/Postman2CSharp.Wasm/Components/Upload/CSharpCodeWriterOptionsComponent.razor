@@ -6,6 +6,10 @@
             <br />
             <p>Applies to classes generated for requests and responses that have a Json body. Use default settings for best results.</p>
             <p><u>Does not apply to form data or query parameter classes.</u></p>
+            <br/>
+            <MudAlert Variant="Variant.Outlined" Elevation="2" Severity="Severity.Info" Style="width: fit-content;">
+                Additional settings can be configured at the <a class="link-normal" href="/Advanced-Settings">Advanced Settings</a> page.
+            </MudAlert>
         </div>
         <div class="f-column end-start" style="gap: 25px;" >
             <MudTooltip Text="Rests settings to default values">
@@ -16,13 +20,13 @@
     <br />
     <MudGrid>
         <MudItem xs="12" sm="6" md="4" lg="3">
+            <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="InputModel.AttributeLibrary" Label="Json Library"></EnumSelectComponent>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4" lg="3">
             <EnumSelectComponent @bind-Value="InputModel.CollectionType" Label="Collection Type"></EnumSelectComponent>
         </MudItem>
         <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="InputModel.AttributeLibrary" Label="Attribute Library"></EnumSelectComponent>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="InputModel.AttributeUsage" Label="Attribute Usage"></EnumSelectComponent>
+            <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="InputModel.AttributeUsage" Label="JsonProperty Attribute Usage"></EnumSelectComponent>
         </MudItem>
         <MudItem xs="12" sm="6" md="4" lg="3">
             <EnumSelectComponent @bind-Value="InputModel.OutputType" Label="Output Type"></EnumSelectComponent>
@@ -41,9 +45,6 @@
         </MudItem>
         <MudItem xs="12" sm="6" md="4" lg="3">
             <MudSwitch Color="Color.Tertiary" @bind-Checked="InputModel.UsePascalCase" Label="Use Pascal Case"></MudSwitch>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudSwitch Color="Color.Tertiary" @bind-Checked="InputModel.UseNestedClasses" Label="Use Nested Classes"></MudSwitch>
         </MudItem>
         <MudItem xs="12" sm="6" md="4" lg="3">
             @{

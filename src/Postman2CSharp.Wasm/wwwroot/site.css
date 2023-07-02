@@ -1,4 +1,8 @@
-﻿.link-normal {
+﻿.mud-alert-message .link-normal {
+    color: #a576ea;
+}
+
+.link-normal {
     color: #5d5db8;
     text-decoration: underline;
     cursor: pointer; 
@@ -121,6 +125,7 @@ li {
 }
 .mud-typography-h3 {
     font-size: 1.5em;
+    color: rgba(255, 255, 255, 0.83);
 }
 
 .splashscreen-container {

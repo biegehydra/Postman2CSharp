@@ -110,6 +110,20 @@ public class ApiClient
     {
         var namespaces = new List<string>(DefaultApiClientNamespaces);
         namespaces.AddRange(ImplicitNamespaces);
+        if (JsonLibrary == JsonLibrary.SystemTextJson && ErrorHandlingStrategy != ErrorHandlingStrategy.None && CatchExceptionTypes.Contains(Core.CatchExceptionTypes.JsonException))
+        {
+            namespaces.Add("System.Text.Json");
+        }
+        else if (JsonLibrary == JsonLibrary.NewtonsoftJson && ErrorHandlingStrategy != ErrorHandlingStrategy.None && CatchExceptionTypes.Contains(Core.CatchExceptionTypes.JsonException))
+        {
+            namespaces.Add("Newtonsoft.Json");
+        }
+
+        if (ErrorHandlingStrategy != ErrorHandlingStrategy.None &&
+            ErrorHandlingSinks.Contains(Core.ErrorHandlingSinks.DebugWriteLine))
+        {
+            namespaces.Add("System.Diagnostics");
+        }
         return namespaces;
     }
 

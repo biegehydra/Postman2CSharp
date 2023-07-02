@@ -16,6 +16,25 @@
 
 <br />
 
+@Explanation("Use Cancellation Tokens", UseCancellationTokens_False, UseCancellationTokens_True)
+
+
+<br/>
+
+<div>
+    <MudText Typo="Typo.h3">Attribute Library</MudText>
+    <br/>
+    <p>
+        You have two attribute libraries that you can choose from. System.Text.Json and Newtonsoft.Json.
+        The attribute library you choose will have two affects. First, it will determine which JsonProperty Attribute
+        to properties/fields on generated request and response classes. Secondly, it will determine which set of
+        json extension methods your project is downloaded with. If you are unsure which to choose, choose System.Text.Json.
+        Additionally, all Newtonsoft.Json extension methods have Newtonsoft in them. GetAsJsonAsync (STJ) => GetAsNewtonsoftJsonAsync (Newtonsoft).
+    </p>
+</div>
+
+<br/>
+
 <div>
     <MudText Typo="Typo.h3">Error Handling Strategy</MudText>
     <br/>
@@ -174,6 +193,27 @@ public async Task<Stream> GetTickets()
 public async Task<Stream> GetTickets(string someVariable) // Now a function parameter
 {
     var response = await _httpClient.GetAsync(""{someVariable}/ticket.php"");
+    return await response.Content.ReadAsStreamAsync();
+}";
+    #endregion
+
+    #region CancellationTokens
+
+        public const string UseCancellationTokens_False =
+@"// UseCancellationTokens = false
+
+public async Task<Stream> GetTickets()
+{
+    var response = await _httpClient.GetAsync(""{_someVariable}/ticket.php"");
+    return await response.Content.ReadAsStreamAsync();
+}";
+    
+        public const string UseCancellationTokens_True =
+@"// UseCancellationTokens = true
+
+public async Task<Stream> GetTickets(CancellationToken cancellationToken) // Now a function parameter
+{
+    var response = await _httpClient.GetAsync(""{someVariable}/ticket.php"", cancellationToken);
     return await response.Content.ReadAsStreamAsync();
 }";
     #endregion

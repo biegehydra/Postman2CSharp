@@ -13,12 +13,12 @@ namespace Postman2CSharp.Core
 
         public List<ErrorHandlingSinks> ErrorHandlingSinks { get; set; } = new()
         {
-            Postman2CSharp.Core.ErrorHandlingSinks.LogException
+            Core.ErrorHandlingSinks.LogException
         };
 
         public List<CatchExceptionTypes> CatchExceptionTypes { get; set; } = new()
         {
-            Postman2CSharp.Core.CatchExceptionTypes.HttpRequestException
+            Core.CatchExceptionTypes.HttpRequestException
         };
 
         public RootDefinition RootDefinition { get; set; } = RootDefinition.PerAuthorityPerFolder;
@@ -26,11 +26,11 @@ namespace Postman2CSharp.Core
         public LogLevel LogLevel { get; set; } = LogLevel.Error;
         public List<XmlCommentTypes> XmlCommentTypes { get; set; } = new()
         {
-            Postman2CSharp.Core.XmlCommentTypes.ApiClient,
-            Postman2CSharp.Core.XmlCommentTypes.QueryParameters,
-            Postman2CSharp.Core.XmlCommentTypes.FormData,
-            Postman2CSharp.Core.XmlCommentTypes.PathVariables,
-            Postman2CSharp.Core.XmlCommentTypes.Request,
+            Core.XmlCommentTypes.ApiClient,
+            Core.XmlCommentTypes.QueryParameters,
+            Core.XmlCommentTypes.FormData,
+            Core.XmlCommentTypes.PathVariables,
+            Core.XmlCommentTypes.Request,
         };
 
         public ApiClientOptions Clone()
@@ -71,6 +71,7 @@ namespace Postman2CSharp.Core
     public enum CatchExceptionTypes
     {
         HttpRequestException,
+        JsonException,
         Exception,
     }
 
