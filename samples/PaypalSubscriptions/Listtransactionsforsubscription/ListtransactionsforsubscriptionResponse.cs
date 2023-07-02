@@ -1,10 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 // Root myDeserializedClass = JsonSerializer.Deserialize<ListtransactionsforsubscriptionResponse>(myJsonResponse);
 namespace PaypalSubscriptions
 {
+    public class ListtransactionsforsubscriptionResponse
+    {
+        public List<Transactions> Transactions { get; set; }
+        public List<Links> Links { get; set; }
+    }
+
+    public class Transactions
+    {
+        public string Status { get; set; }
+        public string Id { get; set; }
+        public AmountWithBreakdown AmountWithBreakdown { get; set; }
+        public PayerName PayerName { get; set; }
+        public string PayerEmail { get; set; }
+        public DateTime Time { get; set; }
+    }
+
     public class AmountWithBreakdown
     {
         public GrossAmount GrossAmount { get; set; }
@@ -24,12 +41,6 @@ namespace PaypalSubscriptions
         public string Value { get; set; }
     }
 
-    public class ListtransactionsforsubscriptionResponse
-    {
-        public List<Transactions> Transactions { get; set; }
-        public List<Links> Links { get; set; }
-    }
-
     public class NetAmount
     {
         public string CurrencyCode { get; set; }
@@ -40,15 +51,5 @@ namespace PaypalSubscriptions
     {
         public string GivenName { get; set; }
         public string Surname { get; set; }
-    }
-
-    public class Transactions
-    {
-        public string Status { get; set; }
-        public string Id { get; set; }
-        public AmountWithBreakdown AmountWithBreakdown { get; set; }
-        public PayerName PayerName { get; set; }
-        public string PayerEmail { get; set; }
-        public DateTime Time { get; set; }
     }
 }

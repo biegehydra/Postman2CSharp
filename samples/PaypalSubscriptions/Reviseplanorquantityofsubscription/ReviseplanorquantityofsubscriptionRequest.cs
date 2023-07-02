@@ -1,10 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 // Root myDeserializedClass = JsonSerializer.Deserialize<ReviseplanorquantityofsubscriptionRequest>(myJsonResponse);
 namespace PaypalSubscriptions
 {
+    public class ReviseplanorquantityofsubscriptionRequest
+    {
+        public string PlanId { get; set; }
+        public ShippingAmount ShippingAmount { get; set; }
+        public ShippingAddress ShippingAddress { get; set; }
+        public ApplicationContext2 ApplicationContext { get; set; }
+    }
+
     public class ApplicationContext2
     {
         public string BrandName { get; set; }
@@ -18,13 +27,5 @@ namespace PaypalSubscriptions
     public class Name3
     {
         public string FullName { get; set; }
-    }
-
-    public class ReviseplanorquantityofsubscriptionRequest
-    {
-        public string PlanId { get; set; }
-        public ShippingAmount ShippingAmount { get; set; }
-        public ShippingAddress ShippingAddress { get; set; }
-        public ApplicationContext2 ApplicationContext { get; set; }
     }
 }

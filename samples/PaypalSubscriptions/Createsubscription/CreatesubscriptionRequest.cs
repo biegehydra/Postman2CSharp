@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 // Root myDeserializedClass = JsonSerializer.Deserialize<CreatesubscriptionRequest>(myJsonResponse);
 namespace PaypalSubscriptions
 {
-    public class Address
+    public class CreatesubscriptionRequest
     {
-        public string AddressLine1 { get; set; }
-        public string AddressLine2 { get; set; }
-        public string AdminArea2 { get; set; }
-        public string AdminArea1 { get; set; }
-        public string PostalCode { get; set; }
-        public string CountryCode { get; set; }
+        public string PlanId { get; set; }
+        public string StartTime { get; set; }
+        public ShippingAmount ShippingAmount { get; set; }
+        public Subscriber Subscriber { get; set; }
+        public ApplicationContext ApplicationContext { get; set; }
     }
 
     public class ApplicationContext
@@ -26,13 +26,14 @@ namespace PaypalSubscriptions
         public string CancelUrl { get; set; }
     }
 
-    public class CreatesubscriptionRequest
+    public class Address
     {
-        public string PlanId { get; set; }
-        public string StartTime { get; set; }
-        public ShippingAmount ShippingAmount { get; set; }
-        public Subscriber Subscriber { get; set; }
-        public ApplicationContext ApplicationContext { get; set; }
+        public string AddressLine1 { get; set; }
+        public string AddressLine2 { get; set; }
+        public string AdminArea2 { get; set; }
+        public string AdminArea1 { get; set; }
+        public string PostalCode { get; set; }
+        public string CountryCode { get; set; }
     }
 
     public class Name
@@ -40,6 +41,13 @@ namespace PaypalSubscriptions
         public string GivenName { get; set; }
         public string Surname { get; set; }
         public string FullName { get; set; }
+    }
+
+    public class Subscriber
+    {
+        public Name Name { get; set; }
+        public string EmailAddress { get; set; }
+        public ShippingAddress ShippingAddress { get; set; }
     }
 
     public class PaymentMethod
@@ -50,7 +58,7 @@ namespace PaypalSubscriptions
 
     public class ShippingAddress
     {
-        public Name2 Name { get; set; }
+        public Name Name { get; set; }
         public Address Address { get; set; }
     }
 
@@ -58,12 +66,5 @@ namespace PaypalSubscriptions
     {
         public string CurrencyCode { get; set; }
         public string Value { get; set; }
-    }
-
-    public class Subscriber
-    {
-        public Name Name { get; set; }
-        public string EmailAddress { get; set; }
-        public ShippingAddress ShippingAddress { get; set; }
     }
 }

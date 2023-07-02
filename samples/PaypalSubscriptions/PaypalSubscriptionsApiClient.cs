@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Net.Http.Json;
 namespace PaypalSubscriptions
 {
     /// <summary>
@@ -26,7 +25,7 @@ namespace PaypalSubscriptions
         public PaypalSubscriptionsApiClient(HttpClient httpClient, IConfiguration config)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri($"https://{_baseurl}/v1/billing/subscriptions/");
+            _httpClient.BaseAddress = new Uri($"https://{_baseUrl}/v1/billing/subscriptions/");
     
             _bearerToken = config["Path:ToBearToken"];
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
@@ -37,13 +36,16 @@ namespace PaypalSubscriptions
         /// </summary>
         public async Task<Stream> Createsubscription(CreatesubscriptionRequest request)
         {
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Request-Id", $"{_guid}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}");
-            _httpClient.DefaultRequestHeaders.Add($"Prefer", $"{_preferRepresentationDetailed}");
+            var headers = new Dictionary<string, string>()
+            {
+                { $"PayPal-Request-Id", $"{_guid}" },
+                { $"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}" },
+                { $"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}" },
+                { $"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}" },
+                { $"Prefer", $"{_preferRepresentationDetailed}" }
+            };
     
-            var response = await _httpClient.PostAsJsonAsync($"", request);
+            var response = await _httpClient.PostAsJsonAsync($"", request, headers);
             return await response.Content.ReadAsStreamAsync();
         }
     
@@ -52,15 +54,18 @@ namespace PaypalSubscriptions
         /// </summary>
         public async Task<ShowsubscriptiondetailsResponse> Showsubscriptiondetails(ShowsubscriptiondetailsParameters queryParameters, string subscriptionId)
         {
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Request-Id", $"{_guid}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}");
-            _httpClient.DefaultRequestHeaders.Add($"Prefer", $"{_preferRepresentationDetailed}");
+            var headers = new Dictionary<string, string>()
+            {
+                { $"PayPal-Request-Id", $"{_guid}" },
+                { $"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}" },
+                { $"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}" },
+                { $"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}" },
+                { $"Prefer", $"{_preferRepresentationDetailed}" }
+            };
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"{subscriptionId}", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ShowsubscriptiondetailsResponse>(queryString);
+            return await _httpClient.GetFromJsonAsync<ShowsubscriptiondetailsResponse>(queryString, headers);
         }
     
         /// <summary>
@@ -68,13 +73,16 @@ namespace PaypalSubscriptions
         /// </summary>
         public async Task<Stream> Updatesubscription(UpdatesubscriptionRequest request, string subscriptionId)
         {
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Request-Id", $"{_guid}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}");
-            _httpClient.DefaultRequestHeaders.Add($"Prefer", $"{_preferRepresentationDetailed}");
+            var headers = new Dictionary<string, string>()
+            {
+                { $"PayPal-Request-Id", $"{_guid}" },
+                { $"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}" },
+                { $"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}" },
+                { $"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}" },
+                { $"Prefer", $"{_preferRepresentationDetailed}" }
+            };
     
-            var response = await _httpClient.PatchAsJsonAsync($"{subscriptionId}", request);
+            var response = await _httpClient.PatchAsJsonAsync($"{subscriptionId}", request, headers);
             return await response.Content.ReadAsStreamAsync();
         }
     
@@ -91,13 +99,16 @@ namespace PaypalSubscriptions
         /// </summary>
         public async Task<Stream> Suspendsubscription(SuspendsubscriptionRequest request, string subscriptionId)
         {
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Request-Id", $"{_guid}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}");
-            _httpClient.DefaultRequestHeaders.Add($"Prefer", $"{_preferRepresentationDetailed}");
+            var headers = new Dictionary<string, string>()
+            {
+                { $"PayPal-Request-Id", $"{_guid}" },
+                { $"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}" },
+                { $"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}" },
+                { $"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}" },
+                { $"Prefer", $"{_preferRepresentationDetailed}" }
+            };
     
-            var response = await _httpClient.PostAsJsonAsync($"{subscriptionId}/suspend", request);
+            var response = await _httpClient.PostAsJsonAsync($"{subscriptionId}/suspend", request, headers);
             return await response.Content.ReadAsStreamAsync();
         }
     
@@ -124,13 +135,16 @@ namespace PaypalSubscriptions
         /// </summary>
         public async Task<Stream> Captureauthorizedpaymentonsubscription(CaptureauthorizedpaymentonsubscriptionRequest request, string subscriptionId)
         {
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Request-Id", $"{_guid}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}");
-            _httpClient.DefaultRequestHeaders.Add($"Prefer", $"{_preferRepresentationDetailed}");
+            var headers = new Dictionary<string, string>()
+            {
+                { $"PayPal-Request-Id", $"{_guid}" },
+                { $"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}" },
+                { $"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}" },
+                { $"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}" },
+                { $"Prefer", $"{_preferRepresentationDetailed}" }
+            };
     
-            var response = await _httpClient.PostAsJsonAsync($"{subscriptionId}/capture", request);
+            var response = await _httpClient.PostAsJsonAsync($"{subscriptionId}/capture", request, headers);
             return await response.Content.ReadAsStreamAsync();
         }
     
@@ -139,15 +153,18 @@ namespace PaypalSubscriptions
         /// </summary>
         public async Task<ListtransactionsforsubscriptionResponse> Listtransactionsforsubscription(ListtransactionsforsubscriptionParameters queryParameters, string subscriptionId)
         {
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Request-Id", $"{_guid}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}");
-            _httpClient.DefaultRequestHeaders.Add($"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}");
-            _httpClient.DefaultRequestHeaders.Add($"Prefer", $"{_preferRepresentationDetailed}");
+            var headers = new Dictionary<string, string>()
+            {
+                { $"PayPal-Request-Id", $"{_guid}" },
+                { $"PayPal-Client-Metadata-Id", $"{_paypalClientMetadataId}" },
+                { $"PayPal-Partner-Attribution-Id", $"{_paypalPartnerAttributionId}" },
+                { $"PayPal-Auth-Assertion", $"{_paypalAuthAssertion}" },
+                { $"Prefer", $"{_preferRepresentationDetailed}" }
+            };
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"{subscriptionId}/transactions", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListtransactionsforsubscriptionResponse>(queryString);
+            return await _httpClient.GetFromJsonAsync<ListtransactionsforsubscriptionResponse>(queryString, headers);
         }
     }
 }
