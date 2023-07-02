@@ -102,7 +102,7 @@ namespace Xamasoft.JsonClassGenerator
 
                 this.Types = this.HandleDuplicateClasses(this.Types);
                 AllTypes.AddRange(Types);
-                LastMinuteCleansing(this.Types);
+                LastMinuteCleansing(this.Types, this.AllTypes);
 
 
                 StringBuilder builder = new StringBuilder();
@@ -118,14 +118,14 @@ namespace Xamasoft.JsonClassGenerator
             }
         }
 
-        private void LastMinuteCleansing(IList<JsonType> types)
+        public static void LastMinuteCleansing(IList<JsonType> types, List<JsonType> allTypes)
         {
             // TODO: Explain
             foreach (JsonType type in types)
             {
                 foreach (JsonFieldInfo field in type.Fields)
                 {
-                    if (!AllTypes.Any(x => FieldEqual(x, field)))
+                    if (!allTypes.Any(x => FieldEqual(x, field)))
                     {
                         if (CSharpCodeWriter._reservedKeywords.Contains(field.Type?.NewAssignedName))
                         {
@@ -171,6 +171,7 @@ namespace Xamasoft.JsonClassGenerator
             }
             return false;
         }
+
         private void GenerateClass(JObject[] examples, JsonType type)
         {
             Dictionary<string, JsonType> jsonFields = new Dictionary<string, JsonType>();
