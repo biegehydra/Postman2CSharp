@@ -50,7 +50,7 @@ public static class ApiClientSerializer
             AddOAuth2Methods(sb, uniqueAuthOAuth2, client.BaseUrl, 1);
         }
         ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: addAuthHeaderToConstructor, client.EnsureSuccessStatusCode,
-            client.CommentTypes, client.CatchExceptionTypes, client.ErrorHandlingSinks, client.ErrorHandlingStrategy, client.LogLevel, client.JsonLibrary);
+            client.CommentTypes, client.CatchExceptionTypes, client.ErrorHandlingSinks, client.ErrorHandlingStrategy, client.LogLevel, client.JsonLibrary, client.UseCancellationTokens);
         sb.AppendLine();
         sb.AppendLine("}");
         return sb.ToString();
@@ -123,14 +123,14 @@ public static class ApiClientSerializer
 
     private static void ApiClientCalls(StringBuilder sb, AuthSettings? auth, string? baseUrl, List<HttpCall> calls, bool constructorHasAuthHeader, 
         bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
-        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary)
+        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool useCancellationTokens)
     {
         var last = calls.Last();
         foreach (var call in calls)
         {
             sb.AppendLine();
             HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, constructorHasAuthHeader, ensureSuccessStatusCode, commentTypes, catchExceptionTypes,
-                errorHandlingSinks, errorHandlingStrategy, logLevel, jsonLibrary);
+                errorHandlingSinks, errorHandlingStrategy, logLevel, jsonLibrary, useCancellationTokens);
             if (!Equals(call, last))
             {
                 sb.AppendLine();

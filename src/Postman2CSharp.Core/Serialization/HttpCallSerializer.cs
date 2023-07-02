@@ -15,7 +15,7 @@ public static class HttpCallSerializer
 {
     public static void SerializeHttpCall(StringBuilder sb, AuthSettings? auth, string? baseUrl, HttpCall call, bool constructorHasAuthHeader,
         bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
-        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary)
+        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool useCancellationTokens)
     {
         string relativePath;
         try
@@ -27,6 +27,10 @@ public static class HttpCallSerializer
             throw new ArgumentException(nameof(call.Request.Url.Raw), $"Invalid URL: {call.Request.Url.Raw}");
         }
         var methodParameters = call.MethodParameters();
+        if (useCancellationTokens)
+        {
+            methodParameters.Add(HttpCallMethodParameter.CancellationToken);
+        }
 
         var indent = Consts.Indent(1);
         XmlComment(sb, commentTypes, call.Request.Description, call.Request.Url.Path, call.Request.Url.Variable, indent);
@@ -37,7 +41,7 @@ public static class HttpCallSerializer
 
         if (errorHandlingStrategy == ErrorHandlingStrategy.None)
         {
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, indent, relativePath, ensureSuccessStatusCode, jsonLibrary);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens);
         }
         else
         {
@@ -47,8 +51,7 @@ public static class HttpCallSerializer
             }
             sb.AppendLine(indent + "try");
             sb.AppendLine(indent + "{");
-            indent = Consts.Indent(3);
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, indent, relativePath, ensureSuccessStatusCode, jsonLibrary);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens);
             indent = Consts.Indent(2);
             sb.AppendLine(indent + "}");
             foreach (var catchExceptionType in catchExceptionTypes)
@@ -157,10 +160,11 @@ public static class HttpCallSerializer
     }
 
     private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool authHasHeader,
-        string indent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary)
+        int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary, bool useCancellationTokens)
     {
+        var indent = Consts.Indent(intIndent);
         sb.AddAuthorizationHeader(call.Request.Auth, indent, authHasHeader);
-        UniqueHeaders(sb, call, indent);
+        UniqueHeaders(sb, call, intIndent, out var hasUniqueHeaders);
 
         if (call.UniqueHeaders.Where(Header.IsImportant).Any())
         {
@@ -204,7 +208,7 @@ public static class HttpCallSerializer
   
         ReturnOrVarResponse(sb, httpClientCallReturnsResponse, indent);
 
-        HttpClientRequest(sb, call, httpClientCallReturnsResponse, requestHasQueryString, relativePath);
+        HttpClientRequest(sb, call, httpClientCallReturnsResponse, requestHasQueryString, relativePath, hasUniqueHeaders, useCancellationTokens);
 
         if (!httpClientCallReturnsResponse && ensureSuccessStatusCode)
         {
@@ -238,7 +242,7 @@ public static class HttpCallSerializer
     }
 
     private static void HttpClientRequest(StringBuilder sb, HttpCall call, bool httpClientCallReturnsResponse,
-        bool requestHasQueryString, string relativePath)
+        bool requestHasQueryString, string relativePath, bool hasHeaders, bool useCancellationToken)
     {
         sb.Append($"await _httpClient.{call.HttpClientFunction}");
         if (httpClientCallReturnsResponse)
@@ -267,6 +271,14 @@ public static class HttpCallSerializer
             }
             if (call.RequestDataType is DataType.Html or DataType.Text or DataType.Xml or DataType.Binary or DataType.GraphQl)
                 list.Add("httpContent");
+            if (hasHeaders)
+            {
+                list.Add("headers");
+            }
+            if (useCancellationToken)
+            {
+                list.Add("cancellationToken");
+            }
             return list;
         }
     }
@@ -344,11 +356,31 @@ public static class HttpCallSerializer
         return requestHasQueryString;
     }
 
-    private static void UniqueHeaders(StringBuilder sb, HttpCall call, string indent)
+    private static void UniqueHeaders(StringBuilder sb, HttpCall call, int intIndent, out bool hasUniqueHeaders)
     {
+        if (!call.UniqueHeaders.Any(Header.IsImportant))
+        {
+            hasUniqueHeaders = false;
+            return;
+        }
+        hasUniqueHeaders = true;
+        var indent = Consts.Indent(intIndent);
+        sb.AppendLine(indent + "var headers = new Dictionary<string, string>()");
+        sb.AppendLine(indent + "{");
+        indent = Consts.Indent(intIndent + 1);
+        var uniqueHeaders = call.UniqueHeaders.Where(Header.IsImportant).ToList();
+        var last = uniqueHeaders.Last();
         foreach (var uniqueHeader in call.UniqueHeaders.Where(Header.IsImportant))
         {
-            sb.AppendLine(indent + $"_httpClient.DefaultRequestHeaders.Add($\"{uniqueHeader.Key}\", $\"{uniqueHeader.Value}\");");
+            hasUniqueHeaders = true;
+            sb.Append(indent + $"{{ $\"{uniqueHeader.Key}\", $\"{uniqueHeader.Value}\" }}");
+            if (uniqueHeader != last)
+            {
+                sb.Append(",");
+            }
+            sb.AppendLine();
         }
+        indent = Consts.Indent(intIndent);
+        sb.AppendLine(indent + "};");
     }
 }

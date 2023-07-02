@@ -50,6 +50,10 @@
                     <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudSwitch>
                 </AdvancedSettingItem>
                 
+                <AdvancedSettingItem ToolTip="@(@"If true each request function on the generated ApiClient will be have a Cancellation token parameter with a default value of default.")">
+                    <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.UseCancellationTokens">Use Cancellation Tokens</MudSwitch>
+                </AdvancedSettingItem>
+                
                 <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are useds as xml comments.">
                     <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="ApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
                 </AdvancedSettingItem>
@@ -178,6 +182,7 @@
                && options1.ErrorHandlingStrategy == options2.ErrorHandlingStrategy
                && options1.LogLevel == options2.LogLevel
                && options1.RootDefinition == options2.RootDefinition
+               && options1.UseCancellationTokens == options2.UseCancellationTokens
                && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch;
     }
     private static SiteSettings DefaultSiteSettings() => new();

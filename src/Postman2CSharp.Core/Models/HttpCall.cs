@@ -101,6 +101,7 @@ public class HttpCall
 }
 public record HttpCallMethodParameter(HttpCallMethodParameterType Type, string VariableType, string ParameterName)
 {
+    public static readonly HttpCallMethodParameter CancellationToken = new (HttpCallMethodParameterType.CancellationToken, "CancellationToken", "cancellationToken = default");
     public string LocalParameterDeclaration => VariableType + " " + ParameterName;
 };
 
@@ -111,5 +112,6 @@ public enum HttpCallMethodParameterType
     FormData,
     RawText,
     Path,
-    Stream
+    Stream,
+    CancellationToken
 }

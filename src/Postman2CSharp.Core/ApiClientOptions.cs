@@ -9,6 +9,7 @@ namespace Postman2CSharp.Core
         public bool RemoveDisabledQueryParams { get; set; }
         public bool EnsureResponseIsSuccessStatusCode { get; set; }
         public bool MakePathCollectionVariablesFunctionParameters { get; set; }
+        public bool UseCancellationTokens { get; set; }
 
         public List<ErrorHandlingSinks> ErrorHandlingSinks { get; set; } = new()
         {
