@@ -65,12 +65,6 @@
     {
         SiteSettings.OnSettingsChanged += OnSiteSettingsChanged;
         LazyLoader.AdvancedSettingsLoadedChanged += AdvancedSettingsLoadedChanged;
-        MainLayout.OnSettingsChanged += OnSettingsChanged;
-    }
-
-    private void OnSettingsChanged()
-    {
-        StateHasChanged();
     }
 
     private void OnSiteSettingsChanged(SiteSettings siteSettings)
@@ -90,6 +84,5 @@
     {
         SiteSettings.OnSettingsChanged -= OnSiteSettingsChanged;
         LazyLoader.AdvancedSettingsLoadedChanged -= AdvancedSettingsLoadedChanged;
-        MainLayout.OnSettingsChanged -= OnSettingsChanged;
     }
 }

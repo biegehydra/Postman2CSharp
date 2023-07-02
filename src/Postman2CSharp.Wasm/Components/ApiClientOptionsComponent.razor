@@ -1,4 +1,5 @@
-﻿<div class="f-row">
+﻿@implements IDisposable
+<div class="f-row">
     <div class="f-column" style="width: 90%;">
         <h2>ApiClient Generation Configurations</h2>
         <br/>
@@ -8,20 +9,12 @@
     </div>
     <div>
         <MudTooltip Text="Resets settings to default values">
-            <MudButton Disabled="Equals(ApiClientOptions, new ApiClientOptions())" Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { ApiClientOptions = new ApiClientOptions();  }">Reset to default</MudButton>
+            <MudButton Disabled="Equals(LastSavedApiClientOptions, new ApiClientOptions())" Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { ApiClientOptions = new ApiClientOptions();  }">Reset to default</MudButton>
         </MudTooltip>
     </div>
 </div>
 <br />
 <MudGrid Spacing="3">
-    <AdvancedSettingItem ToolTip="Removes any header that is ticked off">
-        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDisabledHeaders">Remove disabled headers</MudSwitch>
-    </AdvancedSettingItem>
-
-    <AdvancedSettingItem ToolTip="Remove any query parameter that is ticked off.">
-        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDisabledQueryParams">Remove Disabled Query Parameters</MudSwitch>
-    </AdvancedSettingItem>
-
     <AdvancedSettingItem ToolTip="Each request in the generated ApiClient will call EnsureSuccessStatusCode() on the HttpResponseMessage before deserializing or returning the response stream.">
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudSwitch>
     </AdvancedSettingItem>
@@ -36,6 +29,10 @@
 
     <AdvancedSettingItem ToolTip="Removes any class that is reused in responses across requests. See options explanation page.">
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateClasses">Remove Duplicate Classes</MudSwitch>
+    </AdvancedSettingItem>
+    
+    <AdvancedSettingItem ToolTip="Any types choosen in here will caused disabled parameters of that type to be removed in pre-processing..">
+        <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="ApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are useds as xml comments.">
@@ -95,6 +92,16 @@
     public static ApiClientOptions ApiClientOptions { get; private set; } = new();
     public static ApiClientOptions LastSavedApiClientOptions { get; private set; } = new();
 
+    protected override void OnInitialized()
+    {
+        MainLayout.OnSettingsChanged += OnSettingsChanged;
+    }
+
+    private void OnSettingsChanged()
+    {
+        StateHasChanged();
+    }
+
     public static void SetApiClientOptions(ApiClientOptions options)
     {
         LastSavedApiClientOptions = options.Clone();
@@ -113,23 +120,26 @@
     {
         ApiClientOptions.XmlCommentTypes = commentTypes.Select(Enum.Parse<XmlCommentTypes>).ToList();
     }
+    private void SelectedRemovedDisabledChanged(IEnumerable<string> commentTypes)
+    {
+        ApiClientOptions.RemoveDisabled = commentTypes.Select(Enum.Parse<RemoveDisabled>).ToList();
+    }
 
     private static ApiClientOptions DefaultOptions() => new();
     private static bool Equals(ApiClientOptions options1, ApiClientOptions options2)
     {
+        var allRemovedDisabledMatch = options1.RemoveDisabled.Count == options2.RemoveDisabled.Count && options1.RemoveDisabled.All(type => options2.RemoveDisabled.Contains(type));
         var allCommentTypesMatch = options1.XmlCommentTypes.Count == options2.XmlCommentTypes.Count && options1.XmlCommentTypes.All(type => options2.XmlCommentTypes.Contains(type));
         var allSinksMatch = options1.ErrorHandlingSinks.Count == options2.ErrorHandlingSinks.Count && options1.ErrorHandlingSinks.All(sink => options2.ErrorHandlingSinks.Contains(sink));
         var allCatchTypesMatch = options1.CatchExceptionTypes.Count == options2.CatchExceptionTypes.Count && options1.CatchExceptionTypes.All(type => options2.CatchExceptionTypes.Contains(type));
-        return options1.RemoveDisabledQueryParams == options2.RemoveDisabledQueryParams
-               && options1.RemoveDisabledHeaders == options2.RemoveDisabledHeaders
-               && options1.RemoveDuplicateClasses == options2.RemoveDuplicateClasses
+        return options1.RemoveDuplicateClasses == options2.RemoveDuplicateClasses
                && options1.EnsureResponseIsSuccessStatusCode == options2.EnsureResponseIsSuccessStatusCode
                && options1.MakePathCollectionVariablesFunctionParameters == options2.MakePathCollectionVariablesFunctionParameters
                && options1.ErrorHandlingStrategy == options2.ErrorHandlingStrategy
                && options1.LogLevel == options2.LogLevel
                && options1.RootDefinition == options2.RootDefinition
                && options1.UseCancellationTokens == options2.UseCancellationTokens
-               && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch;
+               && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch && allRemovedDisabledMatch;
     }
 
     private void SaveOptions()
@@ -137,4 +147,10 @@
         LastSavedApiClientOptions = ApiClientOptions.Clone();
         Snackbar?.Add($"Saved {nameof(ApiClientOptions)}", Severity.Success);
     }
+
+    public void Dispose()
+    {
+        MainLayout.OnSettingsChanged -= OnSettingsChanged;
+    }
+
 }

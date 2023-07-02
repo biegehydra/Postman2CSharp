@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using System.Text.RegularExpressions;
+using Postman2CSharp.Core.Infrastructure;
 
 namespace Postman2CSharp.Core.Utilities
 {
@@ -167,13 +168,21 @@ namespace Postman2CSharp.Core.Utilities
             if (rootItem.RequestItems() == null) return;
             foreach (var requestItem in rootItem.RequestItems()!)
             {
-                if (options.RemoveDisabledHeaders)
+                if (options.RemoveDisabled.Contains(RemoveDisabled.Headers))
                 {
                     requestItem.Request!.Header.RemoveAll(x => x.Disabled == true);
                 }
-                if (options.RemoveDisabledQueryParams)
+                if (options.RemoveDisabled.Contains(RemoveDisabled.QueryParameters))
                 {
                     requestItem.Request!.Url.Query?.RemoveAll(x => x.Disabled == true);
+                }
+                if (options.RemoveDisabled.Contains(RemoveDisabled.FormData))
+                {
+                    requestItem.Request!.Body?.Formdata?.RemoveAll(x => x.Disabled);
+                }
+                if (options.RemoveDisabled.Contains(RemoveDisabled.FormUrlEncoded))
+                {
+                    requestItem.Request!.Body?.Urlencoded?.RemoveAll(x => x.Disabled);
                 }
             }
         }

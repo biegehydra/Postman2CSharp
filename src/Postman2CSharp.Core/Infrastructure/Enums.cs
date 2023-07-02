@@ -63,4 +63,12 @@
         Text,
         File
     }
+
+    public enum RemoveDisabled
+    {
+        Headers,
+        QueryParameters,
+        FormData,
+        FormUrlEncoded
+    }
 }

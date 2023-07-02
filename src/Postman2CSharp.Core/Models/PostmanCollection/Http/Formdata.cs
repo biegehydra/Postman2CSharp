@@ -20,7 +20,7 @@ public class Formdata : IFormData
     public JsonElement? Src { get; set; }
     public string? Value { get; set; }
     public string? Description { get; set; }
-
+    public bool Disabled { get; set; }
     private string? _csPropertyName;
     public string CsPropertyName => _csPropertyName ??= Utils.NormalizeToCsharpPropertyName(Key);
 }

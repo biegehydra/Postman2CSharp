@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Postman2CSharp.Core;
 using Xamasoft.JsonClassGenerator.CodeWriterConfiguration;
@@ -34,7 +33,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             get { return "C#"; }
         }
 
-        private static readonly HashSet<string> _reservedKeywords = new (comparer: StringComparer.Ordinal) {
+        public static readonly HashSet<string> _reservedKeywords = new (comparer: StringComparer.Ordinal) {
             "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class", "const", "continue",
             "decimal", "default", "delegate", "do", "double", "else", "enum", "event", "explicit", "extern", "false", "finally",
             "fixed", "float", "for", "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock", "long",
@@ -76,6 +75,10 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
                     break;
                 case JsonLibrary.SystemTextJson:
                     importNamespaces.Add("System.Text.Json");
+                    if (config.AttributeUsage != JsonPropertyAttributeUsage.Never)
+                    {
+                        importNamespaces.Add("System.Text.Json.Serialization");
+                    }
                     break;
                 //case JsonLibrary.NewtonsoftAndSystemTextJson:
                 //        importNamespaces.Add("Newtonsoft.Json");

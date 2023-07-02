@@ -40,7 +40,10 @@ public static class Utils
                 result = "_" + result;
             }
         }
-
+        if (result.Length > 45)
+        {
+            result = result[^45..];
+        }
         return result;
     }
 

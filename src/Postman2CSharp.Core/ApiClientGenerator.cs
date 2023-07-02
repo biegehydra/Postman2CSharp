@@ -145,6 +145,7 @@ public class ApiClientGenerator
         return allVariableUsages;
     }
 
+
     private async Task<ApiClient> CreateApiClient(CollectionItem rootItem, List<VariableUsage> variableUsages)
     {
         RootItemHelpers.NormalizeRequestItemNames(rootItem);
@@ -152,15 +153,15 @@ public class ApiClientGenerator
         var allCallNames = rootItem.RequestItems()?.Select(x => x.Name).ToList() ?? new ();
         var commonBase = Utils.GetCommonBase(allCallNames);
         commonBase ??= Utils.GetLongestSubstring(allCallNames);
-
-        var name = Utils.NormalizeToCsharpPropertyName(commonBase ?? Options.CSharpCodeWriterConfig.Namespace) + "ApiClient";
-        var nameSpace = Utils.NormalizeToCsharpPropertyName(commonBase ?? Options.CSharpCodeWriterConfig.Namespace);
+        var normalizedNameSpace = Utils.NormalizeToCsharpPropertyName(commonBase ?? Options.CSharpCodeWriterConfig.Namespace);
+        var name = normalizedNameSpace + "ApiClient";
         var leastPossibleUri = rootItem.FindLeastPossibleUri();
         var commonHeaders = rootItem.GetCommonHeaders();
-        var httpCalls = await GetHttpCalls(rootItem, commonHeaders, nameSpace);
+        var uniqueNamesList = new List<string>() { normalizedNameSpace, name };
+        var httpCalls = await GetHttpCalls(rootItem, commonHeaders, normalizedNameSpace, uniqueNamesList);
         var auth = rootItem.Auth ?? PostmanCollection.Auth;
 
-        var apiClient = new ApiClient(name, rootItem.Description, nameSpace, leastPossibleUri, httpCalls, commonHeaders, auth, variableUsages,
+        var apiClient = new ApiClient(name, rootItem.Description, normalizedNameSpace, leastPossibleUri, httpCalls, commonHeaders, auth, variableUsages,
             Options.ApiClientOptions.EnsureResponseIsSuccessStatusCode, Options.ApiClientOptions.XmlCommentTypes, Options.ApiClientOptions.CatchExceptionTypes,
             Options.ApiClientOptions.ErrorHandlingSinks, Options.ApiClientOptions.ErrorHandlingStrategy, Options.ApiClientOptions.LogLevel, Options.CSharpCodeWriterConfig.AttributeLibrary,
             Options.ApiClientOptions.UseCancellationTokens);
@@ -170,7 +171,26 @@ public class ApiClientGenerator
         return apiClient;
     }
 
-    private async Task<List<HttpCall>> GetHttpCalls(CollectionItem item, List<Header> commonHeaders, string nameSpace)
+    public string GenerateUniqueName(string baseName, List<string> existingNames)
+    {
+        // If the base name doesn't exist in the list, return it as is
+        if (!existingNames.Contains(baseName))
+        {
+            existingNames.Add(baseName);
+            return baseName;
+        }
+
+        // If the base name does exist, append numbers starting from 2 until a unique name is found
+        int counter = 2;
+        while (existingNames.Contains(baseName + counter))
+        {
+            counter++;
+        }
+        existingNames.Add(baseName + counter);
+        return baseName + counter;
+    }
+
+    private async Task<List<HttpCall>> GetHttpCalls(CollectionItem item, List<Header> commonHeaders, string nameSpace, List<string> uniqueNames)
     {
         List<HttpCall> httpCalls = new ();
         var requestItems = item.RequestItems();
@@ -183,6 +203,7 @@ public class ApiClientGenerator
         {
             var requestDataType = Utils.GetRequestDataType(requestItem.Request!);
             var normalizedName = Utils.NormalizeToCsharpPropertyName(requestItem.Name);
+            var uniqueName = GenerateUniqueName(normalizedName, uniqueNames);
 
             string? requestSourceCode = null;
             string? requestClassName = null;
@@ -198,7 +219,7 @@ public class ApiClientGenerator
                 {
                     try
                     {
-                        ProcessItem(jsonClassGenerator, json, normalizedName, Consts.Request, ref requestClassName,
+                        ProcessItem(jsonClassGenerator, json, uniqueName, Consts.Request, ref requestClassName,
                             ref requestSourceCode, ref requestTypes);
                     }
                     catch (JsonException)
@@ -207,9 +228,24 @@ public class ApiClientGenerator
                         requestSourceCode = null;
                         requestTypes = null;
                     }
+                    catch (NoClassesGeneratedException)
+                    {
+#if DEBUG
+                        Console.WriteLine($"Request no classes generated. {requestItem.Name}");
+#endif
+                        requestClassName = null;
+                        requestSourceCode = null;
+                        requestTypes = null;
+                    }
                     catch (Exception ex)
                     {
+                        requestClassName = null;
+                        requestSourceCode = null;
+                        requestTypes = null;
+#if DEBUG
                         Console.WriteLine(ex);
+                        throw;
+                        #endif
                     }
                 }
             }
@@ -218,7 +254,8 @@ public class ApiClientGenerator
             string? formClassSourceCode = null;
             if (requestDataType is DataType.ComplexFormData or DataType.SimpleFormData)
             {
-                formClassName = normalizedName + (requestDataType is DataType.ComplexFormData ? Consts.Classes.MultipartFormData : Consts.Classes.FormData);
+                formClassName = uniqueName + (requestDataType is DataType.ComplexFormData ? Consts.Classes.MultipartFormData : Consts.Classes.FormData);
+                formClassName = GenerateUniqueName(formClassName, uniqueNames);
                 Dictionary<string, string?> descriptionDict;
                 if (requestItem.Request!.Body!.Formdata != null)
                 {
@@ -260,13 +297,33 @@ public class ApiClientGenerator
                 {
                     try
                     {
-                        ProcessItem(jsonClassGenerator, json, normalizedName, Consts.Response, ref responseClassName, ref responseSourceCode, ref responseTypes);
+                        ProcessItem(jsonClassGenerator, json, uniqueName, Consts.Response, ref responseClassName,
+                            ref responseSourceCode, ref responseTypes);
                     }
                     catch (JsonException)
                     {
                         responseClassName = "EmptyResponse";
                         responseSourceCode = null;
                         responseTypes = null;
+                    }
+                    catch (NoClassesGeneratedException)
+                    {
+#if DEBUG
+                        Console.WriteLine($@"Response no classes generated. {requestItem.Name}");
+#endif
+                        responseClassName = null;
+                        responseSourceCode = null;
+                        responseTypes = null;
+                    }
+                    catch (Exception ex)
+                    {
+                        responseClassName = null;
+                        responseSourceCode = null;
+                        responseTypes = null;
+#if DEBUG
+                        Console.WriteLine(ex);
+                        throw;
+#endif
                     }
                 }
             }
@@ -277,19 +334,40 @@ public class ApiClientGenerator
             if (requestItem.Request!.Url.Query is {Count: > 0})
             {
                 var jObject = new JObject();
-                foreach (var queryParameter in requestItem.Request.Url.Query)
+                var queryParameters = requestItem.Request!.Url.Query.Where(x => !string.IsNullOrWhiteSpace(x.Key)).ToList();
+                foreach (var queryParameter in queryParameters)
                 {
                     jObject[queryParameter.Key] = "test";
                 }
 
-                var descriptionDict = requestItem.Request.Url.Query
+                var descriptionDict = queryParameters
                     .GroupBy(x => x.Key)
                     .ToDictionary(
                         group => group.Key,
                         group => group.First().Description?.HtmlToPlainText()
                     );
                 var queryParametersAsJson = jObject.ToString();
-                ProcessItem(jsonClassGenerator ,queryParametersAsJson, normalizedName, Consts.Parameters, ref queryParametersClassName, ref queryParametersSourceCode, ref queryParameterTypes, descriptionDict);
+                try
+                {
+                    ProcessItem(jsonClassGenerator, queryParametersAsJson, uniqueName, Consts.Parameters, ref queryParametersClassName, ref queryParametersSourceCode, ref queryParameterTypes, descriptionDict);
+                }
+                catch (NoClassesGeneratedException)
+                {
+#if DEBUG
+                    Console.WriteLine($@"Query parameters no classes generated. {requestItem.Name}");
+#endif
+                    queryParametersClassName = null;
+                    queryParametersSourceCode = null;
+                }
+                catch (Exception ex)
+                {
+                    queryParametersClassName = null;
+                    queryParametersSourceCode = null;
+#if DEBUG
+                    Console.WriteLine(ex);
+                    throw;
+#endif
+                }
             }
 
             var uniqueHeaders = requestItem.Request.Header.Except(commonHeaders).ToList() ?? new ();
@@ -299,7 +377,7 @@ public class ApiClientGenerator
 
             httpCalls.Add(new ()
             {
-                Name = normalizedName,
+                Name = uniqueName,
                 HttpClientFunction = httpClientFunction,
                 Request = requestItem.Request!,
                 RequestDataType = requestDataType,
@@ -328,7 +406,7 @@ public class ApiClientGenerator
 
         void ProcessItem(JsonClassGenerator classGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, ref List<ClassType>? types, Dictionary<string, string?>? descriptionDict = null)
         {
-            className = itemName + itemType;
+            className = GenerateUniqueName(itemName + itemType, uniqueNames);
             var writeComments = Options.ApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.QueryParameters);
             classGenerator.SetRootName(className);
             if (itemType == Consts.Parameters)
@@ -390,7 +468,7 @@ public class ApiClientGenerator
                 JsonMemberName = y.JsonMemberName
             }).ToList()
         }).ToList();
-        var consolidated = CodeAnalysisUtils.ConsolidateNamespaces(sb.ToString());
+        var consolidated = CodeAnalysisUtils.ConsolidateNamespaces(sb.ToString(), rootClassName);
         return CodeAnalysisUtils.ReorderClasses(consolidated, rootClassName);
     }
 

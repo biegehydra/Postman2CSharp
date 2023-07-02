@@ -83,7 +83,7 @@ namespace Postman2CSharp.Core.Utilities
                 if (sourceCode == null || fileNameNoExtension == null) return;
                 var fullFileName = fileNameNoExtension + ".cs";
                 if (fullFileName == ".cs") return;
-                dict!.Add(fullFileName, (httpCallName, sourceCode));
+                dict!.TryAdd(fullFileName, (httpCallName, sourceCode));
             }
         }
 

@@ -24,7 +24,7 @@ public class HelpersTests
     {
         var unconsolidatedNamespaces = ReadFile("MultipleNamespaces.txt");
 
-        var consolidated = CodeAnalysisUtils.ConsolidateNamespaces(unconsolidatedNamespaces);
+        var consolidated = CodeAnalysisUtils.ConsolidateNamespaces(unconsolidatedNamespaces, "GeolocateRequest");
 
         var tree = CSharpSyntaxTree.ParseText(consolidated);
         var root = tree.GetCompilationUnitRoot();

@@ -101,10 +101,12 @@ namespace Xamasoft.JsonClassGenerator
                 this.GenerateClass(examples, rootType);
 
                 this.Types = this.HandleDuplicateClasses(this.Types);
+                AllTypes.AddRange(Types);
+                LastMinuteCleansing(this.Types);
+
 
                 StringBuilder builder = new StringBuilder();
                 CodeWriter.WriteClassesToFile(builder, this.Types, rootWasArray);
-                AllTypes.AddRange(Types);
 
                 errorMessage = String.Empty;
                 return builder;
@@ -114,6 +116,60 @@ namespace Xamasoft.JsonClassGenerator
                 errorMessage = ex.ToString();
                 return new StringBuilder();
             }
+        }
+
+        private void LastMinuteCleansing(IList<JsonType> types)
+        {
+            // TODO: Explain
+            foreach (JsonType type in types)
+            {
+                foreach (JsonFieldInfo field in type.Fields)
+                {
+                    if (!AllTypes.Any(x => FieldEqual(x, field)))
+                    {
+                        if (CSharpCodeWriter._reservedKeywords.Contains(field.Type?.NewAssignedName))
+                        {
+                            continue;
+                        }
+                        if (CSharpCodeWriter._reservedKeywords.Contains(field.Type?.InternalType?.NewAssignedName))
+                        {
+                            continue;
+                        }
+                        if (field.Type?.NewAssignedName is {Length: > 2})
+                        {
+                            var test = field.Type?.NewAssignedName;
+                            var last = field.Type.NewAssignedName.Last();
+                            if (char.IsDigit(last))
+                            {
+                                field.Type.AssignNewAssignedName(field.Type.NewAssignedName[..^1]);
+                            }
+                        }
+                        if (field.Type?.InternalType?.NewAssignedName is {Length: > 2})
+                        {
+                            var test = field.Type?.InternalType.NewAssignedName;
+                            var last = field.Type.InternalType.NewAssignedName.Last();
+                            if (char.IsDigit(last))
+                            {
+                                field.Type.AssignNewAssignedName(field.Type.InternalType.NewAssignedName[..^1]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool FieldEqual(JsonType type, JsonFieldInfo field)
+        {
+            if (field == null) return false;
+            if (field.Type?.NewAssignedName != null && field.Type.NewAssignedName == type.NewAssignedName)
+            {
+                return true;
+            }
+            if (field.Type?.InternalType?.NewAssignedName != null && field.Type.InternalType.NewAssignedName == type.NewAssignedName)
+            {
+                return true;
+            }
+            return false;
         }
         private void GenerateClass(JObject[] examples, JsonType type)
         {
@@ -301,6 +357,11 @@ namespace Xamasoft.JsonClassGenerator
                                     // Because of this we check if the assigned names equal Class2 == Class2
                                     // Then we set the internal type of it to the duplicate
                                     // AssignedName Class2 NewAssignedName Class => AssignedName Class2 NewAssignedName Class2
+                                    if (type.AssignedName != null && jsonTypeField.Type?.AssignedName == type.AssignedName)
+                                    {
+                                        jsonTypeField.Type.AssignNewAssignedName(type.NewAssignedName);
+                                        continue;
+                                    }
                                     if (type.AssignedName != null && jsonTypeField.Type?.InternalType?.AssignedName == type.AssignedName)
                                     {
                                         jsonTypeField.Type!.InternalType!.AssignNewAssignedName(type.NewAssignedName);
