@@ -183,7 +183,7 @@
         var apiClientOptions = await JsRuntime.InvokeAsync<ApiClientOptions?>("getLocalStorage", "apiClientOptions");
         if (apiClientOptions != null)
         {
-            AdvancedSettings.SetApiClientOptions(apiClientOptions);
+            ApiClientOptionsComponent.SetApiClientOptions(apiClientOptions);
         }
         OnSettingsChanged?.Invoke();
         return false;
@@ -193,7 +193,7 @@
     {
         await JsRuntime.InvokeVoidAsync("setLocalStorage", "siteSettings", SiteSettings.Instance);
         await JsRuntime.InvokeVoidAsync("setLocalStorage", "codeWriterConfig", CSharpCodeWriterOptionsComponent.LastSavedInputModel);
-        await JsRuntime.InvokeVoidAsync("setLocalStorage", "apiClientOptions", AdvancedSettings.ApiClientOptions);
+        await JsRuntime.InvokeVoidAsync("setLocalStorage", "apiClientOptions", ApiClientOptionsComponent.ApiClientOptions);
     }
 
 

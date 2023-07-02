@@ -1,6 +1,9 @@
 ﻿.mud-alert-message .link-normal {
     color: #a576ea;
 }
+.mud-paper {
+    --mud-palette-error: #9c5c64;
+}
 
 .link-normal {
     color: #5d5db8;

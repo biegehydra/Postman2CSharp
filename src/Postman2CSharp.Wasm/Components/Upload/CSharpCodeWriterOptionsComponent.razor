@@ -1,82 +1,74 @@
 ﻿@implements IDisposable
-<MudPaper Style="padding: 16px;">
-    <div class="f-row-column" style="gap: 10px;" >
-        <div style="width: 90%;">
-            <h2>Json Class Generation Options</h2>
-            <br />
-            <p>Applies to classes generated for requests and responses that have a Json body. Use default settings for best results.</p>
-            <p><u>Does not apply to form data or query parameter classes.</u></p>
-            <br/>
-            <MudAlert Variant="Variant.Outlined" Elevation="2" Severity="Severity.Info" Style="width: fit-content;">
-                Additional settings can be configured at the <a class="link-normal" href="/Advanced-Settings">Advanced Settings</a> page.
-            </MudAlert>
-        </div>
-        <div class="f-column end-start" style="gap: 25px;" >
-            <MudTooltip Text="Rests settings to default values">
-                <MudButton Style="white-space: nowrap;" Color="Color.Error" Disabled="InputModel.Equals(InputModelWithDefaults())" Variant="Variant.Filled" OnClick="SetInputModelToDefault">Reset To Default</MudButton>
-            </MudTooltip>
-        </div>
+<div class="f-row-column" style="gap: 10px;">
+    <div style="width: 90%;">
+        <h2>Json Class Generation Options</h2>
+        <br />
+        <p>Applies to classes generated for requests and responses that have a Json body. Use default settings for best results.</p>
+        <p><u>Does not apply to form data or query parameter classes.</u></p>
     </div>
-    <br />
-    <MudGrid>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="InputModel.AttributeLibrary" Label="Json Library"></EnumSelectComponent>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent @bind-Value="InputModel.CollectionType" Label="Collection Type"></EnumSelectComponent>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="InputModel.AttributeUsage" Label="JsonProperty Attribute Usage"></EnumSelectComponent>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent @bind-Value="InputModel.OutputType" Label="Output Type"></EnumSelectComponent>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent @bind-Value="InputModel.OutputMembers" Label="Output Members"></EnumSelectComponent>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudSwitch Color="Color.Tertiary" @bind-Checked="InputModel.NullValueHandlingIgnore" Label="Null Value Handling Ignore"></MudSwitch>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudSwitch Color="Color.Tertiary" @bind-Checked="InputModel.ReadOnlyCollectionProperties" Label="Read Only Collection Properties"></MudSwitch>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudSwitch Color="Color.Tertiary" @bind-Checked="InputModel.AlwaysUseNullables" Label="Always Use Nullables"></MudSwitch>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudSwitch Color="Color.Tertiary" @bind-Checked="InputModel.UsePascalCase" Label="Use Pascal Case"></MudSwitch>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            @{
-                var toolTipColor = Color.Warning;
-                var toolTipVisible = false;
-                string toolTipMessage = "";
-                if (!InputModel.Equals(LastSavedInputModel))
-                {
-                    toolTipColor = Color.Warning;
-                    toolTipVisible = true;
-                    toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
-                }
+    <div class="f-column end-start" style="gap: 25px;">
+        <MudTooltip Text="Resets settings to default values">
+            <MudButton Style="white-space: nowrap;" Color="Color.Error" Disabled="InputModel.Equals(InputModelWithDefaults())" Variant="Variant.Filled" OnClick="SetInputModelToDefault">Reset To Default</MudButton>
+        </MudTooltip>
+    </div>
+</div>
+<br />
+<MudGrid>
+    <MudItem xs="12" sm="6" md="4" lg="3">
+        <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="InputModel.AttributeLibrary" Label="Json Library"></EnumSelectComponent>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3">
+        <EnumSelectComponent @bind-Value="InputModel.CollectionType" Label="Collection Type"></EnumSelectComponent>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3">
+        <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="InputModel.AttributeUsage" Label="JsonProperty Attribute Usage"></EnumSelectComponent>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3">
+        <EnumSelectComponent @bind-Value="InputModel.OutputType" Label="Output Type"></EnumSelectComponent>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3">
+        <EnumSelectComponent @bind-Value="InputModel.OutputMembers" Label="Output Members"></EnumSelectComponent>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3">
+        <MudSwitch Color="Color.Tertiary" @bind-Checked="InputModel.NullValueHandlingIgnore" Label="Null Value Handling Ignore"></MudSwitch>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3">
+        <MudSwitch Color="Color.Tertiary" @bind-Checked="InputModel.ReadOnlyCollectionProperties" Label="Read Only Collection Properties"></MudSwitch>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3">
+        <MudSwitch Color="Color.Tertiary" @bind-Checked="InputModel.AlwaysUseNullables" Label="Always Use Nullables"></MudSwitch>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3">
+        <MudSwitch Color="Color.Tertiary" @bind-Checked="InputModel.UsePascalCase" Label="Use Pascal Case"></MudSwitch>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3">
+        @{
+            var toolTipColor = Color.Warning;
+            var toolTipVisible = false;
+            string toolTipMessage = "";
+            if (!InputModel.Equals(LastSavedInputModel))
+            {
+                toolTipColor = Color.Warning;
+                toolTipVisible = true;
+                toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
             }
-            <div class="f-row aic" style="gap: 15px; width: 100%; justify-content: space-around;">
-                <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="InputModel.Equals(LastSavedInputModel)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
-                @if (toolTipVisible)
-                {
-                    <MudTooltip Style="position: absolute; top: 10px; right: 10px;" Text="@toolTipMessage">
-                        <MudIcon Icon="@Icons.Warning" Color="@toolTipColor" Title="Warning" Size="Size.Large"></MudIcon>
-                    </MudTooltip>
-                }
-                else
-                {
-                    <div style="width: 20px;">
-
-                    </div>
-                }
-            </div>
-        </MudItem>
-    </MudGrid>
-</MudPaper>
-
+        }
+        <div class="f-row aic" style="gap: 15px; width: 100%; justify-content: space-around;">
+            <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="InputModel.Equals(LastSavedInputModel)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
+            @if (toolTipVisible)
+            {
+                <MudTooltip Style="position: absolute; top: 10px; right: 10px;" Text="@toolTipMessage">
+                    <MudIcon Icon="@Icons.Warning" Color="@toolTipColor" Title="Warning" Size="Size.Large"></MudIcon>
+                </MudTooltip>
+            }
+            else
+            {
+                <div style="width: 20px;">
+                </div>
+            }
+        </div>
+    </MudItem>
+</MudGrid>
 
 
 @code {
@@ -139,7 +131,7 @@
     {
         Options = InputModel.ToCSharpCodeWriterConfig();
         LastSavedInputModel = InputModel.Clone();
-        SnackBar.Value?.Add($"Code writing options saved", Severity.Success);
+        SnackBar.Value?.Add($"Class generation options saved", Severity.Success);
     }
 
     public void Dispose()

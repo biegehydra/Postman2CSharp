@@ -11,101 +11,7 @@
     @if (LazyLoader.AdvancedSettingsLoaded)
     {
         <MudPaper Style="padding: 16px;">
-            <div class="f-row">
-                <div class="f-column" style="width: 90%;">
-                    <h2>ApiClient Generation Options</h2>
-                    <br/>
-                    <MudAlert Variant="Variant.Outlined" Elevation="2" Severity="Severity.Info" Style="width: fit-content;">
-                        For an in depth explanation on how these settings work, see the <a class="link-normal" href="/Advanced-Settings/Explanations">Advanced Settings Explanation</a> page.
-                    </MudAlert>
-                </div>
-                <div>
-                    @if (!Equals(ApiClientOptions, new ApiClientOptions()))
-                    {
-                        <MudTooltip Text="Resets settings to default values">
-                            <MudButton Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { ApiClientOptions = new ApiClientOptions();  }">Reset to default</MudButton>
-                        </MudTooltip>
-                    }
-                </div>
-            </div>
-            <br />
-            <MudGrid Spacing="3">
-                <AdvancedSettingItem ToolTip="Removes any header that is ticked off">
-                    <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDisabledHeaders">Remove disabled headers</MudSwitch>
-                </AdvancedSettingItem>
-
-                <AdvancedSettingItem ToolTip="Remove any query parameter that is ticked off.">
-                    <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDisabledQueryParams">Remove Disabled Query Parameters</MudSwitch>
-                </AdvancedSettingItem>
-
-                <AdvancedSettingItem ToolTip="Removes any class that is reused in responses across requests. See options explanation page.">
-                    <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateClasses">Remove Duplicate Classes</MudSwitch>
-                </AdvancedSettingItem>
-
-                <AdvancedSettingItem ToolTip="Each request in the generated ApiClient will call EnsureSuccessStatusCode() on the HttpResponseMessage before deserializing or returning the response stream.">
-                    <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudSwitch>
-                </AdvancedSettingItem>
-
-                <AdvancedSettingItem ToolTip="@(@"All actual ""path variables"" are automatically treated as function parameters, but collection variables in paths will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
-                    <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudSwitch>
-                </AdvancedSettingItem>
-                
-                <AdvancedSettingItem ToolTip="@(@"If true each request function on the generated ApiClient will be have a Cancellation token parameter with a default value of default.")">
-                    <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.UseCancellationTokens">Use Cancellation Tokens</MudSwitch>
-                </AdvancedSettingItem>
-                
-                <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are useds as xml comments.">
-                    <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="ApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
-                </AdvancedSettingItem>
-
-                <AdvancedSettingItem ToolTip="Determines whether or not to handle errors when making http client calls and how to handle them when they happen.">
-                    <EnumSelectComponent @bind-Value="ApiClientOptions.ErrorHandlingStrategy" AlwaysShowAllEnumValues Label="Error Handling Strategy"></EnumSelectComponent>
-                </AdvancedSettingItem>
-
-                <AdvancedSettingItem ToolTip="Choose how to output your exceptions, if at all.">
-                    <MultiEnumSelectComponent TEnum="ErrorHandlingSinks" Value="ApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
-                </AdvancedSettingItem>
-
-                <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handling by the sinks.">
-                    <MultiEnumSelectComponent TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="ApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
-                </AdvancedSettingItem>
-
-                <AdvancedSettingItem ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
-                    <EnumSelectComponent @bind-Value="ApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
-                </AdvancedSettingItem>
-
-                <AdvancedSettingItem ToolTip="WARNING: It is almost never advisable to change this to PerAuthority, especially with large postman collections. See options explanation page.">
-                    <EnumSelectComponent @bind-Value="ApiClientOptions.RootDefinition" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
-                </AdvancedSettingItem>
-                <MudItem xs="12" sm="6" md="4" lg="3" Style="align-self: flex-end; display: flex; justify-content: center;">
-                    @{
-                        var toolTipColor = Color.Warning;
-                        var toolTipVisible = false;
-                        string toolTipMessage = "";
-                        if (!Equals(ApiClientOptions, LastSavedApiClientOptions))
-                        {
-                            toolTipColor = Color.Warning;
-                            toolTipVisible = true;
-                            toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
-                        }
-                    }
-                    <div class="f-row aic" style="gap: 15px; width: 100%; justify-content: space-around;">
-                        <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="Equals(ApiClientOptions, LastSavedApiClientOptions)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
-                        @if (toolTipVisible)
-                        {
-                            <MudTooltip Style="position: absolute; top: 10px; right: 10px;" Text="@toolTipMessage">
-                                <MudIcon Icon="@Icons.Warning" Color="@toolTipColor" Title="Warning" Size="Size.Large"></MudIcon>
-                            </MudTooltip>
-                        }
-                        else
-                        {
-                            <div style="width: 20px;">
-
-                            </div>
-                        }
-                    </div>
-                </MudItem>
-            </MudGrid>
+            <CSharpCodeWriterOptionsComponent />
             <br />
             <br />
             <div class="f-row">
@@ -115,7 +21,7 @@
                 <div>
                     @if (!Equals(SiteSettings.Instance, DefaultSiteSettings()))
                     {
-                        <MudTooltip Text="Rests settings to default values">
+                        <MudTooltip Text="Resets settings to default values">
                             <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="() => SiteSettings.Instance = DefaultSiteSettings()">Reset</MudButton>
                         </MudTooltip>
                     }
@@ -140,8 +46,6 @@
     [Inject] private ISnackbar? Snackbar { get; set; }
     [Inject] private Interop? Interop { get; set; }
     [Inject] private LazyLoader? LazyLoader { get; set; }
-    public static ApiClientOptions ApiClientOptions { get; private set; } = new();
-    public static ApiClientOptions LastSavedApiClientOptions { get; private set; } = new();
 
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
     {
@@ -149,42 +53,6 @@
         new("Advanced Settings", "/Advanced-Settings", true, Icons.Settings)
     };
 
-    public static void SetApiClientOptions(ApiClientOptions options)
-    {
-        LastSavedApiClientOptions = options.Clone();
-        ApiClientOptions = options.Clone();
-    }
-
-    private void SelectedErrorHandlingSinksChanged(IEnumerable<string> errorHandlingSinks)
-    {
-        ApiClientOptions.ErrorHandlingSinks = errorHandlingSinks.Select(Enum.Parse<ErrorHandlingSinks>).ToList();
-    }
-    private void SelectedCatchExceptionTypesChanged(IEnumerable<string> catchTypes)
-    {
-        ApiClientOptions.CatchExceptionTypes = catchTypes.Select(Enum.Parse<CatchExceptionTypes>).ToList();
-    }
-    private void SelectedCommentTypesChanged(IEnumerable<string> commentTypes)
-    {
-        ApiClientOptions.XmlCommentTypes = commentTypes.Select(Enum.Parse<XmlCommentTypes>).ToList();
-    }
-
-    private static ApiClientOptions DefaultOptions() => new ();
-    private static bool Equals(ApiClientOptions options1, ApiClientOptions options2)
-    {
-        var allCommentTypesMatch = options1.XmlCommentTypes.Count == options2.XmlCommentTypes.Count && options1.XmlCommentTypes.All(type => options2.XmlCommentTypes.Contains(type));
-        var allSinksMatch = options1.ErrorHandlingSinks.Count == options2.ErrorHandlingSinks.Count && options1.ErrorHandlingSinks.All(sink => options2.ErrorHandlingSinks.Contains(sink));
-        var allCatchTypesMatch = options1.CatchExceptionTypes.Count == options2.CatchExceptionTypes.Count && options1.CatchExceptionTypes.All(type => options2.CatchExceptionTypes.Contains(type));
-        return options1.RemoveDisabledQueryParams == options2.RemoveDisabledQueryParams
-               && options1.RemoveDisabledHeaders == options2.RemoveDisabledHeaders
-               && options1.RemoveDuplicateClasses == options2.RemoveDuplicateClasses
-               && options1.EnsureResponseIsSuccessStatusCode == options2.EnsureResponseIsSuccessStatusCode
-               && options1.MakePathCollectionVariablesFunctionParameters == options2.MakePathCollectionVariablesFunctionParameters
-               && options1.ErrorHandlingStrategy == options2.ErrorHandlingStrategy
-               && options1.LogLevel == options2.LogLevel
-               && options1.RootDefinition == options2.RootDefinition
-               && options1.UseCancellationTokens == options2.UseCancellationTokens
-               && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch;
-    }
     private static SiteSettings DefaultSiteSettings() => new();
     private static bool Equals(SiteSettings settings1, SiteSettings settings2)
     {
@@ -224,11 +92,4 @@
         LazyLoader.AdvancedSettingsLoadedChanged -= AdvancedSettingsLoadedChanged;
         MainLayout.OnSettingsChanged -= OnSettingsChanged;
     }
-
-    private void SaveOptions()
-    {
-        LastSavedApiClientOptions = ApiClientOptions.Clone();
-        Snackbar?.Add($"Saved {nameof(ApiClientOptions)}", Severity.Success);
-    }
-
 }

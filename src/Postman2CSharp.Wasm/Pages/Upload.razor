@@ -15,7 +15,9 @@
 @if (LazyLoader.UploadLoaded)
 {
     <div class="code-writing-options-contianer">
-        <CSharpCodeWriterOptionsComponent></CSharpCodeWriterOptionsComponent>
+        <MudPaper Style="padding: 16px;">
+            <ApiClientOptionsComponent></ApiClientOptionsComponent>
+        </MudPaper>
     </div>
 
     <CollectionUpload SuccessfulUpload="OnSuccessfulUpload"></CollectionUpload>

@@ -84,7 +84,7 @@
                 return;
             }
 
-            var apiClientGenerator = new ApiClientGenerator(collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, AdvancedSettings.LastSavedApiClientOptions));
+            var apiClientGenerator = new ApiClientGenerator(collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, ApiClientOptionsComponent.LastSavedApiClientOptions));
             StartTrackingGenerator(apiClientGenerator);
             await Task.Delay(1);
             var apiClients = await apiClientGenerator.GenerateApiClients();
