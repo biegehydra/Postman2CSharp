@@ -17,7 +17,6 @@ using Xamasoft.JsonClassGenerator.CodeWriterConfiguration;
 using Xamasoft.JsonClassGenerator.Models;
 using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Utilities;
-using IFormData = Postman2CSharp.Core.Models.PostmanCollection.Http.IFormData;
 
 namespace Postman2CSharp.Core;
 

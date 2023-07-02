@@ -25,9 +25,9 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Authorization
         [JsonRequired] public required string Type { get; set; }
         private PostmanAuthType? _enumType;
         public PostmanAuthType EnumType() => _enumType ??= Enum.Parse<PostmanAuthType>(Type);
-        public List<KeyValueTypeTrio>? Apikey { get; set; }
-        public List<KeyValueTypeTrio>? Oauth2 { get; set; }
-        public List<KeyValueTypeTrio>? Jwt { get; set; }
+        public List<KeyValueType>? Apikey { get; set; }
+        public List<KeyValueType>? Oauth2 { get; set; }
+        public List<KeyValueType>? Jwt { get; set; }
 
 
         public bool TryGetAuth2Config(OAuth2Config config, out string? value)
@@ -168,28 +168,6 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Authorization
         QueryParams
     }
 
-    public class OAuth2Properties
-    {
-        public const string AccessToken = "AccessToken";
-        public const string RefreshToken = "RefreshToken";
-        public const string RefreshTokenUrl = "_refreshTokenUrl";
-        public const string AccessTokenUrl = "_accessTokenUrl";
-        public const string RedirectUrl = "_redirectTokenUrl";
-        public const string AuthUrl = "_authUrl";
-        public const string ClientId = "_clientId";
-        public const string ClientSecret = "_clientSecret";
-        public const string Scope = "_scope";
-        public const string State = "_state";
-    }
-    public class OAuth2Functions
-    {
-        public const string GetAccessToken = "GetAccessToken";
-        public const string GetRefreshToken = "GetRefreshToken";
-        public const string PersistAccessToken = "PersistAccessToken";
-        public const string PersistRefreshToken = "PersistRefreshToken";
-        public const string AddAccessTokenToRequest = "AddAccessTokenToRequest";
-    }
-
     public enum OAuth2Config
     {
         RefreshTokenUrl,
@@ -208,7 +186,7 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Authorization
         HeaderPrefix
     }
 
-    public class KeyValueTypeTrio
+    public class KeyValueType
     {
         [JsonRequired] public required string Type { get; set; }
         [JsonRequired] public required string Key { get; set; }

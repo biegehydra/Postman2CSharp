@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Postman2CSharp.Core.Infrastructure;
 
 namespace Postman2CSharp.Core
 {
@@ -13,12 +14,12 @@ namespace Postman2CSharp.Core
 
         public List<ErrorHandlingSinks> ErrorHandlingSinks { get; set; } = new()
         {
-            Core.ErrorHandlingSinks.LogException
+            Infrastructure.ErrorHandlingSinks.LogException
         };
 
         public List<CatchExceptionTypes> CatchExceptionTypes { get; set; } = new()
         {
-            Core.CatchExceptionTypes.HttpRequestException
+            Infrastructure.CatchExceptionTypes.HttpRequestException
         };
 
         public RootDefinition RootDefinition { get; set; } = RootDefinition.PerAuthorityPerFolder;
@@ -26,62 +27,16 @@ namespace Postman2CSharp.Core
         public LogLevel LogLevel { get; set; } = LogLevel.Error;
         public List<XmlCommentTypes> XmlCommentTypes { get; set; } = new()
         {
-            Core.XmlCommentTypes.ApiClient,
-            Core.XmlCommentTypes.QueryParameters,
-            Core.XmlCommentTypes.FormData,
-            Core.XmlCommentTypes.PathVariables,
-            Core.XmlCommentTypes.Request,
+            Infrastructure.XmlCommentTypes.ApiClient,
+            Infrastructure.XmlCommentTypes.QueryParameters,
+            Infrastructure.XmlCommentTypes.FormData,
+            Infrastructure.XmlCommentTypes.PathVariables,
+            Infrastructure.XmlCommentTypes.Request,
         };
 
         public ApiClientOptions Clone()
         {
             return (ApiClientOptions) MemberwiseClone();
         }
-    }
-
-    public enum XmlCommentTypes
-    {
-        ApiClient,
-        QueryParameters,
-        FormData,
-        PathVariables,
-        Request,
-    }
-
-    public enum RootDefinition
-    {
-        PerAuthorityPerFolder,
-        PerAuthority,
-    }
-
-    public enum ErrorHandlingSinks
-    {
-        LogException,
-        ConsoleWriteLine,
-        DebugWriteLine
-    }
-
-    public enum ErrorHandlingStrategy
-    {
-        None,
-        ThrowException,
-        ReturnDefault
-    }
-
-    public enum CatchExceptionTypes
-    {
-        HttpRequestException,
-        JsonException,
-        Exception,
-    }
-
-    public enum LogLevel
-    {
-        Trace,
-        Debug,
-        Information,
-        Warning,
-        Error,
-        Critical
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
+using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Serialization;
@@ -110,17 +111,17 @@ public class ApiClient
     {
         var namespaces = new List<string>(DefaultApiClientNamespaces);
         namespaces.AddRange(ImplicitNamespaces);
-        if (JsonLibrary == JsonLibrary.SystemTextJson && ErrorHandlingStrategy != ErrorHandlingStrategy.None && CatchExceptionTypes.Contains(Core.CatchExceptionTypes.JsonException))
+        if (JsonLibrary == JsonLibrary.SystemTextJson && ErrorHandlingStrategy != ErrorHandlingStrategy.None && CatchExceptionTypes.Contains(Infrastructure.CatchExceptionTypes.JsonException))
         {
             namespaces.Add("System.Text.Json");
         }
-        else if (JsonLibrary == JsonLibrary.NewtonsoftJson && ErrorHandlingStrategy != ErrorHandlingStrategy.None && CatchExceptionTypes.Contains(Core.CatchExceptionTypes.JsonException))
+        else if (JsonLibrary == JsonLibrary.NewtonsoftJson && ErrorHandlingStrategy != ErrorHandlingStrategy.None && CatchExceptionTypes.Contains(Infrastructure.CatchExceptionTypes.JsonException))
         {
             namespaces.Add("Newtonsoft.Json");
         }
 
         if (ErrorHandlingStrategy != ErrorHandlingStrategy.None &&
-            ErrorHandlingSinks.Contains(Core.ErrorHandlingSinks.DebugWriteLine))
+            ErrorHandlingSinks.Contains(Infrastructure.ErrorHandlingSinks.DebugWriteLine))
         {
             namespaces.Add("System.Diagnostics");
         }

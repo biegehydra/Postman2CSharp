@@ -39,3 +39,24 @@ public static class Consts
         public const string IQueryParameters = nameof(IQueryParameters);
     }
 }
+public static class OAuth2Properties
+{
+    public const string AccessToken = "AccessToken";
+    public const string RefreshToken = "RefreshToken";
+    public const string RefreshTokenUrl = "_refreshTokenUrl";
+    public const string AccessTokenUrl = "_accessTokenUrl";
+    public const string RedirectUrl = "_redirectTokenUrl";
+    public const string AuthUrl = "_authUrl";
+    public const string ClientId = "_clientId";
+    public const string ClientSecret = "_clientSecret";
+    public const string Scope = "_scope";
+    public const string State = "_state";
+}
+public static class OAuth2Functions
+{
+    public const string GetAccessToken = "GetAccessToken";
+    public const string GetRefreshToken = "GetRefreshToken";
+    public const string PersistAccessToken = "PersistAccessToken";
+    public const string PersistRefreshToken = "PersistRefreshToken";
+    public const string AddAccessTokenToRequest = "AddAccessTokenToRequest";
+}

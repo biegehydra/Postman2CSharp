@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Postman2CSharp.Core.Infrastructure;
 
 namespace Postman2CSharp.Core.Models.PostmanCollection.Http
 {
-    public class Header : IKvp
+    public class Header
     {
         private static readonly List<string> CommonAuthHeaders = new List<string>()
         {

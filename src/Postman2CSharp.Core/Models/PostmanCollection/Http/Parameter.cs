@@ -1,5 +1,6 @@
 ﻿using Postman2CSharp.Core.Utilities;
 using System.Text.Json.Serialization;
+using Postman2CSharp.Core.Infrastructure;
 
 namespace Postman2CSharp.Core.Models.PostmanCollection.Http;
 

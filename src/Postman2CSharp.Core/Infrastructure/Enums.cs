@@ -13,4 +13,54 @@
         Binary,
         GraphQl
     }
+    public enum XmlCommentTypes
+    {
+        ApiClient,
+        QueryParameters,
+        FormData,
+        PathVariables,
+        Request,
+    }
+
+    public enum RootDefinition
+    {
+        PerAuthorityPerFolder,
+        PerAuthority,
+    }
+
+    public enum ErrorHandlingSinks
+    {
+        LogException,
+        ConsoleWriteLine,
+        DebugWriteLine
+    }
+
+    public enum ErrorHandlingStrategy
+    {
+        None,
+        ThrowException,
+        ReturnDefault
+    }
+
+    public enum CatchExceptionTypes
+    {
+        HttpRequestException,
+        JsonException,
+        Exception,
+    }
+
+    public enum LogLevel
+    {
+        Trace,
+        Debug,
+        Information,
+        Warning,
+        Error,
+        Critical
+    }
+    public enum FormDataType
+    {
+        Text,
+        File
+    }
 }

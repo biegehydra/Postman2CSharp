@@ -7,7 +7,6 @@ using Newtonsoft.Json.Linq;
 using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
-using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Utilities;
