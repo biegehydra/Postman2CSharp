@@ -249,11 +249,11 @@
             SnackBar?.Add("Saving to local storage is disabled.", Severity.Warning);
             return;
         }
-        if (!LazyLoader.UploadLoaded)
+        if (!LazyLoader.ConvertLoaded)
         {
             try
             {
-                await LazyLoader.LoadUploadAssemblies();
+                await LazyLoader.LoadConvertAssemblies();
             }
             catch (Exception ex)
             {
