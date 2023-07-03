@@ -30,13 +30,13 @@
                 <strong>Step 2:</strong> In the 'Export Collection' dialog box, select version 'Collection v2.1'.
             </MudText>
         </MudListItem>
-        <img class="getting-started-image" src="images/Export.png" alt="Show More" fetchpriority="low" loading="lazy">
+        <img class="getting-started-image" src="images/Export.png" alt="Export" fetchpriority="low" loading="lazy">
         <MudListItem>
             <MudText>
                 <strong>Step 3:</strong> Click 'Export' and choose the location where you want to save the file.
             </MudText>
         </MudListItem>
-        <img class="getting-started-image" src="images/ExportCollection.png" alt="Show More" fetchpriority="low" loading="lazy">
+        <img class="getting-started-image" src="images/ExportCollection.png" alt="Export Collection" fetchpriority="low" loading="lazy">
         <MudListItem>
             <MudText>
                 <strong>Step 4:</strong> Now you can Upload the exported Json file on <a class="link-normal" href="/Upload">this</a> page to generate your C# API client.
@@ -51,7 +51,12 @@
     <MudList>
         <MudListItem>
             <MudText>
-                <strong>Save responses for all requests:</strong> This provides a reference point and allows us to generate classes for json responses.
+                <strong>Save responses for all requests:</strong> This allows Postman2CSharp to generate classes for your response json.
+            </MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText>
+                <strong>Put example json in request bodies that use it:</strong> As above, this allows Postman2CSharp to generate classes for your response json.
             </MudText>
         </MudListItem>
         <MudListItem>
@@ -66,7 +71,7 @@
         </MudListItem>
         <MudListItem>
             <MudText>
-                <strong>Use collection variables instead of other types of variables:</strong> Collection variables allow us to do more code generation for you because their values are included in the json.
+                <strong>Use collection variables instead of other types of variables:</strong> Collection variables allow Postman2CSharp to do more code generation for you because their values are included in the exported json.
             </MudText>
         </MudListItem>
     </MudList>

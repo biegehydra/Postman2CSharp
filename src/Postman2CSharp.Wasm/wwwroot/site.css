@@ -14,6 +14,15 @@
     padding: 5px 16px;
     flex-grow: 1;
 }
+.show-more {
+    text-decoration: underline;
+    font-size: small;
+}
+
+.show-more:hover {
+    cursor: pointer;
+    text-decoration: none;
+}
 
 strong, b {
     color: #dbdbdb;

@@ -53,7 +53,7 @@ namespace Postman2CSharp.Core.Utilities
             return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
         }
 
-        public static string ReorderClasses(string sourceCode, string rootName)
+        public static string ReorderClasses(string sourceCode, string rootName, out int classCount)
         {
             var tree = CSharpSyntaxTree.ParseText(sourceCode);
             var root = tree.GetRoot();
@@ -71,6 +71,17 @@ namespace Postman2CSharp.Core.Utilities
                 };
             }
             var classes = namespaceDeclaration.Members.OfType<ClassDeclarationSyntax>().ToList();
+            classCount = classes.Count;
+            if (classCount == 0)
+            {
+#if DEBUG
+                Debug.WriteLine($"No classes generated for {rootName}");
+#endif
+                throw new NoClassesGeneratedException()
+                {
+                    IntendedRootName = rootName
+                };
+            }
             var orderedClasses = classes
                 .OrderBy(c => c.Identifier.Text != rootName) // RootName class first
                 .ThenByDescending(c =>
@@ -96,6 +107,6 @@ namespace Postman2CSharp.Core.Utilities
 
     public class NoClassesGeneratedException : Exception
     {
-        public string IntendedRootName { get; set; }
+        public required string IntendedRootName { get; set; }
     }
 }

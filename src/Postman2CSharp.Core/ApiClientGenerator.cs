@@ -158,13 +158,13 @@ public class ApiClientGenerator
         var leastPossibleUri = rootItem.FindLeastPossibleUri();
         var commonHeaders = rootItem.GetCommonHeaders();
         var uniqueNamesList = new List<string>() { normalizedNameSpace, name };
-        var httpCalls = await GetHttpCalls(rootItem, commonHeaders, normalizedNameSpace, uniqueNamesList);
+        var (httpCalls, totalClassesGeneratedFromHttpCalls) = await GetHttpCalls(rootItem, commonHeaders, normalizedNameSpace, uniqueNamesList);
         var auth = rootItem.Auth ?? PostmanCollection.Auth;
 
         var apiClient = new ApiClient(name, rootItem.Description, normalizedNameSpace, leastPossibleUri, httpCalls, commonHeaders, auth, variableUsages,
             Options.ApiClientOptions.EnsureResponseIsSuccessStatusCode, Options.ApiClientOptions.XmlCommentTypes, Options.ApiClientOptions.CatchExceptionTypes,
             Options.ApiClientOptions.ErrorHandlingSinks, Options.ApiClientOptions.ErrorHandlingStrategy, Options.ApiClientOptions.LogLevel, Options.CSharpCodeWriterConfig.AttributeLibrary,
-            Options.ApiClientOptions.UseCancellationTokens);
+            Options.ApiClientOptions.UseCancellationTokens, totalClassesGeneratedFromHttpCalls + 1);
         // This is generated here and not in the constructor because it allows my wasm app to lazy load a couple large dlls
         // that are used in the generation process. GenerateSourceCode was being called when I deserialized api clients from local storage
         apiClient.GenerateSourceCode();
@@ -190,13 +190,14 @@ public class ApiClientGenerator
         return baseName + counter;
     }
 
-    private async Task<List<HttpCall>> GetHttpCalls(CollectionItem item, List<Header> commonHeaders, string nameSpace, List<string> uniqueNames)
+    private async Task<(List<HttpCall> HttpCalls, int TotalClassesGenerated)> GetHttpCalls(CollectionItem item, List<Header> commonHeaders, string nameSpace, List<string> uniqueNames)
     {
         List<HttpCall> httpCalls = new ();
         var requestItems = item.RequestItems();
         var writeFormDataComments = Options.ApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.FormData);
+        var totalClassesGenerated = 0;
 
-        if(requestItems == null) return httpCalls;
+        if(requestItems == null) return (httpCalls, totalClassesGenerated);
 
         var jsonClassGenerator = ClassGenerator();
         foreach (var requestItem in requestItems)
@@ -267,6 +268,7 @@ public class ApiClientGenerator
                         );
                     var iFormData = requestItem.Request!.Body!.Formdata.Cast<IFormData>().ToList();
                     formClassSourceCode = GenerateFormDataClass(formClassName, iFormData, requestDataType, nameSpace, descriptionDict, writeFormDataComments);
+                    totalClassesGenerated++;
                 }
                 else if (requestItem.Request!.Body!.Urlencoded != null)
                 {
@@ -278,6 +280,7 @@ public class ApiClientGenerator
                         );
                     var iFormData = requestItem.Request!.Body!.Urlencoded.Cast<IFormData>().ToList();
                     formClassSourceCode = GenerateFormDataClass(formClassName, iFormData, DataType.SimpleFormData, nameSpace, descriptionDict, writeFormDataComments);
+                    totalClassesGenerated++;
                 }
             }
 
@@ -402,7 +405,7 @@ public class ApiClientGenerator
                 throw new Exception("Something went wrong");
             await RaiseProgressCallback((float) _processedRequests / TotalRequest);
         }
-        return httpCalls;
+        return (httpCalls, totalClassesGenerated);
 
         void ProcessItem(JsonClassGenerator classGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, ref List<ClassType>? types, Dictionary<string, string?>? descriptionDict = null)
         {
@@ -421,7 +424,8 @@ public class ApiClientGenerator
                 classGenerator.CodeWriter = new CSharpCodeWriter(codeWriterClone, writeComments);
             }
             classGenerator.SetDescriptionDict(descriptionDict);
-            sourceCode = GenerateClasses(classGenerator, json, ref types, className);
+            (sourceCode, var classCount) = GenerateClasses(classGenerator, json, ref types, className);
+            totalClassesGenerated += classCount;
             if (sourceCode == string.Empty)
             {
                 if (JsonSerializer.Deserialize<List<string>>(json) is { })
@@ -456,7 +460,7 @@ public class ApiClientGenerator
         return new CSharpCodeWriter(Options.CSharpCodeWriterConfig, writeComments);
     }
 
-    private static string GenerateClasses(JsonClassGenerator jsonClassGenerator, string json, ref List<ClassType>? types, string rootClassName)
+    private static (string SourceCode, int ClassCount) GenerateClasses(JsonClassGenerator jsonClassGenerator, string json, ref List<ClassType>? types, string rootClassName)
     {
         var sb = jsonClassGenerator.GenerateClasses(json, out var errorMessage);
         types = jsonClassGenerator.Types?.Select(x => new ClassType()
@@ -469,7 +473,8 @@ public class ApiClientGenerator
             }).ToList()
         }).ToList();
         var consolidated = CodeAnalysisUtils.ConsolidateNamespaces(sb.ToString(), rootClassName);
-        return CodeAnalysisUtils.ReorderClasses(consolidated, rootClassName);
+        var reordered = CodeAnalysisUtils.ReorderClasses(consolidated, rootClassName, out var classCount);
+        return (reordered, classCount);
     }
 
     private static string? GenerateFormDataClass (string? formClassName, List<IFormData>? formdatas, DataType? dataType, string nameSpace, Dictionary<string, string?> descriptionDict, bool writeFormDataComments)

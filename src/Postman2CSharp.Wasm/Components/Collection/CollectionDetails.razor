@@ -1,15 +1,4 @@
-﻿<style>
-    .show-more {
-        text-decoration: underline;
-        font-size: small;
-    }
-
-    .show-more:hover {
-        cursor: pointer;
-        text-decoration: none;
-    }
-</style>
-@if (Info != null && Collection != null)
+﻿@if (Info != null && Collection != null)
 {
     <div class="f-row" style="justify-content: space-between">
         <div class="f-row" style="justify-content: space-between; gap: 10px; width: 100%;">
@@ -76,7 +65,7 @@ else
 
     private int HttpCallsCount => Collection?.ApiClients.Sum(x => x.HttpCalls.Count) ?? 0;
 
-    private int TotalGeneratedClasses => Collection?.ApiClients.Sum(GeneratedClassesCount) ?? 0;
+    private int TotalGeneratedClasses => Collection?.ApiClients.Sum(x => x.TotalClassesGenerated) ?? 0;
 
     private ApiCollection? _cachedCollection;
     protected override async Task OnAfterRenderAsync(bool first)
@@ -101,30 +90,5 @@ else
         ShowMore = false;
         await Interop.EmptyElement("markdown-body");
         StateHasChanged();
-    }
-
-    private static int GeneratedClassesCount(ApiClient client)
-    {
-        int i = 0;
-        foreach (var httpCall in client.HttpCalls)
-        {
-            if (httpCall.FormDataClassName != null)
-            {
-                i++;
-            }
-            if (httpCall.ResponseClassName != null)
-            {
-                i++;
-            }
-            if (httpCall.RequestClassName != null)
-            {
-                i++;
-            }
-            if (httpCall.QueryParameterClassName != null)
-            {
-                i++;
-            }
-        }
-        return i;
     }
 }

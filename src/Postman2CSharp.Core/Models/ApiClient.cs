@@ -54,6 +54,7 @@ public class ApiClient
     public required bool EnsureSuccessStatusCode { get; set; }
     public required List<XmlCommentTypes> CommentTypes { get; set; }
     public required bool UseCancellationTokens { get; set; }
+    public required int TotalClassesGenerated { get; set; }
 
     private List<AuthSettings>? _uniqueAuths;
     public List<AuthSettings> UniqueAuths => _uniqueAuths ??= GetUniqueAuths();
@@ -80,7 +81,7 @@ public class ApiClient
 #pragma warning restore CS8618
         List<Header> commonHeaders, AuthSettings? collectionAuth, List<VariableUsage> variableUsages,
         bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
-        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool useCancellationTokens)
+        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool useCancellationTokens, int totalClassesGenerated)
     {
         Name = name;
         Description = description;
@@ -98,6 +99,7 @@ public class ApiClient
         LogLevel = logLevel;
         JsonLibrary = jsonLibrary;
         UseCancellationTokens = useCancellationTokens;
+        TotalClassesGenerated = totalClassesGenerated;
     }
 
     public void GenerateSourceCode()

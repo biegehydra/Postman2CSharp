@@ -16,7 +16,7 @@
     public string? Key { get; set; }
 
     [EditorRequired, Parameter]
-    public List<Header>? NestedValues { get; set; }
+    public Dictionary<string,string>? NestedValues { get; set; }
 
     [EditorRequired, Parameter]
     public FontSize FontSize { get; set; }
