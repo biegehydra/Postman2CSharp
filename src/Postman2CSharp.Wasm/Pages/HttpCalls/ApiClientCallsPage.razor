@@ -25,9 +25,16 @@
         await TabsService.Value.AddHttpCalls(CollectionId!, SelectedApiClient!.Id);
     }
 
-    protected override void OnParametersSet()
+    private ApiClient? _cachedApiClient;
+    protected override async Task OnParametersSetAsync()
     {
         if (!GetApiClientFromParameters()) return;
+
+        if (SelectedApiClient != null && SelectedApiClient != _cachedApiClient)
+        {
+            _cachedApiClient = SelectedApiClient;
+            await TabsService.Value.AddHttpCalls(CollectionId!, SelectedApiClient!.Id);
+        }
         _breadCrumbs = new()
         {
             new("Home", "/", icon: Icons.Home),

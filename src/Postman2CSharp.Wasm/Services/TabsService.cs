@@ -196,7 +196,12 @@ namespace Postman2CSharp.Wasm.Services
                     ApiClientIndex = index;
                 return;
             }
-            Tabs.Insert(1, new CollectionTabView
+            var insertIndex = 0;
+            if (Tabs.Count > 1)
+            {
+                insertIndex = 1;
+            }
+            Tabs.Insert(insertIndex, new CollectionTabView
             {
                 Id = Guid.NewGuid().ToString(),
                 Label = label,
@@ -215,6 +220,7 @@ namespace Postman2CSharp.Wasm.Services
                     ApiClientIndex = index;
                 return;
             }
+            SetHome(collectionId);
             Tabs.Insert(1, new CollectionTabView
             {
                 Id = Guid.NewGuid().ToString(),
@@ -236,6 +242,7 @@ namespace Postman2CSharp.Wasm.Services
                     ApiClientIndex = index;
                 return;
             }
+            SetHome(collectionId);
             Tabs.Insert(1, new CollectionTabView
             {
                 Id = Guid.NewGuid().ToString(),
