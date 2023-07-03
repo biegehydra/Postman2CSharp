@@ -8,7 +8,7 @@ Generated ApiClients are highly configurable to suit your needs. Full explanatio
 
 ## Introduction
 
-I'm tired of making ApiClients, your tired of making ApiClients, were all tired of it. It's always the same bs boilerplate code. You gotta keep looking back and forth between postman and visual studio to make sure you don't forget anything. We've all been there. We'll now you don't have to. You can use postman2csharp and be sure that all request parts are included in the generated code.
+I'm tired of making ApiClients, you're tired of making ApiClients, we're all tired of it. It's always the same bs boilerplate code. You gotta keep looking back and forth between postman and visual studio to make sure you don't forget anything. We've all been there. We'll now you don't have to. You can use postman2csharp and be sure that all request parts are included in the generated code.
 
 This doesn't however mean that the generated ApiClient are production ready. You will still need to review and fix the generated code.
 
