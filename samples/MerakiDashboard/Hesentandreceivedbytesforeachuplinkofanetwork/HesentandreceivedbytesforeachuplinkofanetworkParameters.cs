@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<HesentandreceivedbytesforeachuplinkofanetworkParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<HeSentAndReceivedBytesForEachUplinkOfANetworkParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class HesentandreceivedbytesforeachuplinkofanetworkParameters : IQueryParameters
+    public class HeSentAndReceivedBytesForEachUplinkOfANetworkParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 365 days from today.

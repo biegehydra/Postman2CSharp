@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListthesecurityeventsforaclientResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheSecurityEventsForAClientResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ListthesecurityeventsforaclientResponse
+    public class ListTheSecurityEventsForAClientResponse
     {
         public DateTime Ts { get; set; }
         public string EventType { get; set; }

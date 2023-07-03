@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<AcrossallbandsforallnetworksintheorganizationParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<AcrossAllBandsForAllNetworksInTheOrganizationParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class AcrossallbandsforallnetworksintheorganizationParameters : IQueryParameters
+    public class AcrossAllBandsForAllNetworksInTheOrganizationParameters : IQueryParameters
     {
         /// <summary>
         /// Filter results by network.

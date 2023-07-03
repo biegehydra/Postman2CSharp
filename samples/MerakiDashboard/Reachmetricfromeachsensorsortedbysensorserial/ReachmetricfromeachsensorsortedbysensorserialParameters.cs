@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReachmetricfromeachsensorsortedbysensorserialParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<REachMetricFromEachSensorSortedBySensorSerialParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReachmetricfromeachsensorsortedbysensorserialParameters : IQueryParameters
+    public class REachMetricFromEachSensorSortedBySensorSerialParameters : IQueryParameters
     {
         /// <summary>
         /// The number of entries per page returned. Acceptable range is 3 - 100. Default is 100.

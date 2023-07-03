@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ErviewofalertoccurrencesoveratimespanbymetricParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ErviewOfAlertOccurrencesOverATimespanByMetricParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ErviewofalertoccurrencesoveratimespanbymetricParameters : IQueryParameters
+    public class ErviewOfAlertOccurrencesOverATimespanByMetricParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 365 days from today.

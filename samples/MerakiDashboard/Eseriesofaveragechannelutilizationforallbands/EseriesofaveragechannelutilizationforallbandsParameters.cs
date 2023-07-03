@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<EseriesofaveragechannelutilizationforallbandsParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ESeriesOfAverageChannelUtilizationForAllBandsParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class EseriesofaveragechannelutilizationforallbandsParameters : IQueryParameters
+    public class ESeriesOfAverageChannelUtilizationForAllBandsParameters : IQueryParameters
     {
         /// <summary>
         /// Filter results by network.

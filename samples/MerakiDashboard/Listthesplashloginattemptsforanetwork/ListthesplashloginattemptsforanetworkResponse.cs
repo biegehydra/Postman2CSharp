@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListthesplashloginattemptsforanetworkResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheSplashLoginAttemptsForANetworkResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ListthesplashloginattemptsforanetworkResponse
+    public class ListTheSplashLoginAttemptsForANetworkResponse
     {
         public string Name { get; set; }
         public string Login { get; set; }

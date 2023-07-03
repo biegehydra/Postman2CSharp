@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<AtionoftheorganizationsAPIdocumentationinJSONParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<AtionOfTheOrganizationsAPIDocumentationInJSONParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class AtionoftheorganizationsAPIdocumentationinJSONParameters : IQueryParameters
+    public class AtionOfTheOrganizationsAPIDocumentationInJSONParameters : IQueryParameters
     {
         /// <summary>
         /// OpenAPI Specification version to return. Default is 2

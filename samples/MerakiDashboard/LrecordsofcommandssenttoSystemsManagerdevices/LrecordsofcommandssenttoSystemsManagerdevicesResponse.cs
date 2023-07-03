@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<LrecordsofcommandssenttoSystemsManagerdevicesResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<LRecordsOfCommandsSentToSystemsManagerDevicesResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class LrecordsofcommandssenttoSystemsManagerdevicesResponse
+    public class LRecordsOfCommandsSentToSystemsManagerDevicesResponse
     {
         public string Action { get; set; }
         public string Name { get; set; }

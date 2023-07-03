@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<Versseenwithintheselectedtimeframedefault1dayParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<VersSeenWithinTheSelectedTimeframeDefault1DayParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class Versseenwithintheselectedtimeframedefault1dayParameters : IQueryParameters
+    public class VersSeenWithinTheSelectedTimeframeDefault1DayParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 31 days from today.

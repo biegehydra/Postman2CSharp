@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<VicemodelssortedbydatausageovergiventimerangeParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ViceModelsSortedByDataUsageOverGivenTimeRangeParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class VicemodelssortedbydatausageovergiventimerangeParameters : IQueryParameters
+    public class ViceModelsSortedByDataUsageOverGivenTimeRangeParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data.

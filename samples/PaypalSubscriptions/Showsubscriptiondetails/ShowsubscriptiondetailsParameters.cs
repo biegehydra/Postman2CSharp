@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ShowsubscriptiondetailsParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ShowSubscriptionDetailsParameters>(myJsonResponse);
 namespace PaypalSubscriptions
 {
-    public class ShowsubscriptiondetailsParameters : IQueryParameters
+    public class ShowSubscriptionDetailsParameters : IQueryParameters
     {
         /// <summary>
         /// List of fields that are to be returned in the response. Possible value for fields are last_failed_payment and plan.

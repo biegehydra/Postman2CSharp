@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<Ationstop10ssidsbydatausageovergiventimerangeParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<AtionsTop10SsidsByDataUsageOverGivenTimeRangeParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class Ationstop10ssidsbydatausageovergiventimerangeParameters : IQueryParameters
+    public class AtionsTop10SsidsByDataUsageOverGivenTimeRangeParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data.

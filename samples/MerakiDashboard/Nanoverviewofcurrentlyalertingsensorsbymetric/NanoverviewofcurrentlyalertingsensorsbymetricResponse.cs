@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<NanoverviewofcurrentlyalertingsensorsbymetricResponse>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<NAnOverviewOfCurrentlyAlertingSensorsByMetricResponse>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class NanoverviewofcurrentlyalertingsensorsbymetricResponse
+    public class NAnOverviewOfCurrentlyAlertingSensorsByMetricResponse
     {
         public List<string> SupportedMetrics { get; set; }
         public Counts2 Counts { get; set; }

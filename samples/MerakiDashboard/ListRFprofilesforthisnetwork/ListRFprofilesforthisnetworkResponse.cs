@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ListRFprofilesforthisnetworkResponse>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ListRFProfilesForThisNetworkResponse>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ListRFprofilesforthisnetworkResponse
+    public class ListRFProfilesForThisNetworkResponse
     {
         public string Id { get; set; }
         public string NetworkId { get; set; }

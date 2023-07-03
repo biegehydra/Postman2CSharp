@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<LutilizationovertimeforadeviceornetworkclientParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<LUtilizationOverTimeForADeviceOrNetworkClientParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class LutilizationovertimeforadeviceornetworkclientParameters : IQueryParameters
+    public class LUtilizationOverTimeForADeviceOrNetworkClientParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 31 days from today.

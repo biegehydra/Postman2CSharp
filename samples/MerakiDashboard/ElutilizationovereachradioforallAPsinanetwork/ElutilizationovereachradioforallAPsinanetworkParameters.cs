@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ElutilizationovereachradioforallAPsinanetworkParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ElUtilizationOverEachRadioForAllAPsInANetworkParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ElutilizationovereachradioforallAPsinanetworkParameters : IQueryParameters
+    public class ElUtilizationOverEachRadioForAllAPsInANetworkParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 31 days from today.

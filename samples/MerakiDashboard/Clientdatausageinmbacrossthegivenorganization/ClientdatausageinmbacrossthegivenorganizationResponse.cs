@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ClientdatausageinmbacrossthegivenorganizationResponse>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ClientDataUsageInMbAcrossTheGivenOrganizationResponse>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ClientdatausageinmbacrossthegivenorganizationResponse
+    public class ClientDataUsageInMbAcrossTheGivenOrganizationResponse
     {
         public Usage4 Usage { get; set; }
         public Counts12 Counts { get; set; }

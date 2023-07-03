@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ElutilizationovereachradioforallAPsinanetworkResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ElUtilizationOverEachRadioForAllAPsInANetworkResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ElutilizationovereachradioforallAPsinanetworkResponse
+    public class ElUtilizationOverEachRadioForAllAPsInANetworkResponse
     {
         public string Serial { get; set; }
         public string Model { get; set; }

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturntheSSIDstatusesofanaccesspointResponse>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheSSIDStatusesOfAnAccessPointResponse>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReturntheSSIDstatusesofanaccesspointResponse
+    public class ReturnTheSSIDStatusesOfAnAccessPointResponse
     {
         public List<BasicServiceSets> BasicServiceSets { get; set; }
     }

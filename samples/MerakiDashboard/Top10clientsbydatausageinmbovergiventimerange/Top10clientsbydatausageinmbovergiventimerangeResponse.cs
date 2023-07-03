@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<Top10clientsbydatausageinmbovergiventimerangeResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<Top10ClientsByDataUsageInMbOverGivenTimeRangeResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class Top10clientsbydatausageinmbovergiventimerangeResponse
+    public class Top10ClientsByDataUsageInMbOverGivenTimeRangeResponse
     {
         public string Name { get; set; }
         public string Mac { get; set; }

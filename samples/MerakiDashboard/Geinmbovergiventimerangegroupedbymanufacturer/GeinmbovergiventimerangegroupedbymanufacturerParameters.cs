@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<GeinmbovergiventimerangegroupedbymanufacturerParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<GeInMbOverGivenTimeRangeGroupedByManufacturerParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class GeinmbovergiventimerangegroupedbymanufacturerParameters : IQueryParameters
+    public class GeInMbOverGivenTimeRangeGroupedByManufacturerParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data.

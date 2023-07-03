@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<IvepolicyaggregatestatisticsforanorganizationResponse>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<IvePolicyAggregateStatisticsForAnOrganizationResponse>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class IvepolicyaggregatestatisticsforanorganizationResponse
+    public class IvePolicyAggregateStatisticsForAnOrganizationResponse
     {
         public Counts11 Counts { get; set; }
         public Limits Limits { get; set; }

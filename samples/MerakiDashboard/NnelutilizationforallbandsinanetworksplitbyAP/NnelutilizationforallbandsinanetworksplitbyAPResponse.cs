@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<NnelutilizationforallbandsinanetworksplitbyAPResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<NnelUtilizationForAllBandsInANetworkSplitByAPResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class NnelutilizationforallbandsinanetworksplitbyAPResponse
+    public class NnelUtilizationForAllBandsInANetworkSplitByAPResponse
     {
         public string Serial { get; set; }
         public string Mac { get; set; }

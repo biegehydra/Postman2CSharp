@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<OfalerttypestobeusedwithmanagingwebhookalertsResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<OfAlertTypesToBeUsedWithManagingWebhookAlertsResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class OfalerttypestobeusedwithmanagingwebhookalertsResponse
+    public class OfAlertTypesToBeUsedWithManagingWebhookAlertsResponse
     {
         public string AlertTypeId { get; set; }
         public string AlertType { get; set; }

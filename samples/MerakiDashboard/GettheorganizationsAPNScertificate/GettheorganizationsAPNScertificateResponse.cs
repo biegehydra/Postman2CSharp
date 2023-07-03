@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<GettheorganizationsAPNScertificateResponse>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<GetTheOrganizationsAPNSCertificateResponse>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class GettheorganizationsAPNScertificateResponse
+    public class GetTheOrganizationsAPNSCertificateResponse
     {
         public string Certificate { get; set; }
     }

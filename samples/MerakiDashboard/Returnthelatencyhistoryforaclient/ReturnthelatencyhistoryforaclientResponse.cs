@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturnthelatencyhistoryforaclientResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturnTheLatencyHistoryForAClientResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReturnthelatencyhistoryforaclientResponse
+    public class ReturnTheLatencyHistoryForAClientResponse
     {
         public int T0 { get; set; }
         public int T1 { get; set; }

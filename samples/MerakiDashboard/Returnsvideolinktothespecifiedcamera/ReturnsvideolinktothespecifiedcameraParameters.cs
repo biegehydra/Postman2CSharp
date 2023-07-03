@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnsvideolinktothespecifiedcameraParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnsVideoLinkToTheSpecifiedCameraParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReturnsvideolinktothespecifiedcameraParameters : IQueryParameters
+    public class ReturnsVideoLinkToTheSpecifiedCameraParameters : IQueryParameters
     {
         /// <summary>
         /// [optional] The video link will start at this time. The timestamp should be a string in ISO8601 format. If no timestamp is specified, we will assume current time.

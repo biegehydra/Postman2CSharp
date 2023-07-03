@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ViewtheChangeLogforyourorganizationParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ViewTheChangeLogForYourOrganizationParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ViewtheChangeLogforyourorganizationParameters : IQueryParameters
+    public class ViewTheChangeLogForYourOrganizationParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 365 days from today.

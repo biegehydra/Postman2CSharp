@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListAirMarshalscanresultsfromanetworkResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListAirMarshalScanResultsFromANetworkResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ListAirMarshalscanresultsfromanetworkResponse
+    public class ListAirMarshalScanResultsFromANetworkResponse
     {
         public string Ssid { get; set; }
         public List<Bssids> Bssids { get; set; }

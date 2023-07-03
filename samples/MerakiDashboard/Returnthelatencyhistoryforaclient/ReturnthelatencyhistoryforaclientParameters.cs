@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnthelatencyhistoryforaclientParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheLatencyHistoryForAClientParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReturnthelatencyhistoryforaclientParameters : IQueryParameters
+    public class ReturnTheLatencyHistoryForAClientParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 791 days from today.

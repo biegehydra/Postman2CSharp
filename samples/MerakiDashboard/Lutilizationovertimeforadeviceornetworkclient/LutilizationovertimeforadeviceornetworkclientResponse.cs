@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<LutilizationovertimeforadeviceornetworkclientResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<LUtilizationOverTimeForADeviceOrNetworkClientResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class LutilizationovertimeforadeviceornetworkclientResponse
+    public class LUtilizationOverTimeForADeviceOrNetworkClientResponse
     {
         public DateTime StartTs { get; set; }
         public DateTime EndTs { get; set; }

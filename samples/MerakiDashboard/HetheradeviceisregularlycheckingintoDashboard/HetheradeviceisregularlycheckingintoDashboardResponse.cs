@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<HetheradeviceisregularlycheckingintoDashboardResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<HetherADeviceIsRegularlyCheckingInToDashboardResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class HetheradeviceisregularlycheckingintoDashboardResponse
+    public class HetherADeviceIsRegularlyCheckingInToDashboardResponse
     {
         public DateTime FirstSeenAt { get; set; }
         public DateTime LastSeenAt { get; set; }

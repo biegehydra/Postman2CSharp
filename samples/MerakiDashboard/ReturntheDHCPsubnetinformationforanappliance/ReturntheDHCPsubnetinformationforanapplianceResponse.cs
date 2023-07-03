@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturntheDHCPsubnetinformationforanapplianceResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturnTheDHCPSubnetInformationForAnApplianceResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReturntheDHCPsubnetinformationforanapplianceResponse
+    public class ReturnTheDHCPSubnetInformationForAnApplianceResponse
     {
         public string Subnet { get; set; }
         public int VlanId { get; set; }

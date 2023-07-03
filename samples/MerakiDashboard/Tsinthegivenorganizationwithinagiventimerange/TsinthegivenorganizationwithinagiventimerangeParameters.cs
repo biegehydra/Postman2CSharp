@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<TsinthegivenorganizationwithinagiventimerangeParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<TsInTheGivenOrganizationWithinAGivenTimeRangeParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class TsinthegivenorganizationwithinagiventimerangeParameters : IQueryParameters
+    public class TsInTheGivenOrganizationWithinAGivenTimeRangeParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data.

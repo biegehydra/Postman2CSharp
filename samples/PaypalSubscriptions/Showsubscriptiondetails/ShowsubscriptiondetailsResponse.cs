@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ShowsubscriptiondetailsResponse>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ShowSubscriptionDetailsResponse>(myJsonResponse);
 namespace PaypalSubscriptions
 {
-    public class ShowsubscriptiondetailsResponse
+    public class ShowSubscriptionDetailsResponse
     {
         public string Status { get; set; }
         public string Id { get; set; }

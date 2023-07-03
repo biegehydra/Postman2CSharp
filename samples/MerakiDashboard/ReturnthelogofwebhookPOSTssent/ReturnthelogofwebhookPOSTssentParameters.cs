@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnthelogofwebhookPOSTssentParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheLogOfWebhookPOSTsSentParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReturnthelogofwebhookPOSTssentParameters : IQueryParameters
+    public class ReturnTheLogOfWebhookPOSTsSentParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 90 days from today.

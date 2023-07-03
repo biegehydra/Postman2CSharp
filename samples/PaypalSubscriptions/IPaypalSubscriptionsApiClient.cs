@@ -4,14 +4,14 @@ namespace PaypalSubscriptions
 {
     public interface IPaypalSubscriptionsApiClient
     {
-        Task<Stream> Createsubscription(CreatesubscriptionRequest request);
-        Task<ShowsubscriptiondetailsResponse> Showsubscriptiondetails(ShowsubscriptiondetailsParameters queryParameters, string subscriptionId);
-        Task<Stream> Updatesubscription(UpdatesubscriptionRequest request, string subscriptionId);
-        Task<ReviseplanorquantityofsubscriptionResponse> Reviseplanorquantityofsubscription(ReviseplanorquantityofsubscriptionRequest request, string subscriptionId);
-        Task<Stream> Suspendsubscription(SuspendsubscriptionRequest request, string subscriptionId);
-        Task<Stream> Activatesubscription(ActivatesubscriptionRequest request, string subscriptionId);
-        Task<Stream> Cancelsubscription(CancelsubscriptionRequest request, string subscriptionId);
-        Task<Stream> Captureauthorizedpaymentonsubscription(CaptureauthorizedpaymentonsubscriptionRequest request, string subscriptionId);
-        Task<ListtransactionsforsubscriptionResponse> Listtransactionsforsubscription(ListtransactionsforsubscriptionParameters queryParameters, string subscriptionId);
+        Task<Stream> CreateSubscription(CreateSubscriptionRequest request);
+        Task<ShowSubscriptionDetailsResponse> ShowSubscriptionDetails(ShowSubscriptionDetailsParameters queryParameters, string subscriptionId);
+        Task<Stream> UpdateSubscription(UpdateSubscriptionRequest request, string subscriptionId);
+        Task<RevisePlanOrQuantityOfSubscriptionResponse> RevisePlanOrQuantityOfSubscription(RevisePlanOrQuantityOfSubscriptionRequest request, string subscriptionId);
+        Task<Stream> SuspendSubscription(SuspendSubscriptionRequest request, string subscriptionId);
+        Task<Stream> ActivateSubscription(ActivateSubscriptionRequest request, string subscriptionId);
+        Task<Stream> CancelSubscription(CancelSubscriptionRequest request, string subscriptionId);
+        Task<Stream> CaptureAuthorizedPaymentOnSubscription(CaptureAuthorizedPaymentOnSubscriptionRequest request, string subscriptionId);
+        Task<ListTransactionsForSubscriptionResponse> ListTransactionsForSubscription(ListTransactionsForSubscriptionParameters queryParameters, string subscriptionId);
     }
 }

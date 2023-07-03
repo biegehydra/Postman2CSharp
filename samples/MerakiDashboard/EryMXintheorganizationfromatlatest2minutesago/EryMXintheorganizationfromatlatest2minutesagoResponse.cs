@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<EryMXintheorganizationfromatlatest2minutesagoResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<EryMXInTheOrganizationFromAtLatest2MinutesAgoResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class EryMXintheorganizationfromatlatest2minutesagoResponse
+    public class EryMXInTheOrganizationFromAtLatest2MinutesAgoResponse
     {
         public string NetworkId { get; set; }
         public string Serial { get; set; }

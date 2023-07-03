@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturnthelogofwebhookPOSTssentResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturnTheLogOfWebhookPOSTsSentResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReturnthelogofwebhookPOSTssentResponse
+    public class ReturnTheLogOfWebhookPOSTsSentResponse
     {
         public string AlertType { get; set; }
         public DateTime LoggedAt { get; set; }

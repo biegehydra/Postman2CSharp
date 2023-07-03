@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<EndpointtoseepowerstatusforwirelessdevicesResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<EndpointToSeePowerStatusForWirelessDevicesResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class EndpointtoseepowerstatusforwirelessdevicesResponse
+    public class EndpointToSeePowerStatusForWirelessDevicesResponse
     {
         public string Serial { get; set; }
         public string Name { get; set; }

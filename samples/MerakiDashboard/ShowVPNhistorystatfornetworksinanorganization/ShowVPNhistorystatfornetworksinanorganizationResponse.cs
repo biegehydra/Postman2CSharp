@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ShowVPNhistorystatfornetworksinanorganizationResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ShowVPNHistoryStatForNetworksInAnOrganizationResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ShowVPNhistorystatfornetworksinanorganizationResponse
+    public class ShowVPNHistoryStatForNetworksInAnOrganizationResponse
     {
         public string NetworkId { get; set; }
         public string NetworkName { get; set; }

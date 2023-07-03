@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<OnnectioneventsonthisnetworkinagiventimerangeResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<OnnectionEventsOnThisNetworkInAGivenTimeRangeResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class OnnectioneventsonthisnetworkinagiventimerangeResponse
+    public class OnnectionEventsOnThisNetworkInAGivenTimeRangeResponse
     {
         public int SsidNumber { get; set; }
         public int Vlan { get; set; }
