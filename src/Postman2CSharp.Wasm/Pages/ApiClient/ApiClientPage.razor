@@ -22,9 +22,17 @@
         if (!GetApiClientFromParameters()) return;
         await TabsService.Value.AddApiClientTab(CollectionId!, ApiClientId!, SelectedApiClient!.Name);
     }
-    protected override void OnParametersSet()
+
+    private ApiClient? _cachedApiClient;
+    protected override async Task OnParametersSetAsync()
     {
         if (!GetApiClientFromParameters()) return;
+
+        if (SelectedApiClient != null && SelectedApiClient != _cachedApiClient)
+        {
+            _cachedApiClient = SelectedApiClient;
+            await TabsService.Value.AddApiClientTab(CollectionId!, ApiClientId!, SelectedApiClient!.Name);
+        }
 
         _breadCrumbs = new()
         {

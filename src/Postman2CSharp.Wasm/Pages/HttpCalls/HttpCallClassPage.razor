@@ -9,10 +9,6 @@
 {
     <pre><code class="language-csharp" @key="ClassName">@_sourceCode</code></pre>
 }
-else
-{
-    <p style="color: red;">Something went wrong</p>
-}
 
 @code {
     private List<BreadcrumbItem> _breadCrumbs = new();
@@ -37,10 +33,18 @@ else
         await TabsService.Value.AddHttpCallClass(CollectionId!, ApiClientId!, HttpCallName!, ClassName!);
     }
 
-    protected override void OnParametersSet()
+    private string? _cachedClassName;
+    private string? _cachedHttpCallName;
+    protected override async Task OnParametersSetAsync()
     {
 
         if (!GetSourceCodeFromParameters()) return;
+        if (!string.IsNullOrWhiteSpace(ClassName) && !string.IsNullOrWhiteSpace(HttpCallName) && ClassName != _cachedClassName && HttpCallName != _cachedHttpCallName)
+        {
+            _cachedClassName = ClassName;
+            _cachedHttpCallName = HttpCallName;
+            await TabsService.Value.AddHttpCallClass(CollectionId!, ApiClientId!, HttpCallName!, ClassName!);
+        }
 
         _breadCrumbs = new()
         {

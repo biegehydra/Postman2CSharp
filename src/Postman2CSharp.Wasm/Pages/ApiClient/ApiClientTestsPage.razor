@@ -26,10 +26,17 @@
         if (ApiClientId == null || CollectionId == null) return;
         await TabsService.Value.AddApiClientTestsTab(CollectionId, ApiClientId, SelectedApiClient!.TestClassName);
     }
-    protected override void OnParametersSet()
+
+    private ApiClient? _cachedApiClient;
+    protected override async Task OnParametersSetAsync()
     {
         if (!GetApiClientFromParameters()) return;
 
+        if (SelectedApiClient != null && SelectedApiClient != _cachedApiClient)
+        {
+            _cachedApiClient = SelectedApiClient;
+            await TabsService.Value.AddApiClientTestsTab(CollectionId, ApiClientId, SelectedApiClient!.TestClassName);
+        }
         _breadCrumbs = new()
         {
             new("Home", "/", icon: Icons.Home),
