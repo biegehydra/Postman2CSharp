@@ -34,7 +34,7 @@
         }
         <Detail Key="Error Handling Strategy" Value="@ApiClient.ErrorHandlingStrategy.ToString()" FontSize="FontSize.Larger"></Detail>
         <Detail Key="Xml Comment Types" Value="@(string.Join(", ", ApiClient.CommentTypes.Select(x => x.ToString())))" FontSize="FontSize.Larger"></Detail>
-        <NestedDetails Key="Variable Usages" NestedValues="ApiClient?.VariableUsages.ToDictionary(x => x.Original, x=> x.Value)" FontSize="FontSize.Larger"></NestedDetails>
+        <NestedDetails Key="Variable Usages" NestedValues="@(ApiClient?.VariableUsages.GroupBy(x => x.Original).ToDictionary(x => x.Key, x => string.Join(", ", x.Select(y => y.Value))))" FontSize="FontSize.Larger"></NestedDetails>
         <small class="show-more" @onclick="() => _verbose = false"><b>Show less</b></small>
     }
 
