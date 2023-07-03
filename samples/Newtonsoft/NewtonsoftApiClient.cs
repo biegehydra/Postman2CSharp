@@ -4,16 +4,16 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-namespace Postman2CSharp
+namespace Newtonsoft
 {
-    public class Postman2CSharpApiClient : IPostman2CSharpApiClient
+    public class NewtonsoftApiClient : INewtonsoftApiClient
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
-        public Postman2CSharpApiClient(HttpClient httpClient, IConfiguration config)
+        public NewtonsoftApiClient(HttpClient httpClient, IConfiguration config)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("https://maps.googleapis.com/maps/api/place/");
+            _httpClient.BaseAddress = new Uri($"https://maps.googleapis.com/maps/api/place/");
     
             _apiKey = config["Path:ToApiKey"];
         }
@@ -77,12 +77,15 @@ namespace Postman2CSharp
         /// </summary>
         public async Task<Stream> PlacePhoto(PlacePhotoParameters queryParameters)
         {
-            _httpClient.DefaultRequestHeaders.Add($"Accept", $"image/*");
+            var headers = new Dictionary<string, string>()
+            {
+                { $"Accept", $"image/*" }
+            };
     
             var parametersDict = queryParameters.ToDictionary();
             parametersDict.Add($"key", _apiKey);
             var queryString = QueryHelpers.AddQueryString($"photo", parametersDict);
-            var response = await _httpClient.GetAsync(queryString);
+            var response = await _httpClient.GetAsync(queryString, headers);
             return await response.Content.ReadAsStreamAsync();
         }
     

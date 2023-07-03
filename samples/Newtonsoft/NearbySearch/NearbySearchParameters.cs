@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 
 // Root myDeserializedClass = JsonSerializer.Deserialize<NearbySearchParameters>(myJsonResponse);
-namespace Postman2CSharp
+namespace Newtonsoft
 {
     public class NearbySearchParameters : IQueryParameters
     {

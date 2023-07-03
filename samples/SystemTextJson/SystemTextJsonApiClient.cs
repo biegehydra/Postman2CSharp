@@ -77,12 +77,15 @@ namespace SystemTextJson
         /// </summary>
         public async Task<Stream> PlacePhoto(PlacePhotoParameters queryParameters)
         {
-            _httpClient.DefaultRequestHeaders.Add($"Accept", $"image/*");
+            var headers = new Dictionary<string, string>()
+            {
+                { $"Accept", $"image/*" }
+            };
     
             var parametersDict = queryParameters.ToDictionary();
             parametersDict.Add($"key", _apiKey);
             var queryString = QueryHelpers.AddQueryString($"photo", parametersDict);
-            var response = await _httpClient.GetAsync(queryString);
+            var response = await _httpClient.GetAsync(queryString, headers);
             return await response.Content.ReadAsStreamAsync();
         }
     

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-namespace Postman2CSharp
+namespace Newtonsoft
 {
     public static class HelperExtensions
     {

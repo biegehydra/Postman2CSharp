@@ -4,8 +4,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 // Root myDeserializedClass = JsonConvert.DeserializeObject<FindPlaceFromTextResponse>(myJsonResponse);
-namespace Postman2CSharp
+namespace Newtonsoft
 {
+    public class FindPlaceFromTextResponse
+    {
+        public List<Candidates> Candidates { get; set; }
+        public string Status { get; set; }
+    }
+
     public class Candidates
     {
         public string FormattedAddress { get; set; }
@@ -13,12 +19,6 @@ namespace Postman2CSharp
         public string Name { get; set; }
         public OpeningHours2 OpeningHours { get; set; }
         public double Rating { get; set; }
-    }
-
-    public class FindPlaceFromTextResponse
-    {
-        public List<Candidates> Candidates { get; set; }
-        public string Status { get; set; }
     }
 
     public class OpeningHours2

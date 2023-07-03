@@ -4,77 +4,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 // Root myDeserializedClass = JsonConvert.DeserializeObject<PlaceDetailsResponse>(myJsonResponse);
-namespace Postman2CSharp
+namespace Newtonsoft
 {
-    public class AddressComponents
-    {
-        public string LongName { get; set; }
-        public string ShortName { get; set; }
-        public List<string> Types { get; set; }
-    }
-
-    public class Close
-    {
-        public int Day { get; set; }
-        public string Time { get; set; }
-    }
-
-    public class Geometry
-    {
-        public Location Location { get; set; }
-        public Viewport Viewport { get; set; }
-    }
-
-    public class Location
-    {
-        public double Lat { get; set; }
-        public double Lng { get; set; }
-    }
-
-    public class Northeast
-    {
-        public double Lat { get; set; }
-        public double Lng { get; set; }
-    }
-
-    public class Open
-    {
-        public int Day { get; set; }
-        public string Time { get; set; }
-    }
-
-    public class OpeningHours
-    {
-        public bool OpenNow { get; set; }
-        public List<Periods> Periods { get; set; }
-        public List<string> WeekdayText { get; set; }
-    }
-
-    public class Periods
-    {
-        public Close Close { get; set; }
-        public Open Open { get; set; }
-    }
-
-    public class Photos
-    {
-        public int Height { get; set; }
-        public List<string> HtmlAttributions { get; set; }
-        public string PhotoReference { get; set; }
-        public int Width { get; set; }
-    }
-
     public class PlaceDetailsResponse
     {
         public List<object> HtmlAttributions { get; set; }
         public Result Result { get; set; }
         public string Status { get; set; }
-    }
-
-    public class PlusCode
-    {
-        public string CompoundCode { get; set; }
-        public string GlobalCode { get; set; }
     }
 
     public class Result
@@ -115,6 +51,70 @@ namespace Postman2CSharp
         public string RelativeTimeDescription { get; set; }
         public string Text { get; set; }
         public int Time { get; set; }
+    }
+
+    public class Photos
+    {
+        public int Height { get; set; }
+        public List<string> HtmlAttributions { get; set; }
+        public string PhotoReference { get; set; }
+        public int Width { get; set; }
+    }
+
+    public class AddressComponents
+    {
+        public string LongName { get; set; }
+        public string ShortName { get; set; }
+        public List<string> Types { get; set; }
+    }
+
+    public class OpeningHours
+    {
+        public bool OpenNow { get; set; }
+        public List<Periods> Periods { get; set; }
+        public List<string> WeekdayText { get; set; }
+    }
+
+    public class Close
+    {
+        public int Day { get; set; }
+        public string Time { get; set; }
+    }
+
+    public class Geometry
+    {
+        public Location Location { get; set; }
+        public Viewport Viewport { get; set; }
+    }
+
+    public class Location
+    {
+        public double Lat { get; set; }
+        public double Lng { get; set; }
+    }
+
+    public class Northeast
+    {
+        public double Lat { get; set; }
+        public double Lng { get; set; }
+    }
+
+    public class Open
+    {
+        public int Day { get; set; }
+        public string Time { get; set; }
+    }
+
+    public class Periods
+    {
+        public Close Close { get; set; }
+        public Open Open { get; set; }
+    }
+
+    public class PlusCode
+    {
+        public string CompoundCode { get; set; }
+        public string GlobalCode { get; set; }
     }
 
     public class Southwest

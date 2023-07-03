@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
-namespace Postman2CSharp
+namespace Newtonsoft
 {
     public interface IQueryParameters
     {

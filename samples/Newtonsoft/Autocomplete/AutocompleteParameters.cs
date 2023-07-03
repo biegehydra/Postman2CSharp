@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 
 // Root myDeserializedClass = JsonSerializer.Deserialize<AutocompleteParameters>(myJsonResponse);
-namespace Postman2CSharp
+namespace Newtonsoft
 {
     public class AutocompleteParameters : IQueryParameters
     {

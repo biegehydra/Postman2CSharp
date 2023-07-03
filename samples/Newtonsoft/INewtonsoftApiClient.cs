@@ -1,8 +1,8 @@
 using System.IO;
 using System.Threading.Tasks;
-namespace Postman2CSharp
+namespace Newtonsoft
 {
-    public interface IPostman2CSharpApiClient
+    public interface INewtonsoftApiClient
     {
         Task<PlaceDetailsResponse> PlaceDetails(PlaceDetailsParameters queryParameters);
         Task<FindPlaceFromTextResponse> FindPlaceFromText(FindPlaceFromTextParameters queryParameters);

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 // Root myDeserializedClass = JsonConvert.DeserializeObject<NearbySearchResponse>(myJsonResponse);
-namespace Postman2CSharp
+namespace Newtonsoft
 {
     public class NearbySearchResponse
     {

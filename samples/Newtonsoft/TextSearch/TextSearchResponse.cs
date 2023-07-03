@@ -4,8 +4,16 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 // Root myDeserializedClass = JsonConvert.DeserializeObject<TextSearchResponse>(myJsonResponse);
-namespace Postman2CSharp
+namespace Newtonsoft
 {
+    public class TextSearchResponse
+    {
+        public List<object> HtmlAttributions { get; set; }
+        public string NextPageToken { get; set; }
+        public List<Results2> Results { get; set; }
+        public string Status { get; set; }
+    }
+
     public class Results2
     {
         public string BusinessStatus { get; set; }
@@ -24,13 +32,5 @@ namespace Postman2CSharp
         public string Reference { get; set; }
         public List<string> Types { get; set; }
         public int UserRatingsTotal { get; set; }
-    }
-
-    public class TextSearchResponse
-    {
-        public List<object> HtmlAttributions { get; set; }
-        public string NextPageToken { get; set; }
-        public List<Results2> Results { get; set; }
-        public string Status { get; set; }
     }
 }

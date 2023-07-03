@@ -2,7 +2,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System;
 using System.Collections.Generic;
-namespace Postman2CSharp
+namespace Newtonsoft
 {
     public static class QueryHelpers
     {
