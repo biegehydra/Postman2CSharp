@@ -1,0 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+// Root myDeserializedClass = JsonSerializer.Deserialize<EsAtTheSpecifiedTimeAndReturnALinkToThatImageRequest>(myJsonResponse);
+namespace MerakiDashboard
+{
+    public class EsAtTheSpecifiedTimeAndReturnALinkToThatImageRequest
+    {
+        public string Timestamp { get; set; }
+        public string Fullframe { get; set; }
+    }
+}

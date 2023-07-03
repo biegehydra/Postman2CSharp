@@ -154,6 +154,7 @@
             SnackBar.Value?.Add("Namespace cannot be empty.", Severity.Warning);
             return;
         }
+        ApiClient.NameSpace = Utils.NormalizeToCsharpPropertyName(ApiClient.NameSpace);
         ApiClient.Name = ApiClient.NameSpace + "ApiClient";
         ApiClient.GenerateSourceCode();
         ApiClient.FixNamespaces(_cachedApiClientNamespace!, ApiClient.NameSpace);
