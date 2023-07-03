@@ -25,7 +25,7 @@ public static class Utils
         {
             return string.Empty;
         }
-        var words = input.Split('_')
+        var words = input.Split('_', ' ', '-')
             .Select(x => Regex.Replace(x, @"\W|_", ""))
             .Where(word => !string.IsNullOrEmpty(word))
             .Select(word => char.ToUpperInvariant(word[0]) + word[1..]);
