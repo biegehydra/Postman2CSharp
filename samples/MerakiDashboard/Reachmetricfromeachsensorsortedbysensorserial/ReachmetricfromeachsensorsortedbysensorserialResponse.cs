@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReachmetricfromeachsensorsortedbysensorserialResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<REachMetricFromEachSensorSortedBySensorSerialResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReachmetricfromeachsensorsortedbysensorserialResponse
+    public class REachMetricFromEachSensorSortedBySensorSerialResponse
     {
         public string Serial { get; set; }
         public Network Network { get; set; }

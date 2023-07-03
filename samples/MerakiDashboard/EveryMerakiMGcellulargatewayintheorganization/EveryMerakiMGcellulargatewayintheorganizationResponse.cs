@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<EveryMerakiMGcellulargatewayintheorganizationResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<EveryMerakiMGCellularGatewayInTheOrganizationResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class EveryMerakiMGcellulargatewayintheorganizationResponse
+    public class EveryMerakiMGCellularGatewayInTheOrganizationResponse
     {
         public string NetworkId { get; set; }
         public string Serial { get; set; }

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<IsttheclientsofadeviceuptoamaximumofamonthagoParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<IstTheClientsOfADeviceUpToAMaximumOfAMonthAgoParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class IsttheclientsofadeviceuptoamaximumofamonthagoParameters : IQueryParameters
+    public class IstTheClientsOfADeviceUpToAMaximumOfAMonthAgoParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 31 days from today.

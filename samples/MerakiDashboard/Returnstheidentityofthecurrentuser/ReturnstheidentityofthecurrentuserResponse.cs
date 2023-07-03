@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnstheidentityofthecurrentuserResponse>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnsTheIdentityOfTheCurrentUserResponse>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReturnstheidentityofthecurrentuserResponse
+    public class ReturnsTheIdentityOfTheCurrentUserResponse
     {
         public string Name { get; set; }
         public string Email { get; set; }

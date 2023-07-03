@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<TsinthegivenorganizationwithinagiventimerangeResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<TsInTheGivenOrganizationWithinAGivenTimeRangeResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class TsinthegivenorganizationwithinagiventimerangeResponse
+    public class TsInTheGivenOrganizationWithinAGivenTimeRangeResponse
     {
         public DateTime Ts { get; set; }
         public int Total { get; set; }

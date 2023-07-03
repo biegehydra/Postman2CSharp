@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<StatusesinformationfordevicesinanorganizationResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<StatusesInformationForDevicesInAnOrganizationResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class StatusesinformationfordevicesinanorganizationResponse
+    public class StatusesInformationForDevicesInAnOrganizationResponse
     {
         public string Mac { get; set; }
         public string Name { get; set; }

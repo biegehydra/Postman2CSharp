@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ListLLDPandCDPinformationforadeviceResponse>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ListLLDPAndCDPInformationForADeviceResponse>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ListLLDPandCDPinformationforadeviceResponse
+    public class ListLLDPAndCDPInformationForADeviceResponse
     {
         public string SourceMac { get; set; }
         public Ports2 Ports { get; set; }

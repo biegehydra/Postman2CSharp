@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListtheClientsinaNetworkResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheClientsInANetworkResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ListtheClientsinaNetworkResponse
+    public class ListTheClientsInANetworkResponse
     {
         public Usage Usage { get; set; }
         public string Id { get; set; }

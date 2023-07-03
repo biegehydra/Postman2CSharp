@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ViewtheChangeLogforyourorganizationResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ViewTheChangeLogForYourOrganizationResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ViewtheChangeLogforyourorganizationResponse
+    public class ViewTheChangeLogForYourOrganizationResponse
     {
         public DateTime Ts { get; set; }
         public string AdminName { get; set; }

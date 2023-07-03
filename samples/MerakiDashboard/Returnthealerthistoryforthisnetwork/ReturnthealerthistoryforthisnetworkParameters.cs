@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnthealerthistoryforthisnetworkParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheAlertHistoryForThisNetworkParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReturnthealerthistoryforthisnetworkParameters : IQueryParameters
+    public class ReturnTheAlertHistoryForThisNetworkParameters : IQueryParameters
     {
         /// <summary>
         /// The number of entries per page returned. Acceptable range is 3 - 1000. Default is 100.

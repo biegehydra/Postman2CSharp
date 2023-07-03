@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<EryMXintheorganizationfromatlatest2minutesagoParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<EryMXInTheOrganizationFromAtLatest2MinutesAgoParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class EryMXintheorganizationfromatlatest2minutesagoParameters : IQueryParameters
+    public class EryMXInTheOrganizationFromAtLatest2MinutesAgoParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 60 days from today.

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ListthesplashloginattemptsforanetworkParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ListTheSplashLoginAttemptsForANetworkParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ListthesplashloginattemptsforanetworkParameters : IQueryParameters
+    public class ListTheSplashLoginAttemptsForANetworkParameters : IQueryParameters
     {
         /// <summary>
         /// Only return the login attempts for the specified SSID

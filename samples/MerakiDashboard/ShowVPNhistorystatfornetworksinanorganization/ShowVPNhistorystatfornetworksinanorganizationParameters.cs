@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ShowVPNhistorystatfornetworksinanorganizationParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ShowVPNHistoryStatForNetworksInAnOrganizationParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ShowVPNhistorystatfornetworksinanorganizationParameters : IQueryParameters
+    public class ShowVPNHistoryStatForNetworksInAnOrganizationParameters : IQueryParameters
     {
         /// <summary>
         /// The number of entries per page returned. Acceptable range is 3 - 300. Default is 300.

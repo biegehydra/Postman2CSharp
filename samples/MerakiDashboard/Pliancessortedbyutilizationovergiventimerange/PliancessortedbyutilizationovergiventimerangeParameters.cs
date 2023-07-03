@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<PliancessortedbyutilizationovergiventimerangeParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<PliancesSortedByUtilizationOverGivenTimeRangeParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class PliancessortedbyutilizationovergiventimerangeParameters : IQueryParameters
+    public class PliancesSortedByUtilizationOverGivenTimeRangeParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data.

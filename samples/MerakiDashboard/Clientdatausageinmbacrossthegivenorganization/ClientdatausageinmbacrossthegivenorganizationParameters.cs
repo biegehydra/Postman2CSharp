@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ClientdatausageinmbacrossthegivenorganizationParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ClientDataUsageInMbAcrossTheGivenOrganizationParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ClientdatausageinmbacrossthegivenorganizationParameters : IQueryParameters
+    public class ClientDataUsageInMbAcrossTheGivenOrganizationParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data.

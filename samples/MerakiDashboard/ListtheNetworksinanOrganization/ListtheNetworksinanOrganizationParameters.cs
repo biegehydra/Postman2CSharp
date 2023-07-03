@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ListtheNetworksinanOrganizationParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ListTheNetworksInAnOrganizationParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ListtheNetworksinanOrganizationParameters : IQueryParameters
+    public class ListTheNetworksInAnOrganizationParameters : IQueryParameters
     {
         /// <summary>
         /// An optional parameter that is the ID of a config template. Will return all networks bound to that template.

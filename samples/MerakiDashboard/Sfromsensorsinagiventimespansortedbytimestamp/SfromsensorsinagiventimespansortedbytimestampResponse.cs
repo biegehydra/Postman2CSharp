@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<SfromsensorsinagiventimespansortedbytimestampResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<SFromSensorsInAGivenTimespanSortedByTimestampResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class SfromsensorsinagiventimespansortedbytimestampResponse
+    public class SFromSensorsInAGivenTimespanSortedByTimestampResponse
     {
         public string Serial { get; set; }
         public Network Network { get; set; }

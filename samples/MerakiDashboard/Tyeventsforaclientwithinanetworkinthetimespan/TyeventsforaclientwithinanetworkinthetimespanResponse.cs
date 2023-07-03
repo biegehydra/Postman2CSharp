@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<TyeventsforaclientwithinanetworkinthetimespanResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<TyEventsForAClientWithinANetworkInTheTimespanResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class TyeventsforaclientwithinanetworkinthetimespanResponse
+    public class TyEventsForAClientWithinANetworkInTheTimespanResponse
     {
         public int OccurredAt { get; set; }
         public string DeviceSerial { get; set; }

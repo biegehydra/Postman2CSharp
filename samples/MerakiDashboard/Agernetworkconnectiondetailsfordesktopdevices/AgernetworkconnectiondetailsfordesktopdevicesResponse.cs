@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<AgernetworkconnectiondetailsfordesktopdevicesResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<AgerNetworkConnectionDetailsForDesktopDevicesResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class AgernetworkconnectiondetailsfordesktopdevicesResponse
+    public class AgerNetworkConnectionDetailsForDesktopDevicesResponse
     {
         public DateTime MeasuredAt { get; set; }
         public string User { get; set; }

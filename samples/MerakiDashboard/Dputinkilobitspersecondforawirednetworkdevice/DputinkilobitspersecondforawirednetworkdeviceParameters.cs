@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<DputinkilobitspersecondforawirednetworkdeviceParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<DputInKilobitsPerSecondForAWiredNetworkDeviceParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class DputinkilobitspersecondforawirednetworkdeviceParameters : IQueryParameters
+    public class DputInKilobitsPerSecondForAWiredNetworkDeviceParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 60 days from today.

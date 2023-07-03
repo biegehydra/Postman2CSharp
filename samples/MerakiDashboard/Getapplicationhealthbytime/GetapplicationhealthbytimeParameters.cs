@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<GetapplicationhealthbytimeParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<GetApplicationHealthByTimeParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class GetapplicationhealthbytimeParameters : IQueryParameters
+    public class GetApplicationHealthByTimeParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 7 days from today.

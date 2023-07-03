@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<SSystemsManagerclientmetricsfordesktopdevicesResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<SSystemsManagerClientMetricsForDesktopDevicesResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class SSystemsManagerclientmetricsfordesktopdevicesResponse
+    public class SSystemsManagerClientMetricsForDesktopDevicesResponse
     {
         public double CpuPercentUsed { get; set; }
         public int MemFree { get; set; }

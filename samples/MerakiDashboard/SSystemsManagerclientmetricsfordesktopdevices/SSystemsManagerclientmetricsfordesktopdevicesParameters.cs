@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<SSystemsManagerclientmetricsfordesktopdevicesParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<SSystemsManagerClientMetricsForDesktopDevicesParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class SSystemsManagerclientmetricsfordesktopdevicesParameters : IQueryParameters
+    public class SSystemsManagerClientMetricsForDesktopDevicesParameters : IQueryParameters
     {
         /// <summary>
         /// The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000.

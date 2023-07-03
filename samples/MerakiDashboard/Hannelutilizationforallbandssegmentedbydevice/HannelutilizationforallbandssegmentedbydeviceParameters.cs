@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<HannelutilizationforallbandssegmentedbydeviceParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<HannelUtilizationForAllBandsSegmentedByDeviceParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class HannelutilizationforallbandssegmentedbydeviceParameters : IQueryParameters
+    public class HannelUtilizationForAllBandsSegmentedByDeviceParameters : IQueryParameters
     {
         /// <summary>
         /// Filter results by network.

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<RegatedlatencyinfoforthisnetworkgroupedbynodeParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<RegatedLatencyInfoForThisNetworkGroupedByNodeParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class RegatedlatencyinfoforthisnetworkgroupedbynodeParameters : IQueryParameters
+    public class RegatedLatencyInfoForThisNetworkGroupedByNodeParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. The maximum lookback period is 180 days from today.

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ListthesecurityeventsforaclientParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ListTheSecurityEventsForAClientParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ListthesecurityeventsforaclientParameters : IQueryParameters
+    public class ListTheSecurityEventsForAClientParameters : IQueryParameters
     {
         /// <summary>
         /// The beginning of the timespan for the data. Data is gathered after the specified t0 value. The maximum lookback period is 791 days from today.

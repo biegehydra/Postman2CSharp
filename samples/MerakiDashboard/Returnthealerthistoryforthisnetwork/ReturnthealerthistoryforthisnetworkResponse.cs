@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturnthealerthistoryforthisnetworkResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturnTheAlertHistoryForThisNetworkResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReturnthealerthistoryforthisnetworkResponse
+    public class ReturnTheAlertHistoryForThisNetworkResponse
     {
         public DateTime OccurredAt { get; set; }
         public string AlertTypeId { get; set; }

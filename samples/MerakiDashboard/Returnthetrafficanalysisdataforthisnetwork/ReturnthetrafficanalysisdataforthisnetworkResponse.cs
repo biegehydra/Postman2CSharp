@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturnthetrafficanalysisdataforthisnetworkResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturnTheTrafficAnalysisDataForThisNetworkResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ReturnthetrafficanalysisdataforthisnetworkResponse
+    public class ReturnTheTrafficAnalysisDataForThisNetworkResponse
     {
         public string Application { get; set; }
         public object Destination { get; set; }

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<Stop10switchesbyenergyusageovergiventimerangeResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<STop10SwitchesByEnergyUsageOverGivenTimeRangeResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class Stop10switchesbyenergyusageovergiventimerangeResponse
+    public class STop10SwitchesByEnergyUsageOverGivenTimeRangeResponse
     {
         public Network Network { get; set; }
         public string Name { get; set; }

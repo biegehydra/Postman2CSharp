@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<AgernetworkconnectiondetailsfordesktopdevicesParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<AgerNetworkConnectionDetailsForDesktopDevicesParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class AgernetworkconnectiondetailsfordesktopdevicesParameters : IQueryParameters
+    public class AgerNetworkConnectionDetailsForDesktopDevicesParameters : IQueryParameters
     {
         /// <summary>
         /// The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000.

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<NnelutilizationforallbandsinanetworksplitbyAPParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<NnelUtilizationForAllBandsInANetworkSplitByAPParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class NnelutilizationforallbandsinanetworksplitbyAPParameters : IQueryParameters
+    public class NnelUtilizationForAllBandsInANetworkSplitByAPParameters : IQueryParameters
     {
         /// <summary>
         /// Filter results by network.

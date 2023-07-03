@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ListwirelessmeshstatusesforrepeatersResponse>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ListWirelessMeshStatusesForRepeatersResponse>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class ListwirelessmeshstatusesforrepeatersResponse
+    public class ListWirelessMeshStatusesForRepeatersResponse
     {
         public string Serial { get; set; }
         public List<string> MeshRoute { get; set; }

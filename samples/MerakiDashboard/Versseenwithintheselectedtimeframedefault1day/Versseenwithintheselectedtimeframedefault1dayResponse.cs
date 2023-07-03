@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<Versseenwithintheselectedtimeframedefault1dayResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<VersSeenWithinTheSelectedTimeframeDefault1DayResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class Versseenwithintheselectedtimeframedefault1dayResponse
+    public class VersSeenWithinTheSelectedTimeframeDefault1DayResponse
     {
         public string Mac { get; set; }
         public int Vlan { get; set; }

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<AtionoftheorganizationsAPIdocumentationinJSONResponse>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<AtionOfTheOrganizationsAPIDocumentationInJSONResponse>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class AtionoftheorganizationsAPIdocumentationinJSONResponse
+    public class AtionOfTheOrganizationsAPIDocumentationInJSONResponse
     {
         public string Openapi { get; set; }
         public Info Info { get; set; }

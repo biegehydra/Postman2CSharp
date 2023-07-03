@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ListtransactionsforsubscriptionParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<ListTransactionsForSubscriptionParameters>(myJsonResponse);
 namespace PaypalSubscriptions
 {
-    public class ListtransactionsforsubscriptionParameters : IQueryParameters
+    public class ListTransactionsForSubscriptionParameters : IQueryParameters
     {
         /// <summary>
         /// (Required) The start time of the range of transactions to list.

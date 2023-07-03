@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<LabilityinformationfordevicesinanorganizationParameters>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<LabilityInformationForDevicesInAnOrganizationParameters>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class LabilityinformationfordevicesinanorganizationParameters : IQueryParameters
+    public class LabilityInformationForDevicesInAnOrganizationParameters : IQueryParameters
     {
         /// <summary>
         /// The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000.

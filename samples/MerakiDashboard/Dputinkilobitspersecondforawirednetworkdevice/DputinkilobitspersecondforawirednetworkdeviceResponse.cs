@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<DputinkilobitspersecondforawirednetworkdeviceResponse>>(myJsonResponse);
+// Root myDeserializedClass = JsonSerializer.Deserialize<List<DputInKilobitsPerSecondForAWiredNetworkDeviceResponse>>(myJsonResponse);
 namespace MerakiDashboard
 {
-    public class DputinkilobitspersecondforawirednetworkdeviceResponse
+    public class DputInKilobitsPerSecondForAWiredNetworkDeviceResponse
     {
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
