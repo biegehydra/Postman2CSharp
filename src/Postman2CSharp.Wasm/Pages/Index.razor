@@ -23,10 +23,4 @@
     {
         TabsService.Value.SetHome(null);
     }
-
-    private async Task OnSuccessfulUpload(ApiCollection apiCollection)
-    {
-        await Layout.AddApiCollection(apiCollection);
-        Navigate.Value.ToCollection(apiCollection.Id);
-    }
 }

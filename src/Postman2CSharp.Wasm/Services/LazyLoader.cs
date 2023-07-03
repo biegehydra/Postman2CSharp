@@ -17,7 +17,7 @@ namespace Postman2CSharp.Wasm.Services
         public static event Func<bool, Task>? AdvancedSettingsLoadedChanged;
         public static bool AdvancedSettingsLoaded { get; set; }
         public static event Func<bool, Task>? UploadLoadedChanged;
-        public static bool UploadLoaded { get; set; }
+        public static bool ConvertLoaded { get; set; }
         private static List<string> UploadAssemblies { get; set; } = new()
         {
             "Microsoft.CodeAnalysis.CSharp.dll",
@@ -69,12 +69,12 @@ namespace Postman2CSharp.Wasm.Services
             await _lazyAssemblyLoader.LoadAssembliesAsync(HttpSecurityDlls);
         }
 
-        public async Task LoadUploadAssemblies()
+        public async Task LoadConvertAssemblies()
         {
-            if (UploadLoaded) return;
+            if (ConvertLoaded) return;
             await _lazyAssemblyLoader.LoadAssembliesAsync(UploadAssemblies);
-            UploadLoaded = true;
-            UploadLoadedChanged?.Invoke(UploadLoaded);
+            ConvertLoaded = true;
+            UploadLoadedChanged?.Invoke(ConvertLoaded);
         }
 
         public async Task LoadAdvancedSettingsAssemblies()
@@ -106,11 +106,11 @@ namespace Postman2CSharp.Wasm.Services
                 {
 
                 }
-                if (uri.Contains("Upload") || uri.Contains("Collection/"))
+                if (uri.Contains("Upload") || uri.Contains("Collection") || uri.Contains("Convert"))
                 {
-                    await LoadUploadAssemblies();
+                    await LoadConvertAssemblies();
                 }
-                if (uri.Contains("Collection/"))
+                if (uri.Contains("Collection"))
                 {
                     LoadCollectionJs();
                 }

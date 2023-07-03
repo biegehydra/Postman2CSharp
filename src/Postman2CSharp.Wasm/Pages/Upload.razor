@@ -1,18 +1,19 @@
 ﻿@inherits MainLayoutComponent
 @page "/Upload"
+@page "/Convert"
 @implements IDisposable
 
-<PageHeader Title="Upload"
-            SubTitle="Upload your Postman collections and transform them into C# HttpClients with Postman2CSharp"
-            Keywords="upload, generator, postman collections, transform, C# HttpClient" />
+<PageHeader Title="Convert"
+            SubTitle="Convert your Postman collections and transform them into C# HttpClients with Postman2CSharp"
+            Keywords="Convert, generator, postman collections, transform, C# HttpClient" />
 
 <BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
 
-<MudText Typo="Typo.h1" Class="mt-4">Upload your Postman Collections</MudText>
+<MudText Typo="Typo.h1" Class="mt-4">Convert Your Postman Collection</MudText>
 
 <br/>
 
-@if (LazyLoader.UploadLoaded)
+@if (LazyLoader.ConvertLoaded)
 {
     <div class="code-writing-options-contianer">
         <MudPaper Style="padding: 16px;">
@@ -29,13 +30,13 @@
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
     {
         new("Home", "/", icon: Icons.Home),
-        new("Upload", "/Upload", true, Icons.CloudDownload)
+        new("Convert", "/Convert", true, Icons.ImportExport)
     };
 
     protected override void OnInitialized()
     {
         TabsService.Value.SetHome(null);
-        if (!LazyLoader.UploadLoaded)
+        if (!LazyLoader.ConvertLoaded)
         {
             throw new Exception("Something went wrong. Reload the page.");
         }

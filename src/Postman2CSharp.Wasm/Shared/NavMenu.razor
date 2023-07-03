@@ -15,7 +15,7 @@
 
 <MudNavMenu>
     <MudNavLink Href="@GettingStartedHref" Match="NavLinkMatch.All" Icon="@Icons.Rocket" >Getting Started</MudNavLink>
-    <MudNavLink Href="/Upload" Match="NavLinkMatch.All" Icon="@Icons.CloudDownload">Upload</MudNavLink>
+    <MudNavLink Href="/Convert" Match="NavLinkMatch.All" Icon="@Icons.ImportExport">Convert</MudNavLink>
     <MudNavGroup Class="favicon-container" Icon="@FavIcon" @bind-Expanded="@CollectionsExpanded" Title="Postman Collections" Disabled="ApiCollections is not {Count: > 0 }">
         @{
             _moreGuidList = new();

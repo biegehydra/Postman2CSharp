@@ -54,19 +54,9 @@ namespace Postman2CSharp.Wasm.Services
             _navManager.NavigateTo($"Collection/{collectionId}/ApiClient/{apiClientId}/HttpCalls/{httpCallName}/{className}");
         }
 
-        public void ToAdvancedSettings()
-        {
-            _navManager.NavigateTo("Advanced-Settings");
-        }
-
         public async Task OpenBlank(string url)
         {
             await _jsRuntime.Value.InvokeVoidAsync("open", url, "_blank");
-        }
-
-        public void ToUpload()
-        {
-            _navManager.NavigateTo("Upload");
         }
     }
 }
