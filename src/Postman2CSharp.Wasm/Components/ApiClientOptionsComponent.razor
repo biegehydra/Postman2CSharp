@@ -31,6 +31,10 @@
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateClasses">Remove Duplicate Classes</MudSwitch>
     </AdvancedSettingItem>
     
+    <AdvancedSettingItem ToolTip="This will determine the attributes used on classes generated from Json and the extension methods used on http client calls..">
+        <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="ApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
+    </AdvancedSettingItem>
+
     <AdvancedSettingItem ToolTip="Any types choosen in here will caused disabled parameters of that type to be removed in pre-processing..">
         <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="ApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
@@ -41,25 +45,25 @@
 
     <AdvancedSettingItem ToolTip="Determines whether or not to handle errors when making http client calls and how to handle them when they happen.">
         <EnumSelectComponent @bind-Value="ApiClientOptions.ErrorHandlingStrategy" AlwaysShowAllEnumValues Label="Error Handling Strategy"></EnumSelectComponent>
-     </AdvancedSettingItem>
+    </AdvancedSettingItem>
 
-     <AdvancedSettingItem ToolTip="Choose how to output your exceptions, if at all.">
-         <MultiEnumSelectComponent TEnum="ErrorHandlingSinks" Value="ApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
-     </AdvancedSettingItem>
+    <AdvancedSettingItem ToolTip="Choose how to output your exceptions, if at all.">
+        <MultiEnumSelectComponent TEnum="ErrorHandlingSinks" Value="ApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
+    </AdvancedSettingItem>
 
-     <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handling by the sinks.">
-         <MultiEnumSelectComponent TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="ApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
-     </AdvancedSettingItem>
+    <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handling by the sinks.">
+        <MultiEnumSelectComponent TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="ApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
+    </AdvancedSettingItem>
 
-     <AdvancedSettingItem ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
-         <EnumSelectComponent @bind-Value="ApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
-     </AdvancedSettingItem>
+    <AdvancedSettingItem ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
+        <EnumSelectComponent @bind-Value="ApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
+    </AdvancedSettingItem>
 
-     <AdvancedSettingItem ToolTip="WARNING: It is almost never advisable to change this to PerAuthority, especially with large postman collections. See options explanation page.">
-         <EnumSelectComponent @bind-Value="ApiClientOptions.RootDefinition" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
-     </AdvancedSettingItem>
-     <MudItem xs="12" sm="6" md="4" lg="3" Style="align-self: flex-end; display: flex; justify-content: center;">
-         @{
+    <AdvancedSettingItem ToolTip="WARNING: It is almost never advisable to change this to PerAuthority, especially with large postman collections. See options explanation page.">
+        <EnumSelectComponent @bind-Value="ApiClientOptions.RootDefinition" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
+    </AdvancedSettingItem>
+    <MudItem xs="12" sm="6" md="4" lg="3" Style="align-self: flex-end; display: flex; justify-content: center;">
+        @{
             var toolTipColor = Color.Warning;
             var toolTipVisible = false;
             string toolTipMessage = "";
@@ -139,6 +143,7 @@
                && options1.LogLevel == options2.LogLevel
                && options1.RootDefinition == options2.RootDefinition
                && options1.UseCancellationTokens == options2.UseCancellationTokens
+               && options1.JsonLibrary == options2.JsonLibrary
                && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch && allRemovedDisabledMatch;
     }
 

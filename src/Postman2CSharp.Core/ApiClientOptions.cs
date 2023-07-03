@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Postman2CSharp.Core.Infrastructure;
+using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core
 {
@@ -9,6 +10,8 @@ namespace Postman2CSharp.Core
         public bool EnsureResponseIsSuccessStatusCode { get; set; }
         public bool MakePathCollectionVariablesFunctionParameters { get; set; }
         public bool UseCancellationTokens { get; set; }
+
+        public JsonLibrary JsonLibrary { get; set; } = JsonLibrary.SystemTextJson;
 
         public List<ErrorHandlingSinks> ErrorHandlingSinks { get; set; } = new()
         {
