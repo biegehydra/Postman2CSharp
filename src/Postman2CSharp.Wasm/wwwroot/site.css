@@ -3,7 +3,9 @@
 }
 .mud-paper {
     --mud-palette-error: #9c5c64;
-    background-color: rgba(172, 115, 207, 0.06);
+}
+.settings-paper {
+    background-color: rgba(115, 126, 207, 0.05);
 }
 
 .link-normal {

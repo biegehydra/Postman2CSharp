@@ -204,7 +204,12 @@ public class ApiClientGenerator
         {
             var requestDataType = Utils.GetRequestDataType(requestItem.Request!);
             var normalizedName = Utils.NormalizeToCsharpPropertyName(requestItem.Name);
-            var uniqueName = GenerateUniqueName(normalizedName, uniqueNames);
+            // If the ApiClient is Geolocate and the request is Geolocate, it's fine to have the same name here
+            var uniqueName = normalizedName;
+            if (normalizedName != nameSpace)
+            {
+                uniqueName = GenerateUniqueName(normalizedName, uniqueNames);
+            }
 
             string? requestSourceCode = null;
             string? requestClassName = null;
