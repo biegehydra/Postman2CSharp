@@ -39,7 +39,7 @@ namespace Postman2CSharp.Core.Utilities
                 AddToDictionary(httpCall.QueryParameterSourceCode, httpCall.QueryParameterClassName, httpCall.Name);
             }
 
-            var apiClientSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, apiClient.SourceCode, true, apiClient.NameSpaces());
+            var apiClientSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, apiClient.SourceCode, true, apiClient.NameSpaces(), addSignature: true);
             var oauth2QueryParamsSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.OAuth2QueryParameters, true, ImplicitOAuth2QueryParametersNamespaces);
             var helperExtensionsSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.HelperExtensions, true, ImplicitHelperExtensionNamespaces);
             var interfacesSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.Interfaces, namespaces: ImplicitInterfacesNamespaces);
@@ -114,7 +114,7 @@ namespace Postman2CSharp.Core.Utilities
             }
         }
 
-        private static string? AddNamespaceAndUsingsToSourceCode(string nameSpace, string? sourceCode, bool padLeft = false, List<string>? namespaces = null)
+        private static string? AddNamespaceAndUsingsToSourceCode(string nameSpace, string? sourceCode, bool padLeft = false, List<string>? namespaces = null, bool addSignature = false)
         {
             if (string.IsNullOrWhiteSpace(sourceCode))
                 return null;
@@ -123,6 +123,14 @@ namespace Postman2CSharp.Core.Utilities
             foreach (var ns in namespaces ?? new())
             {
                 sb.Append($"using {ns};\n");
+            }
+            if (namespaces?.Count > 0)
+            {
+                sb.AppendLine();
+            }
+            if (addSignature)
+            {
+                sb.AppendLine("// Generated using Postman2CSharp https://postman2csharp.com/Convert");
             }
             sb.Append($"namespace {nameSpace}\n");
             sb.Append("{\n");
