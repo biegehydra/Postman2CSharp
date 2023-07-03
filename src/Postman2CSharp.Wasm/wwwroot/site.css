@@ -267,6 +267,9 @@ li {
     .hang-tight-text {
         font-size: 1.17em;
     }
+    .small-w-100 {
+        width: 100% !important;
+    }
 }
 @media (max-width: 270px) {
     .mud-treeview-item-content {

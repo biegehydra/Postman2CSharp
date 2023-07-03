@@ -3,17 +3,20 @@
 @if (ApiClientGroups != null)
 {
     <MudTreeView T="string" Class="collection-tree-root" Hover ExpandOnClick>
-        <CascadingValue Value="this">
-            @foreach (var group in ApiClientGroups)
-            {
-                <div class="f-column" >
-                    @foreach (var apiClient in group)
-                    {
-                        <ApiClientTreeItem ApiClient="apiClient" ShowCoreCsvFiles="ShowCoreCsvFiles" ApiCollection="ApiCollection"/>
-                    }
-                </div>
-            }
-        </CascadingValue>
+     @{
+            ApiClientTreeViewGuidDict = new();
+     }
+     <CascadingValue Value="this">
+         @foreach (var group in ApiClientGroups)
+         {
+             <div class="f-column">
+                 @foreach (var apiClient in group)
+                 {
+                     <ApiClientTreeItem @ref="ApiClientTreeViewGuidDict[apiClient.Id]" ApiClient="apiClient" ShowCoreCsvFiles="ShowCoreCsvFiles" ApiCollection="ApiCollection"/>
+                 }
+             </div>
+         }
+     </CascadingValue>
     </MudTreeView>
 }
 
@@ -80,9 +83,18 @@
 
     public async Task StartEditingNextApiClientNameSpace(string nextApiClientId)
     {
-        _shouldRender = true;
-        SnackBar.Value?.Add("Began editing next namespace with default value.");
-        await ApiClientTreeViewGuidDict[nextApiClientId].BeginEditingApiClientNamespace(true);
+        try
+        {
+            _shouldRender = true;
+            await ApiClientTreeViewGuidDict[nextApiClientId].BeginEditingApiClientNamespace(true);
+            SnackBar.Value?.Add("Began editing next namespace with default value.");
+        }
+        catch (Exception ex)
+        {
+            #if DEBUG
+            Console.WriteLine(ex);
+            #endif
+        }
     }
 
     private bool _shouldRender = true;

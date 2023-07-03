@@ -130,25 +130,23 @@ public class ApiClient
 
     public void FixNamespaces(string oldNamespace, string newNewspace)
     {
-        InterfaceSourceCode = InterfaceSourceCode.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
-        TestClassSourceCode = TestClassSourceCode.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
         foreach (var httpCall in HttpCalls)
         {
             if (httpCall.ResponseClassName != null)
             {
-                httpCall.ResponseSourceCode = httpCall.ResponseSourceCode!.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
+                httpCall.ResponseSourceCode = httpCall.ResponseSourceCode?.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
             }
             if (httpCall.RequestClassName != null)
             {
-                httpCall.RequestSourceCode = httpCall.RequestSourceCode!.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
+                httpCall.RequestSourceCode = httpCall.RequestSourceCode?.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
             }
             if (httpCall.QueryParameterClassName != null)
             {
-                httpCall.QueryParameterSourceCode = httpCall.QueryParameterSourceCode!.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
+                httpCall.QueryParameterSourceCode = httpCall.QueryParameterSourceCode?.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
             }
             if (httpCall.FormDataClassName != null)
             {
-                httpCall.FormDataSourceCode = httpCall.FormDataSourceCode!.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
+                httpCall.FormDataSourceCode = httpCall.FormDataSourceCode?.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
             }
         }
     }

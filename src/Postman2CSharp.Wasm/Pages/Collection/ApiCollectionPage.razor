@@ -1,42 +1,42 @@
 ﻿@page "/Collection/{CollectionId}"
+@page "/Collection"
 @inherits MainLayoutComponent
 
 <PageTitle>Collection @SelectedApiCollection?.CollectionInfo.Name</PageTitle>
 
 <BreadCrumbs Items="@_breadCrumbs"></BreadCrumbs>
 
-
+<br />
+<CollectionDetails Info="CollectionInfo" Collection="SelectedApiCollection"></CollectionDetails>
 @if (SelectedApiCollection != null)
 {
     <br />
-    <CollectionDetails Info="CollectionInfo" Collection="SelectedApiCollection"></CollectionDetails>
+    <h3>Please Read:</h3>
+    <br />
+    <p>When your collection is uploaded it is recursively traversed to detect any root that has at least 1 request.
+        Each of these roots is used to generate an ApiClient. Postman2CSharp will try to identify common headers,
+        a base url, set up authorization, automatically generate classes for query parameters, request bodies, responses,
+        and form data, and more to keep your code clean, uniform, and organize; but more importantly, to save you time from writing
+        boilerplate code. A tree view of the generated source code for each api client is shown below.
+    </p>
+    <ul>
+        <li>The name given to the root folder of each ApiClient will also be used as the namespace.</li>
+        <li>
+            <b>Generated code should not be used carelessly. Use at your own risk.</b>
+            <ul>
+                <li>Some spots have placeholders for custom code.</li>
+                <li>Not all features are supported including many authentication types. See <a class="link-normal" href="/SupportedFeatures">Supported Features</a></li>
+            </ul>
+        </li>
+    </ul>
+    <div class="f-row-column" style="justify-content: end; gap: 15px;">
+        <MudSwitch Color="Color.Primary" Label="Show Core Files" @bind-Checked="ShowCoreCsvFiles" ></MudSwitch>
+    </div>
+    <br/>
+    <CollectionTreeItem ShowCoreCsvFiles="ShowCoreCsvFiles" ApiCollection="SelectedApiCollection"></CollectionTreeItem>
+    <br/>
+    <br/>
 }
-<br />
-<h3>Please Read:</h3>
-<br />
-<p>When your collection is uploaded it is recursively traversed to detect any root that has at least 1 request.
-    Each of these roots is used to generate an ApiClient. Postman2CSharp will try to identify common headers,
-    a base url, set up authorization, automatically generate classes for query parameters, request bodies, responses,
-    and form data, and more to keep your code clean, uniform, and organize; but more importantly, to save you time from writing
-    boilerplate code. A tree view of the generated source code for each api client is shown below.
-</p>
-<ul>
-    <li>The name given to the root folder of each ApiClient will also be used as the namespace.</li>
-    <li>
-        <b>Generated code should not be used carelessly. Use at your own risk.</b>
-        <ul>
-            <li>Some spots have placeholders for custom code.</li>
-            <li>Not all features are supported including many authentication types. See <a class="link-normal" href="/SupportedFeatures">Supported Features</a></li>
-        </ul>
-    </li>
-</ul>
-<div class="f-row-column" style="justify-content: end; gap: 15px;">
-    <MudSwitch Color="Color.Primary" Label="Show Core Files" @bind-Checked="ShowCoreCsvFiles" ></MudSwitch>
-</div>
-<br/>
-<CollectionTreeItem ShowCoreCsvFiles="ShowCoreCsvFiles" ApiCollection="SelectedApiCollection"></CollectionTreeItem>
-<br/>
-<br/>
 
 @code {
     private List<BreadcrumbItem> _breadCrumbs = new();
@@ -56,7 +56,7 @@
 
     private ApiCollection? SelectedApiCollection => ApiCollections?.FirstOrDefault(x => x.Id == CollectionId);
 
-    private CollectionInfo CollectionInfo => SelectedApiCollection!.CollectionInfo;
+    private CollectionInfo? CollectionInfo => SelectedApiCollection?.CollectionInfo;
 
     private async Task DownloadAllApiClients()
     {

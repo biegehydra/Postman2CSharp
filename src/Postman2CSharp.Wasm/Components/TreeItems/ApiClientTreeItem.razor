@@ -1,5 +1,5 @@
 ﻿@inherits MainLayoutComponent
-
+@implements IDisposable
 @if (ApiClient != null && UserAttributes != null && ApiCollection != null)
 {
     <MudTreeViewItem UserAttributes="UserAttributes" Class="file-tree-item" Value="@ApiClient.NameSpace" @bind-Expanded="Expanded" >
@@ -93,7 +93,6 @@
     protected override void OnInitialized()
     {
         UserAttributes = new Dictionary<string, object>() { { "id", _guid } };
-        CollectionTreeItem.ApiClientTreeViewGuidDict[ApiClient!.Id] = this;
         SetCache();
     }
 
@@ -222,4 +221,13 @@
         _cachedApiCollectionId = ApiCollection!.Id;
         _cachedApiClientId = ApiClient!.Id!;
     }
+
+    public void Dispose()
+    {
+        if (ApiClient != null)
+        {
+            CollectionTreeItem.ApiClientTreeViewGuidDict.Remove(ApiClient.Id);
+        }
+    }
+
 }

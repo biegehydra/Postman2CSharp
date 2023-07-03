@@ -7,6 +7,14 @@
             max-width: 100%;
         }
     }
+    .getting-started-image {
+        height: 400px;
+    }
+    @@media (max-width: 600px) {
+        .getting-started-image {
+            height: 300px;
+        }
+    }
 </style>
 <div class="getting-started-container">
     <MudText>Follow the steps below to convert your Postman collection to a C# API client.</MudText>
@@ -16,19 +24,22 @@
                 <strong>Step 1:</strong> Open Postman and hover over the collection (root folder) you want to export. Click on the ellipsis (...), scroll down, and then select 'Export'.
             </MudText>
         </MudListItem>
+        <img class="getting-started-image" src="images/ShowMore.png" alt="Show More" fetchpriority="low" loading="lazy">
         <MudListItem>
             <MudText>
                 <strong>Step 2:</strong> In the 'Export Collection' dialog box, select version 'Collection v2.1'.
             </MudText>
         </MudListItem>
+        <img class="getting-started-image" src="images/Export.png" alt="Show More" fetchpriority="low" loading="lazy">
         <MudListItem>
             <MudText>
                 <strong>Step 3:</strong> Click 'Export' and choose the location where you want to save the file.
             </MudText>
         </MudListItem>
+        <img class="getting-started-image" src="images/ExportCollection.png" alt="Show More" fetchpriority="low" loading="lazy">
         <MudListItem>
             <MudText>
-                <strong>Step 4:</strong> Now you can <a class="link-normal" href="/Upload">Upload</a> the exported JSON file on our platform to generate your C# API client.
+                <strong>Step 4:</strong> Now you can Upload the exported Json file on <a class="link-normal" href="/Upload">this</a> page to generate your C# API client.
             </MudText>
         </MudListItem>
     </MudList>
@@ -62,10 +73,9 @@
 
     <MudText Typo="Typo.h2" GutterBottom="true">Configuration</MudText>
     <MudText>
-        There are some configurations for how classes for Json are generated on the Upload page.
-        For the full list of settings visit the <a class="link-normal" href="/Advanced-Settings">Advanced Settings</a> page. Explanations
-        for each setting can be found at the <a class="link-normal" href="/Advanced-Settings/Explanations">Advanced Settings Explanations</a>
-        page.
+        There majority of configuration will be found on the Upload page. There are some additional configuration that you can configure
+        on the Advanced Settings page; these configurations deal with how classes are generated from Json. For an explanation of configurations
+        see <a class="link-normal" href="/ApiClient-Configurations-Explained">ApiClient Configurations Explained</a>.
     </MudText>
     <br />
 </div>

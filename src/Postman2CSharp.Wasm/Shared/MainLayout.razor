@@ -209,40 +209,11 @@
 
         SiteSettings.Instance.TotalApiClientsGenerated += 1;
         await JsRuntime.InvokeVoidAsync("setLocalStorage", "siteSettings", SiteSettings.Instance);
-        NotifyIfCheckpointIsHit();
 
         StateHasChanged();
         await SaveApiCollectionToLocalStore(apiCollection.Id);
     }
 
-    private void NotifyIfCheckpointIsHit()
-    {
-        string? message = null;
-        if (SiteSettings.Instance.TotalApiClientsGenerated == 10) 
-            message ="Congratulations on generating ApiClients for 10 collections. If your enjoying Postman2CSharp, please consider donating to support the project.";
-
-        if (SiteSettings.Instance.TotalApiClientsGenerated == 50)
-            message = "Congratulations on generating ApiClients for 50 collections. If your enjoying Postman2CSharp, please consider donating to support the project.";
-
-        if (SiteSettings.Instance.TotalApiClientsGenerated == 100)
-            message = "Congratulations on generating ApiClients for 100 collections. If your enjoying Postman2CSharp, please consider donating to support the project.";
-
-        if (message != null)
-        {
-            SnackBar?.Add<BuyMeACoffeePopup>(new Dictionary<string, object>()
-            {
-                {"Message", message }
-            }, Severity.Normal, configure =>
-            {
-                configure.ActionVariant = Variant.Text;
-                configure.CloseAfterNavigation = false;
-                configure.HideIcon = true;
-                configure.ShowCloseIcon = false;
-                configure.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
-                configure.VisibleStateDuration = 27000;
-            });
-        }
-    }
 
     private void StripApiCollections()
     {
