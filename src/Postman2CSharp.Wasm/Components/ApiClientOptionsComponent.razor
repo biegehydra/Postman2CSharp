@@ -4,7 +4,7 @@
         <h2>ApiClient Generation Configurations</h2>
         <br/>
         <MudAlert Variant="Variant.Outlined" Elevation="2" Severity="Severity.Info" Style="width: fit-content;">
-            For an in depth explanation on how these settings work, see the <a class="link-normal" href="/ApiClient-Configurations-Explained">Advanced Settings Explanation</a> page.
+            For an in depth explanation on how these settings work, see <a class="link-normal" href="/ApiClient-Configurations-Explained">ApiClient Configurations Explanation</a>.
         </MudAlert>
     </div>
     <div>
@@ -19,7 +19,7 @@
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudSwitch>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem ToolTip="@(@"All actual ""path variables"" are automatically treated as function parameters, but collection variables in paths will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
+    <AdvancedSettingItem ToolTip="@(@"All actual ""path variables"" (/:pathVariable/) are automatically treated as function parameters, but collection variables in paths (/{{variable}}/) will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudSwitch>
     </AdvancedSettingItem>
 

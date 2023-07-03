@@ -36,6 +36,22 @@
 <br/>
 
 <div>
+    <MudText Typo="Typo.h3">Xml Comments Type</MudText>
+    <br/>
+    <p>
+        You have full control over the type of xml comments that are generated. Xml comments are generated
+        from the description field of different parameters. Your options are ApiClient, QueryParameters, FormData,
+        PathVariables, and Request. These are the locations of the generated xml comments. ApiClient: Appear at the top
+        of generated ApiClient, description comes from root item description. QueryParameters: Each variable in the generated
+        Parameters class will have an xml summary based on the description of the query parameters. FormData: Same as before but for FormData.
+        PathVariables: An xml param tag will be generated on the ApiClient function for each path variable. Request: An xml summary will
+        be generated on the ApiClient function from the description of the postman request item.
+    </p>
+</div>
+
+<br/>
+
+<div>
     <MudText Typo="Typo.h3">Error Handling Strategy</MudText>
     <br/>
     <p>None - Request will be with no catch clause.</p>
