@@ -7,7 +7,7 @@
     <Detail Key="Http Call Count" Value="@ApiClient.HttpCalls.Count.ToString()" FontSize="FontSize.Larger"></Detail>
     <Detail Key="Classes Generated" Value="@ApiClient.TotalClassesGenerated.ToString()" FontSize="FontSize.Larger"></Detail>
     <Detail Key="Unique Auths" Value="@(string.Join(", ", ApiClient.UniqueAuths.Select(x => x.EnumType().ToString())))" FontSize="FontSize.Larger"></Detail>
-    <NestedDetails Key="Common Headers" NestedValues="ApiClient.CommonHeaders.ToDictionary(x => x.Key, x=> x.Value)" FontSize="FontSize.Larger"></NestedDetails>
+    <NestedDetails Key="Common Headers" NestedValues="@(ApiClient.CommonHeaders.GroupBy(x => x.Key).ToDictionary(x => x.Key, x=> string.Join(", ", x.Select(y => y.Value))))" FontSize="FontSize.Larger"></NestedDetails>
     @if (!_verbose)
     {
         <small class="show-more" @onclick="() => _verbose = true"><b>Show more</b></small>
@@ -34,7 +34,7 @@
         }
         <Detail Key="Error Handling Strategy" Value="@ApiClient.ErrorHandlingStrategy.ToString()" FontSize="FontSize.Larger"></Detail>
         <Detail Key="Xml Comment Types" Value="@(string.Join(", ", ApiClient.CommentTypes.Select(x => x.ToString())))" FontSize="FontSize.Larger"></Detail>
-        <NestedDetails Key="Variable Usages" NestedValues="ApiClient?.VariableUsages.ToDictionary(x => x.Original, x=> x.Value)" FontSize="FontSize.Larger"></NestedDetails>
+        <NestedDetails Key="Variable Usages" NestedValues="@(ApiClient?.VariableUsages.GroupBy(x => x.Original).ToDictionary(x => x.Key, x => string.Join(", ", x.Select(y => y.Value))))" FontSize="FontSize.Larger"></NestedDetails>
         <small class="show-more" @onclick="() => _verbose = false"><b>Show less</b></small>
     }
 
