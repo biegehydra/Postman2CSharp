@@ -35,7 +35,7 @@
         if (SelectedApiClient != null && SelectedApiClient != _cachedApiClient)
         {
             _cachedApiClient = SelectedApiClient;
-            await TabsService.Value.AddApiClientTestsTab(CollectionId, ApiClientId, SelectedApiClient!.TestClassName);
+            await TabsService.Value.AddApiClientTestsTab(CollectionId!, ApiClientId!, SelectedApiClient!.TestClassName);
         }
         _breadCrumbs = new()
         {
