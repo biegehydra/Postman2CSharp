@@ -34,7 +34,7 @@
                     }
                     @if (SelectedClassName?.Contains(Consts.Response) ?? false)
                     {
-                        <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.ResponseSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+                        <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.SuccessResponse?.SourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
                     }
                     @if (SelectedClassName?.Contains(Consts.Parameters) ?? false)
                     {
@@ -53,7 +53,7 @@
                 }
                 @if (SelectedClassName?.Contains(Consts.Response) ?? false)
                 {
-                    <pre><code class="language-csharp">@httpCall.ResponseSourceCode</code></pre>
+                    <pre><code class="language-csharp">@httpCall.SuccessResponse?.SourceCode</code></pre>
                 }
                 @if (SelectedClassName?.Contains(Consts.Parameters) ?? false)
                 {
@@ -93,9 +93,9 @@
         {
             allClassNames.Add(httpCall.RequestClassName);
         }
-        if (httpCall.ResponseSourceCode != null)
+        if (httpCall.SuccessResponse?.ClassName != null)
         {
-            allClassNames.Add(httpCall.ResponseClassName);
+            allClassNames.Add(httpCall.SuccessResponse.ClassName);
         }
         if (httpCall.QueryParameterSourceCode != null)
         {

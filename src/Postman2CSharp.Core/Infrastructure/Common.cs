@@ -36,7 +36,7 @@ namespace Postman2CSharp.Core.Infrastructure
             {
                 sb.Append(indent + "public async Task");
             }
-            sb.Append($"<{call.ResponseClassName ?? "Stream"}>");
+            sb.Append($"<{call.SuccessResponse?.ClassName ?? "Stream"}>");
             sb.Append($" {call.Name}(");
             sb.Append(string.Join(", ", methodParameters.Select(x => x.LocalParameterDeclaration)));
             sb.AppendLine(isInterface ? ");" : ")");

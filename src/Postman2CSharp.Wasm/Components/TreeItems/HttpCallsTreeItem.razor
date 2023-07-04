@@ -1,7 +1,7 @@
 ﻿@if (ApiClientId != null && ApiCollectionId != null && HttpCall != null && _shouldRender)
 {
     @if (!string.IsNullOrWhiteSpace(HttpCall.RequestSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.QueryParameterSourceCode)
-         || !string.IsNullOrWhiteSpace(HttpCall.FormDataSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.ResponseSourceCode))
+         || !string.IsNullOrWhiteSpace(HttpCall.FormDataSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.SuccessResponse?.SourceCode))
     {
         <MudTreeViewItem Value="@HttpCall.Name" @bind-Expanded="Expanded" >
             <Content>
@@ -13,7 +13,7 @@
                 <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.RequestClassName" SourceCode="@HttpCall.RequestSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
                 <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.QueryParameterClassName" SourceCode="@HttpCall.QueryParameterSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
                 <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.FormDataClassName" SourceCode="@HttpCall.FormDataSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
-                <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.ResponseClassName" SourceCode="@HttpCall.ResponseSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
+                <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.SuccessResponse?.ClassName" SourceCode="@HttpCall.SuccessResponse?.SourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
             </ChildContent>
         </MudTreeViewItem>
     }

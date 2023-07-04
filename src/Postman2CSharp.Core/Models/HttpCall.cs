@@ -1,11 +1,34 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
-using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
+using Postman2CSharp.Core.Utilities;
 
 namespace Postman2CSharp.Core.Models;
+
+public class ApiResponse
+{
+    public int Code { get; }
+    public string? ClassName { get; }
+    public string? SourceCode { get; set; }
+    public DataType DataType { get; }
+
+    private string? _statusCode;
+    public string StatusCode()
+    {
+        return _statusCode ??= $"Status{Code}{(HttpStatusCode)Code}";
+    }
+
+    public ApiResponse(int code, string? className, string? sourceCode, DataType dataType)
+    {
+        Code = code;
+        ClassName = className;
+        SourceCode = sourceCode;
+        DataType = dataType;
+    }
+}
 
 public class Field
 {
@@ -21,30 +44,25 @@ public class ClassType
 
 public class HttpCall
 {
-    public required string Name { get; set; }
-    public DataType RequestDataType { get; set; }
+    public required string Name { get; init; }
+    public DataType RequestDataType { get; init; }
     public string? RequestSourceCode { get; set; }
-    public required Request Request { get; set; }
-    public required string? RequestClassName { get; set; }
+    public required Request Request { get; init; }
+    public required string? RequestClassName { get; init; }
     public required List<ClassType>? RequestTypes { get; set; }
 
-    public required string? QueryParameterClassName { get; set; }
+    public required string? QueryParameterClassName { get; init; }
     public required string? QueryParameterSourceCode { get; set; }
-    public required List<ClassType>? QueryParameterTypes { get; set; }
+    public required List<ClassType>? QueryParameterTypes { get; init; }
 
-    public required string HttpClientFunction { get; set; }
-    public required string? FormDataClassName { get; set; }
+    public required string HttpClientFunction { get; init; }
+    public required string? FormDataClassName { get; init; }
     public required string? FormDataSourceCode { get; set; }
 
+    public ApiResponse? SuccessResponse => AllResponses.FirstOrDefault(x => x.Code == 200);
+    public required List<ApiResponse> AllResponses { get; init; }
 
-    public DataType ResponseDataType { get; set; }
-    public string? ResponseSourceCode { get; set; }
-    public required string? ResponseClassName { get; set; }
-    public required List<ClassType>? ResponseTypes { get; set; }
-    public Response? SuccessResponse => AllResponses.FirstOrDefault(x => x.Code == 200);
-    public required List<Response> AllResponses { get; set; }
-
-    public required List<Header> UniqueHeaders { get; set; }
+    public required List<Header> UniqueHeaders { get; init; }
 
     public List<HttpCallMethodParameter> MethodParameters()
     {
@@ -94,7 +112,7 @@ public class HttpCall
         {
             if (path.IsVariable())
             {
-                var pathVariable = new HttpCallMethodParameter(HttpCallMethodParameterType.Path, "string", path.LocalVariableName);
+                var pathVariable = new HttpCallMethodParameter(HttpCallMethodParameterType.Path, "string", path.CsPropertyName(CsharpPropertyType.Local));
                 methodParameters.Add(pathVariable);
             }
         }

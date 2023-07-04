@@ -142,9 +142,9 @@ public class ApiClient
     {
         foreach (var httpCall in HttpCalls)
         {
-            if (httpCall.ResponseClassName != null)
+            if (httpCall.SuccessResponse?.ClassName != null)
             {
-                httpCall.ResponseSourceCode = httpCall.ResponseSourceCode?.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
+                httpCall.SuccessResponse.SourceCode = httpCall.SuccessResponse.ClassName.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
             }
             if (httpCall.RequestClassName != null)
             {

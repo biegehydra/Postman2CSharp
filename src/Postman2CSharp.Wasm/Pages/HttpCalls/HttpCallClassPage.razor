@@ -94,9 +94,9 @@
         {
             _sourceCode = selectedHttpCall.RequestSourceCode;
         }
-        if (selectedHttpCall.ResponseClassName == ClassName)
+        if (selectedHttpCall.SuccessResponse != null && selectedHttpCall.SuccessResponse.ClassName == ClassName)
         {
-            _sourceCode = selectedHttpCall.ResponseSourceCode;
+            _sourceCode = selectedHttpCall.SuccessResponse.ClassName;
         }
         if (_sourceCode == null) return false;
 
