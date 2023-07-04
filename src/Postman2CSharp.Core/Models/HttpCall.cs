@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
@@ -40,7 +41,8 @@ public class HttpCall
     public string? ResponseSourceCode { get; set; }
     public required string? ResponseClassName { get; set; }
     public required List<ClassType>? ResponseTypes { get; set; }
-    public Response? SuccessResponse { get; set; }
+    public Response? SuccessResponse => AllResponses.FirstOrDefault(x => x.Code == 200);
+    public required List<Response> AllResponses { get; set; }
 
     public required List<Header> UniqueHeaders { get; set; }
 

@@ -220,11 +220,9 @@
         if (ApiCollections == null) return;
         foreach (var apiCollection in ApiCollections)
         {
-            foreach (var successResponse in apiCollection.ApiClients.SelectMany(x => x.HttpCalls)
-                .Where(x => x.SuccessResponse?.Body != null)
-                .Select(x => x.SuccessResponse))
+            foreach (var response in apiCollection.ApiClients.SelectMany(x => x.HttpCalls.SelectMany(y => y.AllResponses)))
             {
-                successResponse!.Body = null;
+                response.Body = null;
             }
             foreach (var requestBody in apiCollection.ApiClients.SelectMany(x => x.HttpCalls)
                 .Where(x => x.Request.Body?.Raw != null)

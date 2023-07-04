@@ -393,7 +393,7 @@ public class ApiClientGenerator
                 RequestDataType = requestDataType,
                 RequestClassName = requestClassName,
                 RequestSourceCode = requestSourceCode,
-                SuccessResponse = successResponse,
+                AllResponses = allResponses,
                 ResponseDataType = responseDataType,
                 ResponseClassName = responseClassName,
                 ResponseSourceCode = responseSourceCode,
