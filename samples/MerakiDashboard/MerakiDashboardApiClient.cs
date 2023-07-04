@@ -4,6 +4,8 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+
+// Generated using Postman2CSharp https://postman2csharp.com/Convert
 namespace MerakiDashboard
 {
     public class MerakiDashboardApiClient : IMerakiDashboardApiClient
@@ -241,10 +243,9 @@ namespace MerakiDashboard
         /// Generate a new vMX authentication token
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<Stream> GenerateANewVMXAuthenticationToken(string serial)
+        public async Task<GenerateANewVMXAuthenticationTokenResponse> GenerateANewVMXAuthenticationToken(string serial)
         {
-            var response = await _httpClient.PostAsync($"devices/{serial}/appliance/vmx/authenticationToken");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostFromJsonAsync<GenerateANewVMXAuthenticationTokenResponse>($"devices/{serial}/appliance/vmx/authenticationToken");
         }
     
         /// <summary>
@@ -627,10 +628,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> AddAStaticDelegatedPrefixFromANetwork(AddAStaticDelegatedPrefixFromANetworkRequest request, string networkId)
+        public async Task<AddAStaticDelegatedPrefixFromANetworkResponse> AddAStaticDelegatedPrefixFromANetwork(AddAStaticDelegatedPrefixFromANetworkRequest request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/appliance/prefixes/delegated/statics", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<AddAStaticDelegatedPrefixFromANetworkResponse>($"networks/{networkId}/appliance/prefixes/delegated/statics", request);
         }
     
         /// <summary>
@@ -679,10 +679,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="staticDelegatedPrefixId">(Required) Static delegated prefix ID</param>
-        public async Task<Stream> DeleteAStaticDelegatedPrefixFromANetwork(string networkId, string staticDelegatedPrefixId)
+        public async Task<EmptyResponse> DeleteAStaticDelegatedPrefixFromANetwork(string networkId, string staticDelegatedPrefixId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/appliance/prefixes/delegated/statics/{staticDelegatedPrefixId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/appliance/prefixes/delegated/statics/{staticDelegatedPrefixId}");
         }
     
         /// <summary>
@@ -904,10 +903,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> AddAStaticRouteForAnMXOrTeleworkerNetwork(AddAStaticRouteForAnMXOrTeleworkerNetworkRequest request, string networkId)
+        public async Task<AddAStaticRouteForAnMXOrTeleworkerNetworkResponse> AddAStaticRouteForAnMXOrTeleworkerNetwork(AddAStaticRouteForAnMXOrTeleworkerNetworkRequest request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/appliance/staticRoutes", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<AddAStaticRouteForAnMXOrTeleworkerNetworkResponse>($"networks/{networkId}/appliance/staticRoutes", request);
         }
     
         /// <summary>
@@ -946,10 +944,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="staticRouteId">(Required) Static route ID</param>
-        public async Task<Stream> DeleteAStaticRouteFromAnMXOrTeleworkerNetwork(string networkId, string staticRouteId)
+        public async Task<EmptyResponse> DeleteAStaticRouteFromAnMXOrTeleworkerNetwork(string networkId, string staticRouteId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/appliance/staticRoutes/{staticRouteId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/appliance/staticRoutes/{staticRouteId}");
         }
     
         /// <summary>
@@ -1009,10 +1006,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> AddAVLAN(AddAVLANRequest request, string networkId)
+        public async Task<AddAVLANResponse> AddAVLAN(AddAVLANRequest request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/appliance/vlans", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<AddAVLANResponse>($"networks/{networkId}/appliance/vlans", request);
         }
     
         /// <summary>
@@ -1078,10 +1074,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="vlanId">(Required) Vlan ID</param>
-        public async Task<Stream> DeleteAVLANFromANetwork(string networkId, string vlanId)
+        public async Task<EmptyResponse> DeleteAVLANFromANetwork(string networkId, string vlanId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/appliance/vlans/{vlanId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/appliance/vlans/{vlanId}");
         }
     
         /// <summary>
@@ -1242,10 +1237,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<Stream> EsAtTheSpecifiedTimeAndReturnALinkToThatImage(EsAtTheSpecifiedTimeAndReturnALinkToThatImageRequest request, string serial)
+        public async Task<EsAtTheSpecifiedTimeAndReturnALinkToThatImageResponse> EsAtTheSpecifiedTimeAndReturnALinkToThatImage(EsAtTheSpecifiedTimeAndReturnALinkToThatImageRequest request, string serial)
         {
-            var response = await _httpClient.PostAsJsonAsync($"devices/{serial}/camera/generateSnapshot", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<EsAtTheSpecifiedTimeAndReturnALinkToThatImageResponse>($"devices/{serial}/camera/generateSnapshot", request);
         }
     
         /// <summary>
@@ -1465,10 +1459,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="wirelessProfileId">(Required) Wireless profile ID</param>
-        public async Task<Stream> AnExistingCameraWirelessProfileForThisNetwork(string networkId, string wirelessProfileId)
+        public async Task<EmptyResponse> AnExistingCameraWirelessProfileForThisNetwork(string networkId, string wirelessProfileId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/camera/wirelessProfiles/{wirelessProfileId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/camera/wirelessProfiles/{wirelessProfileId}");
         }
     
         /// <summary>
@@ -1530,10 +1523,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="qualityRetentionProfileId">(Required) Quality retention profile ID</param>
-        public async Task<Stream> ExistingQualityRetentionProfileForThisNetwork2(string networkId, string qualityRetentionProfileId)
+        public async Task<EmptyResponse> ExistingQualityRetentionProfileForThisNetwork2(string networkId, string qualityRetentionProfileId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/camera/qualityRetentionProfiles/{qualityRetentionProfileId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/camera/qualityRetentionProfiles/{qualityRetentionProfileId}");
         }
     
         /// <summary>
@@ -1897,10 +1889,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="id">(Required) ID</param>
-        public async Task<Stream> DeletesASensorAlertProfileFromANetwork(string networkId, string id)
+        public async Task<EmptyResponse> DeletesASensorAlertProfileFromANetwork(string networkId, string id)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/sensor/alerts/profiles/{id}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/sensor/alerts/profiles/{id}");
         }
     
         /// <summary>
@@ -2072,10 +2063,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<Stream> CreateALayer3InterfaceForASwitch(CreateALayer3InterfaceForASwitchRequest request, string serial)
+        public async Task<CreateALayer3InterfaceForASwitchResponse> CreateALayer3InterfaceForASwitch(CreateALayer3InterfaceForASwitchRequest request, string serial)
         {
-            var response = await _httpClient.PostAsJsonAsync($"devices/{serial}/switch/routing/interfaces", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<CreateALayer3InterfaceForASwitchResponse>($"devices/{serial}/switch/routing/interfaces", request);
         }
     
         /// <summary>
@@ -2130,10 +2120,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
         /// <param name="interfaceId">(Required) Interface ID</param>
-        public async Task<Stream> DeleteALayer3InterfaceFromTheSwitch(string serial, string interfaceId)
+        public async Task<EmptyResponse> DeleteALayer3InterfaceFromTheSwitch(string serial, string interfaceId)
         {
-            var response = await _httpClient.DeleteAsync($"devices/{serial}/switch/routing/interfaces/{interfaceId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"devices/{serial}/switch/routing/interfaces/{interfaceId}");
         }
     
         /// <summary>
@@ -2165,10 +2154,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<Stream> CreateALayer3StaticRouteForASwitch(CreateALayer3StaticRouteForASwitchRequest request, string serial)
+        public async Task<CreateALayer3StaticRouteForASwitchResponse> CreateALayer3StaticRouteForASwitch(CreateALayer3StaticRouteForASwitchRequest request, string serial)
         {
-            var response = await _httpClient.PostAsJsonAsync($"devices/{serial}/switch/routing/staticRoutes", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<CreateALayer3StaticRouteForASwitchResponse>($"devices/{serial}/switch/routing/staticRoutes", request);
         }
     
         /// <summary>
@@ -2219,10 +2207,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
         /// <param name="staticRouteId">(Required) Static route ID</param>
-        public async Task<Stream> DeleteALayer3StaticRouteForASwitch(string serial, string staticRouteId)
+        public async Task<EmptyResponse> DeleteALayer3StaticRouteForASwitch(string serial, string staticRouteId)
         {
-            var response = await _httpClient.DeleteAsync($"devices/{serial}/switch/routing/staticRoutes/{staticRouteId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"devices/{serial}/switch/routing/staticRoutes/{staticRouteId}");
         }
     
         /// <summary>
@@ -2346,10 +2333,9 @@ namespace MerakiDashboard
         /// Create an access policy for a switch network. If you would like to enable Meraki Authentication, set radiusServers to empty array.
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> CreateAnAccessPolicyForASwitchNetwork(CreateAnAccessPolicyForASwitchNetworkRequest request, string networkId)
+        public async Task<CreateAnAccessPolicyForASwitchNetworkResponse> CreateAnAccessPolicyForASwitchNetwork(CreateAnAccessPolicyForASwitchNetworkRequest request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/switch/accessPolicies", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<CreateAnAccessPolicyForASwitchNetworkResponse>($"networks/{networkId}/switch/accessPolicies", request);
         }
     
         /// <summary>
@@ -2384,10 +2370,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="accessPolicyNumber">(Required) Access policy number</param>
-        public async Task<Stream> DeleteAnAccessPolicyForASwitchNetwork(string networkId, string accessPolicyNumber)
+        public async Task<EmptyResponse> DeleteAnAccessPolicyForASwitchNetwork(string networkId, string accessPolicyNumber)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/switch/accessPolicies/{accessPolicyNumber}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/switch/accessPolicies/{accessPolicyNumber}");
         }
     
         /// <summary>
@@ -2508,10 +2493,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> CreateALinkAggregationGroup(CreateALinkAggregationGroupRequest request, string networkId)
+        public async Task<CreateALinkAggregationGroupResponse> CreateALinkAggregationGroup(CreateALinkAggregationGroupRequest request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/switch/linkAggregations", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<CreateALinkAggregationGroupResponse>($"networks/{networkId}/switch/linkAggregations", request);
         }
     
         /// <summary>
@@ -2549,10 +2533,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="linkAggregationId">(Required) Link aggregation ID</param>
-        public async Task<Stream> SplitALinkAggregationGroupIntoSeparatePorts(string networkId, string linkAggregationId)
+        public async Task<EmptyResponse> SplitALinkAggregationGroupIntoSeparatePorts(string networkId, string linkAggregationId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/switch/linkAggregations/{linkAggregationId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/switch/linkAggregations/{linkAggregationId}");
         }
     
         /// <summary>
@@ -2608,10 +2591,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> AddASwitchPortSchedule(AddASwitchPortScheduleRequest request, string networkId)
+        public async Task<AddASwitchPortScheduleResponse> AddASwitchPortSchedule(AddASwitchPortScheduleRequest request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/switch/portSchedules", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<AddASwitchPortScheduleResponse>($"networks/{networkId}/switch/portSchedules", request);
         }
     
         /// <summary>
@@ -2619,10 +2601,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="portScheduleId">(Required) Port schedule ID</param>
-        public async Task<Stream> DeleteASwitchPortSchedule(string networkId, string portScheduleId)
+        public async Task<EmptyResponse> DeleteASwitchPortSchedule(string networkId, string portScheduleId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/switch/portSchedules/{portScheduleId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/switch/portSchedules/{portScheduleId}");
         }
     
         /// <summary>
@@ -2682,10 +2663,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> AddAQualityOfServiceRule(AddAQualityOfServiceRuleRequest request, string networkId)
+        public async Task<AddAQualityOfServiceRuleResponse> AddAQualityOfServiceRule(AddAQualityOfServiceRuleRequest request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/switch/qosRules", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<AddAQualityOfServiceRuleResponse>($"networks/{networkId}/switch/qosRules", request);
         }
     
         /// <summary>
@@ -2710,10 +2690,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="qosRuleId">(Required) Qos rule ID</param>
-        public async Task<Stream> DeleteAQualityOfServiceRule(string networkId, string qosRuleId)
+        public async Task<EmptyResponse> DeleteAQualityOfServiceRule(string networkId, string qosRuleId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/switch/qosRules/{qosRuleId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/switch/qosRules/{qosRuleId}");
         }
     
         /// <summary>
@@ -2796,10 +2775,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> CreateAStack(CreateAStackRequest request, string networkId)
+        public async Task<CreateAStackResponse> CreateAStack(CreateAStackRequest request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/switch/stacks", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<CreateAStackResponse>($"networks/{networkId}/switch/stacks", request);
         }
     
         /// <summary>
@@ -2817,10 +2795,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="switchStackId">(Required) Switch stack ID</param>
-        public async Task<Stream> DeleteAStack(string networkId, string switchStackId)
+        public async Task<EmptyResponse> DeleteAStack(string networkId, string switchStackId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/switch/stacks/{switchStackId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/switch/stacks/{switchStackId}");
         }
     
         /// <summary>
@@ -3580,10 +3557,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> CreatesNewRFProfileForThisNetwork(CreatesNewRFProfileForThisNetworkRequest request, string networkId)
+        public async Task<CreatesNewRFProfileForThisNetworkResponse> CreatesNewRFProfileForThisNetwork(CreatesNewRFProfileForThisNetworkRequest request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/appliance/rfProfiles", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<CreatesNewRFProfileForThisNetworkResponse>($"networks/{networkId}/appliance/rfProfiles", request);
         }
     
         /// <summary>
@@ -3629,10 +3605,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="rfProfileId">(Required) Rf profile ID</param>
-        public async Task<Stream> DeleteARFProfile(string networkId, string rfProfileId)
+        public async Task<EmptyResponse> DeleteARFProfile(string networkId, string rfProfileId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/appliance/rfProfiles/{rfProfileId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/appliance/rfProfiles/{rfProfileId}");
         }
     
         /// <summary>
@@ -3670,10 +3645,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> CreatesNewRFProfileForThisNetwork2(CreatesNewRFProfileForThisNetwork2Request request, string networkId)
+        public async Task<CreatesNewRFProfileForThisNetwork2Response> CreatesNewRFProfileForThisNetwork2(CreatesNewRFProfileForThisNetwork2Request request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/wireless/rfProfiles", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<CreatesNewRFProfileForThisNetwork2Response>($"networks/{networkId}/wireless/rfProfiles", request);
         }
     
         /// <summary>
@@ -3719,10 +3693,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="rfProfileId">(Required) Rf profile ID</param>
-        public async Task<Stream> DeleteARFProfile2(string networkId, string rfProfileId)
+        public async Task<EmptyResponse> DeleteARFProfile2(string networkId, string rfProfileId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/wireless/rfProfiles/{rfProfileId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/wireless/rfProfiles/{rfProfileId}");
         }
     
         /// <summary>
@@ -3769,10 +3742,9 @@ namespace MerakiDashboard
         /// Add a media server to be monitored for this organization. Only valid for organizations with Meraki Insight.
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<Stream> DAMediaServerToBeMonitoredForThisOrganization(DAMediaServerToBeMonitoredForThisOrganizationRequest request, string organizationId)
+        public async Task<DAMediaServerToBeMonitoredForThisOrganizationResponse> DAMediaServerToBeMonitoredForThisOrganization(DAMediaServerToBeMonitoredForThisOrganizationRequest request, string organizationId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"organizations/{organizationId}/insight/monitoredMediaServers", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<DAMediaServerToBeMonitoredForThisOrganizationResponse>($"organizations/{organizationId}/insight/monitoredMediaServers", request);
         }
     
         /// <summary>
@@ -3800,10 +3772,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
         /// <param name="monitoredMediaServerId">(Required) Monitored media server ID</param>
-        public async Task<Stream> LeteAMonitoredMediaServerFromThisOrganization(string organizationId, string monitoredMediaServerId)
+        public async Task<EmptyResponse> LeteAMonitoredMediaServerFromThisOrganization(string organizationId, string monitoredMediaServerId)
         {
-            var response = await _httpClient.DeleteAsync($"organizations/{organizationId}/insight/monitoredMediaServers/{monitoredMediaServerId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"organizations/{organizationId}/insight/monitoredMediaServers/{monitoredMediaServerId}");
         }
     
         /// <summary>
@@ -3815,10 +3786,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> BypassActivationLockAttempt(BypassActivationLockAttemptRequest request, string networkId)
+        public async Task<BypassActivationLockAttemptResponse> BypassActivationLockAttempt(BypassActivationLockAttemptRequest request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/sm/bypassActivationLockAttempts", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<BypassActivationLockAttemptResponse>($"networks/{networkId}/sm/bypassActivationLockAttempts", request);
         }
     
         /// <summary>
@@ -3981,10 +3951,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> AddATargetGroup(AddATargetGroupRequest request, string networkId)
+        public async Task<AddATargetGroupResponse> AddATargetGroup(AddATargetGroupRequest request, string networkId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"networks/{networkId}/sm/targetGroups", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<AddATargetGroupResponse>($"networks/{networkId}/sm/targetGroups", request);
         }
     
         /// <summary>
@@ -4020,10 +3989,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="targetGroupId">(Required) Target group ID</param>
-        public async Task<Stream> DeleteATargetGroupFromANetwork(string networkId, string targetGroupId)
+        public async Task<EmptyResponse> DeleteATargetGroupFromANetwork(string networkId, string targetGroupId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/sm/targetGroups/{targetGroupId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/sm/targetGroups/{targetGroupId}");
         }
     
         /// <summary>
@@ -4060,10 +4028,9 @@ namespace MerakiDashboard
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="userAccessDeviceId">(Required) User access device ID</param>
-        public async Task<Stream> DeleteAUserAccessDevice(string networkId, string userAccessDeviceId)
+        public async Task<EmptyResponse> DeleteAUserAccessDevice(string networkId, string userAccessDeviceId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}/sm/userAccessDevices/{userAccessDeviceId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}/sm/userAccessDevices/{userAccessDeviceId}");
         }
     
         /// <summary>
@@ -4238,20 +4205,18 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<Stream> BlinkTheLEDsOnADevice(BlinkTheLEDsOnADeviceRequest request, string serial)
+        public async Task<BlinkTheLEDsOnADeviceResponse> BlinkTheLEDsOnADevice(BlinkTheLEDsOnADeviceRequest request, string serial)
         {
-            var response = await _httpClient.PostAsJsonAsync($"devices/{serial}/blinkLeds", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<BlinkTheLEDsOnADeviceResponse>($"devices/{serial}/blinkLeds", request);
         }
     
         /// <summary>
         /// Reboot a device
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<Stream> RebootADevice(string serial)
+        public async Task<RebootADeviceResponse> RebootADevice(string serial)
         {
-            var response = await _httpClient.PostAsync($"devices/{serial}/reboot");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostFromJsonAsync<RebootADeviceResponse>($"devices/{serial}/reboot");
         }
     
         /// <summary>
@@ -4318,10 +4283,9 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Stream> DeleteANetwork(string networkId)
+        public async Task<EmptyResponse> DeleteANetwork(string networkId)
         {
-            var response = await _httpClient.DeleteAsync($"networks/{networkId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"networks/{networkId}");
         }
     
         /// <summary>
@@ -4514,10 +4478,9 @@ namespace MerakiDashboard
         /// management| object| Information about the organization's management system
         /// 
         /// </summary>
-        public async Task<Stream> CreateANewOrganization(CreateANewOrganizationRequest request)
+        public async Task<CreateANewOrganizationResponse> CreateANewOrganization(CreateANewOrganizationRequest request)
         {
-            var response = await _httpClient.PostAsJsonAsync($"organizations", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<CreateANewOrganizationResponse>($"organizations", request);
         }
     
         /// <summary>
@@ -4529,20 +4492,18 @@ namespace MerakiDashboard
         /// 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<Stream> OrganizationByCloningTheAddressedOrganization(OrganizationByCloningTheAddressedOrganizationRequest request, string organizationId)
+        public async Task<OrganizationByCloningTheAddressedOrganizationResponse> OrganizationByCloningTheAddressedOrganization(OrganizationByCloningTheAddressedOrganizationRequest request, string organizationId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"organizations/{organizationId}/clone", request);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<OrganizationByCloningTheAddressedOrganizationResponse>($"organizations/{organizationId}/clone", request);
         }
     
         /// <summary>
         /// Delete an organization
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<Stream> DeleteAnOrganization(string organizationId)
+        public async Task<EmptyResponse> DeleteAnOrganization(string organizationId)
         {
-            var response = await _httpClient.DeleteAsync($"organizations/{organizationId}");
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.DeleteFromJsonAsync<EmptyResponse>($"organizations/{organizationId}");
         }
     
         /// <summary>

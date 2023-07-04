@@ -9,7 +9,7 @@ namespace MerakiDashboard
     public class ClientDataUsageInMbAcrossTheGivenOrganizationResponse
     {
         public Usage4 Usage { get; set; }
-        public Counts12 Counts { get; set; }
+        public UsageInKb Counts { get; set; }
     }
 
     public class Overall
@@ -23,10 +23,5 @@ namespace MerakiDashboard
     {
         public Overall Overall { get; set; }
         public double Average { get; set; }
-    }
-
-    public class Counts12
-    {
-        public int Total { get; set; }
     }
 }

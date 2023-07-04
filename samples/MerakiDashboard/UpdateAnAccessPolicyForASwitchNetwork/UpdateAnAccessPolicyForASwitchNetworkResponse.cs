@@ -15,7 +15,7 @@ namespace MerakiDashboard
         public bool RadiusTestingEnabled { get; set; }
         public bool RadiusCoaSupportEnabled { get; set; }
         public bool RadiusAccountingEnabled { get; set; }
-        public List<RadiusAccountingServers> RadiusAccountingServers { get; set; }
+        public List<RadiusServers> RadiusAccountingServers { get; set; }
         public string RadiusGroupAttribute { get; set; }
         public string HostMode { get; set; }
         public string AccessPolicyType { get; set; }

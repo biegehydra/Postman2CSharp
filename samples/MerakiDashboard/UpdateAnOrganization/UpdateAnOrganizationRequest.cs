@@ -10,11 +10,6 @@ namespace MerakiDashboard
     {
         public string Name { get; set; }
         public Management Management { get; set; }
-        public Api4 Api { get; set; }
-    }
-
-    public class Api4
-    {
-        public string Enabled { get; set; }
+        public VlanTagging3 Api { get; set; }
     }
 }

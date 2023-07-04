@@ -8,12 +8,6 @@ namespace MerakiDashboard
 {
     public class ReturnsTheUplinkSettingsForYourMGNetworkResponse
     {
-        public BandwidthLimits BandwidthLimits { get; set; }
-    }
-
-    public class BandwidthLimits
-    {
-        public int LimitUp { get; set; }
-        public int LimitDown { get; set; }
+        public GlobalBandwidthLimits BandwidthLimits { get; set; }
     }
 }

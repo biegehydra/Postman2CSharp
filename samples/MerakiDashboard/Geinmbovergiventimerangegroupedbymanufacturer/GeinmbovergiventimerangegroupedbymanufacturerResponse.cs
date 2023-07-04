@@ -10,13 +10,6 @@ namespace MerakiDashboard
     {
         public string Name { get; set; }
         public Clients Clients { get; set; }
-        public Usage6 Usage { get; set; }
-    }
-
-    public class Usage6
-    {
-        public int Total { get; set; }
-        public int Upstream { get; set; }
-        public int Downstream { get; set; }
+        public Usage Usage { get; set; }
     }
 }

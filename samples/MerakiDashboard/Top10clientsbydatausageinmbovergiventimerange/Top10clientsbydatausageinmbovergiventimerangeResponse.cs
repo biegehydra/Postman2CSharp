@@ -11,7 +11,7 @@ namespace MerakiDashboard
         public string Name { get; set; }
         public string Mac { get; set; }
         public string Id { get; set; }
-        public Network Network { get; set; }
+        public ResultingNetworks Network { get; set; }
         public Usage5 Usage { get; set; }
     }
 

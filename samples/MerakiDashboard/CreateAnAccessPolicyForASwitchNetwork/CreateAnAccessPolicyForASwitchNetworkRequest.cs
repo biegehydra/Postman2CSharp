@@ -17,7 +17,7 @@ namespace MerakiDashboard
         public string UrlRedirectWalledGardenEnabled { get; set; }
         public Radius2 Radius { get; set; }
         public string GuestPortBouncing { get; set; }
-        public List<RadiusAccountingServers2> RadiusAccountingServers { get; set; }
+        public List<RadiusServers3> RadiusAccountingServers { get; set; }
         public string RadiusGroupAttribute { get; set; }
         public string AccessPolicyType { get; set; }
         public string IncreaseAccessSpeed { get; set; }
@@ -39,12 +39,5 @@ namespace MerakiDashboard
         public CriticalAuth2 CriticalAuth { get; set; }
         public string FailedAuthVlanId { get; set; }
         public string ReAuthenticationInterval { get; set; }
-    }
-
-    public class RadiusAccountingServers2
-    {
-        public string Host { get; set; }
-        public string Port { get; set; }
-        public string Secret { get; set; }
     }
 }

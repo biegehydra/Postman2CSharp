@@ -17,7 +17,7 @@ namespace MerakiDashboard
         public string EncryptionMode { get; set; }
         public string WpaEncryptionMode { get; set; }
         public string Visible { get; set; }
-        public DhcpEnforcedDeauthentication DhcpEnforcedDeauthentication { get; set; }
+        public VlanTagging3 DhcpEnforcedDeauthentication { get; set; }
         public Dot11w Dot11w { get; set; }
     }
 
@@ -32,10 +32,5 @@ namespace MerakiDashboard
     {
         public string Enabled { get; set; }
         public string Required { get; set; }
-    }
-
-    public class DhcpEnforcedDeauthentication
-    {
-        public string Enabled { get; set; }
     }
 }

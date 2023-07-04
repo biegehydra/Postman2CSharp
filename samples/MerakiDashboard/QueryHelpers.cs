@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System;
 using System.Collections.Generic;
+
 namespace MerakiDashboard
 {
     public static class QueryHelpers

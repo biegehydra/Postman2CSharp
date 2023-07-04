@@ -10,10 +10,10 @@ namespace MerakiDashboard
     {
         public string Id { get; set; }
         public string Status { get; set; }
-        public Data Data { get; set; }
+        public Data2 Data { get; set; }
     }
 
-    public class Data
+    public class Data2
     {
         [JsonPropertyName("2090938209")]
         public _2090938209 _2090938209 { get; set; }

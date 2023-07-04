@@ -11,11 +11,11 @@ namespace MerakiDashboard
         public string DeviceName { get; set; }
         public string DeviceLanIp { get; set; }
         public string DeviceSubnet { get; set; }
-        public List<FixedIpAssignments6> FixedIpAssignments { get; set; }
+        public List<FixedIpAssignments7> FixedIpAssignments { get; set; }
         public List<ReservedIpRanges> ReservedIpRanges { get; set; }
     }
 
-    public class FixedIpAssignments6
+    public class FixedIpAssignments7
     {
         public string Mac { get; set; }
         public string Name { get; set; }

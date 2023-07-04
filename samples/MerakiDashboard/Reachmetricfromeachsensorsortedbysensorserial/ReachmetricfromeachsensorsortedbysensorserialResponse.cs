@@ -9,7 +9,7 @@ namespace MerakiDashboard
     public class REachMetricFromEachSensorSortedBySensorSerialResponse
     {
         public string Serial { get; set; }
-        public Network Network { get; set; }
+        public BlockedUrlCategories Network { get; set; }
         public List<Readings> Readings { get; set; }
     }
 

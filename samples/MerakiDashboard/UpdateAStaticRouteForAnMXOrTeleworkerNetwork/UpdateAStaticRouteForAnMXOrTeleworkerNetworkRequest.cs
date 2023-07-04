@@ -13,11 +13,7 @@ namespace MerakiDashboard
         public string GatewayIp { get; set; }
         public string GatewayVlanId { get; set; }
         public string Enabled { get; set; }
-        public FixedIpAssignments3 FixedIpAssignments { get; set; }
+        public FixedIpAssignments FixedIpAssignments { get; set; }
         public List<ReservedIpRanges> ReservedIpRanges { get; set; }
-    }
-
-    public class FixedIpAssignments3
-    {
     }
 }

@@ -9,7 +9,7 @@ namespace MerakiDashboard
     public class UpdatesASensorAlertProfileForANetworkRequest
     {
         public string Name { get; set; }
-        public Schedule Schedule { get; set; }
+        public BlockedUrlCategories Schedule { get; set; }
         public List<Conditions> Conditions { get; set; }
         public Recipients Recipients { get; set; }
         public List<string> Serials { get; set; }

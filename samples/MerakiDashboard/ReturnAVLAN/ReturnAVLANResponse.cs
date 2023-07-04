@@ -27,7 +27,7 @@ namespace MerakiDashboard
         public string DnsNameservers { get; set; }
         public List<DhcpOptions> DhcpOptions { get; set; }
         public string VpnNatSubnet { get; set; }
-        public MandatoryDhcp MandatoryDhcp { get; set; }
+        public Wan2 MandatoryDhcp { get; set; }
         public Ipv6 Ipv6 { get; set; }
     }
 }

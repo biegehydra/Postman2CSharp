@@ -16,7 +16,7 @@ namespace MerakiDashboard
         public TwoFourGhzSettings TwoFourGhzSettings { get; set; }
         public FiveGhzSettings FiveGhzSettings { get; set; }
         public SixGhzSettings SixGhzSettings { get; set; }
-        public Transmission Transmission { get; set; }
+        public VlanTagging3 Transmission { get; set; }
         public PerSsidSettings PerSsidSettings { get; set; }
     }
 }

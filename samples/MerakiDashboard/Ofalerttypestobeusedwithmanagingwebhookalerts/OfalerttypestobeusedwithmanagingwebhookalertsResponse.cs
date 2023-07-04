@@ -16,7 +16,7 @@ namespace MerakiDashboard
         public string AlertId { get; set; }
         public string AlertLevel { get; set; }
         public DateTime OccurredAt { get; set; }
-        public AlertData AlertData { get; set; }
+        public _9 AlertData { get; set; }
         public string OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         public string OrganizationUrl { get; set; }
@@ -32,9 +32,5 @@ namespace MerakiDashboard
         public string EnrollmentString { get; set; }
         public string Notes { get; set; }
         public List<string> ProductTypes { get; set; }
-    }
-
-    public class AlertData
-    {
     }
 }

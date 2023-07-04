@@ -12,6 +12,6 @@ namespace MerakiDashboard
         public string Name { get; set; }
         public int AppliedDeviceCount { get; set; }
         public Ssid Ssid { get; set; }
-        public Identity Identity { get; set; }
+        public Authentication4 Identity { get; set; }
     }
 }

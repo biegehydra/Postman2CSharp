@@ -10,7 +10,7 @@ namespace MerakiDashboard
     {
         public string Serial { get; set; }
         public string Name { get; set; }
-        public Network Network { get; set; }
+        public Profile3 Network { get; set; }
         public Power Power { get; set; }
         public List<Ports> Ports { get; set; }
         public Aggregation Aggregation { get; set; }

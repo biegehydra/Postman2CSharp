@@ -25,28 +25,4 @@ namespace MerakiDashboard
         public string MinBitrate { get; set; }
         public string AxEnabled { get; set; }
     }
-
-    public class _15
-    {
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _23
-    {
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _33
-    {
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _43
-    {
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
 }

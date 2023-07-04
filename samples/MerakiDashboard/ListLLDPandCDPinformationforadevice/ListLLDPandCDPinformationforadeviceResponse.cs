@@ -9,7 +9,7 @@ namespace MerakiDashboard
     public class ListLLDPAndCDPInformationForADeviceResponse
     {
         public string SourceMac { get; set; }
-        public Ports2 Ports { get; set; }
+        public PerSsidSettings2 Ports { get; set; }
     }
 
     public class Cdp2
@@ -26,25 +26,5 @@ namespace MerakiDashboard
         public string PortId { get; set; }
         public string ManagementAddress { get; set; }
         public string SourcePort { get; set; }
-    }
-
-    public class Ports2
-    {
-        [JsonPropertyName("8")]
-        public _8 _8 { get; set; }
-
-        [JsonPropertyName("12")]
-        public _12 _12 { get; set; }
-    }
-
-    public class _127
-    {
-        public Cdp Cdp { get; set; }
-        public Lldp2 Lldp { get; set; }
-    }
-
-    public class _86
-    {
-        public Cdp2 Cdp { get; set; }
     }
 }

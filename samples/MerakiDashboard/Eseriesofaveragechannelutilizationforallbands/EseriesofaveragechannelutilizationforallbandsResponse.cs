@@ -10,7 +10,7 @@ namespace MerakiDashboard
     {
         public DateTime StartTs { get; set; }
         public DateTime EndTs { get; set; }
-        public Network Network { get; set; }
+        public Profile3 Network { get; set; }
         public List<ByBand> ByBand { get; set; }
     }
 }

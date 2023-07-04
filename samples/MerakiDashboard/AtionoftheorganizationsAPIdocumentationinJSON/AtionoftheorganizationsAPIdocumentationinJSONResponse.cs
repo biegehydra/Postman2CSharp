@@ -27,12 +27,6 @@ namespace MerakiDashboard
         public string Description { get; set; }
     }
 
-    public class ApplicationJson
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-    }
-
     public class _200
     {
         public string Description { get; set; }
@@ -42,7 +36,7 @@ namespace MerakiDashboard
     public class Examples
     {
         [JsonPropertyName("application/json")]
-        public List<ApplicationJson> ApplicationJson { get; set; }
+        public List<ResultingNetworks> ApplicationJson { get; set; }
     }
 
     public class Organizations

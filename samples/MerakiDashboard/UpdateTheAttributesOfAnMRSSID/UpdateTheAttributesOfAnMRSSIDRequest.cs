@@ -15,7 +15,7 @@ namespace MerakiDashboard
         public string EncryptionMode { get; set; }
         public string Psk { get; set; }
         public string WpaEncryptionMode { get; set; }
-        public Dot11w Dot11w { get; set; }
+        public VlanTagging3 Dot11w { get; set; }
         public Dot11r Dot11r { get; set; }
         public string SplashPage { get; set; }
         public List<string> SplashGuestSponsorDomains { get; set; }
@@ -23,7 +23,7 @@ namespace MerakiDashboard
         public LocalRadius LocalRadius { get; set; }
         public Ldap Ldap { get; set; }
         public ActiveDirectory ActiveDirectory { get; set; }
-        public List<RadiusServers12> RadiusServers { get; set; }
+        public List<RadiusServers13> RadiusServers { get; set; }
         public string RadiusProxyEnabled { get; set; }
         public string RadiusTestingEnabled { get; set; }
         public string RadiusCalledStationId { get; set; }
@@ -35,7 +35,7 @@ namespace MerakiDashboard
         public string RadiusFailoverPolicy { get; set; }
         public string RadiusLoadBalancingPolicy { get; set; }
         public string RadiusAccountingEnabled { get; set; }
-        public List<RadiusAccountingServers8> RadiusAccountingServers { get; set; }
+        public List<RadiusAccountingServers9> RadiusAccountingServers { get; set; }
         public string RadiusAccountingInterimInterval { get; set; }
         public string RadiusAttributeForGroupPolicies { get; set; }
         public string IpAssignmentMode { get; set; }
@@ -65,10 +65,10 @@ namespace MerakiDashboard
         public string MandatoryDhcpEnabled { get; set; }
         public string AdultContentFilteringEnabled { get; set; }
         public DnsRewrite DnsRewrite { get; set; }
-        public SpeedBurst SpeedBurst { get; set; }
+        public VlanTagging3 SpeedBurst { get; set; }
     }
 
-    public class RadiusServers12
+    public class RadiusServers13
     {
         public string Host { get; set; }
         public string Port { get; set; }
@@ -87,7 +87,7 @@ namespace MerakiDashboard
         public ClientRootCaCertificate ClientRootCaCertificate { get; set; }
     }
 
-    public class RadiusAccountingServers8
+    public class RadiusAccountingServers9
     {
         public string Host { get; set; }
         public string Port { get; set; }
@@ -98,7 +98,7 @@ namespace MerakiDashboard
 
     public class Ldap
     {
-        public List<Servers> Servers { get; set; }
+        public List<RadiusServers3> Servers { get; set; }
         public Credentials Credentials { get; set; }
         public string BaseDistinguishedName { get; set; }
         public ServerCaCertificate ServerCaCertificate { get; set; }
@@ -114,7 +114,7 @@ namespace MerakiDashboard
     public class LocalRadius
     {
         public string CacheTimeout { get; set; }
-        public PasswordAuthentication PasswordAuthentication { get; set; }
+        public VlanTagging3 PasswordAuthentication { get; set; }
         public CertificateAuthentication CertificateAuthentication { get; set; }
     }
 
@@ -144,14 +144,8 @@ namespace MerakiDashboard
 
     public class Gre
     {
-        public Concentrator Concentrator { get; set; }
+        public RadiusServers3 Concentrator { get; set; }
         public string Key { get; set; }
-    }
-
-    public class Servers
-    {
-        public string Host { get; set; }
-        public string Port { get; set; }
     }
 
     public class ClientRootCaCertificate
@@ -159,28 +153,13 @@ namespace MerakiDashboard
         public string Contents { get; set; }
     }
 
-    public class Concentrator
-    {
-        public string Host { get; set; }
-    }
-
     public class Oauth
     {
         public List<string> AllowedDomains { get; set; }
     }
 
-    public class PasswordAuthentication
-    {
-        public string Enabled { get; set; }
-    }
-
     public class ServerCaCertificate
     {
         public string Contents { get; set; }
-    }
-
-    public class SpeedBurst
-    {
-        public string Enabled { get; set; }
     }
 }

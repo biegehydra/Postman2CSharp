@@ -11,13 +11,8 @@ namespace MerakiDashboard
         public SpoofingProtection SpoofingProtection { get; set; }
     }
 
-    public class IpSourceGuard
-    {
-        public string Mode { get; set; }
-    }
-
     public class SpoofingProtection
     {
-        public IpSourceGuard IpSourceGuard { get; set; }
+        public Authentication IpSourceGuard { get; set; }
     }
 }

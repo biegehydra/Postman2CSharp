@@ -10,9 +10,4 @@ namespace MerakiDashboard
     {
         public Livestream Livestream { get; set; }
     }
-
-    public class RelatedDevices2
-    {
-        public string Serial { get; set; }
-    }
 }

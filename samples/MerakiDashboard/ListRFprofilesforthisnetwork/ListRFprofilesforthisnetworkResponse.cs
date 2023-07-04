@@ -14,11 +14,11 @@ namespace MerakiDashboard
         public bool ClientBalancingEnabled { get; set; }
         public string MinBitrateType { get; set; }
         public string BandSelectionType { get; set; }
-        public ApBandSettings ApBandSettings { get; set; }
+        public _4 ApBandSettings { get; set; }
         public TwoFourGhzSettings8 TwoFourGhzSettings { get; set; }
         public FiveGhzSettings8 FiveGhzSettings { get; set; }
         public SixGhzSettings SixGhzSettings { get; set; }
-        public Transmission Transmission { get; set; }
+        public Wan2 Transmission { get; set; }
         public PerSsidSettings2 PerSsidSettings { get; set; }
     }
 
@@ -218,16 +218,5 @@ namespace MerakiDashboard
         public int MinBitrate { get; set; }
         public string BandOperationMode { get; set; }
         public bool BandSteeringEnabled { get; set; }
-    }
-
-    public class ApBandSettings
-    {
-        public string BandOperationMode { get; set; }
-        public bool BandSteeringEnabled { get; set; }
-    }
-
-    public class Transmission
-    {
-        public bool Enabled { get; set; }
     }
 }

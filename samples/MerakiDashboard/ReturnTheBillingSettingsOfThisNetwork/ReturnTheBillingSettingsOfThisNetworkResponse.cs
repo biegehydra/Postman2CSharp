@@ -16,7 +16,7 @@ namespace MerakiDashboard
     {
         public string Id { get; set; }
         public int Price { get; set; }
-        public BandwidthLimits BandwidthLimits { get; set; }
+        public GlobalBandwidthLimits BandwidthLimits { get; set; }
         public string TimeLimit { get; set; }
     }
 }

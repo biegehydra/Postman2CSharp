@@ -20,7 +20,7 @@ namespace MerakiDashboard
         public Ipv6 Ipv6 { get; set; }
     }
 
-    public class Ipv616
+    public class Ipv617
     {
         public string AssignmentMode { get; set; }
         public string Address { get; set; }

@@ -11,11 +11,6 @@ namespace MerakiDashboard
         public string Vlan { get; set; }
         public string UseCombinedPower { get; set; }
         public List<PowerExceptions> PowerExceptions { get; set; }
-        public UplinkClientSampling2 UplinkClientSampling { get; set; }
-    }
-
-    public class UplinkClientSampling2
-    {
-        public string Enabled { get; set; }
+        public VlanTagging3 UplinkClientSampling { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace MerakiDashboard
         public string AuthMode { get; set; }
         public string EncryptionMode { get; set; }
         public string WpaEncryptionMode { get; set; }
-        public List<RadiusServers10> RadiusServers { get; set; }
+        public List<RadiusServers11> RadiusServers { get; set; }
         public bool RadiusAccountingEnabled { get; set; }
         public bool RadiusEnabled { get; set; }
         public string RadiusAttributeForGroupPolicies { get; set; }
@@ -37,10 +37,10 @@ namespace MerakiDashboard
         public int PerSsidBandwidthLimitUp { get; set; }
         public int PerSsidBandwidthLimitDown { get; set; }
         public bool MandatoryDhcpEnabled { get; set; }
-        public List<RadiusAccountingServers6> RadiusAccountingServers { get; set; }
+        public List<RadiusAccountingServers7> RadiusAccountingServers { get; set; }
     }
 
-    public class RadiusAccountingServers6
+    public class RadiusAccountingServers7
     {
         public string Host { get; set; }
         public int Port { get; set; }
@@ -48,7 +48,7 @@ namespace MerakiDashboard
         public string CaCertificate { get; set; }
     }
 
-    public class RadiusServers10
+    public class RadiusServers11
     {
         public string Host { get; set; }
         public int Port { get; set; }

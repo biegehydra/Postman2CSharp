@@ -12,21 +12,11 @@ namespace MerakiDashboard
         public string DefaultPolicy { get; set; }
         public List<string> BlockedServers { get; set; }
         public List<string> AllowedServers { get; set; }
-        public ArpInspection ArpInspection { get; set; }
+        public Wan2 ArpInspection { get; set; }
     }
 
     public class Alerts
     {
-        public Email Email { get; set; }
-    }
-
-    public class ArpInspection
-    {
-        public bool Enabled { get; set; }
-    }
-
-    public class Email
-    {
-        public bool Enabled { get; set; }
+        public Wan2 Email { get; set; }
     }
 }

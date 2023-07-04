@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+
 namespace MerakiDashboard
 {
     public static class HelperExtensions

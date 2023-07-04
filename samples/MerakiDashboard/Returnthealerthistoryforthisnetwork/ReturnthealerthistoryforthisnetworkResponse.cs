@@ -11,7 +11,7 @@ namespace MerakiDashboard
         public DateTime OccurredAt { get; set; }
         public string AlertTypeId { get; set; }
         public string AlertType { get; set; }
-        public Device3 Device { get; set; }
+        public Device Device { get; set; }
         public Destinations7 Destinations { get; set; }
     }
 
@@ -21,11 +21,6 @@ namespace MerakiDashboard
         public Push Push { get; set; }
         public Sms Sms { get; set; }
         public Webhook Webhook { get; set; }
-    }
-
-    public class Device3
-    {
-        public string Serial { get; set; }
     }
 
     public class Email4

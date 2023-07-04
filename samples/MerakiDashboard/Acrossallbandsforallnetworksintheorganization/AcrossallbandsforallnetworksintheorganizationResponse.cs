@@ -8,7 +8,7 @@ namespace MerakiDashboard
 {
     public class AcrossAllBandsForAllNetworksInTheOrganizationResponse
     {
-        public Network Network { get; set; }
+        public Profile3 Network { get; set; }
         public List<ByBand> ByBand { get; set; }
     }
 }

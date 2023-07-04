@@ -15,7 +15,7 @@ namespace MerakiDashboard
     public class Plans2
     {
         public string Price { get; set; }
-        public BandwidthLimits BandwidthLimits { get; set; }
+        public GlobalBandwidthLimits2 BandwidthLimits { get; set; }
         public string TimeLimit { get; set; }
         public string Id { get; set; }
     }

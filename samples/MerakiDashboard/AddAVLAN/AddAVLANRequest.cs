@@ -16,7 +16,7 @@ namespace MerakiDashboard
         public string TemplateVlanType { get; set; }
         public string Cidr { get; set; }
         public string Mask { get; set; }
-        public Ipv6 Ipv6 { get; set; }
-        public MandatoryDhcp MandatoryDhcp { get; set; }
+        public VlanTagging3 Ipv6 { get; set; }
+        public VlanTagging3 MandatoryDhcp { get; set; }
     }
 }

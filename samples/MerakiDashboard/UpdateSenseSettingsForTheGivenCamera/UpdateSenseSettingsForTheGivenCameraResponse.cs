@@ -9,7 +9,7 @@ namespace MerakiDashboard
     public class UpdateSenseSettingsForTheGivenCameraResponse
     {
         public bool SenseEnabled { get; set; }
-        public AudioDetection AudioDetection { get; set; }
+        public Wan2 AudioDetection { get; set; }
         public string MqttBrokerId { get; set; }
         public List<string> MqttTopics { get; set; }
     }

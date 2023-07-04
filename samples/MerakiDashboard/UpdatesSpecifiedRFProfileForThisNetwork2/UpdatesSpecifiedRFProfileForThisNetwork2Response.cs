@@ -14,11 +14,11 @@ namespace MerakiDashboard
         public bool ClientBalancingEnabled { get; set; }
         public string MinBitrateType { get; set; }
         public string BandSelectionType { get; set; }
-        public ApBandSettings ApBandSettings { get; set; }
+        public _9 ApBandSettings { get; set; }
         public TwoFourGhzSettings TwoFourGhzSettings { get; set; }
         public FiveGhzSettings FiveGhzSettings { get; set; }
         public SixGhzSettings SixGhzSettings { get; set; }
-        public Transmission Transmission { get; set; }
+        public Wan2 Transmission { get; set; }
         public PerSsidSettings PerSsidSettings { get; set; }
     }
 }

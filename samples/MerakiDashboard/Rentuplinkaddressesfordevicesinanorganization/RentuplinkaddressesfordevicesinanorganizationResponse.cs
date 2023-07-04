@@ -10,7 +10,7 @@ namespace MerakiDashboard
     {
         public string Mac { get; set; }
         public string Name { get; set; }
-        public Network Network { get; set; }
+        public ResultingNetworks Network { get; set; }
         public string ProductType { get; set; }
         public string Serial { get; set; }
         public List<string> Tags { get; set; }
@@ -23,17 +23,12 @@ namespace MerakiDashboard
         public string AssignmentMode { get; set; }
         public string Address { get; set; }
         public string Gateway { get; set; }
-        public Public Public { get; set; }
+        public Ipv6 Public { get; set; }
     }
 
     public class Uplinks6
     {
         public string Interface { get; set; }
         public List<Addresses> Addresses { get; set; }
-    }
-
-    public class Public
-    {
-        public string Address { get; set; }
     }
 }

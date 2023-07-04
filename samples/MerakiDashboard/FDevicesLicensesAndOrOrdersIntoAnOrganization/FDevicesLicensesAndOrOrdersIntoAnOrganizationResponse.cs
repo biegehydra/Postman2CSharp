@@ -10,6 +10,6 @@ namespace MerakiDashboard
     {
         public List<string> Orders { get; set; }
         public List<string> Serials { get; set; }
-        public List<Licenses> Licenses { get; set; }
+        public List<RemainderLicenses> Licenses { get; set; }
     }
 }

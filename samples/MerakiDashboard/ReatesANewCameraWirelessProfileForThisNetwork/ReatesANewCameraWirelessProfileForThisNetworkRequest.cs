@@ -10,7 +10,7 @@ namespace MerakiDashboard
     {
         public string Name { get; set; }
         public Ssid Ssid { get; set; }
-        public Identity Identity { get; set; }
+        public Authentication4 Identity { get; set; }
     }
 
     public class Ssid
@@ -19,11 +19,5 @@ namespace MerakiDashboard
         public string AuthMode { get; set; }
         public string EncryptionMode { get; set; }
         public string Psk { get; set; }
-    }
-
-    public class Identity
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
     }
 }

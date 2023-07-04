@@ -10,7 +10,7 @@ namespace MerakiDashboard
     {
         public string Subnet { get; set; }
         public string ApplianceIp { get; set; }
-        public MandatoryDhcp MandatoryDhcp { get; set; }
+        public Wan2 MandatoryDhcp { get; set; }
         public Ipv6 Ipv6 { get; set; }
     }
 
@@ -26,10 +26,5 @@ namespace MerakiDashboard
     {
         public bool Enabled { get; set; }
         public List<PrefixAssignments> PrefixAssignments { get; set; }
-    }
-
-    public class MandatoryDhcp
-    {
-        public bool Enabled { get; set; }
     }
 }

@@ -38,7 +38,7 @@ namespace MerakiDashboard
         public string Chaddr { get; set; }
         public string Sname { get; set; }
         public string MagicCookie { get; set; }
-        public List<Options> Options { get; set; }
+        public List<Parameters2> Options { get; set; }
     }
 
     public class Ip
@@ -57,7 +57,7 @@ namespace MerakiDashboard
         public Source Source { get; set; }
         public Destination Destination { get; set; }
         public string Type { get; set; }
-        public Ethernet Ethernet { get; set; }
+        public Rules11 Ethernet { get; set; }
         public Ip Ip { get; set; }
         public Udp Udp { get; set; }
         public Fields Fields { get; set; }
@@ -78,7 +78,7 @@ namespace MerakiDashboard
         public int Port { get; set; }
     }
 
-    public class Ipv410
+    public class Ipv47
     {
         public string Address { get; set; }
         public string Subnet { get; set; }
@@ -117,20 +117,9 @@ namespace MerakiDashboard
         public Ipv4 Ipv4 { get; set; }
     }
 
-    public class Options
-    {
-        public string Name { get; set; }
-        public string Value { get; set; }
-    }
-
     public class Udp
     {
         public int Length { get; set; }
         public string Checksum { get; set; }
-    }
-
-    public class Ethernet
-    {
-        public string Type { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace MerakiDashboard
         public string Serial { get; set; }
         public string Mac { get; set; }
         public string ProductType { get; set; }
-        public Network Network { get; set; }
+        public ResultingNetworks Network { get; set; }
         public Usage7 Usage { get; set; }
         public Clients Clients { get; set; }
     }

@@ -13,14 +13,14 @@ namespace MerakiDashboard
         public string ClientBalancingEnabled { get; set; }
         public string MinBitrateType { get; set; }
         public ApBandSettings2 ApBandSettings { get; set; }
-        public TwoFourGhzSettings13 TwoFourGhzSettings { get; set; }
-        public FiveGhzSettings13 FiveGhzSettings { get; set; }
+        public TwoFourGhzSettings14 TwoFourGhzSettings { get; set; }
+        public FiveGhzSettings14 FiveGhzSettings { get; set; }
         public SixGhzSettings2 SixGhzSettings { get; set; }
-        public Transmission2 Transmission { get; set; }
+        public VlanTagging3 Transmission { get; set; }
         public PerSsidSettings PerSsidSettings { get; set; }
     }
 
-    public class FiveGhzSettings13
+    public class FiveGhzSettings14
     {
         public string MaxPower { get; set; }
         public string MinPower { get; set; }
@@ -40,7 +40,7 @@ namespace MerakiDashboard
         public string Rxsop { get; set; }
     }
 
-    public class TwoFourGhzSettings13
+    public class TwoFourGhzSettings14
     {
         public string MaxPower { get; set; }
         public string MinPower { get; set; }
@@ -50,119 +50,9 @@ namespace MerakiDashboard
         public string Rxsop { get; set; }
     }
 
-    public class _02
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _102
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _112
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _123
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _132
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _142
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _19
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _27
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _37
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _47
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _52
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _62
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _72
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _82
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
-    public class _92
-    {
-        public string MinBitrate { get; set; }
-        public string BandOperationMode { get; set; }
-        public string BandSteeringEnabled { get; set; }
-    }
-
     public class ApBandSettings2
     {
         public string BandOperationMode { get; set; }
         public string BandSteeringEnabled { get; set; }
-    }
-
-    public class Transmission2
-    {
-        public string Enabled { get; set; }
     }
 }

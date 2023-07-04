@@ -20,27 +20,12 @@ namespace MerakiDashboard
         public string EbgpHoldTimer { get; set; }
         public string EbgpMultihop { get; set; }
         public string Ip { get; set; }
-        public Ipv6 Ipv6 { get; set; }
+        public VlanTagging3 Ipv6 { get; set; }
         public string ReceiveLimit { get; set; }
         public string AllowTransit { get; set; }
         public string SourceInterface { get; set; }
         public string NextHopIp { get; set; }
-        public TtlSecurity TtlSecurity { get; set; }
-        public Authentication8 Authentication { get; set; }
-    }
-
-    public class Authentication8
-    {
-        public string Password { get; set; }
-    }
-
-    public class Ipv615
-    {
-        public string Address { get; set; }
-    }
-
-    public class TtlSecurity
-    {
-        public string Enabled { get; set; }
+        public VlanTagging3 TtlSecurity { get; set; }
+        public Authentication Authentication { get; set; }
     }
 }

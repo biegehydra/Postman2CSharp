@@ -27,17 +27,6 @@ namespace MerakiDashboard
         public string ProductType { get; set; }
     }
 
-    public class Lldp3
-    {
-        public string ChassisId { get; set; }
-        public string SystemName { get; set; }
-        public string SystemDescription { get; set; }
-        public List<string> SystemCapabilities { get; set; }
-        public string ManagementAddress { get; set; }
-        public string PortId { get; set; }
-        public string PortDescription { get; set; }
-    }
-
     public class Nodes
     {
         public string DerivedId { get; set; }
@@ -47,6 +36,15 @@ namespace MerakiDashboard
         public Discovered Discovered { get; set; }
         public Stack Stack { get; set; }
         public Device Device { get; set; }
+    }
+
+    public class Lldp3
+    {
+        public string ChassisId { get; set; }
+        public string SystemName { get; set; }
+        public string SystemDescription { get; set; }
+        public List<string> SystemCapabilities { get; set; }
+        public string ManagementAddress { get; set; }
     }
 
     public class Members
@@ -72,12 +70,6 @@ namespace MerakiDashboard
         public Discovered Discovered { get; set; }
     }
 
-    public class Counts10
-    {
-        public int Total { get; set; }
-        public ByStatus ByStatus { get; set; }
-    }
-
     public class Discovered
     {
         public Lldp3 Lldp { get; set; }
@@ -99,7 +91,7 @@ namespace MerakiDashboard
     public class Uplinks4
     {
         public int VlanId { get; set; }
-        public Pppoe7 Pppoe { get; set; }
+        public Pppoe Pppoe { get; set; }
     }
 
     public class ByStatus
@@ -115,11 +107,6 @@ namespace MerakiDashboard
     public class Ports3
     {
         public Counts Counts { get; set; }
-    }
-
-    public class Pppoe7
-    {
-        public bool Enabled { get; set; }
     }
 
     public class Switch

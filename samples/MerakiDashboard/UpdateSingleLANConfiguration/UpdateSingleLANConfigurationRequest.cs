@@ -11,7 +11,7 @@ namespace MerakiDashboard
         public string Subnet { get; set; }
         public string ApplianceIp { get; set; }
         public Ipv6 Ipv6 { get; set; }
-        public MandatoryDhcp2 MandatoryDhcp { get; set; }
+        public VlanTagging3 MandatoryDhcp { get; set; }
     }
 
     public class PrefixAssignments2
@@ -26,10 +26,5 @@ namespace MerakiDashboard
     {
         public string Enabled { get; set; }
         public List<PrefixAssignments2> PrefixAssignments { get; set; }
-    }
-
-    public class MandatoryDhcp2
-    {
-        public string Enabled { get; set; }
     }
 }
