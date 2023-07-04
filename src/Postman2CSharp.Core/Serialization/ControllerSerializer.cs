@@ -6,6 +6,7 @@ using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
+using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
 using Postman2CSharp.Core.Utilities;
 
 namespace Postman2CSharp.Core.Serialization
@@ -28,7 +29,7 @@ namespace Postman2CSharp.Core.Serialization
             var last = apiClient.HttpCalls.Last();
             foreach (var httpCall in apiClient.HttpCalls)   
             {
-                SerializeEndpoint(sb, apiClient.CommonHeaders, httpCall, uriSegments, apiClient.BaseUrl, 1);
+                SerializeEndpoint(sb, apiClient, httpCall, uriSegments, apiClient.BaseUrl, 1);
                 if (httpCall != last)
                 {
                     sb.AppendLine();
@@ -37,13 +38,15 @@ namespace Postman2CSharp.Core.Serialization
             sb.AppendLine("}");
             return sb.ToString();
         }
-        private static void SerializeEndpoint(StringBuilder sb, List<Header> sharedHeaders, HttpCall httpCall, List<string> baseUriSegments, string? baseUrl, int intIndent)
+        private static void SerializeEndpoint(StringBuilder sb, ApiClient apiClient, HttpCall httpCall, List<string> baseUriSegments, string? baseUrl, int intIndent)
         {
             var indent = Consts.Indent(intIndent);
             var attribute = Attribute(httpCall);
             var relativePath = Utils.ExtractRelativePath(baseUrl ?? "", httpCall.Request.Url.Raw);
             relativePath = string.IsNullOrWhiteSpace(relativePath) ? string.Empty : $"(\"{relativePath}\")";
 
+            XmlComment(sb, apiClient.CommentTypes, httpCall.RequestClassName, httpCall.Request.Description,
+                httpCall.Request.Url.Path, httpCall.Request.Url.Query, httpCall.Request.Url.Variable, httpCall.Request.Header, indent);
             foreach (var response in httpCall.AllResponses.OrderBy(x => x.Code))
             {
                 sb.Append(indent + $"[ProducesResponseType(StatusCodes.{response.StatusCode()}");
@@ -55,7 +58,7 @@ namespace Postman2CSharp.Core.Serialization
             }
             sb.AppendLine(indent + $"[{attribute}{relativePath}]");
             var responseType = httpCall.SuccessResponse?.ClassName ?? "Stream";
-            sb.AppendLine(indent + $"public IActionResult<{responseType}> {httpCall.Name}({ControllerParameters(httpCall, sharedHeaders, baseUriSegments)})");
+            sb.AppendLine(indent + $"public IActionResult<{responseType}> {httpCall.Name}({ControllerParameters(httpCall, apiClient.CommonHeaders, baseUriSegments)})");
             sb.AppendLine(indent + "{");
             indent = Consts.Indent(intIndent + 1);
             sb.AppendLine(indent + "throw new NotImplementedException();");
@@ -63,7 +66,7 @@ namespace Postman2CSharp.Core.Serialization
             sb.AppendLine(indent + "}");
         }
 
-        private static void XmlComment(StringBuilder sb, List<XmlCommentTypes> commentTypes, string? requestClassName, string? requestDescription, List<Path>? paths, List<Parameter>? queryParameters, List<KeyValueTypeDescription>? variables, List<Header> headers, string indent)
+        private static void XmlComment(StringBuilder sb, List<XmlCommentTypes> commentTypes, string? requestClassName, string? requestDescription, List<Path>? paths, List<QueryParameter>? queryParameters, List<KeyValueTypeDescription>? variables, List<Header> headers, string indent)
         {
             if (commentTypes.Contains(XmlCommentTypes.Request) && !string.IsNullOrWhiteSpace(requestDescription) && !string.IsNullOrWhiteSpace(requestClassName))
             {
@@ -89,7 +92,7 @@ namespace Postman2CSharp.Core.Serialization
             {
                 foreach (var parameter in queryParameters.Where(parameter => !string.IsNullOrWhiteSpace(parameter.Description)))
                 {
-                    sb.AppendLine($"/// <param name=\"{parameter.CsPropertyName(CsharpPropertyType.Local)}\">{parameter.Description}</param>");
+                    sb.AppendLine(indent + $"/// <param name=\"{parameter.CsPropertyName(CsharpPropertyType.Local)}\">{parameter.Description}</param>");
                 }
             }
 
@@ -98,7 +101,7 @@ namespace Postman2CSharp.Core.Serialization
                 foreach (var headerGroup in headers.GroupBy(x => x.Key).Where(header => header.Any(x => !string.IsNullOrWhiteSpace(x.Description))))
                 {
                     var header = headerGroup.First();
-                    sb.AppendLine($"/// <param name=\"{header.Key}\">{header.Description}</param>");
+                    sb.AppendLine(indent + $"/// <param name=\"{header.Key}\">{header.Description}</param>");
                 }
             }
         }

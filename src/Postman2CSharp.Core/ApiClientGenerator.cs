@@ -206,6 +206,7 @@ public class ApiClientGenerator
         {
             var requestDataType = Utils.GetRequestDataType(requestItem.Request!);
             var normalizedName = requestItem.NormalizedName();
+            requestItem.Description = requestItem.Description.HtmlToPlainText();
             // If the ApiClient is Geolocate and the request is Geolocate, it's fine to have the same name here
             var uniqueName = normalizedName;
             if (normalizedName != nameSpace)
@@ -213,6 +214,7 @@ public class ApiClientGenerator
                 uniqueName = GenerateUniqueName(normalizedName, uniqueNames);
             }
 
+            requestItem.Request!.Description = requestItem.Request.Description.HtmlToPlainText();
             string? requestSourceCode = null;
             string? requestClassName = null;
             List<ClassType>? requestTypes = null;

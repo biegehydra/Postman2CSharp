@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using Postman2CSharp.Core.Infrastructure;
@@ -298,26 +299,60 @@ public static class Utils
         return paddedParagraph;
     }
 
-    public static string HtmlToPlainText(this string html)
+    public static string? HtmlToPlainText(this string? html)
     {
-        const string tagWhiteSpace = @"(>|$)(\W|\n|\r)+<";//matches one or more (white space or line breaks) between '>' and '<'
-        const string stripFormatting = @"<[^>]*(>|$)";//match any character between '<' and '>', even when end tag is missing
-        const string lineBreak = @"<(br|BR)\s{0,1}\/{0,1}>";//matches: <br>,<br/>,<br />,<BR>,<BR/>,<BR />
+        if (string.IsNullOrWhiteSpace(html)) return null;
+        const string tagWhiteSpace = @"(>|$)(\W|\n|\r)+<"; // Matches one or more (white space or line breaks) between '>' and '<'
+        const string stripFormatting = @"<[^>]*(>|$)"; // Matches any character between '<' and '>', even when end tag is missing
+        const string lineBreak = @"<(br|BR)\s{0,1}\/{0,1}>"; // Matches: <br>,<br/>,<br />,<BR>,<BR/>,<BR />
+
         var lineBreakRegex = new Regex(lineBreak, RegexOptions.Multiline);
         var stripFormattingRegex = new Regex(stripFormatting, RegexOptions.Multiline);
         var tagWhiteSpaceRegex = new Regex(tagWhiteSpace, RegexOptions.Multiline);
 
-        var text = html;
-        //Decode html specific characters
-        text = System.Net.WebUtility.HtmlDecode(text);
-        //Remove tag whitespace/line breaks
+        // Decode HTML specific characters
+        var text = System.Net.WebUtility.HtmlDecode(html);
+
+        // Remove tag whitespace/line breaks
         text = tagWhiteSpaceRegex.Replace(text, "><");
-        //Replace <br /> with line breaks
+
+        // Replace <br /> with line breaks
         text = lineBreakRegex.Replace(text, Environment.NewLine);
-        //Strip formatting
+
+        // Strip formatting
         text = stripFormattingRegex.Replace(text, string.Empty);
 
+        // Insert new lines every 70 characters
+        text = InsertNewLinesEvery100Characters(text);
+
         return text;
+    }
+
+    /// <summary>
+    /// Inserts a new line every 70 characters in a string.
+    /// </summary>
+    /// <param name="text">The text to insert new lines into.</param>
+    /// <returns>A string with new lines inserted.</returns>
+    private static string InsertNewLinesEvery100Characters(string text)
+    {
+        var sb = new StringBuilder();
+        var words = text.Split(' ');
+
+        var lineLength = 0;
+        foreach (var word in words)
+        {
+            if (lineLength + word.Length > 100)
+            {
+                sb.Append(Environment.NewLine);
+                lineLength = 0;
+            }
+
+            sb.Append(word);
+            sb.Append(' ');
+            lineLength += word.Length + 1;
+        }
+
+        return sb.ToString();
     }
 
     public static string FixXmlCommentsAfterCodeAnalysis(this string sourceCode, int indent)
