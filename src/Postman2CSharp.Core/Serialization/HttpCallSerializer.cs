@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
 using Xamasoft.JsonClassGenerator.Models;
 
@@ -42,7 +43,7 @@ public static class HttpCallSerializer
 
         if (errorHandlingStrategy == ErrorHandlingStrategy.None)
         {
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens, errorHandlingStrategy);
         }
         else
         {
@@ -52,7 +53,7 @@ public static class HttpCallSerializer
             }
             sb.AppendLine(indent + "try");
             sb.AppendLine(indent + "{");
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens, errorHandlingStrategy);
             indent = Consts.Indent(2);
             sb.AppendLine(indent + "}");
             foreach (var catchExceptionType in catchExceptionTypes)
@@ -161,7 +162,22 @@ public static class HttpCallSerializer
     }
 
     private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool authHasHeader,
-        int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary, bool useCancellationTokens)
+        int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary, bool useCancellationTokens, ErrorHandlingStrategy errorHandlingStrategy)
+    {
+        if (call.AllResponses.Count == 0) throw new UnreachableException("No success responses found. Should never happen.");
+        if (call.AllResponses.Count > 1)
+        {
+            HttpCallMultipleResponseTypesBody(sb, auth, call, authHasHeader, intIndent, relativePath, ensureSuccessStatusCode, jsonLibrary, errorHandlingStrategy, useCancellationTokens);
+        }
+        else
+        {
+            HttpCallSingleResponseTypeBody(sb, auth, call, authHasHeader, intIndent, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens);
+        }
+    }
+
+    private static void HttpCallSingleResponseTypeBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
+        bool authHasHeader, int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary,
+        bool useCancellationTokens)
     {
         var indent = Consts.Indent(intIndent);
         sb.AddAuthorizationHeader(call.Request.Auth, indent, authHasHeader);
@@ -196,20 +212,22 @@ public static class HttpCallSerializer
         {
             sb.AppendLine(indent + $"var httpContent = new StreamContent(stream);");
         }
-        else if (call.RequestDataType is DataType.GraphQl) 
+        else if (call.RequestDataType is DataType.GraphQl)
         {
             GraphQlString(sb, call.Request.Body!.Graphql, indent);
         }
 
         // We need to use the HttpRequestMessage
 
-        var httpClientCallReturnsResponse = call.SuccessResponse?.ClassName != null && 
-                                            call.HttpClientFunction.Contains("Json") && 
-                                            !(call.HttpClientFunction.Contains("AsJson") || call.HttpClientFunction.Contains("AsNewtonsoftJson"));
-  
+        var httpClientCallReturnsResponse = call.SuccessResponse?.ClassName != null &&
+                                            call.HttpClientFunction.Contains("Json") &&
+                                            !(call.HttpClientFunction.Contains("AsJson") ||
+                                              call.HttpClientFunction.Contains("AsNewtonsoftJson"));
+
         ReturnOrVarResponse(sb, httpClientCallReturnsResponse, indent);
 
-        HttpClientRequest(sb, call, httpClientCallReturnsResponse, requestHasQueryString, relativePath, hasUniqueHeaders, useCancellationTokens);
+        HttpClientRequest(sb, call, httpClientCallReturnsResponse, requestHasQueryString, relativePath, hasUniqueHeaders,
+            useCancellationTokens);
 
         if (!httpClientCallReturnsResponse && ensureSuccessStatusCode)
         {
@@ -218,22 +236,107 @@ public static class HttpCallSerializer
 
         if (!httpClientCallReturnsResponse)
         {
-            ReturnIfRequestDidNotReturnEarlier(sb, call, jsonLibrary, indent, useCancellationTokens);
+            ReturnIfRequestDidNotReturnEarlier(sb, call, call.SuccessResponse, jsonLibrary, indent, useCancellationTokens);
         }
     }
 
-    private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, HttpCall call, JsonLibrary jsonLibrary, string indent, bool useCancellationTokens)
+    private static void HttpCallMultipleResponseTypesBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
+        bool authHasHeader, int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary, ErrorHandlingStrategy
+         errorHandlingStrategy, bool useCancellationTokens)
+    {
+        var indent = Consts.Indent(intIndent);
+        sb.AddAuthorizationHeader(call.Request.Auth, indent, authHasHeader);
+        UniqueHeaders(sb, call, intIndent, out var hasUniqueHeaders);
+
+        if (call.UniqueHeaders.Where(Header.IsImportant).Any())
+        {
+            sb.AppendLine();
+        }
+
+        var requestHasQueryString = QueryParameters(sb, call.Request.Auth ?? auth, call, indent, relativePath);
+
+        if (call.RequestDataType is DataType.Html or DataType.Text or DataType.Xml)
+        {
+            var parameterName = call.RequestDataType switch
+            {
+                DataType.Html => "html",
+                DataType.Xml => "xml",
+                DataType.Text => "text",
+                _ => throw new UnreachableException()
+            };
+            var contentType = call.RequestDataType switch
+            {
+                DataType.Html => "text/html",
+                DataType.Xml => "text/xml",
+                DataType.Text => "text/plan",
+                _ => throw new UnreachableException()
+            };
+            sb.AppendLine(
+                indent + $"var httpContent = new StringContent({parameterName}, Encoding.UTF8, \"{contentType}\")");
+        }
+        else if (call.RequestDataType is DataType.Binary)
+        {
+            sb.AppendLine(indent + $"var httpContent = new StreamContent(stream);");
+        }
+        else if (call.RequestDataType is DataType.GraphQl)
+        {
+            GraphQlString(sb, call.Request.Body!.Graphql, indent);
+        }
+
+        
+
+        ReturnOrVarResponse(sb, false, indent);
+
+        HttpClientRequest(sb, call, false, requestHasQueryString, relativePath, hasUniqueHeaders,
+            useCancellationTokens);
+
+        int i = 0;
+        foreach (var response in call.AllResponses)
+        {
+            var ifStatement = i == 0 ? "if" : "else if";
+            sb.AppendLine(indent + $"{ifStatement} (response.StatusCode == HttpStatusCode.{(HttpStatusCode) response.Code})");
+            sb.AppendLine(indent + "{");
+            indent = Consts.Indent(intIndent + 1);
+
+            ReturnIfRequestDidNotReturnEarlier(sb, call, response, jsonLibrary, indent, useCancellationTokens);
+
+            indent = Consts.Indent(intIndent);
+            sb.AppendLine(indent + "}");
+            i++;
+        }
+        sb.AppendLine(indent + "else");
+        sb.AppendLine(indent + "{");
+        indent = Consts.Indent(intIndent + 1);
+        switch (errorHandlingStrategy)
+        {
+            case ErrorHandlingStrategy.None:
+                sb.AppendLine(indent + "throw new Exception(\"Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}\");");
+                break;
+            case ErrorHandlingStrategy.ThrowException:
+                sb.AppendLine(indent + "throw new Exception(\"Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}\");");
+                break;
+            case ErrorHandlingStrategy.ReturnDefault:
+                sb.AppendLine(indent + "return default;");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(errorHandlingStrategy), errorHandlingStrategy, null);
+        }
+        indent = Consts.Indent(intIndent);
+        sb.AppendLine(indent + "}");
+    }
+
+    private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, HttpCall call, ApiResponse? apiResponse, JsonLibrary jsonLibrary, string indent, bool useCancellationTokens)
     {
         sb.Append(indent + "return ");
-        if (call.SuccessResponse?.ClassName != null)
+        if (apiResponse?.ClassName != null)
         {
             if (jsonLibrary == JsonLibrary.SystemTextJson)
             {
-                sb.AppendLine($"await response.ReadJsonAsync<{call.SuccessResponse.ClassName}>();");
+                sb.AppendLine($"await response.ReadJsonAsync<{apiResponse.ClassName}>();");
             }
             else
             {
-                sb.AppendLine($"await response.ReadNewtonsoftJsonAsync<{call.SuccessResponse.ClassName}>();");
+                sb.AppendLine($"await response.ReadNewtonsoftJsonAsync<{apiResponse.ClassName}>();");
             }
         }
         else

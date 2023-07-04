@@ -94,9 +94,12 @@
         {
             _sourceCode = selectedHttpCall.RequestSourceCode;
         }
-        if (selectedHttpCall.SuccessResponse != null && selectedHttpCall.SuccessResponse.ClassName == ClassName)
+        foreach (var response in selectedHttpCall.AllResponses)
         {
-            _sourceCode = selectedHttpCall.SuccessResponse.ClassName;
+            if (response.ClassName == ClassName)
+            {
+                _sourceCode = response.SourceCode;
+            }   
         }
         if (_sourceCode == null) return false;
 

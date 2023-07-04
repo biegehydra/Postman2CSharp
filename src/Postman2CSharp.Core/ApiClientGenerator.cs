@@ -352,7 +352,8 @@ public class ApiClientGenerator
 
                 allApiResponse.Add(new ApiResponse(response.Code.Value, null, null, DataType.Binary));
             }
-            if (allApiResponse.Count == 0)
+            // If there is no success response, add one
+            if (!allApiResponse.Any(x => x is {Code: >= 200 and < 300}))
             {
                 allApiResponse.Add(new ApiResponse(200, null, null, DataType.Binary));
             }
@@ -402,7 +403,9 @@ public class ApiClientGenerator
             var uniqueHeaders = requestItem.Request.Header.Except(commonHeaders).ToList() ?? new ();
 
             var successResponseDataType = allApiResponse.FirstOrDefault()?.DataType ?? DataType.Null;
-            var httpClientFunction = Utils.HttpClientCall(requestItem.Request.Method, requestDataType, successResponseDataType, Options.CSharpCodeWriterConfig.AttributeLibrary);
+            // Multiple api responses or the only api response is not a success response
+            var multipleResponse = allApiResponse.Count > 1;
+            var httpClientFunction = Utils.HttpClientCall(requestItem.Request.Method, requestDataType, successResponseDataType, Options.CSharpCodeWriterConfig.AttributeLibrary, multipleResponse);
 
 
             httpCalls.Add(new ()

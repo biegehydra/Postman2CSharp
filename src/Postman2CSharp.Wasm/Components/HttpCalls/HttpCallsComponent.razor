@@ -93,9 +93,12 @@
         {
             allClassNames.Add(httpCall.RequestClassName);
         }
-        if (httpCall.SuccessResponse?.ClassName != null)
+        foreach (var response in httpCall.AllResponses)
         {
-            allClassNames.Add(httpCall.SuccessResponse.ClassName);
+            if (response.SourceCode != null)
+            {
+                allClassNames.Add(response.ClassName);
+            }
         }
         if (httpCall.QueryParameterSourceCode != null)
         {

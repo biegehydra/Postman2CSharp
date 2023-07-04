@@ -55,7 +55,7 @@ public class HttpCall
     public required string? QueryParameterSourceCode { get; set; }
     public required List<ClassType>? QueryParameterTypes { get; init; }
 
-    public required string HttpClientFunction { get; init; }
+    public required string HttpClientFunction { get; set; }
     public required string? FormDataClassName { get; init; }
     public required string? FormDataSourceCode { get; set; }
 

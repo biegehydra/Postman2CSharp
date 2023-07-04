@@ -65,13 +65,13 @@ public static class Utils
         return result;
     }
 
-    public static string HttpClientCall(string httpMethod, DataType requestDataType, DataType responseDataType, JsonLibrary jsonLibrary)
+    public static string HttpClientCall(string httpMethod, DataType requestDataType, DataType responseDataType, JsonLibrary jsonLibrary, bool multipleResponses)
     {
         string function;
         var suffix = jsonLibrary == JsonLibrary.SystemTextJson ? "Json" : "NewtonsoftJson";
         if (requestDataType == DataType.Json)
         {
-            if (responseDataType == DataType.Json)
+            if (responseDataType == DataType.Json && !multipleResponses)
             {
                 function = httpMethod.ToUpper() switch
                 {
@@ -98,7 +98,7 @@ public static class Utils
         }
         else
         {
-            if (responseDataType == DataType.Json)
+            if (responseDataType == DataType.Json && !multipleResponses)
             {
                 function = httpMethod.ToUpper() switch
                 {
