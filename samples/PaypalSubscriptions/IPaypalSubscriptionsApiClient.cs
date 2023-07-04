@@ -4,7 +4,7 @@ namespace PaypalSubscriptions
 {
     public interface IPaypalSubscriptionsApiClient
     {
-        Task<Stream> CreateSubscription(CreateSubscriptionRequest request);
+        Task<CreateSubscriptionResponse> CreateSubscription(CreateSubscriptionRequest request);
         Task<ShowSubscriptionDetailsResponse> ShowSubscriptionDetails(ShowSubscriptionDetailsParameters queryParameters, string subscriptionId);
         Task<Stream> UpdateSubscription(UpdateSubscriptionRequest request, string subscriptionId);
         Task<RevisePlanOrQuantityOfSubscriptionResponse> RevisePlanOrQuantityOfSubscription(RevisePlanOrQuantityOfSubscriptionRequest request, string subscriptionId);

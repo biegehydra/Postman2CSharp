@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+
 namespace PaypalSubscriptions
 {
     public static class HelperExtensions

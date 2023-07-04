@@ -11,21 +11,6 @@ namespace PaypalSubscriptions
         public string PlanId { get; set; }
         public ShippingAmount ShippingAmount { get; set; }
         public ShippingAddress ShippingAddress { get; set; }
-        public ApplicationContext2 ApplicationContext { get; set; }
-    }
-
-    public class ApplicationContext2
-    {
-        public string BrandName { get; set; }
-        public string Locale { get; set; }
-        public string ShippingPreference { get; set; }
-        public PaymentMethod PaymentMethod { get; set; }
-        public string ReturnUrl { get; set; }
-        public string CancelUrl { get; set; }
-    }
-
-    public class Name3
-    {
-        public string FullName { get; set; }
+        public ApplicationContext ApplicationContext { get; set; }
     }
 }

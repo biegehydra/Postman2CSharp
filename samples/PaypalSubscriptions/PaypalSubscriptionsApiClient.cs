@@ -4,6 +4,8 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+
+// Generated using Postman2CSharp https://postman2csharp.com/Convert
 namespace PaypalSubscriptions
 {
     /// <summary>
@@ -34,7 +36,7 @@ namespace PaypalSubscriptions
         /// <summary>
         /// Creates a subscription.
         /// </summary>
-        public async Task<Stream> CreateSubscription(CreateSubscriptionRequest request)
+        public async Task<CreateSubscriptionResponse> CreateSubscription(CreateSubscriptionRequest request)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -45,8 +47,7 @@ namespace PaypalSubscriptions
                 { $"Prefer", $"{_preferRepresentationDetailed}" }
             };
     
-            var response = await _httpClient.PostAsJsonAsync($"", request, headers);
-            return await response.Content.ReadAsStreamAsync();
+            return await _httpClient.PostJsonAsync<CreateSubscriptionResponse>($"", request, headers);
         }
     
         /// <summary>
