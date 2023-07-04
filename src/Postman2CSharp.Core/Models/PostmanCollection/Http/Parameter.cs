@@ -12,7 +12,4 @@ public class Parameter : IFormData
     public string? Type { get; set; }
     public bool Disabled { get; set; }
     public string? Description { get; set; }
-
-    private string? _csPropertyName;
-    public string CsPropertyName => _csPropertyName ??= Utils.NormalizeToCsharpPropertyName(Key);
 }

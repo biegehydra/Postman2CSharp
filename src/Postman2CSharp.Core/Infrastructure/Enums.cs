@@ -20,6 +20,7 @@
         FormData,
         PathVariables,
         Request,
+        Header
     }
 
     public enum RootDefinition

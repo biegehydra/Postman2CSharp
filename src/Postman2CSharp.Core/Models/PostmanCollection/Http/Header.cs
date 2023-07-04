@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Postman2CSharp.Core.Utilities;
 
 namespace Postman2CSharp.Core.Models.PostmanCollection.Http
 {
-    public class Header
+    public class Header : ICsProperty
     {
         private static readonly List<string> CommonAuthHeaders = new List<string>()
         {
@@ -29,6 +30,7 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Http
 
         [JsonRequired] public required string Key { get; set; }
         [JsonRequired] public required string Value { get; set; }
+        public string? Description { get; set; }
         public bool? Disabled { get; set; }
         public override bool Equals(object? obj)
         {

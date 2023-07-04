@@ -40,7 +40,7 @@ public class VariableExtractorTests
         };
 
         // Act
-        var result = VariableExtractor.ReplaceVariablesWithValues(input, collectionVariables);
+        var result = VariableExtractor.ReplaceVariablesWithValues(input, collectionVariables, CsharpPropertyType.Private);
 
         // Assert
         Assert.AreEqual(expectedOutput, result);
@@ -53,13 +53,13 @@ public class VariableExtractorTests
     public void ExtractAndReplaceVariablesTest(string? input, string? expectedOriginal, string? expectedCsPropertyUsage, string? expectedOutput)
     {
         // Act
-        var (stringWithCSharpInterpolation, variables) = VariableExtractor.ExtractAndReplaceVariables(input);
+        var (stringWithCSharpInterpolation, variables) = VariableExtractor.ExtractAndReplaceVariables(input, CsharpPropertyType.Private);
 
         // Assert
         Assert.AreEqual(expectedOutput, stringWithCSharpInterpolation);
         if (expectedOriginal != null && expectedCsPropertyUsage != null)
         {
-            Assert.IsTrue(variables.Any(v => v.Original == expectedOriginal && v.CSPropertyUsage == expectedCsPropertyUsage));
+            Assert.IsTrue(variables.Any(v => v.Original == expectedOriginal && v.CsharpPropertyType == CsharpPropertyType.Private));
         }
     }
 }

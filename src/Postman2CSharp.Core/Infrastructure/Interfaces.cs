@@ -1,8 +1,8 @@
-﻿namespace Postman2CSharp.Core.Infrastructure;
+﻿using Postman2CSharp.Core.Utilities;
 
-public interface IFormData
+namespace Postman2CSharp.Core.Infrastructure;
+
+public interface IFormData : ICsProperty
 {
-    public string Key { get; }
-    public string CsPropertyName { get; }
     public FormDataType FormDataType { get; }
 }

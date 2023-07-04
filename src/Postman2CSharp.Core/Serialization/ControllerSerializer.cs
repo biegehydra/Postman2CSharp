@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models;
+using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Utilities;
 
@@ -42,14 +43,64 @@ namespace Postman2CSharp.Core.Serialization
             var attribute = Attribute(httpCall);
             var relativePath = Utils.ExtractRelativePath(baseUrl ?? "", httpCall.Request.Url.Raw);
             relativePath = string.IsNullOrWhiteSpace(relativePath) ? string.Empty : $"(\"{relativePath}\")";
-            sb.AppendLine(indent + $"[{attribute}{relativePath})]");
-            var responseType = httpCall.ResponseClassName ?? "Stream";
+
+            foreach (var response in httpCall.AllResponses.OrderBy(x => x.Code))
+            {
+                sb.Append(indent + $"[ProducesResponseType(StatusCodes.{response.StatusCode()}");
+                if (response.ClassName != null)
+                {
+                    sb.Append($", Type = typeof({response.ClassName})");
+                }
+                sb.AppendLine(")]");
+            }
+            sb.AppendLine(indent + $"[{attribute}{relativePath}]");
+            var responseType = httpCall.SuccessResponse?.ClassName ?? "Stream";
             sb.AppendLine(indent + $"public IActionResult<{responseType}> {httpCall.Name}({ControllerParameters(httpCall, sharedHeaders, baseUriSegments)})");
             sb.AppendLine(indent + "{");
             indent = Consts.Indent(intIndent + 1);
             sb.AppendLine(indent + "throw new NotImplementedException();");
             indent = Consts.Indent(intIndent);
             sb.AppendLine(indent + "}");
+        }
+
+        private static void XmlComment(StringBuilder sb, List<XmlCommentTypes> commentTypes, string? requestClassName, string? requestDescription, List<Path>? paths, List<Parameter>? queryParameters, List<KeyValueTypeDescription>? variables, List<Header> headers, string indent)
+        {
+            if (commentTypes.Contains(XmlCommentTypes.Request) && !string.IsNullOrWhiteSpace(requestDescription) && !string.IsNullOrWhiteSpace(requestClassName))
+            {
+                var xmlComment = XmlCommentHelpers.ToXmlParam(requestDescription, requestClassName, indent);
+                sb.Append(xmlComment);
+            }
+
+            if (commentTypes.Contains(XmlCommentTypes.PathVariables) && paths != null && variables != null)
+            {
+                foreach (var path in paths)
+                {
+                    if (variables.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Key) && x.Key == path.Value?.Replace(":", string.Empty)) is
+                        { } keyValueTypeDescription)
+                    {
+                        if (!string.IsNullOrWhiteSpace(keyValueTypeDescription.Description))
+                        {
+                            sb.AppendLine(indent + $"/// <param name=\"{path.CsPropertyName(CsharpPropertyType.Local)}\">{keyValueTypeDescription.Description}</param>");
+                        }
+                    }
+                }
+            }
+            if (commentTypes.Contains(XmlCommentTypes.QueryParameters) && queryParameters != null)
+            {
+                foreach (var parameter in queryParameters.Where(parameter => !string.IsNullOrWhiteSpace(parameter.Description)))
+                {
+                    sb.AppendLine($"/// <param name=\"{parameter.CsPropertyName(CsharpPropertyType.Local)}\">{parameter.Description}</param>");
+                }
+            }
+
+            if (commentTypes.Contains(XmlCommentTypes.Header))
+            {
+                foreach (var headerGroup in headers.GroupBy(x => x.Key).Where(header => header.Any(x => !string.IsNullOrWhiteSpace(x.Description))))
+                {
+                    var header = headerGroup.First();
+                    sb.AppendLine($"/// <param name=\"{header.Key}\">{header.Description}</param>");
+                }
+            }
         }
 
         private static string ControllerParameters(HttpCall httpCall, List<Header> sharedHeaders, List<string> baseUriSegments)
@@ -68,18 +119,18 @@ namespace Postman2CSharp.Core.Serialization
             }
             foreach (var parameter in httpCall.Request.Url.Query ?? new ())
             {
-                parameters.Add($"[FromQuery] string {Utils.NormalizeToCsharpPropertyName(parameter.Key, CsharpPropertyType.Local)}");
+                parameters.Add($"[FromQuery] string {parameter.CsPropertyName(CsharpPropertyType.Local)}");
             }
             foreach (var path in httpCall.Request.Url.Path?.Where(x => x.IsVariable()) ?? new List<Path>())
             {
                 if (!baseUriSegments.Contains(path))
                 {
-                    parameters.Add($"[FromRoute] string " + path.LocalVariableName);
+                    parameters.Add($"[FromRoute] string " + path.CsPropertyName(CsharpPropertyType.Local));
                 }
             }
             foreach (var header in allHeaders.GroupBy(x => x.Key))
             {
-                parameters.Add($"[FromHeader(Name = \"{header.Key}\")] string {Utils.NormalizeToCsharpPropertyName(header.Key, CsharpPropertyType.Local)}");
+                parameters.Add($"[FromHeader(Name = \"{header.Key}\")] string {header.First().CsPropertyName(CsharpPropertyType.Local)}");
             }
             return string.Join(", ", parameters.ToArray());
         }

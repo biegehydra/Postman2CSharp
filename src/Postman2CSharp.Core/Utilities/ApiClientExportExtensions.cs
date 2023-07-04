@@ -34,7 +34,10 @@ namespace Postman2CSharp.Core.Utilities
 
                 httpCall.QueryParameterSourceCode = AddInterface(httpCall.QueryParameterSourceCode, httpCall.QueryParameterTypes, httpCall.QueryParameterClassName, Consts.Interfaces.IQueryParameters);
                 AddToDictionary(httpCall.FormDataSourceCode, httpCall.FormDataClassName, httpCall.Name);
-                AddToDictionary(httpCall.ResponseSourceCode, httpCall.ResponseClassName, httpCall.Name);
+                foreach (var response in httpCall.AllResponses)
+                {
+                    AddToDictionary(response.SourceCode, httpCall.SuccessResponse?.ClassName, httpCall.Name);
+                }
                 AddToDictionary(httpCall.RequestSourceCode, httpCall.RequestClassName, httpCall.Name);
                 AddToDictionary(httpCall.QueryParameterSourceCode, httpCall.QueryParameterClassName, httpCall.Name);
             }

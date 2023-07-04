@@ -18,6 +18,7 @@ using Xamasoft.JsonClassGenerator.Models;
 using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 using Postman2CSharp.Core.Utilities;
+using System.Net;
 
 namespace Postman2CSharp.Core;
 
@@ -122,7 +123,7 @@ public class ApiClientGenerator
         // Doing all the variable extraction and replacement here allows the TotalRequests to be accurate TODO: For some reason it's still not 100% accurate
         foreach (var rootItem in rootItems)
         {
-            var variableUsages = VariableExtractor.ExtractVariableUsages(rootItem, PostmanCollection.Variable ?? new());
+            var variableUsages = VariableExtractor.ExtractAndReplaceVariableUsagesWithPrivateVariables(rootItem, PostmanCollection.Variable ?? new());
             allVariableUsages.Add(variableUsages);
             if (PostmanCollection.Variable != null)
             {
@@ -204,7 +205,7 @@ public class ApiClientGenerator
         foreach (var requestItem in requestItems)
         {
             var requestDataType = Utils.GetRequestDataType(requestItem.Request!);
-            var normalizedName = Utils.NormalizeToCsharpPropertyName(requestItem.Name);
+            var normalizedName = requestItem.NormalizedName();
             // If the ApiClient is Geolocate and the request is Geolocate, it's fine to have the same name here
             var uniqueName = normalizedName;
             if (normalizedName != nameSpace)
@@ -290,52 +291,68 @@ public class ApiClientGenerator
                 }
             }
 
-            var allResponses = requestItem.Response?.GroupBy(x => x.Code).Select(x => x.First()).ToList() ?? new List<Response>();
-            var successResponse = allResponses.FirstOrDefault(x => x.Code == 200);
-            var responseDataType = Utils.GetResponseDataType(successResponse);
-            string? responseSourceCode = null;
-            string? responseClassName = null;
-            List<ClassType>? responseTypes = null;
-            if (responseDataType == DataType.Json)
-            {   
-                var json = successResponse!.Body ?? string.Empty;
-                if (string.IsNullOrWhiteSpace(json))
+            var allResponses = requestItem.Response?.Where(x => x.Code.HasValue).GroupBy(x => x.Code!.Value).Select(x => x.First()).ToList() ?? new List<Response>();
+            var allApiResponse = new List<ApiResponse>();
+            foreach (var response in allResponses)
+            {
+                if (response.Code == null) continue;
+
+                var responseDataType = Utils.GetResponseDataType(response);
+                if (responseDataType == DataType.Json)
                 {
-                    responseClassName = "EmptyResponse";
-                }
-                else
-                {
+                    string? responseSourceCode = null;
+                    string? responseClassName = null;
+                    var json = response.Body;
+                    if (string.IsNullOrWhiteSpace(json))
+                    {
+                        responseClassName = "EmptyResponse";
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
+                        continue;
+                    }
+
                     try
                     {
-                        ProcessItem(jsonClassGenerator, json, uniqueName, Consts.Response, ref responseClassName,
-                            ref responseSourceCode, ref responseTypes);
+                        List<ClassType>? _ = null;
+                        var type = allResponses.Count > 1
+                            ? (HttpStatusCode) response.Code + Consts.Response
+                            : Consts.Response;
+                        ProcessItem(jsonClassGenerator, json, uniqueName, type, ref responseClassName,
+                            ref responseSourceCode, ref _);
                     }
                     catch (JsonException)
                     {
                         responseClassName = "EmptyResponse";
-                        responseSourceCode = null;
-                        responseTypes = null;
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
+                        continue;
                     }
                     catch (NoClassesGeneratedException)
                     {
+                        responseClassName = "EmptyResponse";
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
+                        continue;
 #if DEBUG
                         Console.WriteLine($@"Response no classes generated. {requestItem.Name}");
 #endif
-                        responseClassName = null;
-                        responseSourceCode = null;
-                        responseTypes = null;
                     }
                     catch (Exception ex)
                     {
-                        responseClassName = null;
-                        responseSourceCode = null;
-                        responseTypes = null;
+                        responseClassName = "EmptyResponse";
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
+                        continue;
 #if DEBUG
                         Console.WriteLine(ex);
                         throw;
 #endif
                     }
+                    allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, responseSourceCode, DataType.Json));
+                    continue;
                 }
+
+                allApiResponse.Add(new ApiResponse(response.Code.Value, null, null, DataType.Binary));
+            }
+            if (allApiResponse.Count == 0)
+            {
+                allApiResponse.Add(new ApiResponse(200, null, null, DataType.Binary));
             }
 
             string? queryParametersSourceCode = null;
@@ -382,7 +399,8 @@ public class ApiClientGenerator
 
             var uniqueHeaders = requestItem.Request.Header.Except(commonHeaders).ToList() ?? new ();
 
-            var httpClientFunction = Utils.HttpClientCall(requestItem.Request.Method, requestDataType, responseDataType, Options.CSharpCodeWriterConfig.AttributeLibrary);
+            var successResponseDataType = allApiResponse.FirstOrDefault()?.DataType ?? DataType.Null;
+            var httpClientFunction = Utils.HttpClientCall(requestItem.Request.Method, requestDataType, successResponseDataType, Options.CSharpCodeWriterConfig.AttributeLibrary);
 
 
             httpCalls.Add(new ()
@@ -393,17 +411,13 @@ public class ApiClientGenerator
                 RequestDataType = requestDataType,
                 RequestClassName = requestClassName,
                 RequestSourceCode = requestSourceCode,
-                AllResponses = allResponses,
-                ResponseDataType = responseDataType,
-                ResponseClassName = responseClassName,
-                ResponseSourceCode = responseSourceCode,
+                AllResponses = allApiResponse,
                 QueryParameterClassName = queryParametersClassName,
                 QueryParameterSourceCode = queryParametersSourceCode,
                 FormDataClassName = formClassName,
                 FormDataSourceCode = formClassSourceCode,
                 UniqueHeaders = uniqueHeaders,
                 RequestTypes = requestTypes,
-                ResponseTypes = responseTypes,
                 QueryParameterTypes = queryParameterTypes,
             });
 
@@ -527,12 +541,12 @@ using System.Net.Http;
                         {
                             if (!string.IsNullOrWhiteSpace(value))
                             {
-                                comment = XmlCommentHelpers.ToXmlComment(value, Consts.Indent(3));
+                                comment = XmlCommentHelpers.ToXmlSummary(value, Consts.Indent(3));
                             }
                         }
                         if (formdata.FormDataType == FormDataType.Text)
                         {
-                            var prop = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("string"), formdata.CsPropertyName)
+                            var prop = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("string"), formdata.CsPropertyName(CsharpPropertyType.Public))
                                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                                 .AddAccessorListAccessors(
                                     SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),

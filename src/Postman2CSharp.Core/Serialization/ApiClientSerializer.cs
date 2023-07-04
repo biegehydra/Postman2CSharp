@@ -20,7 +20,7 @@ public static class ApiClientSerializer
         var sb = new StringBuilder();
         if (client.CommentTypes.Contains(XmlCommentTypes.ApiClient) && !string.IsNullOrWhiteSpace(client.Description))
         {
-            var xmlComment = XmlCommentHelpers.ToXmlComment(client.Description.HtmlToPlainText(), string.Empty);
+            var xmlComment = XmlCommentHelpers.ToXmlSummary(client.Description.HtmlToPlainText(), string.Empty);
             sb.Append(xmlComment);
         }
         sb.AppendLine($"public class {client.Name} : {client.InterfaceName}");
@@ -31,7 +31,7 @@ public static class ApiClientSerializer
         {
             sb.AppendLine(indent + $"private readonly ILogger<{client.Name}> _logger;");
         }
-        VariableUsagesAsProperties(sb, client.VariableUsages, indent);
+        VariableUsagesAsPrivateProperties(sb, client.VariableUsages, indent);
         AuthProperties(client.CollectionAuth, sb, indent);
         foreach (var otherUniqueAuth in client.UniqueAuths.Where(x => x.EnumType() != client.CollectionAuth?.EnumType()))
         {
@@ -168,11 +168,11 @@ public static class ApiClientSerializer
         }
     }
 
-    private static void VariableUsagesAsProperties(StringBuilder sb, List<VariableUsage> variableUsages, string indent)
+    private static void VariableUsagesAsPrivateProperties(StringBuilder sb, List<VariableUsage> variableUsages, string indent)
     {
         foreach (var variableUsage in variableUsages.Where(x => !x.Original.StartsWith(":")))
         {
-            var normalizedKey = Utils.NormalizeToCsharpPropertyName(variableUsage.CSPropertyUsage, CsharpPropertyType.Private);
+            var normalizedKey = variableUsage.CSPropertyUsage(CsharpPropertyType.Private);
             var valueLiteral = string.IsNullOrWhiteSpace(variableUsage.Value) ? "string.Empty" : $"\"{variableUsage.Value}\"";
             sb.AppendLine(indent + $"private string {normalizedKey} = {valueLiteral};");
         }

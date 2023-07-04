@@ -42,7 +42,7 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Http
     public class Path
     {
         public string? Value { get; set; }
-        public string LocalVariableName => Utils.NormalizeToCsharpPropertyName(Value, CsharpPropertyType.Local);
+        public string CsPropertyName(CsharpPropertyType type) => Utils.NormalizeToCsharpPropertyName(Value, type);
         public bool IsVariable()
         {
             return Value != null && Value.StartsWith(":");

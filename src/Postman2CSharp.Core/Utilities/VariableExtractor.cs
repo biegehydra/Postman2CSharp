@@ -11,7 +11,7 @@ namespace Postman2CSharp.Core.Utilities
     public static class VariableExtractor
     {
         // We purposefully don't check URL usages here
-        public static List<VariableUsage> ExtractVariableUsages(CollectionItem rootItem, List<CollectionVariable> collectionVariables)
+        public static List<VariableUsage> ExtractAndReplaceVariableUsagesWithPrivateVariables(CollectionItem rootItem, List<CollectionVariable> collectionVariables)
         {
             var collectionVariableUsages = new List<VariableUsage>();
 
@@ -23,11 +23,10 @@ namespace Postman2CSharp.Core.Utilities
             // Initialize the dictionary with collection variables
             foreach (var collectionVariable in collectionVariables)
             {
-                var csPropertyUsage = Utils.NormalizeToCsharpPropertyName(collectionVariable.Key, CsharpPropertyType.Private);
-                collectionVariableUsages.Add(new(collectionVariable.Key, csPropertyUsage, collectionVariable.Value));
+                collectionVariableUsages.Add(new(collectionVariable.Key, collectionVariable.Value, CsharpPropertyType.Private));
             }
 
-            var usedVariables = new List<(string Original, string CSPropertyUsage)>();
+            var usedVariables = new List<(string Original, CsharpPropertyType CsharpPropertyType)>();
 
             foreach (var requestItem in rootItem.RequestItems()!)
             {
@@ -36,15 +35,15 @@ namespace Postman2CSharp.Core.Utilities
                 if (request.Url is { } url)
                 {
                     // Check URL properties for variables
-                    var result = ExtractAndReplaceVariables(url.Raw);
+                    var result = ExtractAndReplaceVariables(url.Raw, CsharpPropertyType.Private);
                     url.Raw = result.StringWithCSharpInterpolation!;
                     usedVariables.AddRange(result.Variables);
 
-                    result = ExtractAndReplaceVariables(url.Protocol);
+                    result = ExtractAndReplaceVariables(url.Protocol, CsharpPropertyType.Private);
                     url.Protocol = result.StringWithCSharpInterpolation!;
                     usedVariables.AddRange(result.Variables);
 
-                    result = ExtractAndReplaceVariables(url.Port);
+                    result = ExtractAndReplaceVariables(url.Port, CsharpPropertyType.Private);
                     url.Port = result.StringWithCSharpInterpolation!;
                     usedVariables.AddRange(result.Variables);
 
@@ -52,7 +51,7 @@ namespace Postman2CSharp.Core.Utilities
                     {
                         for (var i = 0; i < url.Host.Count; i++)
                         {
-                            result = ExtractAndReplaceVariables(url.Host[i]);
+                            result = ExtractAndReplaceVariables(url.Host[i], CsharpPropertyType.Private);
                             url.Host[i] = result.StringWithCSharpInterpolation!;
                             usedVariables.AddRange(result.Variables);
                         }
@@ -62,7 +61,7 @@ namespace Postman2CSharp.Core.Utilities
                     {
                         for (var i = 0; i < url.Path.Count; i++)
                         {
-                            result = ExtractAndReplaceVariables(url.Path[i]);
+                            result = ExtractAndReplaceVariables(url.Path[i], CsharpPropertyType.Private);
                             url.Path[i] = result.StringWithCSharpInterpolation!;
                             usedVariables.AddRange(result.Variables);
                         }
@@ -72,11 +71,11 @@ namespace Postman2CSharp.Core.Utilities
                 if (request.Body is { } body)
                 {
                     // Check Body properties for variables
-                    var result = ExtractAndReplaceVariables(body.Mode);
+                    var result = ExtractAndReplaceVariables(body.Mode, CsharpPropertyType.Private);
                     body.Mode = result.StringWithCSharpInterpolation!;
                     usedVariables.AddRange(result.Variables);
 
-                    result = ExtractAndReplaceVariables(body.Raw);
+                    result = ExtractAndReplaceVariables(body.Raw, CsharpPropertyType.Private);
                     body.Raw = result.StringWithCSharpInterpolation!;
                     usedVariables.AddRange(result.Variables);
                 }
@@ -86,11 +85,11 @@ namespace Postman2CSharp.Core.Utilities
                     // Check Header properties for variables
                     foreach (var header in request.Header)
                     {
-                        var result = ExtractAndReplaceVariables(header.Key);
+                        var result = ExtractAndReplaceVariables(header.Key, CsharpPropertyType.Private);
                         header.Key = result.StringWithCSharpInterpolation!;
                         usedVariables.AddRange(result.Variables);
 
-                        result = ExtractAndReplaceVariables(header.Value);
+                        result = ExtractAndReplaceVariables(header.Value, CsharpPropertyType.Private);
                         header.Value = result.StringWithCSharpInterpolation!;
                         usedVariables.AddRange(result.Variables);
                     }
@@ -98,13 +97,13 @@ namespace Postman2CSharp.Core.Utilities
             }
 
             // Add any additional used variables to the dictionary
-            foreach (var (original, csPropertyUsage) in usedVariables.Distinct())
+            foreach (var (original, csPropertyType) in usedVariables.Distinct())
             {
                 if (collectionVariableUsages.Any(x => x.Original == original))
                 {
                     continue;
                 }
-                collectionVariableUsages.Add(new(original, csPropertyUsage, null));
+                collectionVariableUsages.Add(new(original, null, csPropertyType));
             }
 
             // Remove any unused variables from the dictionary. This is necessary for collection variables that aren't used / we don't care about
@@ -118,25 +117,25 @@ namespace Postman2CSharp.Core.Utilities
         {
             if (authSettings.TryGetAuth2Config(OAuth2Config.AccessTokenUrl, out var accessTokenUrl) && accessTokenUrl is { })
             {
-                accessTokenUrl = ReplaceVariablesWithValues(accessTokenUrl, variableUsages)!;
+                accessTokenUrl = ReplaceVariablesWithValues(accessTokenUrl, variableUsages, CsharpPropertyType.Private)!;
                 authSettings.SetAuth2ConfigValue(OAuth2Config.AccessTokenUrl, accessTokenUrl);
             }
 
             if (authSettings.TryGetAuth2Config(OAuth2Config.AuthUrl, out var authUrl) && authUrl is { })
             {
-                authUrl = ReplaceVariablesWithValues(authUrl, variableUsages)!;
+                authUrl = ReplaceVariablesWithValues(authUrl, variableUsages, CsharpPropertyType.Private)!;
                 authSettings.SetAuth2ConfigValue(OAuth2Config.AuthUrl, authUrl);
             }
 
             if (authSettings.TryGetAuth2Config(OAuth2Config.RefreshTokenUrl, out var refreshTokenUrl) && refreshTokenUrl is { })
             {
-                refreshTokenUrl = ReplaceVariablesWithValues(refreshTokenUrl, variableUsages)!;
+                refreshTokenUrl = ReplaceVariablesWithValues(refreshTokenUrl, variableUsages, CsharpPropertyType.Private)!;
                 authSettings.SetAuth2ConfigValue(OAuth2Config.RefreshTokenUrl, refreshTokenUrl);
             }
 
             if (authSettings.TryGetAuth2Config(OAuth2Config.RedirectUri, out var redirectUri) && redirectUri is { })
             {
-                redirectUri = ReplaceVariablesWithValues(redirectUri, variableUsages)!;
+                redirectUri = ReplaceVariablesWithValues(redirectUri, variableUsages, CsharpPropertyType.Private)!;
                 authSettings.SetAuth2ConfigValue(OAuth2Config.RedirectUri, redirectUri);
             }
         }
@@ -151,11 +150,11 @@ namespace Postman2CSharp.Core.Utilities
         {
             foreach (var collectionVariable in collectionVariables)
             {
-                collectionVariable.Value = ReplaceVariablesWithValues(collectionVariable.Value, collectionVariables)!;
+                collectionVariable.Value = ReplaceVariablesWithValues(collectionVariable.Value, collectionVariables, CsharpPropertyType.Private)!;
             }
         }
 
-        public static string? ReplaceVariablesWithValues(string? input, List<CollectionVariable> collectionVariables)
+        public static string? ReplaceVariablesWithValues(string? input, List<CollectionVariable> collectionVariables, CsharpPropertyType type)
         {
             if (input == null) return null;
             var pattern = "{{(.*?)}}";
@@ -170,13 +169,13 @@ namespace Postman2CSharp.Core.Utilities
                     var value = variableUsage.Value;
                     if (string.IsNullOrEmpty(variableUsage.Value))
                     {
-                        value = Utils.NormalizeToCsharpPropertyName(variable);
+                        value = Utils.NormalizeToCsharpPropertyName(variable, type);
                     }
                     input = input.Replace($"{{{{{variable}}}}}", value);
                 }
                 else
                 {
-                    var value = Utils.NormalizeToCsharpPropertyName(variable);
+                    var value = Utils.NormalizeToCsharpPropertyName(variable, type);
                     input = input.Replace($"{{{{{variable}}}}}", value);
                 }
             }
@@ -184,9 +183,9 @@ namespace Postman2CSharp.Core.Utilities
             return input;
         }
 
-        public static (string? StringWithCSharpInterpolation, List<(string Original, string CSPropertyUsage)> Variables) ExtractAndReplaceVariables(string? input)
+        public static (string? StringWithCSharpInterpolation, List<(string Original, CsharpPropertyType CsharpPropertyType)> Variables) ExtractAndReplaceVariables(string? input, CsharpPropertyType csharpPropertyType)
         {
-            var variables = new List<(string Original, string CSPropertyUsage)>();
+            var variables = new List<(string Original, CsharpPropertyType CsharpPropertyType)>();
             if (input == null) return (null, variables);
             var pattern = "{{(.*?)}}";
 
@@ -203,12 +202,12 @@ namespace Postman2CSharp.Core.Utilities
                     // of api client member variables and we don't want that
                     continue;
                 }
-                var csPropertyUsage = Utils.NormalizeToCsharpPropertyName(variable, CsharpPropertyType.Private);
+                var csPropertyUsage = Utils.NormalizeToCsharpPropertyName(variable, csharpPropertyType);
 
                 // Replace the variable with the C# interpolated usage
                 input = input.Replace($"{{{{{variable}}}}}", $"{{{csPropertyUsage}}}");
 
-                variables.Add(new(variable, csPropertyUsage));
+                variables.Add(new(variable, csharpPropertyType));
             }
 
             return (input, variables);

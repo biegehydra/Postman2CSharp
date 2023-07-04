@@ -20,7 +20,7 @@ namespace Postman2CSharp.Core.Utilities
         {
             foreach (var requestItem in rootItem.RequestItems() ?? new List<CollectionItem>())
             {
-                requestItem.Name = Utils.NormalizeToCsharpPropertyName(requestItem.Name);
+                requestItem.Name = requestItem.NormalizedName();
             }
         }
 
@@ -203,7 +203,7 @@ namespace Postman2CSharp.Core.Utilities
                 var url = requestItem.Request!.Url;
                 foreach (var pathVariableUsage in url.Path?.Where(x => x.IsVariable()) ?? new List<Path>())
                 {
-                    url.Raw = url.Raw.Replace(pathVariableUsage, $"{{{pathVariableUsage.LocalVariableName}}}");
+                    url.Raw = url.Raw.Replace(pathVariableUsage, $"{{{pathVariableUsage.CsPropertyName(CsharpPropertyType.Local)}}}");
                 }
             }
         }
@@ -263,7 +263,7 @@ namespace Postman2CSharp.Core.Utilities
                     foreach (Match match in Regex.Matches(path, InterpolatedVariableRegex))
                     {
                         var matched = match.Value;
-                        if (variableUsages.FirstOrDefault(x => matched.Contains(x.CSPropertyUsage)) is { } variableUsage)
+                        if (variableUsages.FirstOrDefault(x => matched.Contains(x.CSPropertyUsage(CsharpPropertyType.Private))) is { } variableUsage)
                         {
                             variableUsages.Remove(variableUsage);
                         }

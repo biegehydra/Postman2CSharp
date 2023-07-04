@@ -4,10 +4,11 @@ using System.Text.Json.Serialization;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
+using Postman2CSharp.Core.Utilities;
 
 namespace Postman2CSharp.Core.Models.PostmanCollection
 {
-    public class CollectionItem
+    public class CollectionItem : IDirtyName
     {
         [JsonRequired] public required string Name { get; set; }
         public List<CollectionItem>? Item { get; set; }

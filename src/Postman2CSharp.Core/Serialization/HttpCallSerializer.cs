@@ -70,7 +70,7 @@ public static class HttpCallSerializer
     {
         if (commentTypes.Contains(XmlCommentTypes.Request) && !string.IsNullOrWhiteSpace(description))
         {
-            var xmlComment = XmlCommentHelpers.ToXmlComment(description, indent);
+            var xmlComment = XmlCommentHelpers.ToXmlSummary(description, indent);
             sb.Append(xmlComment);
         }
 
@@ -82,7 +82,7 @@ public static class HttpCallSerializer
             {
                 if (!string.IsNullOrWhiteSpace(keyValueTypeDescription.Description))
                 {
-                    sb.AppendLine(indent + $"/// <param name=\"{path.LocalVariableName}\">{keyValueTypeDescription.Description}</param>");
+                    sb.AppendLine(indent + $"/// <param name=\"{path.CsPropertyName(CsharpPropertyType.Local)}\">{keyValueTypeDescription.Description}</param>");
                 }
             }
         }
@@ -203,7 +203,7 @@ public static class HttpCallSerializer
 
         // We need to use the HttpRequestMessage
 
-        var httpClientCallReturnsResponse = call.ResponseClassName != null && 
+        var httpClientCallReturnsResponse = call.SuccessResponse?.ClassName != null && 
                                             call.HttpClientFunction.Contains("Json") && 
                                             !(call.HttpClientFunction.Contains("AsJson") || call.HttpClientFunction.Contains("AsNewtonsoftJson"));
   
@@ -225,15 +225,15 @@ public static class HttpCallSerializer
     private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, HttpCall call, JsonLibrary jsonLibrary, string indent, bool useCancellationTokens)
     {
         sb.Append(indent + "return ");
-        if (call.ResponseClassName != null)
+        if (call.SuccessResponse?.ClassName != null)
         {
             if (jsonLibrary == JsonLibrary.SystemTextJson)
             {
-                sb.AppendLine($"await response.ReadJsonAsync<{call.ResponseClassName}>();");
+                sb.AppendLine($"await response.ReadJsonAsync<{call.SuccessResponse.ClassName}>();");
             }
             else
             {
-                sb.AppendLine($"await response.ReadNewtonsoftJsonAsync<{call.ResponseClassName}>();");
+                sb.AppendLine($"await response.ReadNewtonsoftJsonAsync<{call.SuccessResponse.ClassName}>();");
             }
         }
         else
@@ -255,7 +255,7 @@ public static class HttpCallSerializer
         sb.Append($"await _httpClient.{call.HttpClientFunction}");
         if (httpClientCallReturnsResponse)
         {
-            sb.Append($"<{call.ResponseClassName}>");
+            sb.Append($"<{call.SuccessResponse!.ClassName}>");
         }
 
         sb.Append('(');

@@ -17,8 +17,25 @@ public enum CsharpPropertyType
     Local,
     Private
 }
+
+public interface ICsProperty
+{
+    public string Key { get; }
+}
+public interface IDirtyName
+{
+    public string Name { get; }
+}
 public static class Utils
 {
+    public static string CsPropertyName(this ICsProperty property, CsharpPropertyType type)
+    {
+        return NormalizeToCsharpPropertyName(property.Key, type);
+    }
+    public static string NormalizedName(this IDirtyName dirtyName)
+    {
+        return NormalizeToCsharpPropertyName(dirtyName.Name);
+    }
     public static string NormalizeToCsharpPropertyName(string? input, CsharpPropertyType propertyType = CsharpPropertyType.Public)
     {
         if (input == null)
@@ -40,9 +57,9 @@ public static class Utils
                 result = "_" + result;
             }
         }
-        if (result.Length > 45)
+        if (result.Length > 50)
         {
-            result = result[^45..];
+            result = result[^50..];
         }
         return result;
     }
@@ -402,6 +419,10 @@ public static class Utils
             return DataType.Json;
         }
 
-        return DataType.Null;
+        if (response == null || response.Code == null)
+        {
+            return DataType.Null;
+        }
+        return DataType.Binary;
     }
 }
