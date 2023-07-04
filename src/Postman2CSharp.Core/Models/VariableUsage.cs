@@ -1,6 +1,9 @@
 ﻿#nullable enable
+
 using System;
 using System.Text.Json.Serialization;
+using Postman2CSharp.Core.Utilities;
+using Utils = Postman2CSharp.Core.Utilities.Utils;
 
 namespace Postman2CSharp.Core.Models.PostmanCollection.Http
 {
@@ -8,16 +11,21 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Http
     {
         public string Original { get; init; }
 
-        public string CSPropertyUsage { get; init; }
+        public CsharpPropertyType ApiClientUsage { get; set; } 
+
+        public string CSPropertyUsage(CsharpPropertyType type)
+        {
+            return Utils.NormalizeToCsharpPropertyName(Original, type);
+        }
 
         public string? Value { get; set; }
 
         [JsonConstructor]
-        public VariableUsage(string original, string csPropertyUsage, string? value)
+        public VariableUsage(string original, string? value, CsharpPropertyType apiClientUsage)
         {
             Original = original;
-            CSPropertyUsage = csPropertyUsage;
             Value = value;
+            ApiClientUsage = apiClientUsage;
         }
 
         public override bool Equals(object? obj)
