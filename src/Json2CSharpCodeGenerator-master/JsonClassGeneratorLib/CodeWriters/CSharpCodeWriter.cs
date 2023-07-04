@@ -286,7 +286,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
                     var description = this.GetFieldDescription(type, field);
                     if (!string.IsNullOrWhiteSpace(description))
                     {
-                        var xmlComment = XmlCommentHelpers.ToXmlComment(description, indentMembers);
+                        var xmlComment = XmlCommentHelpers.ToXmlSummary(description, indentMembers);
                         sw.AppendLine(xmlComment);
                     }
                 }
