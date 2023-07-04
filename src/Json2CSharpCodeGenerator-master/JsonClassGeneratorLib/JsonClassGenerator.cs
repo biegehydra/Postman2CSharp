@@ -395,18 +395,81 @@ namespace Xamasoft.JsonClassGenerator
                 }
             }
 
+            var semiDuplicates = new List<(JsonType Duplicate, JsonType Original)>();
+            foreach (JsonType jsonType in typesWithNoDuplicates)
+            {
+                foreach (JsonType type in AllTypes)
+                {
+                    if (TypesMatch(jsonType, type))
+                    {
+                        semiDuplicates.Add((jsonType, type));
+                        foreach (JsonType jsonType1 in typesWithNoDuplicates)
+                        {
+                            foreach (JsonFieldInfo jsonTypeField in jsonType1.Fields)
+                            {
+                                // If the type wasn't a match that means we are keeping the duplicate.
+                                // Because of this we check if the assigned names equal Class2 == Class2
+                                // Then we set the internal type of it to the duplicate
+                                // AssignedName Class2 NewAssignedName Class => AssignedName Class2 NewAssignedName Class2
+                                if (jsonType.NewAssignedName != null && jsonTypeField.Type?.NewAssignedName == jsonType.NewAssignedName)
+                                {
+                                    jsonTypeField.Type.AssignNewAssignedName(type.NewAssignedName);
+                                    continue;
+                                }
+                                if (jsonType.NewAssignedName != null && jsonTypeField.Type?.InternalType?.NewAssignedName == jsonType.NewAssignedName)
+                                {
+                                    jsonTypeField.Type!.InternalType!.AssignNewAssignedName(type.NewAssignedName);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (var type in semiDuplicates)
+            {
+                typesWithNoDuplicates.Remove(type.Duplicate);
+            }
+
+            var unused = new List<JsonType>();
+            foreach (JsonType jsonType in typesWithNoDuplicates)
+            {
+                bool isUsed = false;
+                foreach (JsonType typesWithNoDuplicate in typesWithNoDuplicates)
+                {
+                    if (typesWithNoDuplicate.Fields.Any(x =>
+                            x.Type?.NewAssignedName == jsonType.NewAssignedName ||
+                            x.Type?.InternalType?.NewAssignedName == jsonType.NewAssignedName))
+                    {
+                        isUsed = true;
+                        break;
+                    }
+                }
+
+                if (!isUsed)
+                {
+                    unused.Add(jsonType);
+                }
+            }
+
+            foreach (var type in unused)
+            {
+                typesWithNoDuplicates.Remove(type);
+            }
+
             return typesWithNoDuplicates;
         }
 
-        private static bool TypesMatch(JsonType type1, JsonType type2)
+        private static bool TypesMatch(JsonType possibleDuplicateTyp, JsonType originalType)
         {
-            if (type1.Fields == null && type2.Fields != null) return false;
-            if (type1.Fields != null && type2.Fields == null) return false;
-            if (type1.Fields == null && type2.Fields == null) return true;
-            if (type1.Fields!.Count != type2.Fields!.Count) return false;
-            foreach (JsonFieldInfo jsonFieldInfo in type1.Fields!)
+            if (possibleDuplicateTyp.Fields == null && originalType.Fields != null) return false;
+            if (possibleDuplicateTyp.Fields != null && originalType.Fields == null) return false;
+            if (possibleDuplicateTyp.Fields == null && originalType.Fields == null) return true;
+            if (possibleDuplicateTyp.IsRoot || originalType.IsRoot) return false;
+            if (possibleDuplicateTyp.Fields!.Count > originalType.Fields!.Count) return false;
+            foreach (JsonFieldInfo jsonFieldInfo in possibleDuplicateTyp.Fields!)
             {
-                if (type2.Fields!.Any(x => x.MemberName == jsonFieldInfo.MemberName && x.Type.Type == jsonFieldInfo.Type.Type))
+                if (originalType.Fields!.Any(x => x.MemberName == jsonFieldInfo.MemberName && x.Type.Type == jsonFieldInfo.Type.Type))
                 {
                     continue;
                 }
