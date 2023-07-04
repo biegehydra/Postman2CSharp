@@ -21,6 +21,7 @@ namespace Postman2CSharp.Wasm.Services
         Collection,
         CoreCsFile,
         Interface,
+        Controller,
         Tests
     }
     public class TabsService
@@ -70,6 +71,9 @@ namespace Postman2CSharp.Wasm.Services
                         break;
                     case TabType.Interface:
                         Navigate.Value.ToApiClientInterface(tab.CollectionId!, tab.ApiClientId!);
+                        break;
+                    case TabType.Controller:
+                        Navigate.Value.ToApiClientController(tab.CollectionId!, tab.ApiClientId!);
                         break;
                     case TabType.Tests:
                         Navigate.Value.ToApiClientTests(tab.CollectionId!, tab.ApiClientId!);
@@ -162,6 +166,27 @@ namespace Postman2CSharp.Wasm.Services
                 ApiClientId = apiClientId,
                 CollectionId = collectionId,
                 Type = TabType.Interface
+            });
+            await MoveToNewTab();
+        }
+
+        public async Task AddApiClientControllerTab(string collectionId, string apiClientId, string label)
+        {
+            if (Tabs.FirstOrDefault(x => x.Type == TabType.Controller && x.ApiClientId == apiClientId && x.Label == label) is { } tab)
+            {
+                var index = Tabs.IndexOf(tab);
+                if (ApiClientIndex != index)
+                    ApiClientIndex = index;
+                return;
+            }
+            SetHome(collectionId);
+            Tabs.Insert(1, new CollectionTabView
+            {
+                Id = Guid.NewGuid().ToString(),
+                Label = label,
+                ApiClientId = apiClientId,
+                CollectionId = collectionId,
+                Type = TabType.Controller
             });
             await MoveToNewTab();
         }

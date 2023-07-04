@@ -1,0 +1,65 @@
+﻿@page "/Collection/{CollectionId}/ApiClient/{ApiClientId}/Controller"
+@inherits MainLayoutComponent
+
+<PageTitle>@SelectedApiClient?.ControllerClassName</PageTitle>
+
+    <BreadCrumbs Items="@_breadCrumbs"></BreadCrumbs>
+
+    <br />
+
+    @if (SelectedApiClient != null)
+{
+    <pre><code @key="SelectedApiClient.Id" class="language-csharp">@SelectedApiClient.ControllerSourceCode</code></pre>
+}
+
+@code {
+    private List<BreadcrumbItem> _breadCrumbs = new();
+
+    [Parameter] public string? ApiClientId { get; set; }
+    [Parameter] public string? CollectionId { get; set; }
+
+    private ApiClient? SelectedApiClient { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!GetApiClientFromParameters()) return;
+        if (ApiClientId == null || CollectionId == null) return;
+        await TabsService.Value.AddApiClientControllerTab(CollectionId, ApiClientId, SelectedApiClient!.InterfaceName);
+    }
+
+    private ApiClient? _cachedApiClient;
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!GetApiClientFromParameters()) return;
+        if (ApiClientId == null || CollectionId == null) return;
+
+        if (SelectedApiClient != null && SelectedApiClient != _cachedApiClient)
+        {
+            _cachedApiClient = SelectedApiClient;
+            await TabsService.Value.AddApiClientControllerTab(CollectionId, ApiClientId, SelectedApiClient!.InterfaceName);
+        }
+        _breadCrumbs = new()
+        {
+            new("Home", "/", icon: Icons.Home),
+            new("Collection", $"/Collection/{CollectionId}", icon: NavMenu.FavIcon),
+            new(SelectedApiClient!.Name, $"/Collection/{CollectionId}/ApiClient/{ApiClientId}"),
+            new(SelectedApiClient!.ControllerClassName, $"/Collection/{CollectionId}/ApiClient/{ApiClientId}/Controller", true),
+        };
+
+    }
+
+    private bool GetApiClientFromParameters()
+    {
+        if (ApiCollections == null || ApiClientId == null || CollectionId == null)
+        {
+            return false;
+        }
+        SelectedApiClient = ApiCollections?.FirstOrDefault(x => x.Id == CollectionId)?
+            .ApiClients.FirstOrDefault(x => x.Id == ApiClientId);
+        if (SelectedApiClient == null)
+        {
+            return false;
+        }
+        return true;
+    }
+}

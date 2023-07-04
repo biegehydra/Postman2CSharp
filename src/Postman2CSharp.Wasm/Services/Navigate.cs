@@ -36,6 +36,11 @@ namespace Postman2CSharp.Wasm.Services
             _navManager.NavigateTo($"Collection/{collectionId}/ApiClient/{apiClientId}/Interface");
         }
 
+        public void ToApiClientController(string collectionId, string apiClientId)
+        {
+            _navManager.NavigateTo($"Collection/{collectionId}/ApiClient/{apiClientId}/Controller");
+        }
+
         public void ToApiClientTests(string collectionId, string apiClientId)
         {
             _navManager.NavigateTo($"Collection/{collectionId}/ApiClient/{apiClientId}/Tests");

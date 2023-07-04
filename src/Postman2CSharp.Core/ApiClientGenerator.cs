@@ -16,6 +16,7 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 using Xamasoft.JsonClassGenerator.CodeWriterConfiguration;
 using Xamasoft.JsonClassGenerator.Models;
 using Postman2CSharp.Core.Infrastructure;
+using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 using Postman2CSharp.Core.Utilities;
 
 namespace Postman2CSharp.Core;
@@ -289,7 +290,8 @@ public class ApiClientGenerator
                 }
             }
 
-            var successResponse = requestItem.Response?.FirstOrDefault(x => x.Code == 200);
+            var allResponses = requestItem.Response?.GroupBy(x => x.Code).Select(x => x.First()).ToList() ?? new List<Response>();
+            var successResponse = allResponses.FirstOrDefault(x => x.Code == 200);
             var responseDataType = Utils.GetResponseDataType(successResponse);
             string? responseSourceCode = null;
             string? responseClassName = null;

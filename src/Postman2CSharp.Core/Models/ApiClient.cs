@@ -38,7 +38,14 @@ public class ApiClient
     public required string? Description { get; set; }
     public string InterfaceName => $"I{Name}";
     public string TestClassName => $"{Name}Tests";
+    public string ControllerClassName => $"{NameSpace}Controller";
     public required string TestClassSourceCode { get; set; }
+    private string? _controllerSourceCode;
+    public required string ControllerSourceCode
+    {
+        get => _controllerSourceCode ??= ControllerSerializer.SerializeController(this);
+        set => _controllerSourceCode = value;
+    }
     public required string? BaseUrl { get; set; }
     public required List<HttpCall> HttpCalls { get; set; }
     public required List<Header> CommonHeaders { get; set; }
@@ -107,6 +114,7 @@ public class ApiClient
         SourceCode = ApiClientSerializer.SerializeApiClient(this);
         InterfaceSourceCode = InterfaceSerializer.CreateInterface(HttpCalls, NameSpace, Name, UseCancellationTokens);
         TestClassSourceCode = TestSerializer.SerializeTestClass(this);
+        ControllerSourceCode = ControllerSerializer.SerializeController(this);
     }
 
     public List<string> NameSpaces()
