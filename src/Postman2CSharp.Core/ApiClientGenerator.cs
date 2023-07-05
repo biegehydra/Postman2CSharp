@@ -251,6 +251,12 @@ public class ApiClientGenerator
                         requestSourceCode = null;
                         requestTypes = null;
                     }
+                    catch (DuplicateRootException ex)
+                    {
+                        requestClassName = ex.OriginalRootName;
+                        requestSourceCode = null;
+                        requestTypes = null;
+                    }
                     catch (Exception ex)
                     {
                         requestClassName = null;
@@ -340,6 +346,12 @@ public class ApiClientGenerator
                         Console.WriteLine($@"Response no classes generated. {requestItem.Name}");
 #endif
                     }
+                    catch (DuplicateRootException ex)
+                    {
+                        responseClassName = ex.OriginalRootName;
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
+                        continue;
+                    }
                     catch (Exception ex)
                     {
                         responseClassName = "EmptyResponse";
@@ -391,6 +403,11 @@ public class ApiClientGenerator
                     Console.WriteLine($@"Query parameters no classes generated. {requestItem.Name}");
 #endif
                     queryParametersClassName = null;
+                    queryParametersSourceCode = null;
+                }
+                catch (DuplicateRootException ex)
+                {
+                    queryParametersClassName = ex.OriginalRootName;
                     queryParametersSourceCode = null;
                 }
                 catch (Exception ex)

@@ -15,6 +15,10 @@ using Xamasoft.JsonClassGenerator.Models;
 
 namespace Xamasoft.JsonClassGenerator
 {
+    public class DuplicateRootException : Exception
+    {
+        public string OriginalRootName { get; set; }
+    }
     public class JsonClassGenerator
     {
         public JsonClassGenerator(ICodeWriter codeWriter, bool removeDuplicateClasses)
@@ -110,6 +114,10 @@ namespace Xamasoft.JsonClassGenerator
 
                 errorMessage = String.Empty;
                 return builder;
+            }
+            catch (DuplicateRootException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -479,7 +487,6 @@ namespace Xamasoft.JsonClassGenerator
             if (possibleDuplicateTyp.Fields == null && originalType.Fields != null) return false;
             if (possibleDuplicateTyp.Fields != null && originalType.Fields == null) return false;
             if (possibleDuplicateTyp.Fields == null && originalType.Fields == null) return true;
-            if (possibleDuplicateTyp.IsRoot || originalType.IsRoot) return false;
             if (possibleDuplicateTyp.Fields!.Count > originalType.Fields!.Count) return false;
             foreach (JsonFieldInfo jsonFieldInfo in possibleDuplicateTyp.Fields!)
             {
@@ -492,8 +499,16 @@ namespace Xamasoft.JsonClassGenerator
                     return false;
                 }
             }
+            if (possibleDuplicateTyp.IsRoot)
+            {
+                throw new DuplicateRootException()
+                {
+                    OriginalRootName = originalType.NewAssignedName ?? originalType.AssignedName
+                };
+            }
             return true;
         }
+        
 
         private string CreateUniqueClassName(string name)
         {

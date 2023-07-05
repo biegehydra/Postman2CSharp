@@ -28,40 +28,46 @@
                     {
                         <MudText Typo="Typo.body1">No classes exist for this call</MudText>
                     }
-                    @if (SelectedClassName?.Contains(Consts.Request) ?? false)
+                    @if (SelectedClassName != null)
                     {
-                        <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.RequestSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
-                    }
-                    @if (SelectedClassName?.Contains(Consts.Response) ?? false)
-                    {
-                        <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.SuccessResponse?.SourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
-                    }
-                    @if (SelectedClassName?.Contains(Consts.Parameters) ?? false)
-                    {
-                        <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.QueryParameterSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
-                    }
-                    @if (SelectedClassName?.Contains(Consts.FormData) ?? false)
-                    {
-                        <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.FormDataSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+                        @if (SelectedClassName == httpCall.RequestClassName)
+                        {
+                            <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.RequestSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+                        }
+                        @if (httpCall.AllResponses.FirstOrDefault(x => x.ClassName == SelectedClassName) is { } response)
+                        {
+                            <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(response.SourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+                        }
+                        @if (SelectedClassName == httpCall.QueryParameterClassName)
+                        {
+                            <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.QueryParameterSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+                        }
+                        @if (SelectedClassName == httpCall.FormDataClassName)
+                        {
+                            <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.FormDataSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+                        }
                     }
                     <div></div>
                 </div>
                 <br/>
-                @if (SelectedClassName?.Contains(Consts.Request) ?? false)
+                @if (SelectedClassName != null)
                 {
-                    <pre><code class="language-csharp">@httpCall.RequestSourceCode</code></pre>
-                }
-                @if (SelectedClassName?.Contains(Consts.Response) ?? false)
-                {
-                    <pre><code class="language-csharp">@httpCall.SuccessResponse?.SourceCode</code></pre>
-                }
-                @if (SelectedClassName?.Contains(Consts.Parameters) ?? false)
-                {
-                    <pre><code class="language-csharp">@httpCall.QueryParameterSourceCode</code></pre>
-                }
-                @if (SelectedClassName?.Contains(Consts.FormData) ?? false)
-                {
-                    <pre><code class="language-csharp">@httpCall.FormDataSourceCode</code></pre>
+                    @if (SelectedClassName == httpCall.RequestClassName)
+                    {
+                        <pre><code @key="@httpCall.RequestClassName" class="language-csharp">@httpCall.RequestSourceCode</code></pre>
+                    }
+                    @if (httpCall.AllResponses.FirstOrDefault(x => x.ClassName == SelectedClassName) is { } response)
+                    {
+                        <pre><code @key="@response.ClassName" class="language-csharp">@response.SourceCode</code></pre>
+                    }
+                    @if (SelectedClassName == httpCall.QueryParameterClassName)
+                    {
+                        <pre><code @key="@httpCall.QueryParameterClassName" class="language-csharp">@httpCall.QueryParameterSourceCode</code></pre>
+                    }
+                    @if (SelectedClassName == httpCall.FormDataClassName)
+                    {
+                        <pre><code @key="@httpCall.FormDataClassName" class="language-csharp">@httpCall.FormDataSourceCode</code></pre>
+                    }
                 }
             </MudTabPanel>
         }
