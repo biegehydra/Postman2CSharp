@@ -53,8 +53,8 @@
 
     public enum MultipleResponseHandling
     {
-        OnlySuccessResponse,
-        AllResponses
+        OneOf,
+        Object
     }
 
     public enum CatchExceptionTypes

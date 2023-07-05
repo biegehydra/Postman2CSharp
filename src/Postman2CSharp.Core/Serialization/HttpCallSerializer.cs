@@ -17,7 +17,7 @@ public static class HttpCallSerializer
 {
     public static void SerializeHttpCall(StringBuilder sb, AuthSettings? auth, string? baseUrl, HttpCall call, bool constructorHasAuthHeader,
         bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
-        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, MultipleResponseHandling multipleResponseHandling, bool useCancellationTokens)
+        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool handleMultipleResponses, MultipleResponseHandling multipleResponseHandling, bool useCancellationTokens)
     {
         string relativePath;
         try
@@ -36,7 +36,7 @@ public static class HttpCallSerializer
 
         var indent = Consts.Indent(1);
         XmlComment(sb, commentTypes, call.Request.Description, call.Request.Url.Path, call.Request.Url.Variable, indent);
-        sb.FunctionSignature(call, indent, methodParameters, multipleResponseHandling);
+        sb.FunctionSignature(call, indent, methodParameters, handleMultipleResponses, multipleResponseHandling);
         sb.AppendLine(indent + "{");
 
         indent = Consts.Indent(2);

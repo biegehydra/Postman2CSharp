@@ -31,12 +31,16 @@
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateClasses">Remove Duplicate Classes</MudSwitch>
     </AdvancedSettingItem>
     
-    <AdvancedSettingItem ToolTip="This will determine the attributes used on classes generated from Json and the extension methods used on http client calls.">
-        <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="ApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
+    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.HandleMultipleResponses">Handle Multiple Responses</MudSwitch>
     </AdvancedSettingItem>
     
-    <AdvancedSettingItem ToolTip="This will determine what to do if a request has multiple response examples. Choosing AllResponses will result in many more classes being generated and the ApiClient source code will become more complicated.">
+    <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle Multiple Responses is enabled and a request has multiple response types.">
         <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="ApiClientOptions.MultipleResponseHandling" Label="Multiple Response Handling"></EnumSelectComponent>
+    </AdvancedSettingItem>
+
+    <AdvancedSettingItem ToolTip="This will determine the attributes used on classes generated from Json and the extension methods used on http client calls.">
+        <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="ApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="Any types choosen in here will caused disabled parameters of that type to be removed in pre-processing..">
@@ -149,6 +153,7 @@
                && options1.UseCancellationTokens == options2.UseCancellationTokens
                && options1.JsonLibrary == options2.JsonLibrary
                && options1.MultipleResponseHandling == options2.MultipleResponseHandling
+               && options1.HandleMultipleResponses == options2.HandleMultipleResponses
                && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch && allRemovedDisabledMatch;
     }
 

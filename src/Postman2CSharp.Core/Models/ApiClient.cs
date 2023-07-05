@@ -116,7 +116,7 @@ public class ApiClient
     public void GenerateSourceCode()
     {
         SourceCode = ApiClientSerializer.SerializeApiClient(this);
-        InterfaceSourceCode = InterfaceSerializer.CreateInterface(HttpCalls, NameSpace, Name, Options.MultipleResponseHandling, Options.UseCancellationTokens);
+        InterfaceSourceCode = InterfaceSerializer.CreateInterface(HttpCalls, NameSpace, Name, Options.HandleMultipleResponses, Options.MultipleResponseHandling, Options.UseCancellationTokens);
         TestClassSourceCode = TestSerializer.SerializeTestClass(this);
         ControllerSourceCode = ControllerSerializer.SerializeController(this);
     }
@@ -143,6 +143,10 @@ public class ApiClient
         if (HttpCalls.Any(x => x.AllResponses.Count > 1))
         {
             namespaces.Add("System.Net");
+        }
+        if (Options.HandleMultipleResponses && Options.MultipleResponseHandling == MultipleResponseHandling.OneOf && HttpCalls.Any(x => x.AllResponses.GroupBy(x => x.ClassName ?? "Stream").Count() > 1))
+        {
+            namespaces.Add("OneOf");
         }
         return namespaces;
     }

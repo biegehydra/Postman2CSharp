@@ -42,10 +42,16 @@ namespace Postman2CSharp.Core.Utilities
                 AddToDictionary(httpCall.QueryParameterSourceCode, httpCall.QueryParameterClassName, httpCall.Name);
             }
 
-            var apiClientSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, apiClient.SourceCode, true, apiClient.NameSpaces(), addSignature: true);
+            var apiClientNamespaces = apiClient.NameSpaces();
+            var apiClientSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, apiClient.SourceCode, true, apiClientNamespaces, addSignature: true);
             var oauth2QueryParamsSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.OAuth2QueryParameters, true, ImplicitOAuth2QueryParametersNamespaces);
             var helperExtensionsSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.HelperExtensions, true, ImplicitHelperExtensionNamespaces);
-            var interfacesSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.Interfaces, namespaces: ImplicitInterfacesNamespaces);
+            var interfacesNamespaces = new List<string>(ImplicitInterfacesNamespaces);
+            if (apiClientNamespaces.Contains("OneOf"))
+            {
+                interfacesNamespaces.Add("OneOf");
+            }
+            var interfacesSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.Interfaces, namespaces: interfacesNamespaces);
             var allQueryParameterNamespaces = new List<string>(QueryHelperNamespaces);
             allQueryParameterNamespaces.AddRange(ImplicitQueryHelperNamespaces);
             var queryHelpersSc = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.QueryHelpers, true, allQueryParameterNamespaces);

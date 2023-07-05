@@ -203,7 +203,7 @@ public class ApiClientGenerator
         var jsonClassGenerator = ClassGenerator();
         foreach (var requestItem in requestItems)
         {
-            if (Options.ApiClientOptions.MultipleResponseHandling == MultipleResponseHandling.OnlySuccessResponse)
+            if (!Options.ApiClientOptions.HandleMultipleResponses)
             {
                 requestItem.Response?.RemoveAll(x => !x.IsSuccessCode);
             }

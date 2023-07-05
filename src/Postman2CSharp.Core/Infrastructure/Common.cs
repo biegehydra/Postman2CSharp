@@ -26,7 +26,7 @@ namespace Postman2CSharp.Core.Infrastructure
             sb.AppendLine(indent + $"private readonly string {variableName};");
         }
 
-        public static void FunctionSignature(this StringBuilder sb, HttpCall call, string indent, List<HttpCallMethodParameter> methodParameters, MultipleResponseHandling multipleResponseHandling, bool isInterface = false)
+        public static void FunctionSignature(this StringBuilder sb, HttpCall call, string indent, List<HttpCallMethodParameter> methodParameters, bool handleMultipleResponse, MultipleResponseHandling multipleResponseHandling, bool isInterface = false)
         {
             if (isInterface)
             {
@@ -36,16 +36,23 @@ namespace Postman2CSharp.Core.Infrastructure
             {
                 sb.Append(indent + "public async Task");
             }
-            if (multipleResponseHandling == MultipleResponseHandling.OnlySuccessResponse || call.AllResponses.GroupBy(x => x.ClassName ?? "Stream").Count() ==1)
+            if (!handleMultipleResponse || call.AllResponses.GroupBy(x => x.ClassName ?? "Stream").Count() == 1)
             {
                 sb.Append($"<{call.SuccessResponse?.ClassName ?? "Stream"}>");
             }
             else
             {
-                sb.Append("<OneOf<");
-                var groups = call.AllResponses.GroupBy(x => x.ClassName ?? "Stream");
-                sb.Append(string.Join(", ", groups.Select(x => x.Key)));
-                sb.Append(">>");
+                if (multipleResponseHandling == MultipleResponseHandling.OneOf)
+                {
+                    sb.Append("<OneOf<");
+                    var groups = call.AllResponses.GroupBy(x => x.ClassName ?? "Stream");
+                    sb.Append(string.Join(", ", groups.Select(x => x.Key)));
+                    sb.Append(">>");
+                }
+                else if (multipleResponseHandling == MultipleResponseHandling.Object)
+                {
+                    sb.Append("<object>");
+                }
             }
             sb.Append($" {call.Name}(");
             sb.Append(string.Join(", ", methodParameters.Select(x => x.LocalParameterDeclaration)));

@@ -10,7 +10,8 @@ namespace Postman2CSharp.Core
         public bool EnsureResponseIsSuccessStatusCode { get; set; }
         public bool MakePathCollectionVariablesFunctionParameters { get; set; }
         public bool UseCancellationTokens { get; set; }
-        public MultipleResponseHandling MultipleResponseHandling { get; set; } = MultipleResponseHandling.OnlySuccessResponse;
+        public bool HandleMultipleResponses { get; set; } = true;
+        public MultipleResponseHandling MultipleResponseHandling { get; set; } = MultipleResponseHandling.OneOf;
 
         public JsonLibrary JsonLibrary { get; set; } = JsonLibrary.SystemTextJson;
 
@@ -33,6 +34,7 @@ namespace Postman2CSharp.Core
             Infrastructure.XmlCommentTypes.FormData,
             Infrastructure.XmlCommentTypes.PathVariables,
             Infrastructure.XmlCommentTypes.Request,
+            Infrastructure.XmlCommentTypes.Header
         };
         public List<RemoveDisabled> RemoveDisabled { get; set; } = new();
 
