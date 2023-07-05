@@ -7,11 +7,26 @@ using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Serialization;
+using Postman2CSharp.Core.Utilities;
 using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Models;
 
-public record DuplicateRoot(string ClassName, List<DuplicateRootUsage> Usages, bool Resolved = false);
+public class DuplicateRoot
+{
+    public required string ClassName { get; set; }
+    public required List<DuplicateRootUsage> Usages { get; set; }
+    public required bool Resolved { get; set; }
+
+    [JsonConstructor]
+    [SetsRequiredMembers]
+    public DuplicateRoot(string className, List<DuplicateRootUsage> usages, bool resolved = false)
+    {
+        ClassName = className;
+        Usages = usages;
+        Resolved = resolved;
+    }
+}
 public record DuplicateRootUsage(string HttpCallName, string? IntendedClassName, GeneratedClassType ClassType);
 
 public class ApiClient
@@ -57,14 +72,7 @@ public class ApiClient
     public required string SourceCode { get; set; }
     public required string InterfaceSourceCode { get; set; }
     public required List<VariableUsage> VariableUsages { get; set; }
-    public required ErrorHandlingStrategy ErrorHandlingStrategy { get; set; }
-    public required List<ErrorHandlingSinks> ErrorHandlingSinks { get; set; }
-    public required List<CatchExceptionTypes> CatchExceptionTypes { get; set; }
-    public required LogLevel LogLevel { get; set; }
-    public required JsonLibrary JsonLibrary { get; set; }
-    public required bool EnsureSuccessStatusCode { get; set; }
-    public required List<XmlCommentTypes> CommentTypes { get; set; }
-    public required bool UseCancellationTokens { get; set; }
+    public required ApiClientOptions Options { get; set; }
     public required int TotalClassesGenerated { get; set; }
 
     private List<AuthSettings>? _uniqueAuths;
@@ -90,9 +98,7 @@ public class ApiClient
 #pragma warning disable CS8618
     public ApiClient(string name, string? description, string nameSpace, string? baseUrl, List<HttpCall> httpCalls,
 #pragma warning restore CS8618
-        List<Header> commonHeaders, AuthSettings? collectionAuth, List<VariableUsage> variableUsages,
-        bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
-        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool useCancellationTokens, int totalClassesGenerated, List<DuplicateRoot> duplicateRoots)
+        List<Header> commonHeaders, AuthSettings? collectionAuth, List<VariableUsage> variableUsages, ApiClientOptions options, int totalClassesGenerated, List<DuplicateRoot> duplicateRoots)
     {
         Name = name;
         Description = description;
@@ -102,14 +108,7 @@ public class ApiClient
         CommonHeaders = commonHeaders;
         CollectionAuth = collectionAuth;
         VariableUsages = variableUsages;
-        EnsureSuccessStatusCode = ensureSuccessStatusCode;
-        CommentTypes = commentTypes;
-        CatchExceptionTypes = catchExceptionTypes;
-        ErrorHandlingSinks = errorHandlingSinks;
-        ErrorHandlingStrategy = errorHandlingStrategy;
-        LogLevel = logLevel;
-        JsonLibrary = jsonLibrary;
-        UseCancellationTokens = useCancellationTokens;
+        Options = options;
         TotalClassesGenerated = totalClassesGenerated;
         DuplicateRoots = duplicateRoots;
     }
@@ -117,7 +116,7 @@ public class ApiClient
     public void GenerateSourceCode()
     {
         SourceCode = ApiClientSerializer.SerializeApiClient(this);
-        InterfaceSourceCode = InterfaceSerializer.CreateInterface(HttpCalls, NameSpace, Name, UseCancellationTokens);
+        InterfaceSourceCode = InterfaceSerializer.CreateInterface(HttpCalls, NameSpace, Name, Options.MultipleResponseHandling, Options.UseCancellationTokens);
         TestClassSourceCode = TestSerializer.SerializeTestClass(this);
         ControllerSourceCode = ControllerSerializer.SerializeController(this);
     }
@@ -126,19 +125,24 @@ public class ApiClient
     {
         var namespaces = new List<string>(DefaultApiClientNamespaces);
         namespaces.AddRange(ImplicitNamespaces);
-        if (JsonLibrary == JsonLibrary.SystemTextJson && ErrorHandlingStrategy != ErrorHandlingStrategy.None && CatchExceptionTypes.Contains(Infrastructure.CatchExceptionTypes.JsonException))
+        if (Options.JsonLibrary == JsonLibrary.SystemTextJson && Options.ErrorHandlingStrategy != ErrorHandlingStrategy.None && Options.CatchExceptionTypes.Contains(CatchExceptionTypes.JsonException))
         {
             namespaces.Add("System.Text.Json");
         }
-        else if (JsonLibrary == JsonLibrary.NewtonsoftJson && ErrorHandlingStrategy != ErrorHandlingStrategy.None && CatchExceptionTypes.Contains(Infrastructure.CatchExceptionTypes.JsonException))
+        else if (Options.JsonLibrary == JsonLibrary.NewtonsoftJson && Options.ErrorHandlingStrategy != ErrorHandlingStrategy.None && Options.CatchExceptionTypes.Contains(CatchExceptionTypes.JsonException))
         {
             namespaces.Add("Newtonsoft.Json");
         }
 
-        if (ErrorHandlingStrategy != ErrorHandlingStrategy.None &&
-            ErrorHandlingSinks.Contains(Infrastructure.ErrorHandlingSinks.DebugWriteLine))
+        if (Options.ErrorHandlingStrategy != ErrorHandlingStrategy.None &&
+            Options.ErrorHandlingSinks.Contains(ErrorHandlingSinks.DebugWriteLine))
         {
             namespaces.Add("System.Diagnostics");
+        }
+
+        if (HttpCalls.Any(x => x.AllResponses.Count > 1))
+        {
+            namespaces.Add("System.Net");
         }
         return namespaces;
     }
@@ -166,33 +170,56 @@ public class ApiClient
         }
     }
 
-    public bool FixCommonClass(string commonClassOld, string commonClassNew)
+    public int FixCommonClass(string commonClassOld, string commonClassNew)
     {
-        var anyMatched = false;
+        int fixedClasses = 0;
         foreach (var httpCall in HttpCalls)
         {
             if (httpCall.RequestClassName == commonClassOld)
             {
                 httpCall.RenameRequest(commonClassNew);
-                anyMatched = true;
+                fixedClasses++;
             }
             if (httpCall.AllResponses.Any(x => x.ClassName == commonClassOld))
             {
                 httpCall.RenameResponses(commonClassOld, commonClassNew);
-                anyMatched = true;
+                fixedClasses++;
             }
             if (httpCall.QueryParameterClassName == commonClassOld)
             {
                 httpCall.RenameQueryParameters(commonClassNew);
-                anyMatched = true;
+                fixedClasses++;
             }
             if (httpCall.FormDataClassName == commonClassOld)
             {
                 httpCall.RenameFormData(commonClassNew);
-                anyMatched = true;
+                fixedClasses++;
             }
         }
-        return anyMatched;
+        return fixedClasses;
+    }
+    public string? GetClassSourceCode(string className)
+    {
+        foreach (var httpCall in HttpCalls)
+        {
+            if (httpCall.RequestClassName == className && !string.IsNullOrWhiteSpace(httpCall.RequestSourceCode))
+            {
+                return httpCall.RequestSourceCode.ExtractClassDeclaration(className);
+            }
+            if (httpCall.AllResponses.FirstOrDefault(x => x.ClassName == className) is { } response && response.SourceCode != null)
+            {
+                return response.SourceCode.ExtractClassDeclaration(className);
+            }
+            if (httpCall.QueryParameterClassName == className && httpCall.QueryParameterSourceCode != null)
+            {
+                return httpCall.QueryParameterSourceCode.ExtractClassDeclaration(className);
+            }
+            if (httpCall.FormDataClassName == className && httpCall.FormDataSourceCode != null)
+            {
+                return httpCall.FormDataSourceCode.ExtractClassDeclaration(className);
+            }
+        }
+        return null;
     }
 
 }

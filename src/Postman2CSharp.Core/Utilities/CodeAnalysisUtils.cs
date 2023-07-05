@@ -9,6 +9,18 @@ namespace Postman2CSharp.Core.Utilities
 {
     public static class CodeAnalysisUtils
     {
+        public static string? ExtractClassDeclaration(this string sourceCode, string className)
+        {
+            var tree = CSharpSyntaxTree.ParseText(sourceCode);
+            var root = tree.GetCompilationUnitRoot();
+
+            var classDeclaration = root.DescendantNodes()
+                .OfType<ClassDeclarationSyntax>()
+                .FirstOrDefault(c => c.Identifier.Text == className);
+
+            return classDeclaration?.NormalizeWhitespace().ToFullString();
+        }
+
         public static string ConsolidateNamespaces(string sourceCode, string rootClassName)
         {
             var tree = CSharpSyntaxTree.ParseText(sourceCode);

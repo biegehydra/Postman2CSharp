@@ -36,7 +36,7 @@ namespace Postman2CSharp.Core.Utilities
                 AddToDictionary(httpCall.FormDataSourceCode, httpCall.FormDataClassName, httpCall.Name);
                 foreach (var response in httpCall.AllResponses)
                 {
-                    AddToDictionary(response.SourceCode, httpCall.SuccessResponse?.ClassName, httpCall.Name);
+                    AddToDictionary(response.SourceCode, response.ClassName, httpCall.Name);
                 }
                 AddToDictionary(httpCall.RequestSourceCode, httpCall.RequestClassName, httpCall.Name);
                 AddToDictionary(httpCall.QueryParameterSourceCode, httpCall.QueryParameterClassName, httpCall.Name);
@@ -52,7 +52,7 @@ namespace Postman2CSharp.Core.Utilities
 
             string? httpExtensionsSourceCode;
             string? httpExtensionsClassName;
-            if (apiClient.JsonLibrary == JsonLibrary.SystemTextJson)
+            if (apiClient.Options.JsonLibrary == JsonLibrary.SystemTextJson)
             {
                 httpExtensionsSourceCode = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.HttpJsonExtensions, true, HttpExtensionsNamespaces);
                 httpExtensionsClassName = nameof(CoreCsFile.HttpJsonExtensions);

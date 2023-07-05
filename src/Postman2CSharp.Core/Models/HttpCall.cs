@@ -62,7 +62,7 @@ public class HttpCall
     public required string? FormDataClassName { get; set; }
     public required string? FormDataSourceCode { get; set; }
 
-    public ApiResponse? SuccessResponse => AllResponses.FirstOrDefault(x => x.Code == 200);
+    public ApiResponse? SuccessResponse => AllResponses.FirstOrDefault(x => x is {Code: >= 200 and < 300});
     public required List<ApiResponse> AllResponses { get; init; }
 
     public required List<Header> UniqueHeaders { get; init; }

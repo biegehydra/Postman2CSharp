@@ -1,19 +1,94 @@
 ﻿@if (ApiClient != null)
 {
-    foreach (var apiClientDuplicateRoot in ApiClient.DuplicateRoots)
-    {
-        <MudText Typo="Typo.h5">@apiClientDuplicateRoot.ClassName</MudText>
-        <div style="padding-left: 10px;">
-            @foreach (var usage in apiClientDuplicateRoot.Usages)
-            {
-                <Detail Key="@usage.HttpCallName" Value="@(usage.IntendedClassName + " " + usage.ClassType)" FontSize="FontSize.Larger" ></Detail>
-            }
-        </div>
-    }
+    <div class="f-column">
+        @foreach (var apiClientDuplicateRoot in ApiClient.DuplicateRoots)
+        {
+            <div class="f-row aic">
+                @if (_oldClassName != apiClientDuplicateRoot.ClassName)
+                {
+                    var icon = apiClientDuplicateRoot.Resolved ? Icons.Check : Icons.Cancel;
+                    var color = apiClientDuplicateRoot.Resolved ? Color.Success : Color.Error;
+                    var text = apiClientDuplicateRoot.Resolved ? "The duplicate has been resolved" : "The duplicate has not been resolved";
+                    <MudTooltip Text="@text">
+                        <MudIconButton Icon="@icon" Color="@color" ></MudIconButton>
+                    </MudTooltip>
+                    <Detail Key="Retained" Value="@apiClientDuplicateRoot.ClassName" FontSize="FontSize.XLarge" />
+                    <MudTooltip Text="Edit Name For All Usages">
+                        <MudIconButton Icon="@Icons.Edit" Color="Color.Primary" OnClick="() => BeginEditNameForAllUsages(apiClientDuplicateRoot.ClassName)" ></MudIconButton>
+                    </MudTooltip>
+                }
+                else
+                {
+                    <MudTextField @bind-Value="@_editingNameForDuplicate" OnKeyUp="OnKeyUp" AutoFocus Clearable Label="New Name" HelperText="Press enter to confirm" />
+                    <MudIconButton Icon="@Icons.Cancel" Class="ml-0 mr-2" OnClick="CancelEditNameForAllUsages" Color="@Color.Default" />
+                    <MudIconButton Icon="@Icons.Check" Class="ml-0 mr-2" OnClick="ConfirmEditNameForAllUsages" Color="@Color.Default" />
+                }
+            </div>
+            <div style="width: fit-content; padding-left: 20px;">
+                <pre><code @key="apiClientDuplicateRoot.ClassName" class="language-csharp">@ApiClient.GetClassSourceCode(apiClientDuplicateRoot.ClassName)</code></pre>
+            </div>
+            <div style="padding-left: 20px;">
+                @foreach (var usage in apiClientDuplicateRoot.Usages)
+                {
+                    <Detail Key="Deduped" Value="@usage.IntendedClassName" FontSize="FontSize.Medium" />
+                }
+            </div>
+            <br />
+        }
+    </div>
 }
 
 @code {
-    private record DuplicateRootModel(string DuplicateRoot);
-    private record Usages(string Location);
+    [Inject] private ISnackbar? Snackbar { get; set; }
+    
+    private string? _oldClassName;
+    private string? _editingNameForDuplicate;
+
     [Parameter] public Core.Models.ApiClient? ApiClient { get; set; }
+
+    private void BeginEditNameForAllUsages(string className)
+    {
+        if (_oldClassName != null) return;
+        _oldClassName = className;
+        _editingNameForDuplicate = className;
+    }
+
+    private void ConfirmEditNameForAllUsages()
+    {
+        if (_oldClassName == null || ApiClient == null) return;
+        if (string.IsNullOrWhiteSpace(_editingNameForDuplicate))
+        {
+            Snackbar?.Add("Cannot change name to empty.");
+            return;
+        }
+        var duplicateRoot = ApiClient.DuplicateRoots.FirstOrDefault(x => x.ClassName == _oldClassName);
+        if (duplicateRoot == null) return;
+        var fixedCount = ApiClient.FixCommonClass(_oldClassName, _editingNameForDuplicate);
+        if (fixedCount != duplicateRoot.Usages.Count + 1)
+        {
+#if DEBUG
+            Snackbar?.Add($"Fixed {fixedCount} usages, but there were {duplicateRoot.Usages.Count} usages.");
+#endif
+        }
+        duplicateRoot.ClassName = _editingNameForDuplicate;
+        duplicateRoot.Resolved = true;
+        ApiClient.GenerateSourceCode();
+        _oldClassName = null;
+        _editingNameForDuplicate = null;
+    }
+
+    private void CancelEditNameForAllUsages()
+    {
+        _editingNameForDuplicate = null;
+        _oldClassName = null;
+    }
+
+    private void OnKeyUp(KeyboardEventArgs obj)
+    {
+        if (obj.Code == "Enter")
+        {
+            ConfirmEditNameForAllUsages();
+        }
+    }
+
 }

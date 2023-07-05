@@ -7,8 +7,8 @@
 
 <br />
 
-<MudText Typo="Typo.h2">@SelectedApiClient?.Name - Duplicate Roots</MudText>
-
+<MudText Typo="Typo.h1" Style="font-size: 2.3em">@SelectedApiClient?.Name - Duplicate Roots</MudText>
+<br/>
 <p>
     If you are seeing this page, it's because you enabled the remove duplicate roots option on the Convert page.
     What that settings does, is it removes duplicate classes from the generated code even if it is a root class.
@@ -48,7 +48,7 @@
         if (SelectedApiClient != null && SelectedApiClient != _cachedApiClient)
         {
             _cachedApiClient = SelectedApiClient;
-            await TabsService.Value.AddApiClientInterfaceTab(CollectionId, ApiClientId, SelectedApiClient!.InterfaceName);
+            await TabsService.Value.AddApiClientDuplicateRootsTab(CollectionId, ApiClientId);
         }
         _breadCrumbs = new()
         {

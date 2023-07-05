@@ -164,9 +164,7 @@ public class ApiClientGenerator
         var auth = rootItem.Auth ?? PostmanCollection.Auth;
 
         var apiClient = new ApiClient(name, rootItem.Description, normalizedNameSpace, leastPossibleUri, httpCalls, commonHeaders, auth, variableUsages,
-            Options.ApiClientOptions.EnsureResponseIsSuccessStatusCode, Options.ApiClientOptions.XmlCommentTypes, Options.ApiClientOptions.CatchExceptionTypes,
-            Options.ApiClientOptions.ErrorHandlingSinks, Options.ApiClientOptions.ErrorHandlingStrategy, Options.ApiClientOptions.LogLevel, Options.CSharpCodeWriterConfig.AttributeLibrary,
-            Options.ApiClientOptions.UseCancellationTokens, totalClassesGeneratedFromHttpCalls + 1, duplicateRoots);
+            Options.ApiClientOptions, totalClassesGeneratedFromHttpCalls + 1, duplicateRoots);
         // This is generated here and not in the constructor because it allows my wasm app to lazy load a couple large dlls
         // that are used in the generation process. GenerateSourceCode was being called when I deserialized api clients from local storage
         apiClient.GenerateSourceCode();

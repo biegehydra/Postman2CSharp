@@ -50,7 +50,7 @@
                 <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
                     <p>Resolve Duplicate Roots</p>
                     <MudBadge Color="Color.Primary" Overlap  Visible="SelectedApiClient.DuplicateRoots.Count(x => !x.Resolved) > 0" Content="@SelectedApiClient.DuplicateRoots.Count(x => !x.Resolved)">
-                        <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientController(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
+                        <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientDuplicateRoots(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
                     </MudBadge>
                 </MudItem>
             }

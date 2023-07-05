@@ -15,10 +15,10 @@ public static class ApiClientSerializer
 {
     public static string SerializeApiClient(ApiClient client)
     {
-        var logsExceptions = client.ErrorHandlingStrategy != ErrorHandlingStrategy.None && client.ErrorHandlingSinks.Any(x => x == ErrorHandlingSinks.LogException);
+        var logsExceptions = client.Options.ErrorHandlingStrategy != ErrorHandlingStrategy.None && client.Options.ErrorHandlingSinks.Any(x => x == ErrorHandlingSinks.LogException);
 
         var sb = new StringBuilder();
-        if (client.CommentTypes.Contains(XmlCommentTypes.ApiClient) && !string.IsNullOrWhiteSpace(client.Description))
+        if (client.Options.XmlCommentTypes.Contains(XmlCommentTypes.ApiClient) && !string.IsNullOrWhiteSpace(client.Description))
         {
             var xmlComment = XmlCommentHelpers.ToXmlSummary(client.Description.HtmlToPlainText(), string.Empty);
             sb.Append(xmlComment);
@@ -50,8 +50,10 @@ public static class ApiClientSerializer
         {
             AddOAuth2Methods(sb, uniqueAuthOAuth2, client.BaseUrl, 1);
         }
-        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: addAuthHeaderToConstructor, client.EnsureSuccessStatusCode,
-            client.CommentTypes, client.CatchExceptionTypes, client.ErrorHandlingSinks, client.ErrorHandlingStrategy, client.LogLevel, client.JsonLibrary, client.UseCancellationTokens);
+
+        var options = client.Options;
+        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: addAuthHeaderToConstructor, options.EnsureResponseIsSuccessStatusCode,
+            options.XmlCommentTypes, options.CatchExceptionTypes, options.ErrorHandlingSinks, options.ErrorHandlingStrategy, options.LogLevel, options.JsonLibrary, options.MultipleResponseHandling, options.UseCancellationTokens);
         sb.AppendLine();
         sb.AppendLine("}");
         return sb.ToString();
@@ -124,14 +126,14 @@ public static class ApiClientSerializer
 
     private static void ApiClientCalls(StringBuilder sb, AuthSettings? auth, string? baseUrl, List<HttpCall> calls, bool constructorHasAuthHeader, 
         bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
-        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool useCancellationTokens)
+        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, MultipleResponseHandling multipleResponseHandling, bool useCancellationTokens)
     {
         var last = calls.Last();
         foreach (var call in calls)
         {
             sb.AppendLine();
             HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, constructorHasAuthHeader, ensureSuccessStatusCode, commentTypes, catchExceptionTypes,
-                errorHandlingSinks, errorHandlingStrategy, logLevel, jsonLibrary, useCancellationTokens);
+                errorHandlingSinks, errorHandlingStrategy, logLevel, jsonLibrary, multipleResponseHandling, useCancellationTokens);
             if (!Equals(call, last))
             {
                 sb.AppendLine();

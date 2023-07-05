@@ -15,7 +15,7 @@
     @if (_verbose)
     {
         <br/>
-        <Detail Key="Json Library" Value="@ApiClient.JsonLibrary.ToString()" FontSize="FontSize.Larger"></Detail>
+        <Detail Key="Json Library" Value="@ApiClient.Options.JsonLibrary.ToString()" FontSize="FontSize.Larger"></Detail>
         @if (ApiClient.AllRequestsHaveSameAuth)
         {
             <Detail Key="All Requests Have Same Auth" Value="true" FontSize="FontSize.Larger"></Detail>
@@ -24,16 +24,16 @@
         {
             <Detail Key="All Requests Inherit Auth" Value="true" FontSize="FontSize.Larger"></Detail>
         }
-        @if (ApiClient.EnsureSuccessStatusCode)
+        @if (ApiClient.Options.EnsureResponseIsSuccessStatusCode)
         {
             <Detail Key="EnsureSuccessStatusCode" Value="true" FontSize="FontSize.Larger"></Detail>
         }
-        @if (ApiClient.UseCancellationTokens)
+        @if (ApiClient.Options.UseCancellationTokens)
         {
             <Detail Key="Use Cancellation Tokens" Value="true" FontSize="FontSize.Larger"></Detail>
         }
-        <Detail Key="Error Handling Strategy" Value="@ApiClient.ErrorHandlingStrategy.ToString()" FontSize="FontSize.Larger"></Detail>
-        <Detail Key="Xml Comment Types" Value="@(string.Join(", ", ApiClient.CommentTypes.Select(x => x.ToString())))" FontSize="FontSize.Larger"></Detail>
+        <Detail Key="Error Handling Strategy" Value="@ApiClient.Options.ErrorHandlingStrategy.ToString()" FontSize="FontSize.Larger"></Detail>
+        <Detail Key="Xml Comment Types" Value="@(string.Join(", ", ApiClient.Options.XmlCommentTypes.Select(x => x.ToString())))" FontSize="FontSize.Larger"></Detail>
         <NestedDetails Key="Variable Usages" NestedValues="@(ApiClient?.VariableUsages.GroupBy(x => x.Original).ToDictionary(x => x.Key, x => string.Join(", ", x.Select(y => y.Value))))" FontSize="FontSize.Larger"></NestedDetails>
         <small class="show-more" @onclick="() => _verbose = false"><b>Show less</b></small>
     }
