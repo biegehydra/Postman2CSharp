@@ -45,7 +45,7 @@ namespace Postman2CSharp.Core.Serialization
             var relativePath = Utils.ExtractRelativePath(baseUrl ?? "", httpCall.Request.Url.Raw);
             relativePath = string.IsNullOrWhiteSpace(relativePath) ? string.Empty : $"(\"{relativePath}\")";
 
-            XmlComment(sb, apiClient.CommentTypes, httpCall.RequestClassName, httpCall.Request.Description,
+            XmlComment(sb, apiClient.Options.XmlCommentTypes, httpCall.RequestClassName, httpCall.Request.Description,
                 httpCall.Request.Url.Path, httpCall.Request.Url.Query, httpCall.Request.Url.Variable, httpCall.Request.Header, indent);
             foreach (var response in httpCall.AllResponses.OrderBy(x => x.Code))
             {

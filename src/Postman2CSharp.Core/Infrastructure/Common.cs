@@ -26,7 +26,7 @@ namespace Postman2CSharp.Core.Infrastructure
             sb.AppendLine(indent + $"private readonly string {variableName};");
         }
 
-        public static void FunctionSignature(this StringBuilder sb, HttpCall call, string indent, List<HttpCallMethodParameter> methodParameters, bool isInterface = false)
+        public static void FunctionSignature(this StringBuilder sb, HttpCall call, string indent, List<HttpCallMethodParameter> methodParameters, MultipleResponseHandling multipleResponseHandling, bool isInterface = false)
         {
             if (isInterface)
             {
@@ -36,7 +36,17 @@ namespace Postman2CSharp.Core.Infrastructure
             {
                 sb.Append(indent + "public async Task");
             }
-            sb.Append($"<{call.SuccessResponse?.ClassName ?? "Stream"}>");
+            if (multipleResponseHandling == MultipleResponseHandling.OnlySuccessResponse || call.AllResponses.GroupBy(x => x.ClassName ?? "Stream").Count() ==1)
+            {
+                sb.Append($"<{call.SuccessResponse?.ClassName ?? "Stream"}>");
+            }
+            else
+            {
+                sb.Append("<OneOf<");
+                var groups = call.AllResponses.GroupBy(x => x.ClassName ?? "Stream");
+                sb.Append(string.Join(", ", groups.Select(x => x.Key)));
+                sb.Append(">>");
+            }
             sb.Append($" {call.Name}(");
             sb.Append(string.Join(", ", methodParameters.Select(x => x.LocalParameterDeclaration)));
             sb.AppendLine(isInterface ? ");" : ")");
