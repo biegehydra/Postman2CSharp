@@ -31,15 +31,19 @@
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateClasses">Remove Duplicate Classes</MudSwitch>
     </AdvancedSettingItem>
     
-    <AdvancedSettingItem ToolTip="This will determine the attributes used on classes generated from Json and the extension methods used on http client calls..">
+    <AdvancedSettingItem ToolTip="This will determine the attributes used on classes generated from Json and the extension methods used on http client calls.">
         <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="ApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
+    </AdvancedSettingItem>
+    
+    <AdvancedSettingItem ToolTip="This will determine what to do if a request has multiple response examples. Choosing AllResponses will result in many more classes being generated and the ApiClient source code will become more complicated.">
+        <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="ApiClientOptions.MultipleResponseHandling" Label="Multiple Response Handling"></EnumSelectComponent>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="Any types choosen in here will caused disabled parameters of that type to be removed in pre-processing..">
         <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="ApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are useds as xml comments.">
+    <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
         <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="ApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
 
@@ -51,7 +55,7 @@
         <MultiEnumSelectComponent TEnum="ErrorHandlingSinks" Value="ApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handling by the sinks.">
+    <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handled by the sinks.">
         <MultiEnumSelectComponent TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="ApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
 
@@ -59,7 +63,7 @@
         <EnumSelectComponent @bind-Value="ApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem ToolTip="WARNING: It is almost never advisable to change this to PerAuthority, especially with large postman collections. See options explanation page.">
+    <AdvancedSettingItem ToolTip="WARNING: Authorizations will be lost is this setting is enabled. This will reorganize requests by authority. See options explained page for full explanation.">
         <EnumSelectComponent @bind-Value="ApiClientOptions.RootDefinition" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
     </AdvancedSettingItem>
     <MudItem xs="12" sm="6" md="4" lg="3" Style="align-self: flex-end; display: flex; justify-content: center;">

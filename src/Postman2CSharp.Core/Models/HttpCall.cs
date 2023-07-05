@@ -10,6 +10,7 @@ namespace Postman2CSharp.Core.Models;
 
 public class ApiResponse
 {
+    public bool IsSuccessCode => Code is >= 200 and < 300;
     public int Code { get; }
     public string? ClassName { get; }
     public string? SourceCode { get; set; }

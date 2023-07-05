@@ -43,6 +43,12 @@
         ReturnDefault
     }
 
+    public enum MultipleResponseHandling
+    {
+        OnlySuccessResponse,
+        AllResponses
+    }
+
     public enum CatchExceptionTypes
     {
         HttpRequestException,

@@ -14,5 +14,6 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Http.Response
         public string? Status { get; set; }
         public string? Body { get; set; }
         public int? Code { get; set; }
+        public bool IsSuccessCode => Code is >= 200 and < 300; 
     }
 }

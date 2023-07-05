@@ -10,6 +10,7 @@ namespace Postman2CSharp.Core
         public bool EnsureResponseIsSuccessStatusCode { get; set; }
         public bool MakePathCollectionVariablesFunctionParameters { get; set; }
         public bool UseCancellationTokens { get; set; }
+        public MultipleResponseHandling MultipleResponseHandling { get; set; } = MultipleResponseHandling.OnlySuccessResponse;
 
         public JsonLibrary JsonLibrary { get; set; } = JsonLibrary.SystemTextJson;
 

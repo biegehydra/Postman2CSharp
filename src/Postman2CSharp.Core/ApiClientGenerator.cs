@@ -204,6 +204,10 @@ public class ApiClientGenerator
         var jsonClassGenerator = ClassGenerator();
         foreach (var requestItem in requestItems)
         {
+            if (Options.ApiClientOptions.MultipleResponseHandling == MultipleResponseHandling.OnlySuccessResponse)
+            {
+                requestItem.Response?.RemoveAll(x => !x.IsSuccessCode);
+            }
             var requestDataType = Utils.GetRequestDataType(requestItem.Request!);
             var normalizedName = requestItem.NormalizedName();
             requestItem.Description = requestItem.Description.HtmlToPlainText();
@@ -353,7 +357,7 @@ public class ApiClientGenerator
                 allApiResponse.Add(new ApiResponse(response.Code.Value, null, null, DataType.Binary));
             }
             // If there is no success response, add one
-            if (!allApiResponse.Any(x => x is {Code: >= 200 and < 300}))
+            if (!allApiResponse.Any(x => x.IsSuccessCode))
             {
                 allApiResponse.Add(new ApiResponse(200, null, null, DataType.Binary));
             }
