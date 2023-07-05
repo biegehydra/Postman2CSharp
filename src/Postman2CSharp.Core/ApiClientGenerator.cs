@@ -160,13 +160,13 @@ public class ApiClientGenerator
         var leastPossibleUri = rootItem.FindLeastPossibleUri();
         var commonHeaders = rootItem.GetCommonHeaders();
         var uniqueNamesList = new List<string>() { normalizedNameSpace, name };
-        var (httpCalls, totalClassesGeneratedFromHttpCalls) = await GetHttpCalls(rootItem, commonHeaders, normalizedNameSpace, uniqueNamesList);
+        var (httpCalls, totalClassesGeneratedFromHttpCalls, duplicateRoots) = await GetHttpCalls(rootItem, commonHeaders, normalizedNameSpace, uniqueNamesList);
         var auth = rootItem.Auth ?? PostmanCollection.Auth;
 
         var apiClient = new ApiClient(name, rootItem.Description, normalizedNameSpace, leastPossibleUri, httpCalls, commonHeaders, auth, variableUsages,
             Options.ApiClientOptions.EnsureResponseIsSuccessStatusCode, Options.ApiClientOptions.XmlCommentTypes, Options.ApiClientOptions.CatchExceptionTypes,
             Options.ApiClientOptions.ErrorHandlingSinks, Options.ApiClientOptions.ErrorHandlingStrategy, Options.ApiClientOptions.LogLevel, Options.CSharpCodeWriterConfig.AttributeLibrary,
-            Options.ApiClientOptions.UseCancellationTokens, totalClassesGeneratedFromHttpCalls + 1);
+            Options.ApiClientOptions.UseCancellationTokens, totalClassesGeneratedFromHttpCalls + 1, duplicateRoots);
         // This is generated here and not in the constructor because it allows my wasm app to lazy load a couple large dlls
         // that are used in the generation process. GenerateSourceCode was being called when I deserialized api clients from local storage
         apiClient.GenerateSourceCode();
@@ -192,14 +192,15 @@ public class ApiClientGenerator
         return baseName + counter;
     }
 
-    private async Task<(List<HttpCall> HttpCalls, int TotalClassesGenerated)> GetHttpCalls(CollectionItem item, List<Header> commonHeaders, string nameSpace, List<string> uniqueNames)
+    private async Task<(List<HttpCall> HttpCalls, int TotalClassesGenerated, List<DuplicateRoot> DuplicateRoots)> GetHttpCalls(CollectionItem item, List<Header> commonHeaders, string nameSpace, List<string> uniqueNames)
     {
+        List<DuplicateRoot> duplicateRoots = new();
         List<HttpCall> httpCalls = new ();
         var requestItems = item.RequestItems();
         var writeFormDataComments = Options.ApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.FormData);
         var totalClassesGenerated = 0;
 
-        if(requestItems == null) return (httpCalls, totalClassesGenerated);
+        if(requestItems == null) return (httpCalls, totalClassesGenerated, duplicateRoots);
 
         var jsonClassGenerator = ClassGenerator();
         foreach (var requestItem in requestItems)
@@ -253,6 +254,7 @@ public class ApiClientGenerator
                     }
                     catch (DuplicateRootException ex)
                     {
+                        AddDuplicateRootUsage(ex.OriginalRootName, requestClassName, uniqueName, GeneratedClassType.Request);
                         requestClassName = ex.OriginalRootName;
                         requestSourceCode = null;
                         requestTypes = null;
@@ -348,6 +350,8 @@ public class ApiClientGenerator
                     }
                     catch (DuplicateRootException ex)
                     {
+                        AddDuplicateRootUsage(ex.OriginalRootName, responseClassName, uniqueName, GeneratedClassType.Response);
+
                         responseClassName = ex.OriginalRootName;
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
                         continue;
@@ -407,6 +411,7 @@ public class ApiClientGenerator
                 }
                 catch (DuplicateRootException ex)
                 {
+                    AddDuplicateRootUsage(ex.OriginalRootName, queryParametersClassName, uniqueName, GeneratedClassType.QueryParameters);
                     queryParametersClassName = ex.OriginalRootName;
                     queryParametersSourceCode = null;
                 }
@@ -452,7 +457,7 @@ public class ApiClientGenerator
                 throw new Exception("Something went wrong");
             await RaiseProgressCallback((float) _processedRequests / TotalRequest);
         }
-        return (httpCalls, totalClassesGenerated);
+        return (httpCalls, totalClassesGenerated, duplicateRoots);
 
         void ProcessItem(JsonClassGenerator classGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, ref List<ClassType>? types, Dictionary<string, string?>? descriptionDict = null)
         {
@@ -493,6 +498,17 @@ public class ApiClientGenerator
                 config.Namespace = nameSpacee;
                 return new CSharpCodeWriter(config, writeDescriptions);
             }
+        }
+
+        void AddDuplicateRootUsage(string className, string? intendedClassName, string requestItemName, GeneratedClassType classType)
+        {
+            if (duplicateRoots.All(x => x.ClassName != className))
+            {
+                duplicateRoots.Add(new DuplicateRoot(className, new List<DuplicateRootUsage>()));
+            }
+
+            var duplicateRoot = duplicateRoots.First(x => x.ClassName == className);
+            duplicateRoot.Usages.Add(new DuplicateRootUsage(requestItemName, intendedClassName, classType));
         }
     }
 

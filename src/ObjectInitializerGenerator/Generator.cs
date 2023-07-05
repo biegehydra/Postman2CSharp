@@ -66,14 +66,14 @@ namespace ObjectInitializerGenerator
 
             if (node.ChildNodes().Any())
             {
-                AnalyseChildNodes(node, parent);
+                AnalyzeChildNodes(node, parent);
             }
 
             objectModelList.Add(parent);
         }
 
 
-        private void AnalyseChildNodes(SyntaxNode node, ObjectModel parent)
+        private void AnalyzeChildNodes(SyntaxNode node, ObjectModel parent)
         {
 
             foreach (SyntaxNode child in node.ChildNodes())
@@ -93,7 +93,7 @@ namespace ObjectInitializerGenerator
 
                     if (child.ChildNodes().Any())
                     {
-                        AnalyseChildNodes(child, subParent);
+                        AnalyzeChildNodes(child, subParent);
                     }
 
                     parent.Children.Add(subParent);

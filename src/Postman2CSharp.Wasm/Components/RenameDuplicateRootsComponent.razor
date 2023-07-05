@@ -1,0 +1,19 @@
+﻿@if (ApiClient != null)
+{
+    foreach (var apiClientDuplicateRoot in ApiClient.DuplicateRoots)
+    {
+        <MudText Typo="Typo.h5">@apiClientDuplicateRoot.ClassName</MudText>
+        <div style="padding-left: 10px;">
+            @foreach (var usage in apiClientDuplicateRoot.Usages)
+            {
+                <Detail Key="@usage.HttpCallName" Value="@(usage.IntendedClassName + " " + usage.ClassType)" FontSize="FontSize.Larger" ></Detail>
+            }
+        </div>
+    }
+}
+
+@code {
+    private record DuplicateRootModel(string DuplicateRoot);
+    private record Usages(string Location);
+    [Parameter] public Core.Models.ApiClient? ApiClient { get; set; }
+}

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using Postman2CSharp.Core.Infrastructure;
@@ -12,7 +14,7 @@ public class ApiResponse
 {
     public bool IsSuccessCode => Code is >= 200 and < 300;
     public int Code { get; }
-    public string? ClassName { get; }
+    public string? ClassName { get; set; }
     public string? SourceCode { get; set; }
     public DataType DataType { get; }
 
@@ -49,15 +51,15 @@ public class HttpCall
     public DataType RequestDataType { get; init; }
     public string? RequestSourceCode { get; set; }
     public required Request Request { get; init; }
-    public required string? RequestClassName { get; init; }
+    public required string? RequestClassName { get; set; }
     public required List<ClassType>? RequestTypes { get; set; }
 
-    public required string? QueryParameterClassName { get; init; }
+    public required string? QueryParameterClassName { get; set; }
     public required string? QueryParameterSourceCode { get; set; }
     public required List<ClassType>? QueryParameterTypes { get; init; }
 
-    public required string HttpClientFunction { get; set; }
-    public required string? FormDataClassName { get; init; }
+    public required string HttpClientFunction { get; init; }
+    public required string? FormDataClassName { get; set; }
     public required string? FormDataSourceCode { get; set; }
 
     public ApiResponse? SuccessResponse => AllResponses.FirstOrDefault(x => x.Code == 200);
@@ -118,6 +120,38 @@ public class HttpCall
             }
         }
         return methodParameters;
+    }
+
+    public void RenameRequest(string newName)
+    {
+        if (RequestClassName == null) throw new UnreachableException("RenameRequest");
+        RequestSourceCode = RequestSourceCode?.Replace(RequestClassName, newName);
+        RequestClassName = newName;
+    }
+
+    public void RenameResponses(string oldName, string newName)
+    {
+        var responses = AllResponses.Where(x => x.ClassName == oldName).ToList();
+        if (responses.Count == 0) throw new UnreachableException("RenameResponse");
+        foreach (var response in responses)
+        {
+            response.SourceCode = response.SourceCode?.Replace(response.ClassName!, newName);
+            response.ClassName = newName;
+        }
+    }
+
+    public void RenameFormData(string newName)
+    {
+        if (FormDataClassName == null) throw new UnreachableException("RenameRequest");
+        FormDataSourceCode = FormDataSourceCode?.Replace(FormDataClassName, newName);
+        FormDataClassName = newName;
+    }
+
+    public void RenameQueryParameters(string newName)
+    {
+        if (QueryParameterClassName == null) throw new UnreachableException("RenameRequest");
+        QueryParameterSourceCode = QueryParameterSourceCode?.Replace(QueryParameterClassName, newName);
+        QueryParameterClassName = newName;
     }
 }
 public record HttpCallMethodParameter(HttpCallMethodParameterType Type, string VariableType, string ParameterName)

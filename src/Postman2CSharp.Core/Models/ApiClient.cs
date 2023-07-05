@@ -11,6 +11,9 @@ using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Models;
 
+public record DuplicateRoot(string ClassName, List<DuplicateRootUsage> Usages, bool Resolved = false);
+public record DuplicateRootUsage(string HttpCallName, string? IntendedClassName, GeneratedClassType ClassType);
+
 public class ApiClient
 {
     private static readonly List<string> ImplicitNamespaces = new() {"System", "System.IO", "System.Net.Http", "System.Threading.Tasks"};
@@ -46,6 +49,7 @@ public class ApiClient
         get => _controllerSourceCode ??= ControllerSerializer.SerializeController(this);
         set => _controllerSourceCode = value;
     }
+    public required List<DuplicateRoot> DuplicateRoots { get; set; }
     public required string? BaseUrl { get; set; }
     public required List<HttpCall> HttpCalls { get; set; }
     public required List<Header> CommonHeaders { get; set; }
@@ -88,7 +92,7 @@ public class ApiClient
 #pragma warning restore CS8618
         List<Header> commonHeaders, AuthSettings? collectionAuth, List<VariableUsage> variableUsages,
         bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
-        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool useCancellationTokens, int totalClassesGenerated)
+        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool useCancellationTokens, int totalClassesGenerated, List<DuplicateRoot> duplicateRoots)
     {
         Name = name;
         Description = description;
@@ -107,6 +111,7 @@ public class ApiClient
         JsonLibrary = jsonLibrary;
         UseCancellationTokens = useCancellationTokens;
         TotalClassesGenerated = totalClassesGenerated;
+        DuplicateRoots = duplicateRoots;
     }
 
     public void GenerateSourceCode()
@@ -159,6 +164,35 @@ public class ApiClient
                 httpCall.FormDataSourceCode = httpCall.FormDataSourceCode?.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
             }
         }
+    }
+
+    public bool FixCommonClass(string commonClassOld, string commonClassNew)
+    {
+        var anyMatched = false;
+        foreach (var httpCall in HttpCalls)
+        {
+            if (httpCall.RequestClassName == commonClassOld)
+            {
+                httpCall.RenameRequest(commonClassNew);
+                anyMatched = true;
+            }
+            if (httpCall.AllResponses.Any(x => x.ClassName == commonClassOld))
+            {
+                httpCall.RenameResponses(commonClassOld, commonClassNew);
+                anyMatched = true;
+            }
+            if (httpCall.QueryParameterClassName == commonClassOld)
+            {
+                httpCall.RenameQueryParameters(commonClassNew);
+                anyMatched = true;
+            }
+            if (httpCall.FormDataClassName == commonClassOld)
+            {
+                httpCall.RenameFormData(commonClassNew);
+                anyMatched = true;
+            }
+        }
+        return anyMatched;
     }
 
 }

@@ -22,6 +22,7 @@ namespace Postman2CSharp.Wasm.Services
         CoreCsFile,
         Interface,
         Controller,
+        DuplicateRoots,
         Tests
     }
     public class TabsService
@@ -78,6 +79,11 @@ namespace Postman2CSharp.Wasm.Services
                     case TabType.Tests:
                         Navigate.Value.ToApiClientTests(tab.CollectionId!, tab.ApiClientId!);
                         break;
+                    case TabType.DuplicateRoots:
+                        Navigate.Value.ToApiClientDuplicateRoots(tab.CollectionId!, tab.ApiClientId!);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
                 TabsChanged?.Invoke();
             }
@@ -166,6 +172,27 @@ namespace Postman2CSharp.Wasm.Services
                 ApiClientId = apiClientId,
                 CollectionId = collectionId,
                 Type = TabType.Interface
+            });
+            await MoveToNewTab();
+        }
+
+        public async Task AddApiClientDuplicateRootsTab(string collectionId, string apiClientId)
+        {
+            if (Tabs.FirstOrDefault(x => x.Type == TabType.DuplicateRoots && x.ApiClientId == apiClientId && x.Label == "Duplicate Roots") is { } tab)
+            {
+                var index = Tabs.IndexOf(tab);
+                if (ApiClientIndex != index)
+                    ApiClientIndex = index;
+                return;
+            }
+            SetHome(collectionId);
+            Tabs.Insert(1, new CollectionTabView
+            {
+                Id = Guid.NewGuid().ToString(),
+                Label = "Duplicate Roots",
+                ApiClientId = apiClientId,
+                CollectionId = collectionId,
+                Type = TabType.DuplicateRoots
             });
             await MoveToNewTab();
         }

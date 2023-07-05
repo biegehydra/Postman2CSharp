@@ -23,6 +23,14 @@
         Header
     }
 
+    public enum GeneratedClassType
+    {
+        QueryParameters,
+        FormData,
+        Response,
+        Request
+    }
+
     public enum RootDefinition
     {
         PerAuthorityPerFolder,
