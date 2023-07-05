@@ -350,22 +350,26 @@ namespace Xamasoft.JsonClassGenerator
                         }
                         else
                         {
+                            // If the type wasn't a match that means we are keeping the duplicate.
+                            // Because of this we check if the assigned names equal Class2 == Class2
+                            // Then we set the internal type of it to the duplicate
+                            // Before: AssignedName: Class2, NewAssignedName: Class => After: AssignedName: Class2, NewAssignedName: Class2
                             foreach (JsonType jsonType in types)
                             {
                                 foreach (JsonFieldInfo jsonTypeField in jsonType.Fields)
                                 {
-                                    // If the type wasn't a match that means we are keeping the duplicate.
-                                    // Because of this we check if the assigned names equal Class2 == Class2
-                                    // Then we set the internal type of it to the duplicate
-                                    // AssignedName Class2 NewAssignedName Class => AssignedName Class2 NewAssignedName Class2
                                     if (type.AssignedName != null && jsonTypeField.Type?.AssignedName == type.AssignedName)
                                     {
+                                        jsonTypeField.Type.AssignOriginalName(type.OriginalName);
+                                        jsonTypeField.Type.AssignName(type.AssignedName);
                                         jsonTypeField.Type.AssignNewAssignedName(type.NewAssignedName);
                                         continue;
                                     }
                                     if (type.AssignedName != null && jsonTypeField.Type?.InternalType?.AssignedName == type.AssignedName)
                                     {
-                                        jsonTypeField.Type!.InternalType!.AssignNewAssignedName(type.NewAssignedName);
+                                        jsonTypeField.Type.InternalType.AssignOriginalName(type.OriginalName);
+                                        jsonTypeField.Type.InternalType.AssignName(type.AssignedName);
+                                        jsonTypeField.Type!.InternalType.AssignNewAssignedName(type.NewAssignedName);
                                     }
                                 }
                             }
@@ -396,29 +400,34 @@ namespace Xamasoft.JsonClassGenerator
             }
 
             var semiDuplicates = new List<(JsonType Duplicate, JsonType Original)>();
-            foreach (JsonType jsonType in typesWithNoDuplicates)
+            foreach (JsonType possibleDuplicate in typesWithNoDuplicates)
             {
-                foreach (JsonType type in AllTypes)
+                foreach (JsonType nonDuplicate in AllTypes)
                 {
-                    if (TypesMatch(jsonType, type))
+                    if (TypesMatch(possibleDuplicate, nonDuplicate))
                     {
-                        semiDuplicates.Add((jsonType, type));
-                        foreach (JsonType jsonType1 in typesWithNoDuplicates)
+                        semiDuplicates.Add((possibleDuplicate, nonDuplicate));
+                        foreach (JsonType type in typesWithNoDuplicates)
                         {
-                            foreach (JsonFieldInfo jsonTypeField in jsonType1.Fields)
+                            foreach (JsonFieldInfo jsonTypeField in type.Fields)
                             {
-                                // If the type wasn't a match that means we are keeping the duplicate.
-                                // Because of this we check if the assigned names equal Class2 == Class2
-                                // Then we set the internal type of it to the duplicate
-                                // AssignedName Class2 NewAssignedName Class => AssignedName Class2 NewAssignedName Class2
-                                if (jsonType.NewAssignedName != null && jsonTypeField.Type?.NewAssignedName == jsonType.NewAssignedName)
+                                // Here we are reassigning the references of the semi duplicates. If the original NewAssignedName was
+                                // Amount and the duplicate is ShippingAmount, we want to reassign all references of ShippingAmount to Amount
+                                // So that that there are less overall classes. Below here we remove the semi duplicates from
+                                // typesWithNoDuplicates. In the example, we would be removing ShippingAmount and keeping Amount.
+                                // It won't cause an issue because all references have been reassigned.
+                                if (possibleDuplicate.NewAssignedName != null && jsonTypeField.Type?.NewAssignedName == possibleDuplicate.NewAssignedName)
                                 {
-                                    jsonTypeField.Type.AssignNewAssignedName(type.NewAssignedName);
+                                    jsonTypeField.Type.AssignOriginalName(nonDuplicate.OriginalName);
+                                    jsonTypeField.Type.AssignName(nonDuplicate.AssignedName);
+                                    jsonTypeField.Type.AssignNewAssignedName(nonDuplicate.NewAssignedName);
                                     continue;
                                 }
-                                if (jsonType.NewAssignedName != null && jsonTypeField.Type?.InternalType?.NewAssignedName == jsonType.NewAssignedName)
+                                if (possibleDuplicate.NewAssignedName != null && jsonTypeField.Type?.InternalType?.NewAssignedName == possibleDuplicate.NewAssignedName)
                                 {
-                                    jsonTypeField.Type!.InternalType!.AssignNewAssignedName(type.NewAssignedName);
+                                    jsonTypeField.Type.InternalType.AssignOriginalName(nonDuplicate.OriginalName);
+                                    jsonTypeField.Type!.InternalType.AssignName(nonDuplicate.AssignedName);
+                                    jsonTypeField.Type!.InternalType!.AssignNewAssignedName(nonDuplicate.NewAssignedName);
                                 }
                             }
                         }
@@ -431,6 +440,13 @@ namespace Xamasoft.JsonClassGenerator
                 typesWithNoDuplicates.Remove(type.Duplicate);
             }
 
+            RemoveUnusedTypes(typesWithNoDuplicates);
+
+            return typesWithNoDuplicates;
+        }
+
+        private static void RemoveUnusedTypes(List<JsonType> typesWithNoDuplicates)
+        {
             var unused = new List<JsonType>();
             foreach (JsonType jsonType in typesWithNoDuplicates)
             {
@@ -456,8 +472,6 @@ namespace Xamasoft.JsonClassGenerator
             {
                 typesWithNoDuplicates.Remove(type);
             }
-
-            return typesWithNoDuplicates;
         }
 
         private static bool TypesMatch(JsonType possibleDuplicateTyp, JsonType originalType)
@@ -478,7 +492,6 @@ namespace Xamasoft.JsonClassGenerator
                     return false;
                 }
             }
-
             return true;
         }
 
