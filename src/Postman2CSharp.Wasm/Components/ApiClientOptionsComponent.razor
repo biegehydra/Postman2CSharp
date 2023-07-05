@@ -71,10 +71,21 @@
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
- <MudText Class="setting-section-header" Typo="Typo.h5">Class Generation</MudText>
+<MudText Class="setting-section-header" Typo="Typo.h5">Class Generation</MudText>
+<p style="margin-bottom: 20px;">
+     It's not recommend to disable RemoveDuplicateClasses ever.
+</p>
 <MudGrid Spacing="3">
     <AdvancedSettingItem ToolTip="Removes any class that is reused in responses across requests. See options explanation page.">
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateClasses">Remove Duplicate Classes</MudSwitch>
+    </AdvancedSettingItem>
+    
+    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveSemiDuplicates">Remove Semi-Duplicates</MudSwitch>
+    </AdvancedSettingItem>
+    
+    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudSwitch>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
@@ -99,7 +110,7 @@
         toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
     }
 }
-<div class="f-row" style="margin-top: 15px; gap: 20px;" >
+<div class="f-row" style="margin-top: 25px; gap: 20px;" >
     <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="Equals(ApiClientOptions, LastSavedApiClientOptions)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
     <MudTooltip Text="Resets settings to default values">
         <MudButton Disabled="Equals(LastSavedApiClientOptions, new ApiClientOptions())" Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { ApiClientOptions = new ApiClientOptions();  }">Reset to default</MudButton>
@@ -167,6 +178,8 @@
                && options1.JsonLibrary == options2.JsonLibrary
                && options1.MultipleResponseHandling == options2.MultipleResponseHandling
                && options1.HandleMultipleResponses == options2.HandleMultipleResponses
+               && options1.RemoveSemiDuplicates == options2.RemoveSemiDuplicates
+               && options1.RemoveDuplicateRoots == options2.RemoveDuplicateRoots
                && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch && allRemovedDisabledMatch;
     }
 

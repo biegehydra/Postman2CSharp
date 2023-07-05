@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using Newtonsoft.Json;
@@ -21,10 +22,12 @@ namespace Xamasoft.JsonClassGenerator
     }
     public class JsonClassGenerator
     {
-        public JsonClassGenerator(ICodeWriter codeWriter, bool removeDuplicateClasses)
+        public JsonClassGenerator(ICodeWriter codeWriter, bool removeDuplicateClasses, bool removeSemiDuplicates, bool removeDuplicateRoots)
         {
             CodeWriter = codeWriter;
             this.RemoveDuplicateClasses = removeDuplicateClasses;
+            this.RemoveSemiDuplicates = removeSemiDuplicates;
+            this.RemoveDuplicateRoots = removeDuplicateRoots;
         }
 
         public void SetRootName(string rootClassName)
@@ -54,6 +57,8 @@ namespace Xamasoft.JsonClassGenerator
 
         private Dictionary<string, string> DescriptionDict { get; set; } = new();
         private bool RemoveDuplicateClasses { get; set; }
+        private bool RemoveSemiDuplicates { get; set; }
+        private bool RemoveDuplicateRoots { get; set; }
         private string _rootClassName = "Root";
         public List<JsonType> AllTypes { get; private set; } = new();
         public IList<JsonType> Types { get; private set; }
@@ -351,7 +356,7 @@ namespace Xamasoft.JsonClassGenerator
                     {
                         // If there are two types in different files/input strings with exactly the same class name and properties we don't 
                         // need to generate the same class twice so we mark it as a duplicate and skip
-                        if (TypesMatch(type, matchedType))
+                        if (TypesMatch(type, matchedType, this.RemoveDuplicateRoots))
                         {
                             isDuplicate = true;
                             break;
@@ -387,9 +392,9 @@ namespace Xamasoft.JsonClassGenerator
                 if (isDuplicate) continue;
 
                 // If this reference hasn't already been fixed above, we need to fix it here
-                if (RemoveDuplicateClasses && char.IsDigit(type.AssignedName!.Last()) && !char.IsDigit(type.NewAssignedName.Last()))
+                if (char.IsDigit(type.AssignedName!.Last()) && !char.IsDigit(type.NewAssignedName.Last()))
                     type.AssignNewAssignedName(type.AssignedName);
-                if (!typesWithNoDuplicates.Exists(p => p.OriginalName == type.OriginalName))
+                if (!RemoveDuplicateClasses || !typesWithNoDuplicates.Exists(p => p.OriginalName == type.OriginalName))
                 {
                     typesWithNoDuplicates.Add(type);
                 }
@@ -407,45 +412,48 @@ namespace Xamasoft.JsonClassGenerator
                 }
             }
 
-            var semiDuplicates = new List<(JsonType Duplicate, JsonType Original)>();
-            foreach (JsonType possibleDuplicate in typesWithNoDuplicates)
+            if (this.RemoveSemiDuplicates)
             {
-                foreach (JsonType nonDuplicate in AllTypes)
+                var semiDuplicates = new List<JsonType>();
+                foreach (JsonType possibleDuplicate in typesWithNoDuplicates)
                 {
-                    if (TypesMatch(possibleDuplicate, nonDuplicate))
+                    foreach (JsonType nonDuplicate in AllTypes)
                     {
-                        semiDuplicates.Add((possibleDuplicate, nonDuplicate));
-                        foreach (JsonType type in typesWithNoDuplicates)
+                        if (TypesMatch(possibleDuplicate, nonDuplicate, this.RemoveDuplicateRoots))
                         {
-                            foreach (JsonFieldInfo jsonTypeField in type.Fields)
+                            semiDuplicates.Add(( possibleDuplicate ));
+                            foreach (JsonType type in typesWithNoDuplicates)
                             {
-                                // Here we are reassigning the references of the semi duplicates. If the original NewAssignedName was
-                                // Amount and the duplicate is ShippingAmount, we want to reassign all references of ShippingAmount to Amount
-                                // So that that there are less overall classes. Below here we remove the semi duplicates from
-                                // typesWithNoDuplicates. In the example, we would be removing ShippingAmount and keeping Amount.
-                                // It won't cause an issue because all references have been reassigned.
-                                if (possibleDuplicate.NewAssignedName != null && jsonTypeField.Type?.NewAssignedName == possibleDuplicate.NewAssignedName)
+                                foreach (JsonFieldInfo jsonTypeField in type.Fields)
                                 {
-                                    jsonTypeField.Type.AssignOriginalName(nonDuplicate.OriginalName);
-                                    jsonTypeField.Type.AssignName(nonDuplicate.AssignedName);
-                                    jsonTypeField.Type.AssignNewAssignedName(nonDuplicate.NewAssignedName);
-                                    continue;
-                                }
-                                if (possibleDuplicate.NewAssignedName != null && jsonTypeField.Type?.InternalType?.NewAssignedName == possibleDuplicate.NewAssignedName)
-                                {
-                                    jsonTypeField.Type.InternalType.AssignOriginalName(nonDuplicate.OriginalName);
-                                    jsonTypeField.Type!.InternalType.AssignName(nonDuplicate.AssignedName);
-                                    jsonTypeField.Type!.InternalType!.AssignNewAssignedName(nonDuplicate.NewAssignedName);
+                                    // Here we are reassigning the references of the semi duplicates. If the original NewAssignedName was
+                                    // Amount and the duplicate is ShippingAmount, we want to reassign all references of ShippingAmount to Amount
+                                    // So that that there are less overall classes. Below here we remove the semi duplicates from
+                                    // typesWithNoDuplicates. In the example, we would be removing ShippingAmount and keeping Amount.
+                                    // It won't cause an issue because all references have been reassigned.
+                                    if (possibleDuplicate.NewAssignedName != null && jsonTypeField.Type?.NewAssignedName == possibleDuplicate.NewAssignedName)
+                                    {
+                                        jsonTypeField.Type.AssignOriginalName(nonDuplicate.OriginalName);
+                                        jsonTypeField.Type.AssignName(nonDuplicate.AssignedName);
+                                        jsonTypeField.Type.AssignNewAssignedName(nonDuplicate.NewAssignedName);
+                                        continue;
+                                    }
+                                    if (possibleDuplicate.NewAssignedName != null && jsonTypeField.Type?.InternalType?.NewAssignedName == possibleDuplicate.NewAssignedName)
+                                    {
+                                        jsonTypeField.Type.InternalType.AssignOriginalName(nonDuplicate.OriginalName);
+                                        jsonTypeField.Type!.InternalType.AssignName(nonDuplicate.AssignedName);
+                                        jsonTypeField.Type!.InternalType!.AssignNewAssignedName(nonDuplicate.NewAssignedName);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            foreach (var type in semiDuplicates)
-            {
-                typesWithNoDuplicates.Remove(type.Duplicate);
+                foreach (var type in semiDuplicates)
+                {
+                    typesWithNoDuplicates.Remove(type);
+                }
             }
 
             RemoveUnusedTypes(typesWithNoDuplicates);
@@ -482,12 +490,13 @@ namespace Xamasoft.JsonClassGenerator
             }
         }
 
-        private static bool TypesMatch(JsonType possibleDuplicateTyp, JsonType originalType)
+        private static bool TypesMatch(JsonType possibleDuplicateTyp, JsonType originalType, bool removeDuplicateRoots)
         {
             if (possibleDuplicateTyp.Fields == null && originalType.Fields != null) return false;
             if (possibleDuplicateTyp.Fields != null && originalType.Fields == null) return false;
             if (possibleDuplicateTyp.Fields == null && originalType.Fields == null) return true;
             if (possibleDuplicateTyp.Fields!.Count > originalType.Fields!.Count) return false;
+            if (!removeDuplicateRoots && possibleDuplicateTyp.IsRoot || originalType.IsRoot) return false;
             foreach (JsonFieldInfo jsonFieldInfo in possibleDuplicateTyp.Fields!)
             {
                 if (originalType.Fields!.Any(x => x.MemberName == jsonFieldInfo.MemberName && x.Type.Type == jsonFieldInfo.Type.Type))
@@ -499,7 +508,7 @@ namespace Xamasoft.JsonClassGenerator
                     return false;
                 }
             }
-            if (possibleDuplicateTyp.IsRoot)
+            if (possibleDuplicateTyp.IsRoot && removeDuplicateRoots)
             {
                 throw new DuplicateRootException()
                 {
