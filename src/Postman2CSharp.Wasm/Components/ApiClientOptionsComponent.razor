@@ -13,11 +13,6 @@
             For an in depth explanation on how these settings work, see <a class="link-normal" href="/ApiClient-Configurations-Explained">ApiClient Configurations Explanation</a>.
         </MudAlert>
     </div>
-    <div>
-        <MudTooltip Text="Resets settings to default values">
-            <MudButton Disabled="Equals(LastSavedApiClientOptions, new ApiClientOptions())" Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { ApiClientOptions = new ApiClientOptions();  }">Reset to default</MudButton>
-        </MudTooltip>
-    </div>
 </div>
 <br />
 <MudText Class="setting-section-header" Typo="Typo.h5">Important</MudText>
@@ -104,12 +99,13 @@
         toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
     }
 }
-<div class="f-row" style="margin-top: 15px;" >
+<div class="f-row" style="margin-top: 15px; gap: 20px;" >
     <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="Equals(ApiClientOptions, LastSavedApiClientOptions)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
+    <MudTooltip Text="Resets settings to default values">
+        <MudButton Disabled="Equals(LastSavedApiClientOptions, new ApiClientOptions())" Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { ApiClientOptions = new ApiClientOptions();  }">Reset to default</MudButton>
+    </MudTooltip>
     @if (toolTipVisible)
-    {  
-        <div style="width: 20px;">
-        </div>
+    {
         <MudTooltip Style="position: absolute; top: 10px; right: 10px;" Text="@toolTipMessage">
             <MudIcon Icon="@Icons.Warning" Color="@toolTipColor" Title="Warning" Size="Size.Large"></MudIcon>
         </MudTooltip>
