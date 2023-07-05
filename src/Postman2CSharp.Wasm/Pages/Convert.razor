@@ -9,24 +9,27 @@
 
 <BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
 
-<MudText Typo="Typo.h1" Class="mt-4">Convert Your Postman Collection</MudText>
+<br/>
 
-<br />
+<MudPaper Class="header-paper" >
+    <MudText Typo="Typo.h1" Class="mt-4">Convert Your Postman Collection</MudText>
 
-<MudText>
-    <strong>Privacy Assurance:</strong> Your Postman collections never leave your computer. This tool operates with Blazor WebAssembly (Wasm),
-    a framework that allows it to run entirely in your browser without making any network calls or sharing information about your collections. 
-    Your data stays on your machine.
-</MudText>
+    <br />
+
+    <MudText>
+        <strong>Privacy Assurance:</strong> Your Postman collections never leave your computer. This tool operates with Blazor WebAssembly (Wasm),
+        a framework that allows it to run entirely in your browser without making any network calls or sharing information about your collections. 
+        Your data stays on your machine.
+    </MudText>
+</MudPaper>
 
 <br/>
+<MudDivider Class="my-divider" DividerType="DividerType.Middle"></MudDivider>
 
 @if (LazyLoader.ConvertLoaded)
 {
     <div class="code-writing-options-contianer">
-        <MudPaper Class="settings-paper" Style="padding: 16px;">
-            <ApiClientOptionsComponent></ApiClientOptionsComponent>
-        </MudPaper>
+        <ApiClientOptionsComponent></ApiClientOptionsComponent>
     </div>
 
     <CollectionUpload SuccessfulUpload="OnSuccessfulUpload"></CollectionUpload>

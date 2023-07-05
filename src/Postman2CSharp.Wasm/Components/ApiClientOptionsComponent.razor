@@ -1,7 +1,13 @@
 ﻿@implements IDisposable
+<style>
+    .setting-section-header {
+        margin-bottom: 10px; 
+        font-weight: 100;
+    }
+</style>
 <div class="f-row-column" style="gap: 10px;">
     <div class="f-column small-w-100" style="width: 90%;">
-        <h2>ApiClient Generation Configurations</h2>
+        <MudText Style="font-weight: 500;" Typo="Typo.h2">ApiClient Generation Configurations</MudText>
         <br/>
         <MudAlert Variant="Variant.Outlined" Elevation="2" Severity="Severity.Info" Style="width: fit-content;">
             For an in depth explanation on how these settings work, see <a class="link-normal" href="/ApiClient-Configurations-Explained">ApiClient Configurations Explanation</a>.
@@ -14,6 +20,48 @@
     </div>
 </div>
 <br />
+<MudText Class="setting-section-header" Typo="Typo.h5">Important</MudText>
+<MudGrid Spacing="3">
+    <AdvancedSettingItem ToolTip="This will determine the attributes used on classes generated from Json and the extension methods used on http client calls.">
+        <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="ApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
+    </AdvancedSettingItem>
+    
+    <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
+        <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="ApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
+    </AdvancedSettingItem>
+</MudGrid>
+<MudDivider Class="my-divider" Light="true" FlexItem="true" />
+<MudText Class="setting-section-header" Typo="Typo.h5">Multiple Response Handling</MudText>
+<MudGrid Spacing="3">
+    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.HandleMultipleResponses">Handle Multiple Responses</MudSwitch>
+    </AdvancedSettingItem>
+
+    <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle Multiple Responses is enabled and a request has multiple response types.">
+        <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="ApiClientOptions.MultipleResponseHandling" Label="Multiple Response Handling"></EnumSelectComponent>
+    </AdvancedSettingItem>
+</MudGrid>
+<MudDivider Class="my-divider" Light="true" FlexItem="true" />
+<MudText Class="setting-section-header" Typo="Typo.h5">Error Handling</MudText>
+<MudGrid Spacing="3">
+    <AdvancedSettingItem ToolTip="Determines whether or not to handle errors when making http client calls and how to handle them when they happen.">
+        <EnumSelectComponent @bind-Value="ApiClientOptions.ErrorHandlingStrategy" AlwaysShowAllEnumValues Label="Error Handling Strategy"></EnumSelectComponent>
+    </AdvancedSettingItem>
+
+    <AdvancedSettingItem ToolTip="Choose how to output your exceptions, if at all.">
+        <MultiEnumSelectComponent TEnum="ErrorHandlingSinks" Value="ApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
+    </AdvancedSettingItem>
+
+    <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handled by the sinks.">
+        <MultiEnumSelectComponent TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="ApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
+    </AdvancedSettingItem>
+    
+    <AdvancedSettingItem ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
+        <EnumSelectComponent @bind-Value="ApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
+    </AdvancedSettingItem>
+</MudGrid>
+<MudDivider Class="my-divider" Light="true" FlexItem="true" />
+<MudText Class="setting-section-header" Typo="Typo.h5">Function Configurations</MudText>
 <MudGrid Spacing="3">
     <AdvancedSettingItem ToolTip="Each request in the generated ApiClient will call EnsureSuccessStatusCode() on the HttpResponseMessage before deserializing or returning the response stream.">
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudSwitch>
@@ -26,78 +74,47 @@
     <AdvancedSettingItem ToolTip="@(@"If true each request function on the generated ApiClient will be have a Cancellation token parameter with a default value of default.")">
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.UseCancellationTokens">Use Cancellation Tokens</MudSwitch>
     </AdvancedSettingItem>
-
+</MudGrid>
+<MudDivider Class="my-divider" Light="true" FlexItem="true" />
+ <MudText Class="setting-section-header" Typo="Typo.h5">Class Generation</MudText>
+<MudGrid Spacing="3">
     <AdvancedSettingItem ToolTip="Removes any class that is reused in responses across requests. See options explanation page.">
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateClasses">Remove Duplicate Classes</MudSwitch>
     </AdvancedSettingItem>
-    
-    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
-        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.HandleMultipleResponses">Handle Multiple Responses</MudSwitch>
-    </AdvancedSettingItem>
-    
-    <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle Multiple Responses is enabled and a request has multiple response types.">
-        <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="ApiClientOptions.MultipleResponseHandling" Label="Multiple Response Handling"></EnumSelectComponent>
-    </AdvancedSettingItem>
-
-    <AdvancedSettingItem ToolTip="This will determine the attributes used on classes generated from Json and the extension methods used on http client calls.">
-        <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="ApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
-    </AdvancedSettingItem>
-
-    <AdvancedSettingItem ToolTip="Any types choosen in here will caused disabled parameters of that type to be removed in pre-processing..">
-        <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="ApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
-    </AdvancedSettingItem>
-
-    <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
-        <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="ApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
-    </AdvancedSettingItem>
-
-    <AdvancedSettingItem ToolTip="Determines whether or not to handle errors when making http client calls and how to handle them when they happen.">
-        <EnumSelectComponent @bind-Value="ApiClientOptions.ErrorHandlingStrategy" AlwaysShowAllEnumValues Label="Error Handling Strategy"></EnumSelectComponent>
-    </AdvancedSettingItem>
-
-    <AdvancedSettingItem ToolTip="Choose how to output your exceptions, if at all.">
-        <MultiEnumSelectComponent TEnum="ErrorHandlingSinks" Value="ApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
-    </AdvancedSettingItem>
-
-    <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handled by the sinks.">
-        <MultiEnumSelectComponent TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="ApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
-    </AdvancedSettingItem>
-
-    <AdvancedSettingItem ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
-        <EnumSelectComponent @bind-Value="ApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
-    </AdvancedSettingItem>
+</MudGrid>
+<MudDivider Class="my-divider" Light="true" FlexItem="true" />
+<MudText Class="setting-section-header" Typo="Typo.h5">Miscellaneous</MudText>
+<MudGrid Spacing="3">
+     <AdvancedSettingItem ToolTip="Any types choosen in here will cause disabled parameters of that type to be removed in pre-processing..">
+         <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="ApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
+     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="WARNING: Authorizations will be lost is this setting is enabled. This will reorganize requests by authority. See options explained page for full explanation.">
-        <EnumSelectComponent @bind-Value="ApiClientOptions.RootDefinition" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
-    </AdvancedSettingItem>
-    <MudItem xs="12" sm="6" md="4" lg="3" Style="align-self: flex-end; display: flex; justify-content: center;">
-        @{
-            var toolTipColor = Color.Warning;
-            var toolTipVisible = false;
-            string toolTipMessage = "";
-            if (!Equals(ApiClientOptions, LastSavedApiClientOptions))
-            {
-                toolTipColor = Color.Warning;
-                toolTipVisible = true;
-                toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
-            }
-        }
-        <div class="f-row aic" style="gap: 15px; width: 100%; justify-content: space-around;">
-            <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="Equals(ApiClientOptions, LastSavedApiClientOptions)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
-            @if (toolTipVisible)
-            {
-                <MudTooltip Style="position: absolute; top: 10px; right: 10px;" Text="@toolTipMessage">
-                    <MudIcon Icon="@Icons.Warning" Color="@toolTipColor" Title="Warning" Size="Size.Large"></MudIcon>
-                </MudTooltip>
-            }
-            else
-            {
-                <div style="width: 20px;">
-                </div>
-            }
-        </div>
-    </MudItem>
+         <EnumSelectComponent @bind-Value="ApiClientOptions.RootDefinition" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
+     </AdvancedSettingItem>
 </MudGrid>
+@{
+    var toolTipColor = Color.Warning;
+    var toolTipVisible = false;
+    string toolTipMessage = "";
+    if (!Equals(ApiClientOptions, LastSavedApiClientOptions))
+    {
+        toolTipColor = Color.Warning;
+        toolTipVisible = true;
+        toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
+    }
+}
+<div class="f-row" style="margin-top: 15px;" >
+    <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="Equals(ApiClientOptions, LastSavedApiClientOptions)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
+    @if (toolTipVisible)
+    {  
+        <div style="width: 20px;">
+        </div>
+        <MudTooltip Style="position: absolute; top: 10px; right: 10px;" Text="@toolTipMessage">
+            <MudIcon Icon="@Icons.Warning" Color="@toolTipColor" Title="Warning" Size="Size.Large"></MudIcon>
+        </MudTooltip>
+    }
+</div>
 
 @code {
     [Inject] private ISnackbar? Snackbar { get; set; }

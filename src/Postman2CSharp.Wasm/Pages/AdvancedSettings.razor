@@ -10,36 +10,34 @@
 <div id="Advanced-Settings">
     @if (LazyLoader.AdvancedSettingsLoaded)
     {
-        <MudPaper Class="settings-paper" Style="padding: 16px;">
-            <CSharpCodeWriterOptionsComponent />
-            <br />
-            <br />
-            <div class="f-row">
-                <div style="width: 90%;">
-                    <h2>Site Settings</h2>
-                </div>
-                <div>
-                    @if (!Equals(SiteSettings.Instance, DefaultSiteSettings()))
-                    {
-                        <MudTooltip Text="Resets settings to default values">
-                            <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="() => SiteSettings.Instance = DefaultSiteSettings()">Reset</MudButton>
-                        </MudTooltip>
-                    }
-                </div>
+        <CSharpCodeWriterOptionsComponent />
+        <br />
+        <br />
+        <div class="f-row">
+            <div style="width: 90%;">
+                <MudText Style="font-weight: 500;" Typo="Typo.h2">Site Settings</MudText>
             </div>
-            <br />
-            <MudGrid Spacing="3">
-                <MudItem xs="12" sm="6" md="4" lg="3">
-                    <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowSnackbarPopups">Show SnackBar Popups</MudSwitch>
-                </MudItem>
-                <MudItem>
-                    <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.SaveCollectionsToLocalStorage">Save Collections to Local Storage</MudSwitch>
-                </MudItem>
-                <MudItem>
-                    <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowDownloadInTreeView">Show Download Button In Tree View</MudSwitch>
-                </MudItem>
-            </MudGrid>
-        </MudPaper>
+            <div>
+                @if (!Equals(SiteSettings.Instance, DefaultSiteSettings()))
+                {
+                    <MudTooltip Text="Resets settings to default values">
+                        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="() => SiteSettings.Instance = DefaultSiteSettings()">Reset</MudButton>
+                    </MudTooltip>
+                }
+            </div>
+        </div>
+        <br />
+        <MudGrid Spacing="3">
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowSnackbarPopups">Show SnackBar Popups</MudSwitch>
+            </MudItem>
+            <MudItem>
+                <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.SaveCollectionsToLocalStorage">Save Collections to Local Storage</MudSwitch>
+            </MudItem>
+            <MudItem>
+                <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowDownloadInTreeView">Show Download Button In Tree View</MudSwitch>
+            </MudItem>
+        </MudGrid>
     }
 </div>
 @code {

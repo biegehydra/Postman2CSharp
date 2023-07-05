@@ -5,11 +5,14 @@
 .mud-paper {
     --mud-palette-error: #9c5c64;
 }
-.settings-paper {
+.header-paper {
     background-color: rgba(115, 126, 207, 0.05);
+    padding: 16px;
+    padding-top: 3px;
 }
-.settings-paper {
-    background-color: rgba(115, 126, 207, 0.05);
+.my-divider {
+    margin-top: 20px;
+    margin-bottom: 15px;
 }
 
 .link-normal {
@@ -208,7 +211,7 @@ li {
     z-index: 1;
 }
 .code-writing-options-contianer {
-    padding: 0px 50px 15px 0px;
+    padding: 10px 50px 15px 10px;
 }
 
 .paper-reset-small {
