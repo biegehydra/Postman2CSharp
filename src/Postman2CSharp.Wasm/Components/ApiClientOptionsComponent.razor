@@ -73,18 +73,13 @@
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
 <MudText Class="setting-section-header" Typo="Typo.h5">Class Generation</MudText>
 <p style="margin-bottom: 20px;">
-     It's not recommend to disable RemoveDuplicateClasses ever.
 </p>
 <MudGrid Spacing="3">
-    <AdvancedSettingItem ToolTip="Removes any class that is reused in responses across requests. See options explanation page.">
-        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateClasses">Remove Duplicate Classes</MudSwitch>
+    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudSwitch>
     </AdvancedSettingItem>
     
-    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
-        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveSemiDuplicates">Remove Semi-Duplicates</MudSwitch>
-    </AdvancedSettingItem>
-    
-    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+    <AdvancedSettingItem ToolTip="This will determine whether root classes are considered for deduping.">
         <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudSwitch>
     </AdvancedSettingItem>
 </MudGrid>

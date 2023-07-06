@@ -19,6 +19,7 @@ using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 using Postman2CSharp.Core.Utilities;
 using System.Net;
+using System.Threading;
 
 namespace Postman2CSharp.Core;
 
@@ -224,6 +225,10 @@ public class ApiClientGenerator
             if (requestDataType is DataType.Json)
             {
                 var json = requestItem.Request!.Body!.Raw ?? "";
+
+                // Will fix any issues caused by collection variables
+                json = VariableExtractor.ReplaceVariablesWith1(json);
+
                 if (string.IsNullOrWhiteSpace(json))
                 {
                     requestClassName = "EmptyRequest";
@@ -252,7 +257,7 @@ public class ApiClientGenerator
                     }
                     catch (DuplicateRootException ex)
                     {
-                        AddDuplicateRootUsage(ex.OriginalRootName, requestClassName, uniqueName, GeneratedClassType.Request);
+                        AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, requestClassName, uniqueName, GeneratedClassType.Request);
                         requestClassName = ex.OriginalRootName;
                         requestSourceCode = null;
                         requestTypes = null;
@@ -348,7 +353,7 @@ public class ApiClientGenerator
                     }
                     catch (DuplicateRootException ex)
                     {
-                        AddDuplicateRootUsage(ex.OriginalRootName, responseClassName, uniqueName, GeneratedClassType.Response);
+                        AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, responseClassName, uniqueName, GeneratedClassType.Response);
 
                         responseClassName = ex.OriginalRootName;
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
@@ -409,7 +414,7 @@ public class ApiClientGenerator
                 }
                 catch (DuplicateRootException ex)
                 {
-                    AddDuplicateRootUsage(ex.OriginalRootName, queryParametersClassName, uniqueName, GeneratedClassType.QueryParameters);
+                    AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, queryParametersClassName, uniqueName, GeneratedClassType.QueryParameters);
                     queryParametersClassName = ex.OriginalRootName;
                     queryParametersSourceCode = null;
                 }
@@ -498,14 +503,14 @@ public class ApiClientGenerator
             }
         }
 
-        void AddDuplicateRootUsage(string className, string? intendedClassName, string requestItemName, GeneratedClassType classType)
+        void AddDuplicateRootUsage(string originalClassName, bool originalIsRoot, string? intendedClassName, string requestItemName, GeneratedClassType classType)
         {
-            if (duplicateRoots.All(x => x.ClassName != className))
+            if (duplicateRoots.All(x => x.ClassName != originalClassName))
             {
-                duplicateRoots.Add(new DuplicateRoot(className, new List<DuplicateRootUsage>()));
+                duplicateRoots.Add(new DuplicateRoot(originalClassName, originalIsRoot, new List<DuplicateRootUsage>(), !originalIsRoot));
             }
 
-            var duplicateRoot = duplicateRoots.First(x => x.ClassName == className);
+            var duplicateRoot = duplicateRoots.First(x => x.ClassName == originalClassName);
             duplicateRoot.Usages.Add(new DuplicateRootUsage(requestItemName, intendedClassName, classType));
         }
     }

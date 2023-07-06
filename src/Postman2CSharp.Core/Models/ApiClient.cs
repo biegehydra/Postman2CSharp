@@ -17,14 +17,16 @@ public class DuplicateRoot
     public required string ClassName { get; set; }
     public required List<DuplicateRootUsage> Usages { get; set; }
     public required bool Resolved { get; set; }
+    public required bool IsRoot { get; set; }
 
     [JsonConstructor]
     [SetsRequiredMembers]
-    public DuplicateRoot(string className, List<DuplicateRootUsage> usages, bool resolved = false)
+    public DuplicateRoot(string className, bool isRoot, List<DuplicateRootUsage> usages, bool resolved = false)
     {
         ClassName = className;
         Usages = usages;
         Resolved = resolved;
+        IsRoot = isRoot;
     }
 }
 public record DuplicateRootUsage(string HttpCallName, string? IntendedClassName, GeneratedClassType ClassType);

@@ -19,6 +19,7 @@ namespace Xamasoft.JsonClassGenerator
     public class DuplicateRootException : Exception
     {
         public string OriginalRootName { get; set; }
+        public bool OriginalIsRoot { get; set; }
     }
     public class JsonClassGenerator
     {
@@ -392,7 +393,7 @@ namespace Xamasoft.JsonClassGenerator
                 if (isDuplicate) continue;
 
                 // If this reference hasn't already been fixed above, we need to fix it here
-                if (char.IsDigit(type.AssignedName!.Last()) && !char.IsDigit(type.NewAssignedName.Last()))
+                if (type.AssignedName != null && type.NewAssignedName != null && char.IsDigit(type.AssignedName.Last()) && !char.IsDigit(type.NewAssignedName.Last()))
                     type.AssignNewAssignedName(type.AssignedName);
                 if (!RemoveDuplicateClasses || !typesWithNoDuplicates.Exists(p => p.OriginalName == type.OriginalName))
                 {
@@ -512,7 +513,8 @@ namespace Xamasoft.JsonClassGenerator
             {
                 throw new DuplicateRootException()
                 {
-                    OriginalRootName = originalType.NewAssignedName ?? originalType.AssignedName
+                    OriginalRootName = originalType.NewAssignedName ?? originalType.AssignedName,
+                    OriginalIsRoot = originalType.IsRoot
                 };
             }
             return true;

@@ -68,18 +68,6 @@ namespace Postman2CSharp.Core.Utilities
                     }
                 }
 
-                if (request.Body is { } body)
-                {
-                    // Check Body properties for variables
-                    var result = ExtractAndReplaceVariables(body.Mode, CsharpPropertyType.Private);
-                    body.Mode = result.StringWithCSharpInterpolation!;
-                    usedVariables.AddRange(result.Variables);
-
-                    result = ExtractAndReplaceVariables(body.Raw, CsharpPropertyType.Private);
-                    body.Raw = result.StringWithCSharpInterpolation!;
-                    usedVariables.AddRange(result.Variables);
-                }
-
                 if (request.Header is { Count: > 0 })
                 {
                     // Check Header properties for variables
@@ -178,6 +166,22 @@ namespace Postman2CSharp.Core.Utilities
                     var value = Utils.NormalizeToCsharpPropertyName(variable, type);
                     input = input.Replace($"{{{{{variable}}}}}", value);
                 }
+            }
+
+            return input;
+        }
+
+        public static string? ReplaceVariablesWith1(string? input)
+        {
+            if (input == null) return null;
+            var pattern = "{{(.*?)}}";
+
+            var matches = Regex.Matches(input, pattern);
+
+            foreach (Match match in matches)
+            {
+                var variable = match.Groups[1].Value;
+                input = input.Replace($"{{{{{variable}}}}}", "1");
             }
 
             return input;

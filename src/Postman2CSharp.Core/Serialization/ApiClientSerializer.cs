@@ -98,7 +98,7 @@ public static class ApiClientSerializer
 
         if (addAuthHeaderToConstructor)
         {
-            var auth = uniqueAuths.Single();
+            var auth = uniqueAuths.SingleOrDefault();
             sb.AddAuthToConstructor(auth, indent, true);
         }
         else

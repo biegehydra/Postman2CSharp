@@ -10,12 +10,15 @@
                     var color = apiClientDuplicateRoot.Resolved ? Color.Success : Color.Error;
                     var text = apiClientDuplicateRoot.Resolved ? "The duplicate has been resolved" : "The duplicate has not been resolved";
                     <MudTooltip Text="@text">
-                        <MudIconButton Icon="@icon" Color="@color" ></MudIconButton>
+                        <MudIconButton Icon="@icon" Color="@color"></MudIconButton>
                     </MudTooltip>
-                    <Detail Key="Retained" Value="@apiClientDuplicateRoot.ClassName" FontSize="FontSize.XLarge" />
-                    <MudTooltip Text="Edit Name For All Usages">
-                        <MudIconButton Icon="@Icons.Edit" Color="Color.Primary" OnClick="() => BeginEditNameForAllUsages(apiClientDuplicateRoot.ClassName)" ></MudIconButton>
-                    </MudTooltip>
+                    <Detail Key="Retained" Value="@apiClientDuplicateRoot.ClassName" FontSize="FontSize.XLarge"/>
+                    if (!apiClientDuplicateRoot.Resolved)
+                    {
+                        <MudTooltip Text="Edit Name For All Usages">
+                            <MudIconButton Icon="@Icons.Edit" Color="Color.Primary" OnClick="() => BeginEditNameForAllUsages(apiClientDuplicateRoot.ClassName)" ></MudIconButton>
+                        </MudTooltip>
+                    }
                 }
                 else
                 {
@@ -25,7 +28,10 @@
                 }
             </div>
             <div style="width: fit-content; padding-left: 20px;">
-                <pre><code @key="apiClientDuplicateRoot.ClassName" class="language-csharp">@ApiClient.GetClassSourceCode(apiClientDuplicateRoot.ClassName)</code></pre>
+                @if (ApiClient.GetClassSourceCode(apiClientDuplicateRoot.ClassName) is { } sourceCode)
+                {
+                    <pre><code @key="apiClientDuplicateRoot.ClassName" class="language-csharp"></code>@sourceCode</pre>
+                }
             </div>
             <div style="padding-left: 20px;">
                 @foreach (var usage in apiClientDuplicateRoot.Usages)
