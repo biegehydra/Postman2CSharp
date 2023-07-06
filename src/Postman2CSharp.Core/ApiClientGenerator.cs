@@ -631,7 +631,7 @@ using System.Net.Http;
                                 if (x.FormDataType == FormDataType.File) files++;
                                 var fileNumberText = files > 1 ? files.ToString() : null;
                                 return x.FormDataType == FormDataType.Text
-                                    ? $"{{ new StringContent({x.CsPropertyName}), \"{x.Key}\" }}"
+                                    ? $"{{ new StringContent({x.CsPropertyName(CsharpPropertyType.Public)}), \"{x.Key}\" }}"
                                     : $"{{ File{fileNumberText}, \"{x.Key}\", FileName{fileNumberText} }}";
                             }));
 
@@ -646,7 +646,7 @@ using System.Net.Http;
                     else 
                     {
                         string formDataContent = string.Join(",\n",
-                            formdatas.Select(x => $"new (\"{x.Key}\", {x.CsPropertyName} )"));
+                            formdatas.Select(x => $"new (\"{x.Key}\", {x.CsPropertyName(CsharpPropertyType.Public)} )"));
 
                         var toFormDataSimpleMethod = SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("FormUrlEncodedContent"), "ToFormData")
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))

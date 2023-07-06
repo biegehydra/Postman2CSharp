@@ -497,7 +497,7 @@ namespace Xamasoft.JsonClassGenerator
             if (possibleDuplicateTyp.Fields != null && originalType.Fields == null) return false;
             if (possibleDuplicateTyp.Fields == null && originalType.Fields == null) return true;
             if (possibleDuplicateTyp.Fields!.Count > originalType.Fields!.Count) return false;
-            if (!removeDuplicateRoots && possibleDuplicateTyp.IsRoot || originalType.IsRoot) return false;
+            if (!removeDuplicateRoots && (possibleDuplicateTyp.IsRoot || originalType.IsRoot)) return false;
             foreach (JsonFieldInfo jsonFieldInfo in possibleDuplicateTyp.Fields!)
             {
                 if (originalType.Fields!.Any(x => x.MemberName == jsonFieldInfo.MemberName && x.Type.Type == jsonFieldInfo.Type.Type))
