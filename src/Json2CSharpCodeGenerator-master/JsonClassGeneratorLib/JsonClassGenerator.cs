@@ -336,7 +336,7 @@ namespace Xamasoft.JsonClassGenerator
             // TODO: This is currently O(n*n) because it iterates through List<T> on every loop iteration. This can be optimized.
 
             List<JsonType> typesWithNoDuplicates = new List<JsonType>();
-            types = types.OrderBy(p => p.AssignedName).ToList();
+            types = types.OrderByDescending(x => x.IsRoot).ThenBy(p => p.AssignedName).ToList();
             AllTypes = AllTypes.OrderBy(p => p.AssignedName).ToList();
 
             foreach (JsonType type in types)
@@ -374,14 +374,14 @@ namespace Xamasoft.JsonClassGenerator
                                 {
                                     if (type.AssignedName != null && jsonTypeField.Type?.AssignedName == type.AssignedName)
                                     {
-                                        jsonTypeField.Type.AssignOriginalName(type.OriginalName);
+                                        jsonTypeField.Type!.AssignOriginalName(type.OriginalName);
                                         jsonTypeField.Type.AssignName(type.AssignedName);
                                         jsonTypeField.Type.AssignNewAssignedName(type.NewAssignedName);
                                         continue;
                                     }
                                     if (type.AssignedName != null && jsonTypeField.Type?.InternalType?.AssignedName == type.AssignedName)
                                     {
-                                        jsonTypeField.Type.InternalType.AssignOriginalName(type.OriginalName);
+                                        jsonTypeField.Type!.InternalType!.AssignOriginalName(type.OriginalName);
                                         jsonTypeField.Type.InternalType.AssignName(type.AssignedName);
                                         jsonTypeField.Type!.InternalType.AssignNewAssignedName(type.NewAssignedName);
                                     }
@@ -491,16 +491,21 @@ namespace Xamasoft.JsonClassGenerator
             }
         }
 
-        private static bool TypesMatch(JsonType possibleDuplicateTyp, JsonType originalType, bool removeDuplicateRoots)
+        private static bool TypesMatch(JsonType dup, JsonType orig, bool removeDuplicateRoots)
         {
-            if (possibleDuplicateTyp.Fields == null && originalType.Fields != null) return false;
-            if (possibleDuplicateTyp.Fields != null && originalType.Fields == null) return false;
-            if (possibleDuplicateTyp.Fields == null && originalType.Fields == null) return true;
-            if (possibleDuplicateTyp.Fields!.Count > originalType.Fields!.Count) return false;
-            if (!removeDuplicateRoots && (possibleDuplicateTyp.IsRoot || originalType.IsRoot)) return false;
-            foreach (JsonFieldInfo jsonFieldInfo in possibleDuplicateTyp.Fields!)
+            if (dup.Fields == null && orig.Fields != null) return false;
+            if (dup.Fields != null && orig.Fields == null) return false;
+            if (dup.Fields == null && orig.Fields == null) return true;
+            if (dup.Fields!.Count > orig.Fields!.Count) return false;
+            if (dup.OriginalName != orig.OriginalName &&
+                orig.Fields.Count - dup.Fields.Count > 4)
             {
-                if (originalType.Fields!.Any(x => x.MemberName == jsonFieldInfo.MemberName && x.Type.Type == jsonFieldInfo.Type.Type))
+                return false;
+            }
+            if (!removeDuplicateRoots && (dup.IsRoot || orig.IsRoot)) return false;
+            foreach (JsonFieldInfo jsonFieldInfo in dup.Fields!)
+            {
+                if (orig.Fields!.Any(x => x.MemberName == jsonFieldInfo.MemberName && x.Type.Type == jsonFieldInfo.Type.Type))
                 {
                     continue;
                 }
@@ -509,12 +514,12 @@ namespace Xamasoft.JsonClassGenerator
                     return false;
                 }
             }
-            if (possibleDuplicateTyp.IsRoot && removeDuplicateRoots)
+            if (dup.IsRoot && removeDuplicateRoots)
             {
                 throw new DuplicateRootException()
                 {
-                    OriginalRootName = originalType.NewAssignedName ?? originalType.AssignedName,
-                    OriginalIsRoot = originalType.IsRoot
+                    OriginalRootName = orig.NewAssignedName ?? orig.AssignedName,
+                    OriginalIsRoot = orig.IsRoot
                 };
             }
             return true;
