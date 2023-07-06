@@ -37,24 +37,34 @@ namespace Postman2CSharp.Wasm.Services
 
         public async Task DownloadApiClient(ApiClient apiClient)
         {
-            var detailsDict = apiClient.ExportToDict();
-            var sourceCodeDict = detailsDict?.ToDictionary(x => x.Key, x => x.Value.SourceCode);
-            if (sourceCodeDict == null)
+            try
             {
-                _snackBar.Value?.Add("Something went wrong processing the Api Client. It could not be serialized correctly.");
-                return;
+                var detailsDict = apiClient.ExportToDict();
+                var sourceCodeDict = detailsDict?.ToDictionary(x => x.Key, x => x.Value.SourceCode);
+                if (sourceCodeDict == null)
+                {
+                    _snackBar.Value?.Add("Something went wrong processing the Api Client. It could not be serialized correctly.");
+                    return;
+                }
+
+                var fileNamePathDict = new Dictionary<string, string>();
+
+                foreach (var fileName in sourceCodeDict.Keys.ToList()
+                             .Where(x => !x.Contains(nameof(CoreCsFile.OAuth2QueryParameters))))
+                {
+                    var specialFileEnding = SpecialFileEndings.FirstOrDefault(fileName.EndsWith);
+                    if (specialFileEnding == null) continue;
+                    // GetCampaignsRequest.cs => { "GetCampaignsRequest.cs", "GetCampaigns" }
+                    fileNamePathDict.Add(fileName, fileName.Replace(specialFileEnding, string.Empty));
+                }
+
+                await _jsRuntime.InvokeVoidAsync("createZipAndDownload", apiClient.Name, sourceCodeDict,
+                    fileNamePathDict);
             }
-
-            var fileNamePathDict = new Dictionary<string, string>();
-
-            foreach (var fileName in sourceCodeDict.Keys.ToList().Where(x => !x.Contains(nameof(CoreCsFile.OAuth2QueryParameters))))
+            catch (OutOfMemoryException)
             {
-                var specialFileEnding = SpecialFileEndings.FirstOrDefault(fileName.EndsWith);
-                if (specialFileEnding == null) continue;
-                // GetCampaignsRequest.cs => { "GetCampaignsRequest.cs", "GetCampaigns" }
-                fileNamePathDict.Add(fileName, fileName.Replace(specialFileEnding, string.Empty));
+                _snackBar.Value?.Add("Application ran out of memory during process. Try deleting large collections or refreshing the page.");
             }
-            await _jsRuntime.InvokeVoidAsync("createZipAndDownload", apiClient.Name, sourceCodeDict, fileNamePathDict);
         }
 
         public async Task DownloadAllApiClient(List<ApiClient> apiClients)
