@@ -436,14 +436,14 @@ namespace Xamasoft.JsonClassGenerator
                                     {
                                         jsonTypeField.Type.AssignOriginalName(nonDuplicate.OriginalName);
                                         jsonTypeField.Type.AssignName(nonDuplicate.AssignedName);
-                                        jsonTypeField.Type.AssignNewAssignedName(nonDuplicate.NewAssignedName);
+                                        jsonTypeField.Type.AssignNewAssignedName(nonDuplicate.NewAssignedName ?? nonDuplicate.AssignedName);
                                         continue;
                                     }
                                     if (possibleDuplicate.NewAssignedName != null && jsonTypeField.Type?.InternalType?.NewAssignedName == possibleDuplicate.NewAssignedName)
                                     {
                                         jsonTypeField.Type.InternalType.AssignOriginalName(nonDuplicate.OriginalName);
                                         jsonTypeField.Type!.InternalType.AssignName(nonDuplicate.AssignedName);
-                                        jsonTypeField.Type!.InternalType!.AssignNewAssignedName(nonDuplicate.NewAssignedName);
+                                        jsonTypeField.Type!.InternalType!.AssignNewAssignedName(nonDuplicate.NewAssignedName ?? nonDuplicate.AssignedName);
                                     }
                                 }
                             }
