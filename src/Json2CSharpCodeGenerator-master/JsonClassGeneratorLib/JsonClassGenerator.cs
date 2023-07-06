@@ -395,6 +395,9 @@ namespace Xamasoft.JsonClassGenerator
                 // If this reference hasn't already been fixed above, we need to fix it here
                 if (type.AssignedName != null && type.NewAssignedName != null && char.IsDigit(type.AssignedName.Last()) && !char.IsDigit(type.NewAssignedName.Last()))
                     type.AssignNewAssignedName(type.AssignedName);
+                if (type.InternalType is {AssignedName: not null, NewAssignedName: not null} && char.IsDigit(type.InternalType.AssignedName.Last()) && !char.IsDigit(type.InternalType.NewAssignedName.Last()))
+                    type.AssignNewAssignedName(type.AssignedName);
+
                 if (!RemoveDuplicateClasses || !typesWithNoDuplicates.Exists(p => p.OriginalName == type.OriginalName))
                 {
                     typesWithNoDuplicates.Add(type);
