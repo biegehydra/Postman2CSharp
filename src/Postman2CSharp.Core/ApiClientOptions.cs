@@ -6,7 +6,6 @@ namespace Postman2CSharp.Core
 {
     public class ApiClientOptions
     {
-        public bool RemoveDuplicateClasses { get; set; } = true;
         public bool RemoveSemiDuplicates { get; set; } = true;
         public bool RemoveDuplicateRoots { get; set; } = true;
         public bool EnsureResponseIsSuccessStatusCode { get; set; }

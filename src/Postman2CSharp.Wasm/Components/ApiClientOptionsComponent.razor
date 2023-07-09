@@ -163,8 +163,7 @@
         var allCommentTypesMatch = options1.XmlCommentTypes.Count == options2.XmlCommentTypes.Count && options1.XmlCommentTypes.All(type => options2.XmlCommentTypes.Contains(type));
         var allSinksMatch = options1.ErrorHandlingSinks.Count == options2.ErrorHandlingSinks.Count && options1.ErrorHandlingSinks.All(sink => options2.ErrorHandlingSinks.Contains(sink));
         var allCatchTypesMatch = options1.CatchExceptionTypes.Count == options2.CatchExceptionTypes.Count && options1.CatchExceptionTypes.All(type => options2.CatchExceptionTypes.Contains(type));
-        return options1.RemoveDuplicateClasses == options2.RemoveDuplicateClasses
-               && options1.EnsureResponseIsSuccessStatusCode == options2.EnsureResponseIsSuccessStatusCode
+        return options1.EnsureResponseIsSuccessStatusCode == options2.EnsureResponseIsSuccessStatusCode
                && options1.MakePathCollectionVariablesFunctionParameters == options2.MakePathCollectionVariablesFunctionParameters
                && options1.ErrorHandlingStrategy == options2.ErrorHandlingStrategy
                && options1.LogLevel == options2.LogLevel
