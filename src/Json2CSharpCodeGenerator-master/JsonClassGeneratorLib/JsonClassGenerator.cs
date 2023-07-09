@@ -409,24 +409,27 @@ namespace Xamasoft.JsonClassGenerator
                                                            ( !potentialType.IsRoot && potentialType.OriginalName == allTypeType.OriginalName && TypesMatch(potentialType, allTypeType, this.RemoveDuplicateRoots) )) is
                     { } allTypesMatchedType)
                 {
-                    if (potentialType.IsRoot)
-                    {
-                        Console.WriteLine("t");
-                    }
                     duplicates.Add(potentialType);
-                    ChangeNewAssignedNamesByNewAssignedNameInList(types, potentialType.NewAssignedName ?? potentialType.AssignedName, allTypesMatchedType.NewAssignedName ?? allTypesMatchedType.AssignedName);
+                    if ((potentialType.NewAssignedName?.StartsWith('_') ?? false) && potentialType.Fields.Count == allTypesMatchedType.Fields.Count)
+                    {
+                        
+                    }
+                    else
+                    {
+                        ChangeNewAssignedNamesByNewAssignedNameInList(types, potentialType.NewAssignedName ?? potentialType.AssignedName, allTypesMatchedType.NewAssignedName ?? allTypesMatchedType.AssignedName);
+                    }
                 }
                 else
                 {
                     var confirmedNotDuplicate = potentialType;
                     confirmedNotDuplicate.IsVariant = true;
-                    if (AllTypes.Any(x => !x.IsRoot && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName))
+                    if (AllTypes.Any(x => !x.IsRoot && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName) || types.Any(x => !x.IsRoot && x != confirmedNotDuplicate && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName))
                     {
                         do
                         {
                             var newnewAssignedName = IncrementString(confirmedNotDuplicate.NewAssignedName);
                             confirmedNotDuplicate.AssignNewAssignedName(newnewAssignedName);
-                        } while (AllTypes.Any(x => x.NewAssignedName == confirmedNotDuplicate.NewAssignedName));
+                        } while (AllTypes.Any(x => !x.IsRoot && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName) || types.Any(x => !x.IsRoot && x != confirmedNotDuplicate &&  x.NewAssignedName == confirmedNotDuplicate.NewAssignedName));
                         ChangeNewAssignedNamesByOriginalInList(typesWithNoDuplicates, confirmedNotDuplicate.OriginalName, confirmedNotDuplicate.NewAssignedName);
                     }
                 }
@@ -516,14 +519,33 @@ namespace Xamasoft.JsonClassGenerator
             var unused = new List<JsonType>();
             foreach (JsonType jsonType in typesWithNoDuplicates)
             {
+#if DEBUG
+                var test = jsonType.AssignedName;
+                var test2 = jsonType.OriginalName;
+                var test3 = jsonType.NewAssignedName;
+                var test4 = jsonType.Fields;
+                var test5 = jsonType.InternalType;
+                var test6 = jsonType.Type;
+                var test7 = jsonType.IsRoot;
+                var test8 = jsonType.IsVariant;
+#endif
+                if (jsonType.IsRoot)
+                {
+                    continue;
+                }
                 bool isUsed = false;
                 foreach (JsonType typesWithNoDuplicate in typesWithNoDuplicates)
                 {
-                    if (typesWithNoDuplicate.IsRoot)
-                    {
-                        isUsed = true;
-                        break;
-                    }
+#if DEBUG
+                    var test1 = jsonType.AssignedName;
+                    var test12 = jsonType.OriginalName;
+                    var test13 = jsonType.NewAssignedName;
+                    var test14 = jsonType.Fields;
+                    var test15 = jsonType.InternalType;
+                    var test16 = jsonType.Type;
+                    var test17 = jsonType.IsRoot;
+                    var test18 = jsonType.IsVariant;
+#endif
                     if (typesWithNoDuplicate.Fields.Any(x =>
                             x.Type?.NewAssignedName == jsonType.NewAssignedName ||
                             x.Type?.InternalType?.NewAssignedName == jsonType.NewAssignedName))
