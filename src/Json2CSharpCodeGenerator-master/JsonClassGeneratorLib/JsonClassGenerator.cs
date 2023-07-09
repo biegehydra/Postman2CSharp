@@ -23,6 +23,12 @@ namespace Xamasoft.JsonClassGenerator
     }
     public class JsonClassGenerator
     {
+        public void SetCurrentRootIsQueryParameters(bool currentRootIsQueryParameters)
+        {
+            _currentRootIsQueryParameters = currentRootIsQueryParameters;
+        }
+        private bool _currentRootIsQueryParameters; 
+
         public JsonClassGenerator(ICodeWriter codeWriter, bool removeDuplicateClasses, bool removeSemiDuplicates, bool removeDuplicateRoots)
         {
             CodeWriter = codeWriter;
@@ -110,7 +116,15 @@ namespace Xamasoft.JsonClassGenerator
                 rootType.IsRoot = true;
                 rootType.AssignName(_rootClassName ?? "Root");
                 this.GenerateClass(examples, rootType);
+                if (_currentRootIsQueryParameters)
+                {
+                    var root = Types.FirstOrDefault(x => x.IsRoot);
+                    if (root != null)
+                    {
+                        root.IsQueryParameters = true;
+                    }
 
+                }
                 this.Types = this.HandleDuplicateClassesJustTypes(this.Types);
                 AllTypes.AddRange(Types);
 
@@ -533,6 +547,7 @@ namespace Xamasoft.JsonClassGenerator
 
         private static bool TypesMatch(JsonType dup, JsonType orig, bool removeDuplicateRoots)
         {
+            if (dup.IsQueryParameters || orig.IsQueryParameters) return false;
             if (dup.Fields == null && orig.Fields != null) return false;
             if (dup.Fields != null && orig.Fields == null) return false;
             if (dup.Fields == null && orig.Fields == null) return true;

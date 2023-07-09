@@ -449,7 +449,8 @@ public class ApiClientGenerator
         }
         return (httpCalls, totalClassesGenerated, duplicateRoots);
 
-        void ProcessItem(JsonClassGenerator classGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, ref List<ClassType>? types, Dictionary<string, string?>? descriptionDict = null)
+        void ProcessItem(JsonClassGenerator classGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, 
+            ref List<ClassType>? types, Dictionary<string, string?>? descriptionDict = null)
         {
             className = GenerateUniqueName(itemName + itemType, uniqueNames);
             var writeComments = Options.ApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.QueryParameters);
@@ -457,6 +458,7 @@ public class ApiClientGenerator
             if (itemType == Consts.Parameters)
             {
                 classGenerator.CodeWriter = ParametersConfig(className, nameSpace, writeComments);
+                classGenerator.SetCurrentRootIsQueryParameters(true);
             }
             else
             {
@@ -464,6 +466,7 @@ public class ApiClientGenerator
                 codeWriterClone.Namespace = nameSpace;
                 codeWriterClone.RootClassName = className;
                 classGenerator.CodeWriter = new CSharpCodeWriter(codeWriterClone, writeComments);
+                classGenerator.SetCurrentRootIsQueryParameters(false);
             }
             classGenerator.SetDescriptionDict(descriptionDict);
             (sourceCode, var classCount) = GenerateClasses(classGenerator, json, ref types, className);
