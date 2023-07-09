@@ -111,7 +111,8 @@ namespace Xamasoft.JsonClassGenerator
                 this.Names.Add(_rootClassName ?? "Root"); //TODO Make sure this doesn't break anything
                 JsonType rootType = new JsonType(this, examples[0]);
                 rootType.IsRoot = true;
-                rootType.AssignName(_rootClassName ?? "Root");
+                rootType.OriginalAssignedName = _rootClassName ?? "Root";
+                rootType.NewAssignedName = _rootClassName ?? "Root";
                 this.GenerateClass(examples, rootType);
                 if (_currentRootIsQueryParameters)
                 {
@@ -279,10 +280,10 @@ namespace Xamasoft.JsonClassGenerator
                         }
                     }
 
-                    fieldType.AssignOriginalName(field.Key);
+                    fieldType.OriginalName = field.Key;
                     var titleCase = AddTitleToNamesIfNotPresent(field.Key);
-                    fieldType.AssignName(titleCase);
-                    fieldType.AssignNewAssignedName(titleCase);
+                    fieldType.OriginalAssignedName = titleCase;
+                    fieldType.NewAssignedName = titleCase;
 
                     this.GenerateClass(subexamples.ToArray(), fieldType);
                 }
@@ -315,10 +316,10 @@ namespace Xamasoft.JsonClassGenerator
                         }
                     }
 
-                    field.Value.InternalType.AssignOriginalName(field.Key);
+                    field.Value.InternalType.OriginalName = field.Key;
                     var titleCase = this.AddTitleToNamesIfNotPresent(field.Key);
-                    field.Value.InternalType.AssignName(titleCase);
-                    field.Value.InternalType.AssignNewAssignedName(titleCase);
+                    field.Value.InternalType.OriginalAssignedName = titleCase;
+                    field.Value.InternalType.NewAssignedName = titleCase;
 
                     this.GenerateClass(subexamples.ToArray(), field.Value.InternalType);
                 }
@@ -333,7 +334,7 @@ namespace Xamasoft.JsonClassGenerator
                 )
                 .ToList();
 
-            if (!string.IsNullOrEmpty(type.AssignedName))
+            if (!string.IsNullOrEmpty(type.NewAssignedName))
             {
                 this.Types.Add(type);
             }
@@ -357,12 +358,13 @@ namespace Xamasoft.JsonClassGenerator
             // TODO: This is currently O(n*n) because it iterates through List<T> on every loop iteration. This can be optimized.
 
             List<JsonType> typesWithNoDuplicates = new List<JsonType>();
-            types = types.OrderByDescending(x => x.IsRoot).ThenBy(p => p.AssignedName).ToList();
+            types = types.OrderByDescending(x => x.IsRoot).ThenBy(p => p.NewAssignedName).ToList();
+            AllTypes = AllTypes.OrderBy(x => x.NewAssignedName).ToList();
 
             foreach (JsonType potentialDuplicate in types)
             {
 #if DEBUG
-                var test = potentialDuplicate.AssignedName;
+                var test = potentialDuplicate.OriginalAssignedName;
                 var test2 = potentialDuplicate.OriginalName;
                 var test3 = potentialDuplicate.NewAssignedName;
                 var test4 = potentialDuplicate.Fields;
@@ -393,7 +395,7 @@ namespace Xamasoft.JsonClassGenerator
             foreach (JsonType potentialType in typesWithNoDuplicates)
             {
 #if DEBUG
-                var test = potentialType.AssignedName;
+                var test = potentialType.OriginalAssignedName;
                 var test2 = potentialType.OriginalName;
                 var test3 = potentialType.NewAssignedName;
                 var test4 = potentialType.Fields;
@@ -413,7 +415,7 @@ namespace Xamasoft.JsonClassGenerator
                     }
                     else
                     {
-                        ChangeNewAssignedNamesByNewAssignedNameInList(types, potentialType.NewAssignedName ?? potentialType.AssignedName, allTypesMatchedType.NewAssignedName ?? allTypesMatchedType.AssignedName);
+                        ChangeNewAssignedNamesByNewAssignedNameInList(types, potentialType.NewAssignedName, allTypesMatchedType.NewAssignedName);
                     }
                 }
                 else if (!RemoveSemiDuplicates && AllTypes.FirstOrDefault(allTypeType =>
@@ -434,7 +436,7 @@ namespace Xamasoft.JsonClassGenerator
                         do
                         {
                             var newnewAssignedName = IncrementString(confirmedNotDuplicate.NewAssignedName);
-                            confirmedNotDuplicate.AssignNewAssignedName(newnewAssignedName);
+                            confirmedNotDuplicate.NewAssignedName = newnewAssignedName;
                         } while (AllTypes.Any(x => !x.IsRoot && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName) || types.Any(x => !x.IsRoot && x != confirmedNotDuplicate &&  x.NewAssignedName == confirmedNotDuplicate.NewAssignedName));
                         ChangeNewAssignedNamesByOriginalInList(typesWithNoDuplicates, confirmedNotDuplicate.OriginalName, confirmedNotDuplicate.NewAssignedName);
                     }
@@ -466,14 +468,14 @@ namespace Xamasoft.JsonClassGenerator
                     if (originalName != null &&
                         jsonTypeField.Type?.OriginalName == originalName)
                     {
-                        jsonTypeField.Type.AssignNewAssignedName(newAssignedName);
+                        jsonTypeField.Type.NewAssignedName = newAssignedName;
                         continue;
                     }
 
                     if (originalName != null && jsonTypeField.Type?.InternalType?.OriginalName ==
                         originalName)
                     {
-                        jsonTypeField.Type!.InternalType!.AssignNewAssignedName(newAssignedName);
+                        jsonTypeField.Type!.InternalType!.NewAssignedName = newAssignedName;
                     }
                 }
             }
@@ -486,35 +488,17 @@ namespace Xamasoft.JsonClassGenerator
             {
                 foreach (JsonFieldInfo jsonTypeField in type.Fields)
                 {
-                    if (type.IsRoot)
+                    if (oldNewAssignedName != null &&
+                        jsonTypeField.Type?.NewAssignedName == oldNewAssignedName)
                     {
-                        if (oldNewAssignedName != null &&
-                            jsonTypeField.Type?.AssignedName == oldNewAssignedName)
-                        {
-                            jsonTypeField.Type.AssignNewAssignedName(newNewAssignedName);
-                            continue;
-                        }
-                        if (oldNewAssignedName != null &&
-                            jsonTypeField.Type?.InternalType?.AssignedName == oldNewAssignedName)
-                        {
-                            jsonTypeField.Type.InternalType.AssignNewAssignedName(newNewAssignedName);
-                            continue;
-                        }
+                        jsonTypeField.Type.NewAssignedName = newNewAssignedName;
+                        continue;
                     }
-                    else
-                    {
-                        if (oldNewAssignedName != null &&
-                            jsonTypeField.Type?.NewAssignedName == oldNewAssignedName)
-                        {
-                            jsonTypeField.Type.AssignNewAssignedName(newNewAssignedName);
-                            continue;
-                        }
 
-                        if (oldNewAssignedName != null && jsonTypeField.Type?.InternalType?.NewAssignedName ==
-                            oldNewAssignedName)
-                        {
-                            jsonTypeField.Type!.InternalType!.AssignNewAssignedName(newNewAssignedName);
-                        }
+                    if (oldNewAssignedName != null && jsonTypeField.Type?.InternalType?.NewAssignedName ==
+                        oldNewAssignedName)
+                    {
+                        jsonTypeField.Type!.InternalType!.NewAssignedName = newNewAssignedName;
                     }
                 }
             }
@@ -526,7 +510,7 @@ namespace Xamasoft.JsonClassGenerator
             foreach (JsonType jsonType in typesWithNoDuplicates)
             {
 #if DEBUG
-                var test = jsonType.AssignedName;
+                var test = jsonType.OriginalAssignedName;
                 var test2 = jsonType.OriginalName;
                 var test3 = jsonType.NewAssignedName;
                 var test4 = jsonType.Fields;
@@ -543,7 +527,7 @@ namespace Xamasoft.JsonClassGenerator
                 foreach (JsonType typesWithNoDuplicate in typesWithNoDuplicates)
                 {
 #if DEBUG
-                    var test1 = jsonType.AssignedName;
+                    var test1 = jsonType.OriginalAssignedName;
                     var test12 = jsonType.OriginalName;
                     var test13 = jsonType.NewAssignedName;
                     var test14 = jsonType.Fields;
@@ -601,7 +585,7 @@ namespace Xamasoft.JsonClassGenerator
             {
                 throw new DuplicateRootException()
                 {
-                    OriginalRootName = orig.NewAssignedName ?? orig.AssignedName,
+                    OriginalRootName = orig.NewAssignedName,
                     OriginalIsRoot = orig.IsRoot
                 };
             }

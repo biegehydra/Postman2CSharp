@@ -83,27 +83,14 @@ namespace Xamasoft.JsonClassGenerator
 
         public JsonTypeEnum Type { get; private set; }
         public JsonType InternalType { get; private set; }
-        public string AssignedName { get; private set; }
-        public string OriginalName { get; private set; }
-        public string NewAssignedName { get; private set; }
+        public string OriginalAssignedName { get; set; }
+        public string OriginalName { get; set; }
+        public string NewAssignedName { get; set; }
         
         /// <summary>
         /// Check if a json field can be nullable, example in an array of objects, one property in one object can have value while in an another object this property is null.
         /// </summary>
         public string IsNullable { get; private set; }
-
-        public void AssignName(string name)
-        {
-            AssignedName = name;
-        }
-        public void AssignOriginalName(string name)
-        {
-            OriginalName = name;
-        }
-        public void AssignNewAssignedName(string name)
-        {
-           NewAssignedName = name;
-        }
 
         public bool MustCache
         {
@@ -129,7 +116,7 @@ namespace Xamasoft.JsonClassGenerator
             }
             if (Type == JsonTypeEnum.Object)
             {
-                return string.Format("ReadStronglyTypedObject<{0}>", AssignedName);
+                return string.Format("ReadStronglyTypedObject<{0}>", NewAssignedName);
             }
             else if (Type == JsonTypeEnum.Array)
             {

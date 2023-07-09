@@ -191,7 +191,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
 
             const string visibility = "public";
 
-            var className = type.NewAssignedName ?? type.AssignedName;
+            var className = type.NewAssignedName;
             if (config.OutputType == OutputTypes.ImmutableRecord)
             {
                 sw.AppendFormat(indentTypes + "{0} record {1}({2}", visibility, className, Environment.NewLine);
@@ -407,7 +407,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             // Write an empty constructor on a single-line:
             if (type.Fields.Count == 0)
             {
-                sw.AppendFormat(indentMembers + "public {0}() {{}}{1}", type.AssignedName, Environment.NewLine);
+                sw.AppendFormat(indentMembers + "public {0}() {{}}{1}", type.NewAssignedName, Environment.NewLine);
                 return;
             }
 
@@ -421,7 +421,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
                         break;
                 }
 
-                sw.AppendFormat(indentMembers + "public {0}({1}", type.AssignedName, Environment.NewLine);
+                sw.AppendFormat(indentMembers + "public {0}({1}", type.NewAssignedName, Environment.NewLine);
 
                 JsonFieldInfo lastField = type.Fields[^1];
 

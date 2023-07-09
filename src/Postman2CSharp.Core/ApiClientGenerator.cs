@@ -19,7 +19,6 @@ using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 using Postman2CSharp.Core.Utilities;
 using System.Net;
-using System.Threading;
 
 namespace Postman2CSharp.Core;
 
@@ -448,7 +447,7 @@ public class ApiClientGenerator
             await RaiseProgressCallback((float) _processedRequests / TotalRequest);
         }
         return (httpCalls, totalClassesGenerated, duplicateRoots);
-
+        
         void ProcessItem(JsonClassGenerator classGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, 
             ref List<ClassType>? types, Dictionary<string, string?>? descriptionDict = null)
         {
@@ -521,7 +520,7 @@ public class ApiClientGenerator
         var sb = jsonClassGenerator.GenerateClasses(json, out var errorMessage);
         types = jsonClassGenerator.Types?.Select(x => new ClassType()
         {
-            AssignedName = x.AssignedName,
+            AssignedName = x.NewAssignedName,
             Fields = x.Fields.Select(y => new Field()
             {
                 MemberName = y.MemberName,
