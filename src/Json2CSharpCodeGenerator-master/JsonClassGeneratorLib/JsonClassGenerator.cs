@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -66,6 +66,7 @@ namespace Xamasoft.JsonClassGenerator
         public HashSet<string> Names = new HashSet<string>();
         #endregion
 
+        private static int TotalProcessed { get; set; }
         /// <summary>
         /// Main Method for parsing json input
         /// </summary>
@@ -102,7 +103,7 @@ namespace Xamasoft.JsonClassGenerator
             try
             {
                 if (this.CodeWriter == null) this.CodeWriter = new CSharpCodeWriter();
-
+                TotalProcessed++;
                 this.Types = new List<JsonType>();
                 this.Names.Add(_rootClassName ?? "Root"); //TODO Make sure this doesn't break anything
                 JsonType rootType = new JsonType(this, examples[0]);
@@ -110,9 +111,8 @@ namespace Xamasoft.JsonClassGenerator
                 rootType.AssignName(_rootClassName ?? "Root");
                 this.GenerateClass(examples, rootType);
 
-                this.Types = this.HandleDuplicateClasses(this.Types);
+                this.Types = this.HandleDuplicateClassesJustTypes(this.Types);
                 AllTypes.AddRange(Types);
-                LastMinuteCleansing(this.Types, this.AllTypes);
 
 
                 StringBuilder builder = new StringBuilder();
@@ -132,59 +132,59 @@ namespace Xamasoft.JsonClassGenerator
             }
         }
 
-        public static void LastMinuteCleansing(IList<JsonType> types, List<JsonType> allTypes)
-        {
-            // TODO: Explain
-            foreach (JsonType type in types)
-            {
-                foreach (JsonFieldInfo field in type.Fields)
-                {
-                    if (!allTypes.Any(x => FieldEqual(x, field)))
-                    {
-                        if (CSharpCodeWriter._reservedKeywords.Contains(field.Type?.NewAssignedName))
-                        {
-                            continue;
-                        }
-                        if (CSharpCodeWriter._reservedKeywords.Contains(field.Type?.InternalType?.NewAssignedName))
-                        {
-                            continue;
-                        }
-                        if (field.Type?.NewAssignedName is {Length: > 2})
-                        {
-                            var test = field.Type?.NewAssignedName;
-                            var last = field.Type.NewAssignedName.Last();
-                            if (char.IsDigit(last))
-                            {
-                                field.Type.AssignNewAssignedName(field.Type.NewAssignedName[..^1]);
-                            }
-                        }
-                        if (field.Type?.InternalType?.NewAssignedName is {Length: > 2})
-                        {
-                            var test = field.Type?.InternalType.NewAssignedName;
-                            var last = field.Type.InternalType.NewAssignedName.Last();
-                            if (char.IsDigit(last))
-                            {
-                                field.Type.AssignNewAssignedName(field.Type.InternalType.NewAssignedName[..^1]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //public static void LastMinuteCleansing(IList<JsonType> types, List<JsonType> allTypes)
+        //{
+        //    // TODO: Explain
+        //    foreach (JsonType type in types)
+        //    {
+        //        foreach (JsonFieldInfo field in type.Fields)
+        //        {
+        //            if (!allTypes.Any(x => FieldEqual(x, field)))
+        //            {
+        //                if (CSharpCodeWriter._reservedKeywords.Contains(field.Type?.NewAssignedName))
+        //                {
+        //                    continue;
+        //                }
+        //                if (CSharpCodeWriter._reservedKeywords.Contains(field.Type?.InternalType?.NewAssignedName))
+        //                {
+        //                    continue;
+        //                }
+        //                if (field.Type?.NewAssignedName is {Length: > 2})
+        //                {
+        //                    var test = field.Type?.NewAssignedName;
+        //                    var last = field.Type.NewAssignedName.Last();
+        //                    if (char.IsDigit(last))
+        //                    {
+        //                        field.Type.AssignNewAssignedName(field.Type.NewAssignedName[..^1]);
+        //                    }
+        //                }
+        //                if (field.Type?.InternalType?.NewAssignedName is {Length: > 2})
+        //                {
+        //                    var test = field.Type?.InternalType.NewAssignedName;
+        //                    var last = field.Type.InternalType.NewAssignedName.Last();
+        //                    if (char.IsDigit(last))
+        //                    {
+        //                        field.Type.AssignNewAssignedName(field.Type.InternalType.NewAssignedName[..^1]);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
-        private static bool FieldEqual(JsonType type, JsonFieldInfo field)
-        {
-            if (field == null) return false;
-            if (field.Type?.NewAssignedName != null && field.Type.NewAssignedName == type.NewAssignedName)
-            {
-                return true;
-            }
-            if (field.Type?.InternalType?.NewAssignedName != null && field.Type.InternalType.NewAssignedName == type.NewAssignedName)
-            {
-                return true;
-            }
-            return false;
-        }
+        //private static bool FieldEqual(JsonType type, JsonFieldInfo field)
+        //{
+        //    if (field == null) return false;
+        //    if (field.Type?.NewAssignedName != null && field.Type.NewAssignedName == type.NewAssignedName)
+        //    {
+        //        return true;
+        //    }
+        //    if (field.Type?.InternalType?.NewAssignedName != null && field.Type.InternalType.NewAssignedName == type.NewAssignedName)
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
         private void GenerateClass(JObject[] examples, JsonType type)
         {
@@ -269,8 +269,9 @@ namespace Xamasoft.JsonClassGenerator
                     }
 
                     fieldType.AssignOriginalName(field.Key);
-                    fieldType.AssignName(this.CreateUniqueClassName(field.Key));
-                    fieldType.AssignNewAssignedName(field.Key.ToTitleCase());
+                    var titleCase = AddTitleToNamesIfNotPresent(field.Key);
+                    fieldType.AssignName(titleCase);
+                    fieldType.AssignNewAssignedName(titleCase);
 
                     this.GenerateClass(subexamples.ToArray(), fieldType);
                 }
@@ -304,8 +305,9 @@ namespace Xamasoft.JsonClassGenerator
                     }
 
                     field.Value.InternalType.AssignOriginalName(field.Key);
-                    field.Value.InternalType.AssignName(this.CreateUniqueClassNameFromPlural(field.Key));
-                    field.Value.InternalType.AssignNewAssignedName(field.Key.ToTitleCase());
+                    var titleCase = this.AddTitleToNamesIfNotPresent(field.Key);
+                    field.Value.InternalType.AssignName(titleCase);
+                    field.Value.InternalType.AssignNewAssignedName(titleCase);
 
                     this.GenerateClass(subexamples.ToArray(), field.Value.InternalType);
                 }
@@ -326,143 +328,173 @@ namespace Xamasoft.JsonClassGenerator
             }
         }
 
+        private string AddTitleToNamesIfNotPresent( string original)
+        {
+            var title = original.ToTitleCase();
+            // Hashset, don't need to check for duplicates
+            Names.Add(title);
+            return title;
+        }
+
         /// <summary>
         /// Checks if there are any duplicate classes in the input, and merges its corresponding properties (TEST CASE 7)
         /// </summary>
         /// <param name="types"></param>
         /// <returns></returns>
-        private IList<JsonType> HandleDuplicateClasses(IList<JsonType> types)
+        private IList<JsonType> HandleDuplicateClassesJustTypes(IList<JsonType> types)
         {
             // TODO: This is currently O(n*n) because it iterates through List<T> on every loop iteration. This can be optimized.
 
             List<JsonType> typesWithNoDuplicates = new List<JsonType>();
             types = types.OrderByDescending(x => x.IsRoot).ThenBy(p => p.AssignedName).ToList();
-            AllTypes = AllTypes.OrderBy(p => p.AssignedName).ToList();
 
-            foreach (JsonType type in types)
+            foreach (JsonType potentialDuplicate in types)
             {
-                bool isDuplicate = false;
-                if (this.RemoveDuplicateClasses)
-                {
 #if DEBUG
-                    var test = type.AssignedName;
-                    var test2 = type.OriginalName;
-                    var test3 = type.NewAssignedName;
-                    var test4 = type.Fields;
-                    var test5 = type.InternalType;
-                    var test6 = type.Type;
+                var test = potentialDuplicate.AssignedName;
+                var test2 = potentialDuplicate.OriginalName;
+                var test3 = potentialDuplicate.NewAssignedName;
+                var test4 = potentialDuplicate.Fields;
+                var test5 = potentialDuplicate.InternalType;
+                var test6 = potentialDuplicate.Type;
+                var test7 = potentialDuplicate.IsRoot;
+                var test8 = potentialDuplicate.IsVariant;
 #endif
-                    var matchedTypes = AllTypes.Where(x => (x.OriginalName != null && x.OriginalName == type.OriginalName) || (x.OriginalName == null && x.AssignedName == type.AssignedName)).ToList();
-                    foreach (JsonType matchedType in matchedTypes)
-                    {
-                        // If there are two types in different files/input strings with exactly the same class name and properties we don't 
-                        // need to generate the same class twice so we mark it as a duplicate and skip
-                        if (TypesMatch(type, matchedType, this.RemoveDuplicateRoots))
-                        {
-                            isDuplicate = true;
-                            break;
-                        }
-                        else
-                        {
-                            // If the type wasn't a match that means we are keeping the duplicate.
-                            // Because of this we check if the assigned names equal Class2 == Class2
-                            // Then we set the internal type of it to the duplicate
-                            // Before: AssignedName: Class2, NewAssignedName: Class => After: AssignedName: Class2, NewAssignedName: Class2
-                            foreach (JsonType jsonType in types)
-                            {
-                                foreach (JsonFieldInfo jsonTypeField in jsonType.Fields)
-                                {
-                                    if (type.AssignedName != null && jsonTypeField.Type?.AssignedName == type.AssignedName)
-                                    {
-                                        jsonTypeField.Type!.AssignOriginalName(type.OriginalName);
-                                        jsonTypeField.Type.AssignName(type.AssignedName);
-                                        jsonTypeField.Type.AssignNewAssignedName(type.NewAssignedName);
-                                        continue;
-                                    }
-                                    if (type.AssignedName != null && jsonTypeField.Type?.InternalType?.AssignedName == type.AssignedName)
-                                    {
-                                        jsonTypeField.Type!.InternalType!.AssignOriginalName(type.OriginalName);
-                                        jsonTypeField.Type.InternalType.AssignName(type.AssignedName);
-                                        jsonTypeField.Type!.InternalType.AssignNewAssignedName(type.NewAssignedName);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if (isDuplicate) continue;
-
-                // If this reference hasn't already been fixed above, we need to fix it here
-                if (type.AssignedName != null && type.NewAssignedName != null && char.IsDigit(type.AssignedName.Last()) && !char.IsDigit(type.NewAssignedName.Last()))
-                    type.AssignNewAssignedName(type.AssignedName);
-                if (type.InternalType is {AssignedName: not null, NewAssignedName: not null} && char.IsDigit(type.InternalType.AssignedName.Last()) && !char.IsDigit(type.InternalType.NewAssignedName.Last()))
-                    type.AssignNewAssignedName(type.AssignedName);
-
-                if (!RemoveDuplicateClasses || !typesWithNoDuplicates.Exists(p => p.OriginalName == type.OriginalName))
+                var firstMatchingType =
+                    typesWithNoDuplicates.FirstOrDefault(x => x.OriginalName == potentialDuplicate.OriginalName);
+                if (firstMatchingType is null)
                 {
-                    typesWithNoDuplicates.Add(type);
+                    typesWithNoDuplicates.Add(potentialDuplicate);
                 }
                 else
                 {
-                    JsonType duplicatedType = typesWithNoDuplicates.FirstOrDefault(p => p.OriginalName == type.OriginalName);
-                    // Rename all references of this type to the original assigned name
-                    foreach (JsonFieldInfo field in type.Fields)
+                    foreach (JsonFieldInfo field in potentialDuplicate.Fields)
                     {
-                        if (!duplicatedType.Fields.ToList().Exists(x => x.JsonMemberName == field.JsonMemberName))
+                        if (firstMatchingType.Fields.All(x => x.JsonMemberName != field.JsonMemberName))
                         {
-                            duplicatedType.Fields.Add(field);
+                            firstMatchingType.Fields.Add(field);
                         }
                     }
                 }
             }
 
-            if (this.RemoveSemiDuplicates)
+            var duplicates = new List<JsonType>();
+            foreach (JsonType potentialType in typesWithNoDuplicates)
             {
-                var semiDuplicates = new List<JsonType>();
-                foreach (JsonType possibleDuplicate in typesWithNoDuplicates)
+#if DEBUG
+                var test = potentialType.AssignedName;
+                var test2 = potentialType.OriginalName;
+                var test3 = potentialType.NewAssignedName;
+                var test4 = potentialType.Fields;
+                var test5 = potentialType.InternalType;
+                var test6 = potentialType.Type;
+                var test7 = potentialType.IsRoot;
+                var test8 = potentialType.IsVariant;
+#endif
+                if (AllTypes.FirstOrDefault(allTypeType => ( potentialType.IsRoot && TypesMatch(potentialType, allTypeType, this.RemoveDuplicateRoots) ) ||
+                                                           ( !potentialType.IsRoot && potentialType.OriginalName == allTypeType.OriginalName && TypesMatch(potentialType, allTypeType, this.RemoveDuplicateRoots) )) is
+                    { } allTypesMatchedType)
                 {
-                    foreach (JsonType nonDuplicate in AllTypes)
+                    if (potentialType.IsRoot)
                     {
-                        if (TypesMatch(possibleDuplicate, nonDuplicate, this.RemoveDuplicateRoots))
+                        Console.WriteLine("t");
+                    }
+                    duplicates.Add(potentialType);
+                    ChangeNewAssignedNamesByNewAssignedNameInList(types, potentialType.NewAssignedName ?? potentialType.AssignedName, allTypesMatchedType.NewAssignedName ?? allTypesMatchedType.AssignedName);
+                }
+                else
+                {
+                    var confirmedNotDuplicate = potentialType;
+                    confirmedNotDuplicate.IsVariant = true;
+                    if (AllTypes.Any(x => !x.IsRoot && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName))
+                    {
+                        do
                         {
-                            semiDuplicates.Add(( possibleDuplicate ));
-                            foreach (JsonType type in typesWithNoDuplicates)
-                            {
-                                foreach (JsonFieldInfo jsonTypeField in type.Fields)
-                                {
-                                    // Here we are reassigning the references of the semi duplicates. If the original NewAssignedName was
-                                    // Amount and the duplicate is ShippingAmount, we want to reassign all references of ShippingAmount to Amount
-                                    // So that that there are less overall classes. Below here we remove the semi duplicates from
-                                    // typesWithNoDuplicates. In the example, we would be removing ShippingAmount and keeping Amount.
-                                    // It won't cause an issue because all references have been reassigned.
-                                    if (possibleDuplicate.NewAssignedName != null && jsonTypeField.Type?.NewAssignedName == possibleDuplicate.NewAssignedName)
-                                    {
-                                        jsonTypeField.Type.AssignOriginalName(nonDuplicate.OriginalName);
-                                        jsonTypeField.Type.AssignName(nonDuplicate.AssignedName);
-                                        jsonTypeField.Type.AssignNewAssignedName(nonDuplicate.NewAssignedName ?? nonDuplicate.AssignedName);
-                                        continue;
-                                    }
-                                    if (possibleDuplicate.NewAssignedName != null && jsonTypeField.Type?.InternalType?.NewAssignedName == possibleDuplicate.NewAssignedName)
-                                    {
-                                        jsonTypeField.Type.InternalType.AssignOriginalName(nonDuplicate.OriginalName);
-                                        jsonTypeField.Type!.InternalType.AssignName(nonDuplicate.AssignedName);
-                                        jsonTypeField.Type!.InternalType!.AssignNewAssignedName(nonDuplicate.NewAssignedName ?? nonDuplicate.AssignedName);
-                                    }
-                                }
-                            }
-                        }
+                            var newnewAssignedName = IncrementString(confirmedNotDuplicate.NewAssignedName);
+                            confirmedNotDuplicate.AssignNewAssignedName(newnewAssignedName);
+                        } while (AllTypes.Any(x => x.NewAssignedName == confirmedNotDuplicate.NewAssignedName));
+                        ChangeNewAssignedNamesByOriginalInList(typesWithNoDuplicates, confirmedNotDuplicate.OriginalName, confirmedNotDuplicate.NewAssignedName);
                     }
                 }
+            }
 
-                foreach (var type in semiDuplicates)
-                {
-                    typesWithNoDuplicates.Remove(type);
-                }
+            foreach (JsonType duplicate in duplicates)
+            {
+                typesWithNoDuplicates.Remove(duplicate);
             }
 
             RemoveUnusedTypes(typesWithNoDuplicates);
 
             return typesWithNoDuplicates;
+        }
+
+        private static void ChangeNewAssignedNamesByOriginalInList(IList<JsonType> listToReplaceAllReferencesIn, string originalName,
+            string newAssignedName)
+        {
+            foreach (JsonType type in listToReplaceAllReferencesIn)
+            {
+                foreach (JsonFieldInfo jsonTypeField in type.Fields)
+                {
+                    // Here we are reassigning the references of the semi duplicates. If the original NewAssignedName was
+                    // Amount and the duplicate is ShippingAmount, we want to reassign all references of ShippingAmount to Amount
+                    // So that that there are less overall classes. Below here we remove the semi duplicates from
+                    // typesWithNoDuplicates. In the example, we would be removing ShippingAmount and keeping Amount.
+                    // It won't cause an issue because all references have been reassigned.
+                    if (originalName != null &&
+                        jsonTypeField.Type?.OriginalName == originalName)
+                    {
+                        jsonTypeField.Type.AssignNewAssignedName(newAssignedName);
+                        continue;
+                    }
+
+                    if (originalName != null && jsonTypeField.Type?.InternalType?.OriginalName ==
+                        originalName)
+                    {
+                        jsonTypeField.Type!.InternalType!.AssignNewAssignedName(newAssignedName);
+                    }
+                }
+            }
+        }
+
+        private static void ChangeNewAssignedNamesByNewAssignedNameInList(IList<JsonType> listToReplaceAllReferencesIn, string oldNewAssignedName,
+            string newNewAssignedName)
+        {
+            foreach (JsonType type in listToReplaceAllReferencesIn)
+            {
+                foreach (JsonFieldInfo jsonTypeField in type.Fields)
+                {
+                    if (type.IsRoot)
+                    {
+                        if (oldNewAssignedName != null &&
+                            jsonTypeField.Type?.AssignedName == oldNewAssignedName)
+                        {
+                            jsonTypeField.Type.AssignNewAssignedName(newNewAssignedName);
+                            continue;
+                        }
+                        if (oldNewAssignedName != null &&
+                            jsonTypeField.Type?.InternalType?.AssignedName == oldNewAssignedName)
+                        {
+                            jsonTypeField.Type.InternalType.AssignNewAssignedName(newNewAssignedName);
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (oldNewAssignedName != null &&
+                            jsonTypeField.Type?.NewAssignedName == oldNewAssignedName)
+                        {
+                            jsonTypeField.Type.AssignNewAssignedName(newNewAssignedName);
+                            continue;
+                        }
+
+                        if (oldNewAssignedName != null && jsonTypeField.Type?.InternalType?.NewAssignedName ==
+                            oldNewAssignedName)
+                        {
+                            jsonTypeField.Type!.InternalType!.AssignNewAssignedName(newNewAssignedName);
+                        }
+                    }
+                }
+            }
         }
 
         private static void RemoveUnusedTypes(List<JsonType> typesWithNoDuplicates)
@@ -473,6 +505,11 @@ namespace Xamasoft.JsonClassGenerator
                 bool isUsed = false;
                 foreach (JsonType typesWithNoDuplicate in typesWithNoDuplicates)
                 {
+                    if (typesWithNoDuplicate.IsRoot)
+                    {
+                        isUsed = true;
+                        break;
+                    }
                     if (typesWithNoDuplicate.Fields.Any(x =>
                             x.Type?.NewAssignedName == jsonType.NewAssignedName ||
                             x.Type?.InternalType?.NewAssignedName == jsonType.NewAssignedName))
@@ -505,7 +542,6 @@ namespace Xamasoft.JsonClassGenerator
             {
                 return false;
             }
-            if (!removeDuplicateRoots && (dup.IsRoot || orig.IsRoot)) return false;
             foreach (JsonFieldInfo jsonFieldInfo in dup.Fields!)
             {
                 if (orig.Fields!.Any(x => x.MemberName == jsonFieldInfo.MemberName && x.Type.Type == jsonFieldInfo.Type.Type))
@@ -525,27 +561,45 @@ namespace Xamasoft.JsonClassGenerator
                     OriginalIsRoot = orig.IsRoot
                 };
             }
+            if (dup.IsRoot)
+            {
+                return false;
+            }
             return true;
         }
-        
 
-        private string CreateUniqueClassName(string name)
+        public static string IncrementString(string input)
         {
-            name = name.ToTitleCase();
-            String finalName = name;
-            Int32 i = 2;
-            while (Names.Any(x => x.Equals(finalName, StringComparison.OrdinalIgnoreCase)))
+            // regular expression pattern for optional digits at the end of the string
+            string pattern = @"^(.*?)(\d{1,2})?$";
+            Regex regex = new (pattern);
+            Match match = regex.Match(input);
+
+            if (match.Success)
             {
-                finalName = name + i;
-                i++;
-            }
-            this.Names.Add(finalName);
-            return finalName;
-        }
+                string prefix = match.Groups[1].Value; // the part of the string before the optional digits
+                string numberStr = match.Groups[2].Value; // the optional digits at the end of the string
 
-        private string CreateUniqueClassNameFromPlural(string plural)
-        {
-            return this.CreateUniqueClassName(plural);
+                int number;
+                if (string.IsNullOrEmpty(numberStr))
+                {
+                    // if there was no number at the end of the string, we add 2 to it
+                    number = 2;
+                }
+                else
+                {
+                    // if there was a number at the end of the string, we increment it by 1
+                    number = int.Parse(numberStr) + 1;
+                }
+
+                // return the new string
+                return prefix + number.ToString();
+            }
+            else
+            {
+                // if the string did not match the pattern, just return it unchanged
+                return input;
+            }
         }
     }
 }

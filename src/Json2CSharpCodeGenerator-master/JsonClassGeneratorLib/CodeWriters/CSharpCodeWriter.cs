@@ -191,7 +191,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
 
             const string visibility = "public";
 
-            var className = type.AssignedName;
+            var className = type.NewAssignedName ?? type.AssignedName;
             if (config.OutputType == OutputTypes.ImmutableRecord)
             {
                 sw.AppendFormat(indentTypes + "{0} record {1}({2}", visibility, className, Environment.NewLine);

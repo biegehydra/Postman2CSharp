@@ -13,7 +13,7 @@ namespace Xamasoft.JsonClassGenerator
 {
     public class JsonType
     {
-
+        public bool IsVariant { get; set; }
         private JsonType(JsonClassGenerator generator)
         {
             this.generator = generator;
