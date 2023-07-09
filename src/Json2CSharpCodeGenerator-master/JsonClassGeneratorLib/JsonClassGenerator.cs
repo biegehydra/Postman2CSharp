@@ -29,10 +29,9 @@ namespace Xamasoft.JsonClassGenerator
         }
         private bool _currentRootIsQueryParameters; 
 
-        public JsonClassGenerator(ICodeWriter codeWriter, bool removeDuplicateClasses, bool removeSemiDuplicates, bool removeDuplicateRoots)
+        public JsonClassGenerator(ICodeWriter codeWriter, bool removeSemiDuplicates, bool removeDuplicateRoots)
         {
             CodeWriter = codeWriter;
-            this.RemoveDuplicateClasses = removeDuplicateClasses;
             this.RemoveSemiDuplicates = removeSemiDuplicates;
             this.RemoveDuplicateRoots = removeDuplicateRoots;
         }
@@ -72,7 +71,6 @@ namespace Xamasoft.JsonClassGenerator
         public HashSet<string> Names = new HashSet<string>();
         #endregion
 
-        private static int TotalProcessed { get; set; }
         /// <summary>
         /// Main Method for parsing json input
         /// </summary>
@@ -109,7 +107,6 @@ namespace Xamasoft.JsonClassGenerator
             try
             {
                 if (this.CodeWriter == null) this.CodeWriter = new CSharpCodeWriter();
-                TotalProcessed++;
                 this.Types = new List<JsonType>();
                 this.Names.Add(_rootClassName ?? "Root"); //TODO Make sure this doesn't break anything
                 JsonType rootType = new JsonType(this, examples[0]);
@@ -405,7 +402,7 @@ namespace Xamasoft.JsonClassGenerator
                 var test7 = potentialType.IsRoot;
                 var test8 = potentialType.IsVariant;
 #endif
-                if (AllTypes.FirstOrDefault(allTypeType => ( potentialType.IsRoot && TypesMatch(potentialType, allTypeType, this.RemoveDuplicateRoots) ) ||
+                if (RemoveSemiDuplicates && AllTypes.FirstOrDefault(allTypeType => ( potentialType.IsRoot && TypesMatch(potentialType, allTypeType, this.RemoveDuplicateRoots) ) ||
                                                            ( !potentialType.IsRoot && potentialType.OriginalName == allTypeType.OriginalName && TypesMatch(potentialType, allTypeType, this.RemoveDuplicateRoots) )) is
                     { } allTypesMatchedType)
                 {
@@ -418,6 +415,15 @@ namespace Xamasoft.JsonClassGenerator
                     {
                         ChangeNewAssignedNamesByNewAssignedNameInList(types, potentialType.NewAssignedName ?? potentialType.AssignedName, allTypesMatchedType.NewAssignedName ?? allTypesMatchedType.AssignedName);
                     }
+                }
+                else if (!RemoveSemiDuplicates && AllTypes.FirstOrDefault(allTypeType =>
+                                 ( potentialType.IsRoot &&
+                                   TypesMatch(potentialType, allTypeType, this.RemoveDuplicateRoots, true) ) ||
+                                 ( !potentialType.IsRoot && potentialType.OriginalName == allTypeType.OriginalName &&
+                                   TypesMatch(potentialType, allTypeType, this.RemoveDuplicateRoots, true) )) is
+                             { } allTypesMatchedTypeStrict)
+                {
+                    duplicates.Add(potentialType);
                 }
                 else
                 {
@@ -567,12 +573,13 @@ namespace Xamasoft.JsonClassGenerator
             }
         }
 
-        private static bool TypesMatch(JsonType dup, JsonType orig, bool removeDuplicateRoots)
+        private static bool TypesMatch(JsonType dup, JsonType orig, bool removeDuplicateRoots, bool strict = false)
         {
             if (dup.IsQueryParameters || orig.IsQueryParameters) return false;
             if (dup.Fields == null && orig.Fields != null) return false;
             if (dup.Fields != null && orig.Fields == null) return false;
             if (dup.Fields == null && orig.Fields == null) return true;
+            if (strict && dup.Fields!.Count != orig.Fields!.Count) return false;
             if (dup.Fields!.Count > orig.Fields!.Count) return false;
             if (dup.OriginalName != orig.OriginalName &&
                 orig.Fields.Count - dup.Fields.Count > 4)
