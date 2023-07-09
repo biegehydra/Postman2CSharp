@@ -49,13 +49,9 @@ namespace Postman2CSharp.Wasm.Services
 
                 var fileNamePathDict = new Dictionary<string, string>();
 
-                foreach (var fileName in sourceCodeDict.Keys.ToList()
-                             .Where(x => !x.Contains(nameof(CoreCsFile.OAuth2QueryParameters))))
+                foreach (var (fileName, (httpCall, _)) in detailsDict!.Where(x => x.Value.HttpCall != null))
                 {
-                    var specialFileEnding = SpecialFileEndings.FirstOrDefault(fileName.EndsWith);
-                    if (specialFileEnding == null) continue;
-                    // GetCampaignsRequest.cs => { "GetCampaignsRequest.cs", "GetCampaigns" }
-                    fileNamePathDict.Add(fileName, fileName.Replace(specialFileEnding, string.Empty));
+                    fileNamePathDict.Add(fileName, httpCall!);
                 }
 
                 await _jsRuntime.InvokeVoidAsync("createZipAndDownload", apiClient.Name, sourceCodeDict,
@@ -63,7 +59,7 @@ namespace Postman2CSharp.Wasm.Services
             }
             catch (OutOfMemoryException)
             {
-                _snackBar.Value?.Add("Application ran out of memory during process. Try deleting large collections or refreshing the page.");
+                _snackBar.Value?.Add("Application ran out of memory during process. Try deleting a large collection then refreshing the page.");
             }
         }
 
