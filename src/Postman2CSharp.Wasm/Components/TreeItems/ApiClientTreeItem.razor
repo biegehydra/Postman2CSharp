@@ -35,7 +35,7 @@
             }
         </Content>
         <ChildContent>
-            @foreach (var httpCall in ApiClient.HttpCalls)
+            @foreach (var httpCall in ApiClient.HttpCalls.OrderBy(x => x.Name))
             {
                 <HttpCallsTreeItem ApiCollectionId="@ApiCollection.Id" ApiClientId="@ApiClient.Id" HttpCall="httpCall" IsParentExpanded="@Expanded"></HttpCallsTreeItem>
             }
