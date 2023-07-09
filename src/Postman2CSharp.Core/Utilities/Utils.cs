@@ -460,4 +460,38 @@ public static class Utils
         }
         return DataType.Binary;
     }
+
+    public static string IncrementString(string input)
+    {
+        // regular expression pattern for optional digits at the end of the string
+        string pattern = @"^(.*?)(\d{1,2})?$";
+        Regex regex = new(pattern);
+        Match match = regex.Match(input);
+
+        if (match.Success)
+        {
+            string prefix = match.Groups[1].Value; // the part of the string before the optional digits
+            string numberStr = match.Groups[2].Value; // the optional digits at the end of the string
+
+            int number;
+            if (string.IsNullOrEmpty(numberStr))
+            {
+                // if there was no number at the end of the string, we add 2 to it
+                number = 2;
+            }
+            else
+            {
+                // if there was a number at the end of the string, we increment it by 1
+                number = int.Parse(numberStr) + 1;
+            }
+
+            // return the new string
+            return prefix + number.ToString();
+        }
+        else
+        {
+            // if the string did not match the pattern, just return it unchanged
+            return input;
+        }
+    }
 }

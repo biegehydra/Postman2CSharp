@@ -281,29 +281,16 @@ public class ApiClientGenerator
             {
                 formClassName = uniqueName + (requestDataType is DataType.ComplexFormData ? Consts.Classes.MultipartFormData : Consts.Classes.FormData);
                 formClassName = GenerateUniqueName(formClassName, uniqueNames);
-                Dictionary<string, string?> descriptionDict;
                 if (requestItem.Request!.Body!.Formdata != null)
                 {
-                    descriptionDict = requestItem.Request!.Body!.Formdata!
-                        .GroupBy(x => x.Key)
-                        .ToDictionary(
-                            group => group.Key,
-                            group => group.First().Description?.HtmlToPlainText()
-                        );
                     var iFormData = requestItem.Request!.Body!.Formdata.Cast<IFormData>().ToList();
-                    formClassSourceCode = GenerateFormDataClass(formClassName, iFormData, requestDataType, nameSpace, descriptionDict, writeFormDataComments);
+                    formClassSourceCode = GenerateFormDataClass(formClassName, iFormData, requestDataType, nameSpace, writeFormDataComments);
                     totalClassesGenerated++;
                 }
                 else if (requestItem.Request!.Body!.Urlencoded != null)
                 {
-                    descriptionDict = requestItem.Request!.Body!.Urlencoded!
-                        .GroupBy(x => x.Key)
-                        .ToDictionary(
-                            group => group.Key,
-                            group => group.First().Description?.HtmlToPlainText()
-                        );
                     var iFormData = requestItem.Request!.Body!.Urlencoded.Cast<IFormData>().ToList();
-                    formClassSourceCode = GenerateFormDataClass(formClassName, iFormData, DataType.SimpleFormData, nameSpace, descriptionDict, writeFormDataComments);
+                    formClassSourceCode = GenerateFormDataClass(formClassName, iFormData, DataType.SimpleFormData, nameSpace, writeFormDataComments);
                     totalClassesGenerated++;
                 }
             }
@@ -543,7 +530,7 @@ public class ApiClientGenerator
         return (reordered, classCount);
     }
 
-    private static string? GenerateFormDataClass (string? formClassName, List<IFormData>? formdatas, DataType? dataType, string nameSpace, Dictionary<string, string?> descriptionDict, bool writeFormDataComments)
+    private static string? GenerateFormDataClass (string? formClassName, List<IFormData>? formdatas, DataType? dataType, string nameSpace, bool writeFormDataComments)
     {
         if (formClassName == null || formdatas == null || dataType == null) return null;
 
@@ -568,7 +555,7 @@ using System.Net.Http;
     {{
     }}
 }}");
-
+        List<string> uniqueKeys = new ();
         var root = (CompilationUnitSyntax)tree.GetRoot();
 
         var newRoot = root.ReplaceNodes(root.DescendantNodes().OfType<ClassDeclarationSyntax>(),
@@ -578,20 +565,19 @@ using System.Net.Http;
                 {
                     int files = 1;
                     // Adding properties
-                    foreach (var formdata in formdatas)
+                    foreach (var formData in formdatas)
                     {
-                        string comment = "";
 
-                        if (writeFormDataComments && descriptionDict.TryGetValue(formdata.Key, out var value))
+                        string comment = "";
+                        var csPropertyName = formData.CsPropertyName(CsharpPropertyType.Public);
+                        var uniqueName = CreateUniqueName(csPropertyName);
+                        if (writeFormDataComments && !string.IsNullOrWhiteSpace(formData.Description))
                         {
-                            if (!string.IsNullOrWhiteSpace(value))
-                            {
-                                comment = XmlCommentHelpers.ToXmlSummary(value, Consts.Indent(3));
-                            }
+                            comment = XmlCommentHelpers.ToXmlSummary(formData.Description, Consts.Indent(3));
                         }
-                        if (formdata.FormDataType == FormDataType.Text)
+                        if (formData.FormDataType == FormDataType.Text)
                         {
-                            var prop = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("string"), formdata.CsPropertyName(CsharpPropertyType.Public))
+                            var prop = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("string"), uniqueName)
                                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                                 .AddAccessorListAccessors(
                                     SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
@@ -601,7 +587,7 @@ using System.Net.Http;
                             node = node.AddMembers(prop);
                         }
 
-                        if (formdata.FormDataType == FormDataType.File)
+                        if (formData.FormDataType == FormDataType.File)
                         {
                             var fileNumberText = files > 1 ? files.ToString() : null;
                             var propFile = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("StreamContent"), $"File{fileNumberText}")
@@ -622,16 +608,20 @@ using System.Net.Http;
                             files++;
                         }
                     }
+
+                    uniqueKeys = new();
                     if (formDataInterface == "IMultipartFormData")
                     {
                         files = 0;
                         string formDataContent = string.Join(",\n",
-                            formdatas.Select((x, i) =>
+                            formdatas.Select(x =>
                             {
                                 if (x.FormDataType == FormDataType.File) files++;
                                 var fileNumberText = files > 1 ? files.ToString() : null;
+                                var csPropertyName = x.CsPropertyName(CsharpPropertyType.Public);
+                                var uniqueName = CreateUniqueName(csPropertyName);
                                 return x.FormDataType == FormDataType.Text
-                                    ? $"{{ new StringContent({x.CsPropertyName(CsharpPropertyType.Public)}), \"{x.Key}\" }}"
+                                    ? $"{{ new StringContent({uniqueName}), \"{x.Key}\" }}"
                                     : $"{{ File{fileNumberText}, \"{x.Key}\", FileName{fileNumberText} }}";
                             }));
 
@@ -646,7 +636,12 @@ using System.Net.Http;
                     else 
                     {
                         string formDataContent = string.Join(",\n",
-                            formdatas.Select(x => $"new (\"{x.Key}\", {x.CsPropertyName(CsharpPropertyType.Public)} )"));
+                            formdatas.Select(x =>
+                            {
+                                var csPropertyName = x.CsPropertyName(CsharpPropertyType.Public);
+                                var uniqueName = CreateUniqueName(csPropertyName);
+                                return $"new (\"{x.Key}\", {uniqueName} )";
+                            }));
 
                         var toFormDataSimpleMethod = SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("FormUrlEncodedContent"), "ToFormData")
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
@@ -661,5 +656,15 @@ using System.Net.Http;
                 return node;
             });
         return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
+
+        string CreateUniqueName(string name)
+        {
+            while (uniqueKeys.Contains(name))
+            {
+                name = Utils.IncrementString(name);
+            }
+            uniqueKeys.Add(name);
+            return name;
+        }
     }
 }
