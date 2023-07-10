@@ -62,7 +62,6 @@ namespace Xamasoft.JsonClassGenerator
         }
 
         private Dictionary<string, string> DescriptionDict { get; set; } = new();
-        private bool RemoveDuplicateClasses { get; set; }
         private bool RemoveSemiDuplicates { get; set; }
         private bool RemoveDuplicateRoots { get; set; }
         private string _rootClassName = "Root";
