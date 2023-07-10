@@ -16,7 +16,10 @@
     [Parameter] public string? SubTitle { get; set; }
     [Parameter, EditorRequired] public string Keywords { get; set; } = null!;
 
-    string GetTitle() => Title == null ? "Postman2CSharp" : $"{Title} - Postman2CSharp";
+    [Parameter] public bool AddPostman2CSharpToTitle { get; set; } = true;
+
+    string GetTitle() => Title == null ? "Postman2CSharp" : 
+        AddPostman2CSharpToTitle ? $"{Title} - Postman2CSharp" : Title;
 
     string GetSubTitle()
     {

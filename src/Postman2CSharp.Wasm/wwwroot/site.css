@@ -5,6 +5,10 @@
 .mud-paper {
     --mud-palette-error: #9c5c64;
 }
+.enum-select-container {
+    min-width: 11em;
+}
+
 .header-paper {
     background-color: rgba(115, 126, 207, 0.05);
     padding: 16px;

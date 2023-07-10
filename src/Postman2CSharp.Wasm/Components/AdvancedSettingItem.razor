@@ -1,5 +1,5 @@
-﻿<MudItem xs="12" sm="6" md="4" lg="3" Style="display: flex; align-items: center;">
-    <div style="width: 100%">
+﻿<MudItem xs="12" sm="6" md="4" lg="3" Style="display: flex; align-items: center; gap: 10px;">
+    <div style="flex-grow: 1;">
         @ChildContent
     </div>
     <MudTooltip Delay="400" Duration="300">
@@ -10,6 +10,7 @@
             <MudText Typo="Typo.body2" Style="max-width: 15em;">@ToolTip</MudText>
         </TooltipContent>
     </MudTooltip>
+    <div style="flex-grow: 1"></div>
 </MudItem>
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }

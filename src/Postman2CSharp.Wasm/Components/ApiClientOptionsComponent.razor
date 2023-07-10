@@ -28,12 +28,13 @@
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
 <MudText Class="setting-section-header" Typo="Typo.h5">Multiple Response Handling</MudText>
 <MudGrid Spacing="3">
-    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
-        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.HandleMultipleResponses">Handle Multiple Responses</MudSwitch>
-    </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle Multiple Responses is enabled and a request has multiple response types.">
-        <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="ApiClientOptions.MultipleResponseHandling" Label="Multiple Response Handling"></EnumSelectComponent>
+        <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="ApiClientOptions.MultipleResponseHandling" Label="Return Type"></EnumSelectComponent>
+    </AdvancedSettingItem>
+
+    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+        <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.HandleMultipleResponses">Handle</MudCheckBox>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
@@ -59,15 +60,15 @@
 <MudText Class="setting-section-header" Typo="Typo.h5">Function Configurations</MudText>
 <MudGrid Spacing="3">
     <AdvancedSettingItem ToolTip="Each request in the generated ApiClient will call EnsureSuccessStatusCode() on the HttpResponseMessage before deserializing or returning the response stream.">
-        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudSwitch>
+         <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudCheckBox>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="@(@"All actual ""path variables"" (/:pathVariable/) are automatically treated as function parameters, but collection variables in paths (/{{variable}}/) will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
-        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudSwitch>
+         <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudCheckBox>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="@(@"If true each request function on the generated ApiClient will be have a Cancellation token parameter with a default value of default.")">
-        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.UseCancellationTokens">Use Cancellation Tokens</MudSwitch>
+         <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.UseCancellationTokens">Use Cancellation Tokens</MudCheckBox>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
@@ -76,11 +77,11 @@
 </p>
 <MudGrid Spacing="3">
     <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
-        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudSwitch>
+         <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
     </AdvancedSettingItem>
     
     <AdvancedSettingItem ToolTip="This will determine whether root classes are considered for deduping.">
-        <MudSwitch Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudSwitch>
+         <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudCheckBox>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
