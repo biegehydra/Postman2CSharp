@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
@@ -142,60 +141,6 @@ namespace Xamasoft.JsonClassGenerator
                 return new StringBuilder();
             }
         }
-
-        //public static void LastMinuteCleansing(IList<JsonType> types, List<JsonType> allTypes)
-        //{
-        //    // TODO: Explain
-        //    foreach (JsonType type in types)
-        //    {
-        //        foreach (JsonFieldInfo field in type.Fields)
-        //        {
-        //            if (!allTypes.Any(x => FieldEqual(x, field)))
-        //            {
-        //                if (CSharpCodeWriter._reservedKeywords.Contains(field.Type?.NewAssignedName))
-        //                {
-        //                    continue;
-        //                }
-        //                if (CSharpCodeWriter._reservedKeywords.Contains(field.Type?.InternalType?.NewAssignedName))
-        //                {
-        //                    continue;
-        //                }
-        //                if (field.Type?.NewAssignedName is {Length: > 2})
-        //                {
-        //                    var test = field.Type?.NewAssignedName;
-        //                    var last = field.Type.NewAssignedName.Last();
-        //                    if (char.IsDigit(last))
-        //                    {
-        //                        field.Type.AssignNewAssignedName(field.Type.NewAssignedName[..^1]);
-        //                    }
-        //                }
-        //                if (field.Type?.InternalType?.NewAssignedName is {Length: > 2})
-        //                {
-        //                    var test = field.Type?.InternalType.NewAssignedName;
-        //                    var last = field.Type.InternalType.NewAssignedName.Last();
-        //                    if (char.IsDigit(last))
-        //                    {
-        //                        field.Type.AssignNewAssignedName(field.Type.InternalType.NewAssignedName[..^1]);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-        //private static bool FieldEqual(JsonType type, JsonFieldInfo field)
-        //{
-        //    if (field == null) return false;
-        //    if (field.Type?.NewAssignedName != null && field.Type.NewAssignedName == type.NewAssignedName)
-        //    {
-        //        return true;
-        //    }
-        //    if (field.Type?.InternalType?.NewAssignedName != null && field.Type.InternalType.NewAssignedName == type.NewAssignedName)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
 
         private void GenerateClass(JObject[] examples, JsonType type)
         {
@@ -459,11 +404,6 @@ namespace Xamasoft.JsonClassGenerator
             {
                 foreach (JsonFieldInfo jsonTypeField in type.Fields)
                 {
-                    // Here we are reassigning the references of the semi duplicates. If the original NewAssignedName was
-                    // Amount and the duplicate is ShippingAmount, we want to reassign all references of ShippingAmount to Amount
-                    // So that that there are less overall classes. Below here we remove the semi duplicates from
-                    // typesWithNoDuplicates. In the example, we would be removing ShippingAmount and keeping Amount.
-                    // It won't cause an issue because all references have been reassigned.
                     if (originalName != null &&
                         jsonTypeField.Type?.OriginalName == originalName)
                     {
