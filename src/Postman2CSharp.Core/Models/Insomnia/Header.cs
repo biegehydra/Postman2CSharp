@@ -9,4 +9,8 @@ public class Header
 
     [JsonRequired]
     public required string Value { get; set; }
+
+    public string? Id { get; set; }
+
+    public bool? Disabled { get; set; }
 }

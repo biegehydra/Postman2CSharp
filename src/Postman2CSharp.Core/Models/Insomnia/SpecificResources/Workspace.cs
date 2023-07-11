@@ -2,6 +2,7 @@
 {
     public class Workspace : BaseResource
     {
+        public string? Scope { get; set; }
         public string? Description { get; set; }
     }
 }

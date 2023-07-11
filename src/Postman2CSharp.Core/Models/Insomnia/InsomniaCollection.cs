@@ -8,7 +8,7 @@ public class InsomniaCollection
 {
     [JsonPropertyName("_type")]
     [JsonRequired]
-    public string Type { get; set; }
+    public required string Type { get; set; }
 
     [JsonPropertyName("__export_format")]
     [JsonRequired]
@@ -20,8 +20,8 @@ public class InsomniaCollection
 
     [JsonPropertyName("__export_source")]
     [JsonRequired]
-    public string ExportSource { get; set; }
+    public required string ExportSource { get; set; }
 
     [JsonRequired]
-    public List<Resource> Resources { get; set; }
+    public required List<Resource> Resources { get; set; }
 }

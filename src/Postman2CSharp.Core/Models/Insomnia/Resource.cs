@@ -1,28 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Postman2CSharp.Core.Models.Insomnia
 {
     public class Resource : BaseResource
     {
-        [JsonPropertyName("_type")]
-        [JsonRequired]
-        public required string Type { get; set; }
-
-        private InsomniaResourceType? _resourceType { get; set; }
-        public InsomniaResourceType ResourceType()
-        {
-            return _resourceType ??= Type switch
-            {
-                "request" => InsomniaResourceType.Request,
-                "request_group" => InsomniaResourceType.RequestGroup,
-                "workspace" => InsomniaResourceType.Workspace,
-                "environment" => InsomniaResourceType.Environment,
-                _ => throw new ArgumentOutOfRangeException(nameof(Type))
-            };
-        }
-
         public string? Description { get; set; }
 
         public bool? IsPrivate { get; set; }
@@ -45,8 +27,6 @@ namespace Postman2CSharp.Core.Models.Insomnia
 
         public string? Scope { get; set; }
 
-        public long? MetaSortKey { get; set; }
-
         public string? Method { get; set; }
 
         public string? Url { get; set; }
@@ -59,12 +39,18 @@ namespace Postman2CSharp.Core.Models.Insomnia
 
         public Authentication? Authentication { get; set; }
 
-        public enum InsomniaResourceType
+        private InsomniaResourceType? _insomniaResourceType;
+        public InsomniaResourceType ResourceType()
         {
-            Request, // request
-            RequestGroup, // request_group
-            Workspace, // workspace
-            Environment // environment
+            return _insomniaResourceType ??= Type switch
+            {
+                "request" => InsomniaResourceType.Request,
+                "request_group" => InsomniaResourceType.RequestGroup,
+                "workspace" => InsomniaResourceType.Workspace,
+                "environment" => InsomniaResourceType.Environment,
+                "cookie_jar" => InsomniaResourceType.CookieJar,
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
     }
 }
