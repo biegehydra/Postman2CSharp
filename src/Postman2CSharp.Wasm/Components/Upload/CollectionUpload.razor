@@ -1,24 +1,30 @@
 ﻿<div class="f-row" style="gap: 15px; align-items: end; flex-wrap: wrap;">
-    <MudButton Color="Color.Secondary" OnClick="GetTestData" Variant="Variant.Filled" >Test Data</MudButton>
+    <MudTooltip Text="Looads in a Google Maps collection to let you see how the website works with dumby data.">
+        <MudButton Color="Color.Secondary" OnClick="GetTestData" Variant="Variant.Filled">Test Data</MudButton>
+    </MudTooltip>
 
-    <MudFileUpload T="IReadOnlyList<IBrowserFile>" Accept=".json" FilesChanged="UploadFiles">
-        <ButtonTemplate>
-            <MudButton HtmlTag="label"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       StartIcon="@Icons.FileCopy"
-                       for="@context">
-                Select Postman Collection
-            </MudButton>
-        </ButtonTemplate>
-    </MudFileUpload>
+    <MudTooltip Text="Select a collection off of your file system. Your collection never leaves your device.">
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>" Accept=".json" FilesChanged="UploadFiles">
+            <ButtonTemplate>
+                <MudButton HtmlTag="label"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.FileCopy"
+                           for="@context">
+                    Select Postman Collection
+                </MudButton>
+            </ButtonTemplate>
+        </MudFileUpload>
+    </MudTooltip>
 
-    <MudButton Variant="Variant.Filled"
-               Color="Color.Tertiary"
-               EndIcon="@Icons.Build"
-               OnClick="Process" Disabled="_uploadedFile == null">
-        Process
-    </MudButton>
+    <MudTooltip Text="Begin creating your ApiClients." Delay="300">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Tertiary"
+                   EndIcon="@Icons.Build"
+                   OnClick="Process" Disabled="_uploadedFile == null">
+            Process
+        </MudButton>
+    </MudTooltip>
 </div>
 <br />
 @_uploadedFile?.Name

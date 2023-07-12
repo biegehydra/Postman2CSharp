@@ -24,6 +24,7 @@
     text-decoration: underline;
     cursor: pointer; 
 }
+
 .main-container {
     padding: 5px 16px;
     flex-grow: 1;

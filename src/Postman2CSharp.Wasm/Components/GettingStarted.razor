@@ -15,15 +15,28 @@
             height: 300px;
         }
     }
+    .mud-list-item strong {
+        font-size: large;
+    }
 </style>
 <div class="getting-started-container">
-    <MudText>
-        <strong>Privacy Assurance:</strong> Your Postman collections never leave your computer. This tool operates with Blazor WebAssembly (Wasm),
-        a framework that allows it to run entirely in your browser without making any network calls or sharing information about your collections. 
-        Your data stays on your machine.
-    </MudText>
-    <br />
-    <MudText>Follow the steps below to convert your Postman collection to a C# API client.</MudText>
+    <MudPaper Elevation="4" Class="header-paper">
+        <MudText Typo="Typo.h1" Class="mt-4">Getting Started</MudText>
+        <br/>
+        <MudText>
+            <strong style="font-size: large;">Privacy Assurance:</strong> Your Postman collections never leave your computer. This tool operates with Blazor WebAssembly (Wasm),
+            a framework that allows it to run entirely in your browser without making any network calls or sharing information about your collections.
+            Your data stays on your machine.
+        </MudText>
+        <br/>
+        <MudText>
+            <strong style="font-size: large;">Have a collection in another format?</strong> Postman supports a variety of type and specification for importing.
+            OpenAPI, GraphQL, cURL, RAML, HAR and more are all supported. For more information, visit their page: <a target="_blank" class="link-normal" href="https://learning.postman.com/docs/designing-and-developing-your-api/importing-an-api/#supported-api-definitions-formats">Supported API definitions formats</a>
+            The imports are well written and create a well-structured collection. If you have a collection in one of these formats, you can import it into Postman and then
+            follow the directions below. <MudIcon Icon="@Icons.ArrowDownward" Size="Size.Small" Style="vertical-align: bottom;"></MudIcon>
+        </MudText>
+    </MudPaper>
+    <br/>
     <MudList>
         <MudListItem>
             <MudText>
@@ -88,6 +101,6 @@
         on the Advanced Settings page; these configurations deal with how classes are generated from Json. For an explanation of configurations
         see <a class="link-normal" href="/ApiClient-Configurations-Explained">ApiClient Configurations Explained</a>.
     </MudText>
-    <br />
+    <br/>
 </div>
 

@@ -1,19 +1,21 @@
 ﻿@page "/"
 @page "/GettingStarted"
 @inherits MainLayoutComponent
-<PageHeader Keywords="@_title" SubTitle="Convert Postman Collections to C# classes online. Postman2CSharp is a free tool that will help you make ApiClients faster."
+<PageHeader Keywords="@_keywords" SubTitle="Securely Convert Postman Collections into
+fully feautured ApiClients for free online, all in the browser. Just a few clicks and your done.
+OpenAPI, GraphQL, cURL, RAML, HAR and other specifications can be also converted by first importing into Postman."
              Title="@_title" ></PageHeader>
 
 <BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
 
-<MudText Typo="Typo.h1" Class="mt-4" >Getting Started</MudText>
-<br/>
+<br />
 
 <GettingStarted />
 
 @code 
 {
     private string _title => Navigate.Value.BaseUrl == Navigate.Value.CurrentUrl ? "Home" : "Getting Started";
+    private string _keywords => "openapi, open api, swagger, convert, graphql, curl, raml, har";
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
     {
         new("Home", "/", true, Icons.Rocket),
