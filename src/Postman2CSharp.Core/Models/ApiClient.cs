@@ -153,6 +153,11 @@ public class ApiClient
         {
             namespaces.Add("OneOf");
         }
+        if (UniqueAuths.Any(x => x.EnumType() is PostmanAuthType.apikey or PostmanAuthType.oauth1 or PostmanAuthType.oauth2
+                or PostmanAuthType.awsv4 or PostmanAuthType.bearer or PostmanAuthType.jwt))
+        {
+            namespaces.Add("Microsoft.Extensions.Configuration");
+        }
         return namespaces;
     }
 
