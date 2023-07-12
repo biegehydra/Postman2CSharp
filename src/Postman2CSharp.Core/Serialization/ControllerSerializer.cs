@@ -8,6 +8,7 @@ using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
 using Postman2CSharp.Core.Utilities;
+using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Serialization
 {
@@ -29,7 +30,7 @@ namespace Postman2CSharp.Core.Serialization
             var last = apiClient.HttpCalls.Last();
             foreach (var httpCall in apiClient.HttpCalls)   
             {
-                SerializeEndpoint(sb, apiClient, httpCall, uriSegments, apiClient.BaseUrl, 1);
+                SerializeEndpoint(sb, apiClient, httpCall, uriSegments, apiClient.BaseUrl, 1, apiClient.CollectionType);
                 if (httpCall != last)
                 {
                     sb.AppendLine();
@@ -38,7 +39,7 @@ namespace Postman2CSharp.Core.Serialization
             sb.AppendLine("}");
             return sb.ToString();
         }
-        private static void SerializeEndpoint(StringBuilder sb, ApiClient apiClient, HttpCall httpCall, List<string> baseUriSegments, string? baseUrl, int intIndent)
+        private static void SerializeEndpoint(StringBuilder sb, ApiClient apiClient, HttpCall httpCall, List<string> baseUriSegments, string? baseUrl, int intIndent, OutputCollectionType outputCollectionType)
         {
             var indent = Consts.Indent(intIndent);
             var attribute = Attribute(httpCall);
@@ -50,15 +51,12 @@ namespace Postman2CSharp.Core.Serialization
             foreach (var response in httpCall.AllResponses.OrderBy(x => x.Code))
             {
                 sb.Append(indent + $"[ProducesResponseType(StatusCodes.{response.StatusCode()}");
-                if (response.ClassName != null)
-                {
-                    sb.Append($", Type = typeof({response.ClassName})");
-                }
+                sb.Append($", Type = typeof({Common.SignatureClassName(response.ClassName, response.RootWasArray, outputCollectionType)})");
                 sb.AppendLine(")]");
             }
             sb.AppendLine(indent + $"[{attribute}{relativePath}]");
-            var responseType = httpCall.SuccessResponse?.ClassName ?? "Stream";
-            sb.AppendLine(indent + $"public IActionResult<{responseType}> {httpCall.Name}({ControllerParameters(httpCall, apiClient.CommonHeaders, baseUriSegments)})");
+            var responseType = Common.SignatureClassName(httpCall.SuccessResponse?.ClassName, httpCall.SuccessResponse?.RootWasArray ?? false, outputCollectionType);
+            sb.AppendLine(indent + $"public IActionResult<{responseType}> {httpCall.Name}({ControllerParameters(httpCall, apiClient.CommonHeaders, baseUriSegments, outputCollectionType)})");
             sb.AppendLine(indent + "{");
             indent = Consts.Indent(intIndent + 1);
             sb.AppendLine(indent + "throw new NotImplementedException();");
@@ -110,7 +108,7 @@ namespace Postman2CSharp.Core.Serialization
             }
         }
 
-        private static string ControllerParameters(HttpCall httpCall, List<Header> sharedHeaders, List<string> baseUriSegments)
+        private static string ControllerParameters(HttpCall httpCall, List<Header> sharedHeaders, List<string> baseUriSegments, OutputCollectionType outputCollectionType)
         {
             var allHeaders = new List<Header>(sharedHeaders);
             allHeaders.AddRange(httpCall.UniqueHeaders);
@@ -118,7 +116,7 @@ namespace Postman2CSharp.Core.Serialization
             var parameters = new List<string>();
             if (httpCall.RequestClassName != null)
             {
-                parameters.Add($"[FromBody] {httpCall.RequestClassName} {Lower(httpCall.RequestClassName)}");
+                parameters.Add($"[FromBody] {Common.SignatureClassName(httpCall.RequestClassName, httpCall.RequestRootWasArray, outputCollectionType)} {Lower(httpCall.RequestClassName)}");
             }
             if (httpCall.FormDataClassName != null)
             {
