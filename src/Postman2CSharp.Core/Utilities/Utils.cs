@@ -171,12 +171,10 @@ public static class Utils
         str = str.Replace("%7D", "}");
 
         // Replace any character with '-' in front of it with its uppercase version
-        str = Regex.Replace(str, @"(\{[^}]*?)-([a-z])([^}]*?\})", m =>
+        str = Regex.Replace(str, @"(?<=\{[^}]*?)-([a-z])(?=[^}]*?\})", m =>
         {
-            var start = m.Groups[1].Value;
-            var letter = m.Groups[2].Value.ToUpperInvariant();
-            var end = m.Groups[3].Value;
-            return start + letter + end;
+            var letter = m.Value.TrimStart('-').ToUpperInvariant();
+            return letter;
         });
         return str;
     }
@@ -185,12 +183,10 @@ public static class Utils
     public static string ReplaceBrackets(this string str)
     {
         // Find uppercase letters between brackets and add '-' before them
-        str = Regex.Replace(str, @"(\{[^}]*)([A-Z])([^}]*\})", m =>
+        str = Regex.Replace(str, @"(?<=\{[^}]*)[A-Z](?=[^}]*\})", m =>
         {
-            var start = m.Groups[1].Value;
-            var letter = m.Groups[2].Value;
-            var end = m.Groups[3].Value;
-            return start + "-" + letter.ToLowerInvariant() + end;
+            var letter = m.Value;
+            return "-" + letter.ToLowerInvariant();
         });
 
         str = str.Replace("{", "leftcurly");

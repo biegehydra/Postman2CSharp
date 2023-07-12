@@ -80,7 +80,7 @@ namespace Postman2CSharp.Core.Utilities
                 }
             }
 
-            var uriData = uris.Select(u => new Uri(u)).ToList();
+            var uriData = uris.Select(u => new Uri(u.ReplaceBrackets())).ToList();
 
             var commonHost = uriData[0].Host;
             return uriData.All(uri => uri.Host == commonHost);
