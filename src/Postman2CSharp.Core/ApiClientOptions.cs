@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using Postman2CSharp.Core.Infrastructure;
+using Xamasoft.JsonClassGenerator;
 using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core
 {
     public class ApiClientOptions
     {
-        public bool RemoveSemiDuplicates { get; set; } = true;
-        public bool RemoveDuplicateRoots { get; set; } = true;
+        public DuplicateOptions DuplicateOptions { get; set; } = new();
         public bool EnsureResponseIsSuccessStatusCode { get; set; }
         public bool MakePathCollectionVariablesFunctionParameters { get; set; }
         public bool UseCancellationTokens { get; set; }

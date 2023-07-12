@@ -506,7 +506,7 @@ public class ApiClientGenerator
 
     private JsonClassGenerator ClassGenerator()
     {
-        return new JsonClassGenerator(CSharpCodeWriter(), Options.ApiClientOptions.RemoveSemiDuplicates, Options.ApiClientOptions.RemoveDuplicateRoots);
+        return new JsonClassGenerator(CSharpCodeWriter(), Options.ApiClientOptions.DuplicateOptions);
     }
 
     private CSharpCodeWriter CSharpCodeWriter()

@@ -76,12 +76,24 @@
 <p style="margin-bottom: 20px;">
 </p>
 <MudGrid Spacing="3">
-    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
-         <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
+    <AdvancedSettingItem ToolTip="This will determine whether root classes are considered for deduping. A root class being one that is not is not used in any other classes. Generally these are used directly in the generated ApiClient class.">
+        <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.DuplicateOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudCheckBox>
+    </AdvancedSettingItem>
+
+    <AdvancedSettingItem ToolTip="This will determine whether or not you want any leniency in the deduping process. If you set this to false, the type matching will be strict and only dedupe when all properties match exactly by name and type.">
+        <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.DuplicateOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
     </AdvancedSettingItem>
     
-    <AdvancedSettingItem ToolTip="This will determine whether root classes are considered for deduping.">
-         <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudCheckBox>
+    <AdvancedSettingItem ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
+                         be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
+potential duplicate as a duplicate. WHEN the json names DO match. The lower this number is, the more often you will have numbered classes. Amount, Amount2, Amount3">
+         <MudNumericField @bind-Value="ApiClientOptions.DuplicateOptions.SameOriginalNameSensitivity" Disabled="ApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Same Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="50" />
+    </AdvancedSettingItem>
+    <AdvancedSettingItem ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
+                         be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
+potential duplicate as a duplicate. WHEN the json names DONT match. The higher this number is, the fewer classes that will be generated. Raising this number will also increase the likely
+hood of an error in generated code (minor issues usually) and increase the likelyhood of confusing class names.">
+         <MudNumericField @bind-Value="ApiClientOptions.DuplicateOptions.DifferentOriginalNameSensitivity" Disabled="ApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Different Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="6" />
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
@@ -173,8 +185,10 @@
                && options1.JsonLibrary == options2.JsonLibrary
                && options1.MultipleResponseHandling == options2.MultipleResponseHandling
                && options1.HandleMultipleResponses == options2.HandleMultipleResponses
-               && options1.RemoveSemiDuplicates == options2.RemoveSemiDuplicates
-               && options1.RemoveDuplicateRoots == options2.RemoveDuplicateRoots
+               && options1.DuplicateOptions.RemoveDuplicateRoots == options2.DuplicateOptions.RemoveDuplicateRoots
+               && options1.DuplicateOptions.RemoveSemiDuplicates == options2.DuplicateOptions.RemoveSemiDuplicates
+               && options1.DuplicateOptions.SameOriginalNameSensitivity == options2.DuplicateOptions.SameOriginalNameSensitivity
+               && options1.DuplicateOptions.DifferentOriginalNameSensitivity == options2.DuplicateOptions.DifferentOriginalNameSensitivity
                && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch && allRemovedDisabledMatch;
     }
 
