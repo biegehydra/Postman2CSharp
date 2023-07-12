@@ -41,7 +41,9 @@ namespace Postman2CSharp.Core
 
         public ApiClientOptions Clone()
         {
-            return (ApiClientOptions) MemberwiseClone();
+            var memberWiseClone =  (ApiClientOptions) MemberwiseClone();
+            memberWiseClone.DuplicateOptions = DuplicateOptions.Clone();
+            return memberWiseClone;
         }
     }
 }

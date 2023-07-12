@@ -1,6 +1,6 @@
 ﻿@typeparam TEnum where TEnum : struct, Enum
 <div class="enum-select-container" >
-    <MudSelect T="TEnum" Label="@Label" @bind-Value="Value">
+    <MudSelect T="TEnum" Disabled="Disabled" Label="@Label" @bind-Value="Value">
         @foreach (var enumValue in Enum.GetValues<TEnum>())
         {
             <MudSelectItem T="TEnum" Value="@enumValue">@enumValue.ToString()</MudSelectItem>
@@ -8,6 +8,7 @@
     </MudSelect>
 </div>
 @code {
+    [Parameter] public bool Disabled { get; set; }
     [Parameter, EditorRequired] public required string Label { get; set; }
 
     [Parameter] public EventCallback<TEnum> ValueChanged { get; set; }

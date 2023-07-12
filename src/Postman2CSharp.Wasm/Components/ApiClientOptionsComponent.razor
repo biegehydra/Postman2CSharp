@@ -30,7 +30,7 @@
 <MudGrid Spacing="3">
 
     <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle Multiple Responses is enabled and a request has multiple response types.">
-        <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="ApiClientOptions.MultipleResponseHandling" Label="Return Type"></EnumSelectComponent>
+        <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="ApiClientOptions.MultipleResponseHandling" Disabled="ApiClientOptions.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
@@ -45,15 +45,15 @@
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="Choose how to output your exceptions, if at all.">
-        <MultiEnumSelectComponent TEnum="ErrorHandlingSinks" Value="ApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
+        <MultiEnumSelectComponent Disabled="ApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="ErrorHandlingSinks" Value="ApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handled by the sinks.">
-        <MultiEnumSelectComponent TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="ApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
+         <MultiEnumSelectComponent Disabled="ApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="ApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
     
     <AdvancedSettingItem ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
-        <EnumSelectComponent @bind-Value="ApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
+         <EnumSelectComponent Disabled="ApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None || !ApiClientOptions.ErrorHandlingSinks.Contains(ErrorHandlingSinks.LogException)" @bind-Value="ApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />

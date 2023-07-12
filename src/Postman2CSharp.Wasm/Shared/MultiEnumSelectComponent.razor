@@ -1,6 +1,6 @@
 ﻿@typeparam TEnum where TEnum : struct, Enum
 <div class="enum-select-container">
-    <MudSelect @ref="_select" T="string" Label="@Label" MultiSelection="true" @bind-SelectedValues="SelectedValues">
+    <MudSelect @ref="_select" T="string" Label="@Label" Disabled="Disabled" MultiSelection="true" @bind-SelectedValues="SelectedValues">
         @foreach (var enumType in Enum.GetValues<TEnum>())
         {
             <MudSelectItem T="string" Value="@enumType.ToString()">@enumType.ToString()</MudSelectItem>
@@ -12,6 +12,7 @@
     private MudSelect<string>? _select;
     private List<string> _selectedValues = new List<string>();
 
+    [Parameter] public bool Disabled { get; set; }
     [Parameter, EditorRequired] public string Label { get; set; } = null!;
     [Parameter] public bool ForbidNoValue { get; set; }
     #pragma warning disable BL0007

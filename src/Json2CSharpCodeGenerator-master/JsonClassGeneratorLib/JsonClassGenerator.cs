@@ -27,6 +27,11 @@ namespace Xamasoft.JsonClassGenerator
         public int SameOriginalNameSensitivity { get; set; } = 3;
         public int DifferentOriginalNameSensitivity { get; set; } = 2;
         public bool RemoveDuplicateRoots { get; set; } = true;
+
+        public DuplicateOptions Clone()
+        {
+            return (DuplicateOptions) MemberwiseClone();
+        }
     }
 
     public class JsonClassGenerator
