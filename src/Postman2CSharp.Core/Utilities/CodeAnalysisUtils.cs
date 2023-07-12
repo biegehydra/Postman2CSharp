@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -60,6 +61,54 @@ namespace Postman2CSharp.Core.Utilities
 
                 // Add consolidated namespace to the new root
                 newRoot = newRoot.AddMembers(consolidatedNamespace);
+            }
+
+            return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
+        }
+
+        public static string ConsolidateNamespaces(IEnumerable<string> sourceCodes, string rootClassName)
+        {
+            var newRoot = SyntaxFactory.CompilationUnit()
+                .WithMembers(new SyntaxList<MemberDeclarationSyntax>());
+
+            foreach (var sourceCode in sourceCodes)
+            {
+                var tree = CSharpSyntaxTree.ParseText(sourceCode);
+                var root = tree.GetCompilationUnitRoot();
+
+                var namespaces = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>().ToList();
+                if (!namespaces.Any())
+                {
+#if DEBUG
+                    Debug.WriteLine($"No classes generated.");
+#endif
+                    throw new NoClassesGeneratedException()
+                    {
+                        IntendedRootName = rootClassName
+                    };
+                }
+                var namespaceGroups = namespaces.GroupBy(n => n.Name.ToString());
+
+                // Merge the root with the new root
+                newRoot = newRoot.WithExterns(newRoot.Externs.AddRange(root.Externs))
+                    .WithUsings(newRoot.Usings.AddRange(root.Usings))
+                    .WithAttributeLists(newRoot.AttributeLists.AddRange(root.AttributeLists))
+                    .WithLeadingTrivia(newRoot.GetLeadingTrivia().Concat(root.GetLeadingTrivia()))
+                    .WithTrailingTrivia(newRoot.GetTrailingTrivia().Concat(root.GetTrailingTrivia()));
+
+                foreach (var namespaceGroup in namespaceGroups)
+                {
+                    var consolidatedNamespace = namespaceGroup.First();
+
+                    // Add all members from duplicate namespaces to the first one
+                    foreach (var duplicateNamespace in namespaceGroup.Skip(1))
+                    {
+                        consolidatedNamespace = consolidatedNamespace.AddMembers(duplicateNamespace.Members.ToArray());
+                    }
+
+                    // Add consolidated namespace to the new root
+                    newRoot = newRoot.AddMembers(consolidatedNamespace);
+                }
             }
 
             return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);

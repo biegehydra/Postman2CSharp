@@ -9,6 +9,13 @@
     min-width: 11em;
 }
 
+img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: cover;
+    object-position: center;
+}
+
 .header-paper {
     background-color: rgba(115, 126, 207, 0.05);
     padding: 16px;
