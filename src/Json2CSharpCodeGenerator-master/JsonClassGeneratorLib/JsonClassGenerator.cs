@@ -505,7 +505,12 @@ namespace Xamasoft.JsonClassGenerator
             if (strict && dup.Fields!.Count != orig.Fields!.Count) return false;
             if (dup.Fields!.Count > orig.Fields!.Count) return false;
             if (dup.OriginalName != orig.OriginalName &&
-                orig.Fields.Count - dup.Fields.Count > 4)
+                orig.Fields.Count - dup.Fields.Count > 2)
+            {
+                return false;
+            }
+            if (dup.OriginalName == orig.OriginalName &&
+                orig.Fields.Count - dup.Fields.Count > 3)
             {
                 return false;
             }

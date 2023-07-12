@@ -126,7 +126,7 @@ namespace Postman2CSharp.Core.Serialization
                         {
                             if (enumValue == AddTokenTo.Header)
                             {
-                                var keyValue = auth.TryGetApiKeyConfig(ApiKeyConfig.Key, out var key) ? key : "jwt";
+                                var keyValue = auth.TryGetJwtConfig(JwtConfig.QueryParamKey, out var key) ? key : "jwt";
                                 sb.AddDefaultAuthorizationHeader(indent, $@"$""{keyValue}""", Consts._jwt);
                             }
                         }
