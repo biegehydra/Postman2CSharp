@@ -24,7 +24,7 @@
     {
         if (!GetApiClientFromParameters()) return;
         if (ApiClientId == null || CollectionId == null) return;
-        await TabsService.Value.AddApiClientControllerTab(CollectionId, ApiClientId, SelectedApiClient!.InterfaceName);
+        await TabsService.Value.AddApiClientControllerTab(CollectionId, ApiClientId, SelectedApiClient!.ControllerClassName);
     }
 
     private ApiClient? _cachedApiClient;

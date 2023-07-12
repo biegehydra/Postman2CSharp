@@ -142,6 +142,7 @@
             if (newVersionDetected)
             {
                 await JsRuntime.InvokeVoidAsync("clearLocalStorage");
+                await SetSiteSettings();
                 SnackBar?.Add($"New website version detected. Your workspace has been reset.", Severity.Info);
             }
             else
@@ -169,7 +170,7 @@
         var siteSettings = await JsRuntime.InvokeAsync<SiteSettings?>("getLocalStorage", "siteSettings");
         if (siteSettings != null)
         {
-            if (siteSettings.Version != null && siteSettings.Version != SiteSettings.CurrentVersion)
+            if (siteSettings.Version is not SiteSettings.CurrentVersion)
             {
                 return true;
             }
@@ -191,6 +192,7 @@
 
     private async Task SetSiteSettings()
     {
+        SiteSettings.Instance.Version = SiteSettings.CurrentVersion;
         await JsRuntime.InvokeVoidAsync("setLocalStorage", "siteSettings", SiteSettings.Instance);
         await JsRuntime.InvokeVoidAsync("setLocalStorage", "codeWriterConfig", CSharpCodeWriterOptionsComponent.LastSavedInputModel);
         await JsRuntime.InvokeVoidAsync("setLocalStorage", "apiClientOptions", ApiClientOptionsComponent.ApiClientOptions);

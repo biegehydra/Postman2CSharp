@@ -70,8 +70,8 @@ namespace Postman2CSharp.Core.Serialization
         {
             if (commentTypes.Contains(XmlCommentTypes.Request) && !string.IsNullOrWhiteSpace(requestDescription) && !string.IsNullOrWhiteSpace(requestClassName))
             {
-                var xmlComment = XmlCommentHelpers.ToXmlParam(requestDescription, requestClassName, indent);
-                sb.Append(xmlComment);
+                var xmlParam = XmlCommentHelpers.ToXmlParam(requestDescription, requestClassName, indent);
+                sb.Append(xmlParam);
             }
 
             if (commentTypes.Contains(XmlCommentTypes.PathVariables) && paths != null && variables != null)
@@ -83,7 +83,9 @@ namespace Postman2CSharp.Core.Serialization
                     {
                         if (!string.IsNullOrWhiteSpace(keyValueTypeDescription.Description))
                         {
-                            sb.AppendLine(indent + $"/// <param name=\"{path.CsPropertyName(CsharpPropertyType.Local)}\">{keyValueTypeDescription.Description}</param>");
+                            var xmlParam = XmlCommentHelpers.ToXmlParam(keyValueTypeDescription.Description,
+                                path.CsPropertyName(CsharpPropertyType.Local), indent);
+                            sb.Append(xmlParam);
                         }
                     }
                 }
@@ -92,7 +94,9 @@ namespace Postman2CSharp.Core.Serialization
             {
                 foreach (var parameter in queryParameters.Where(parameter => !string.IsNullOrWhiteSpace(parameter.Description)))
                 {
-                    sb.AppendLine(indent + $"/// <param name=\"{parameter.CsPropertyName(CsharpPropertyType.Local)}\">{parameter.Description}</param>");
+                    var xmlParam = XmlCommentHelpers.ToXmlParam(parameter.Description,
+                        parameter.CsPropertyName(CsharpPropertyType.Local), indent);
+                    sb.Append(xmlParam);
                 }
             }
 
