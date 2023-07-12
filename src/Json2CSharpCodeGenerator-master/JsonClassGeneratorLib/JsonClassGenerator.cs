@@ -19,6 +19,7 @@ namespace Xamasoft.JsonClassGenerator
     {
         public string OriginalRootName { get; set; }
         public bool OriginalIsRoot { get; set; }
+        public bool DuplicateIsArray { get; set; }
     }
 
     public class DuplicateOptions
@@ -88,7 +89,7 @@ namespace Xamasoft.JsonClassGenerator
         /// <param name="jsonInput"></param>
         /// <param name="errorMessage"></param>
         /// <returns></returns>
-        public StringBuilder GenerateClasses(string jsonInput, out string errorMessage)
+        public (StringBuilder Sb, bool RootWasArray) GenerateClasses(string jsonInput, out string errorMessage)
         {
             JObject[] examples = null;
             bool rootWasArray = false;
@@ -112,7 +113,7 @@ namespace Xamasoft.JsonClassGenerator
             catch (Exception ex)
             {
                 errorMessage = "Exception: " + ex.Message;
-                return new StringBuilder();
+                throw;
             }
 
             try
@@ -124,6 +125,7 @@ namespace Xamasoft.JsonClassGenerator
                 rootType.IsRoot = true;
                 rootType.OriginalAssignedName = _rootClassName ?? "Root";
                 rootType.NewAssignedName = _rootClassName ?? "Root";
+                rootType.RootWasArray = rootWasArray;
                 this.GenerateClass(examples, rootType);
                 if (_currentRootIsQueryParameters)
                 {
@@ -137,12 +139,13 @@ namespace Xamasoft.JsonClassGenerator
                 this.Types = this.HandleDuplicateClassesJustTypes(this.Types);
                 AllTypes.AddRange(Types);
 
+                var test = Types.FirstOrDefault(x => x.IsRoot);
 
                 StringBuilder builder = new StringBuilder();
                 CodeWriter.WriteClassesToFile(builder, this.Types, rootWasArray);
 
                 errorMessage = String.Empty;
-                return builder;
+                return (builder, rootWasArray);
             }
             catch (DuplicateRootException)
             {
@@ -151,7 +154,7 @@ namespace Xamasoft.JsonClassGenerator
             catch (Exception ex)
             {
                 errorMessage = ex.ToString();
-                return new StringBuilder();
+                throw;
             }
         }
 
@@ -543,7 +546,8 @@ namespace Xamasoft.JsonClassGenerator
                 throw new DuplicateRootException()
                 {
                     OriginalRootName = orig.NewAssignedName,
-                    OriginalIsRoot = orig.IsRoot
+                    OriginalIsRoot = orig.IsRoot,
+                    DuplicateIsArray = dup.IsArray
                 };
             }
             if (dup.IsRoot)

@@ -164,7 +164,7 @@ public class ApiClientGenerator
         var auth = rootItem.Auth ?? PostmanCollection.Auth;
 
         var apiClient = new ApiClient(name, rootItem.Description, normalizedNameSpace, leastPossibleUri, httpCalls, commonHeaders, auth, variableUsages,
-            Options.ApiClientOptions, totalClassesGeneratedFromHttpCalls + 1, duplicateRoots);
+            Options.ApiClientOptions, totalClassesGeneratedFromHttpCalls + 1, duplicateRoots, Options.CSharpCodeWriterConfig.CollectionType);
         // This is generated here and not in the constructor because it allows my wasm app to lazy load a couple large dlls
         // that are used in the generation process. GenerateSourceCode was being called when I deserialized api clients from local storage
         apiClient.GenerateSourceCode();
@@ -220,6 +220,7 @@ public class ApiClientGenerator
             requestItem.Request!.Description = requestItem.Request.Description.HtmlToPlainText();
             string? requestSourceCode = null;
             string? requestClassName = null;
+            bool requestRootWasArray = false;
             List<ClassType>? requestTypes = null;
             if (requestDataType is DataType.Json)
             {
@@ -237,13 +238,14 @@ public class ApiClientGenerator
                     try
                     {
                         ProcessItem(jsonClassGenerator, json, uniqueName, Consts.Request, ref requestClassName,
-                            ref requestSourceCode, ref requestTypes);
+                            ref requestSourceCode, ref requestTypes, ref requestRootWasArray);
                     }
                     catch (JsonException)
                     {
                         requestClassName = "EmptyRequest";
                         requestSourceCode = null;
                         requestTypes = null;
+                        requestRootWasArray = false;
                     }
                     catch (NoClassesGeneratedException)
                     {
@@ -253,11 +255,13 @@ public class ApiClientGenerator
                         requestClassName = null;
                         requestSourceCode = null;
                         requestTypes = null;
+                        requestRootWasArray = false;
                     }
                     catch (DuplicateRootException ex)
                     {
                         AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, requestClassName, uniqueName, GeneratedClassType.Request);
                         requestClassName = ex.OriginalRootName;
+                        requestRootWasArray = ex.DuplicateIsArray;
                         requestSourceCode = null;
                         requestTypes = null;
                     }
@@ -266,6 +270,7 @@ public class ApiClientGenerator
                         requestClassName = null;
                         requestSourceCode = null;
                         requestTypes = null;
+                        requestRootWasArray = false;
 #if DEBUG
                         Console.WriteLine(ex);
                         throw;
@@ -305,11 +310,12 @@ public class ApiClientGenerator
                 {
                     string? responseSourceCode = null;
                     string? responseClassName = null;
+                    bool rootWasArray = false;
                     var json = response.Body;
                     if (string.IsNullOrWhiteSpace(json))
                     {
                         responseClassName = "EmptyResponse";
-                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
                         continue;
                     }
 
@@ -320,18 +326,18 @@ public class ApiClientGenerator
                             ? (HttpStatusCode) response.Code + Consts.Response
                             : Consts.Response;
                         ProcessItem(jsonClassGenerator, json, uniqueName, type, ref responseClassName,
-                            ref responseSourceCode, ref _);
+                            ref responseSourceCode, ref _, ref rootWasArray);
                     }
                     catch (JsonException)
                     {
                         responseClassName = "EmptyResponse";
-                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
                         continue;
                     }
                     catch (NoClassesGeneratedException)
                     {
                         responseClassName = "EmptyResponse";
-                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
                         continue;
 #if DEBUG
                         Console.WriteLine($@"Response no classes generated. {requestItem.Name}");
@@ -342,29 +348,29 @@ public class ApiClientGenerator
                         AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, responseClassName, uniqueName, GeneratedClassType.Response);
 
                         responseClassName = ex.OriginalRootName;
-                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, ex.DuplicateIsArray));
                         continue;
                     }
                     catch (Exception ex)
                     {
                         responseClassName = "EmptyResponse";
-                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json));
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
                         continue;
 #if DEBUG
                         Console.WriteLine(ex);
                         throw;
 #endif
                     }
-                    allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, responseSourceCode, DataType.Json));
+                    allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, responseSourceCode, DataType.Json, rootWasArray));
                     continue;
                 }
 
-                allApiResponse.Add(new ApiResponse(response.Code.Value, null, null, DataType.Binary));
+                allApiResponse.Add(new ApiResponse(response.Code.Value, null, null, DataType.Binary, false));
             }
             // If there is no success response, add one
             if (!allApiResponse.Any(x => x.IsSuccessCode))
             {
-                allApiResponse.Add(new ApiResponse(200, null, null, DataType.Binary));
+                allApiResponse.Add(new ApiResponse(200, null, null, DataType.Binary, false));
             }
 
             string? queryParametersSourceCode = null;
@@ -388,7 +394,8 @@ public class ApiClientGenerator
                 var queryParametersAsJson = jObject.ToString();
                 try
                 {
-                    ProcessItem(jsonClassGenerator, queryParametersAsJson, uniqueName, Consts.Parameters, ref queryParametersClassName, ref queryParametersSourceCode, ref queryParameterTypes, descriptionDict);
+                    bool _ = false;
+                    ProcessItem(jsonClassGenerator, queryParametersAsJson, uniqueName, Consts.Parameters, ref queryParametersClassName, ref queryParametersSourceCode, ref queryParameterTypes, ref  _, descriptionDict);
                 }
                 catch (NoClassesGeneratedException)
                 {
@@ -431,6 +438,7 @@ public class ApiClientGenerator
                 RequestDataType = requestDataType,
                 RequestClassName = requestClassName,
                 RequestSourceCode = requestSourceCode,
+                RequestRootWasArray = requestRootWasArray,
                 AllResponses = allApiResponse,
                 QueryParameterClassName = queryParametersClassName,
                 QueryParameterSourceCode = queryParametersSourceCode,
@@ -449,7 +457,7 @@ public class ApiClientGenerator
         return (httpCalls, totalClassesGenerated, duplicateRoots);
         
         void ProcessItem(JsonClassGenerator classGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, 
-            ref List<ClassType>? types, Dictionary<string, string?>? descriptionDict = null)
+            ref List<ClassType>? types, ref bool rootWasArray, Dictionary<string, string?>? descriptionDict = null)
         {
             className = GenerateUniqueName(itemName + itemType, uniqueNames);
             var writeComments = Options.ApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.QueryParameters);
@@ -468,7 +476,7 @@ public class ApiClientGenerator
                 classGenerator.SetCurrentRootIsQueryParameters(false);
             }
             classGenerator.SetDescriptionDict(descriptionDict);
-            (sourceCode, var classCount) = GenerateClasses(classGenerator, json, ref types, className);
+            (sourceCode, var classCount, rootWasArray) = GenerateClasses(classGenerator, json, ref types, className);
             totalClassesGenerated += classCount;
             if (sourceCode == string.Empty)
             {
@@ -515,9 +523,9 @@ public class ApiClientGenerator
         return new CSharpCodeWriter(Options.CSharpCodeWriterConfig, writeComments);
     }
 
-    private static (string SourceCode, int ClassCount) GenerateClasses(JsonClassGenerator jsonClassGenerator, string json, ref List<ClassType>? types, string rootClassName)
+    private static (string SourceCode, int ClassCount, bool RootWasArray) GenerateClasses(JsonClassGenerator jsonClassGenerator, string json, ref List<ClassType>? types, string rootClassName)
     {
-        var sb = jsonClassGenerator.GenerateClasses(json, out var errorMessage);
+        var (sb, rootWasArray) = jsonClassGenerator.GenerateClasses(json, out var errorMessage);
         types = jsonClassGenerator.Types?.Select(x => new ClassType()
         {
             AssignedName = x.NewAssignedName,
@@ -529,7 +537,7 @@ public class ApiClientGenerator
         }).ToList();
         var consolidated = CodeAnalysisUtils.ConsolidateNamespaces(sb.ToString(), rootClassName);
         var reordered = CodeAnalysisUtils.ReorderClasses(consolidated, rootClassName, out var classCount);
-        return (reordered, classCount);
+        return (reordered, classCount, rootWasArray);
     }
 
     private static string? GenerateFormDataClass (string? formClassName, List<IFormData>? formdatas, DataType? dataType, string nameSpace, bool writeFormDataComments)

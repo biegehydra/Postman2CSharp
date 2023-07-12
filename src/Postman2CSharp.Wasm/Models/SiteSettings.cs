@@ -52,6 +52,6 @@ namespace Postman2CSharp.Wasm.Models
         public int TotalApiClientsGenerated { get; set; }
         public string? Version { get; set; }
 
-        public const string CurrentVersion = "0.2";
+        public const string CurrentVersion = "0.3";
     }
 }

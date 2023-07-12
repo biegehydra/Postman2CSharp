@@ -1,7 +1,9 @@
-﻿using Postman2CSharp.Core.Models;
+﻿using System;
+using Postman2CSharp.Core.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Infrastructure
 {
@@ -26,7 +28,7 @@ namespace Postman2CSharp.Core.Infrastructure
             sb.AppendLine(indent + $"private readonly string {variableName};");
         }
 
-        public static void FunctionSignature(this StringBuilder sb, HttpCall call, string indent, List<HttpCallMethodParameter> methodParameters, bool handleMultipleResponse, MultipleResponseHandling multipleResponseHandling, bool isInterface = false)
+        public static void FunctionSignature(this StringBuilder sb, HttpCall call, string indent, OutputCollectionType outputCollectionType, List<HttpCallMethodParameter> methodParameters, bool handleMultipleResponse, MultipleResponseHandling multipleResponseHandling, bool isInterface = false)
         {
             if (isInterface)
             {
@@ -36,16 +38,22 @@ namespace Postman2CSharp.Core.Infrastructure
             {
                 sb.Append(indent + "public async Task");
             }
-            if (!handleMultipleResponse || call.AllResponses.GroupBy(x => x.ClassName ?? "Stream").Count() == 1)
+            if (!handleMultipleResponse || call.AllResponses.GroupBy(x => SignatureClassName(x.ClassName, x.RootWasArray, outputCollectionType)).Count() == 1)
             {
-                sb.Append($"<{call.SuccessResponse?.ClassName ?? "Stream"}>");
+                if (call.SuccessResponse == null)
+                {
+#if DEBUG
+                    throw new Exception("SuccessResponse null. Not supposed to happen.");
+#endif
+                }
+                sb.Append($"<{SignatureClassName(call.SuccessResponse?.ClassName, call.SuccessResponse?.RootWasArray ?? false, outputCollectionType)}>");
             }
             else
             {
                 if (multipleResponseHandling == MultipleResponseHandling.OneOf)
                 {
                     sb.Append("<OneOf<");
-                    var groups = call.AllResponses.GroupBy(x => x.ClassName ?? "Stream");
+                    var groups = call.AllResponses.GroupBy(x => SignatureClassName(x.ClassName, x.RootWasArray, outputCollectionType));
                     sb.Append(string.Join(", ", groups.Select(x => x.Key)));
                     sb.Append(">>");
                 }
@@ -57,6 +65,24 @@ namespace Postman2CSharp.Core.Infrastructure
             sb.Append($" {call.Name}(");
             sb.Append(string.Join(", ", methodParameters.Select(x => x.LocalParameterDeclaration)));
             sb.AppendLine(isInterface ? ");" : ")");
+        }
+
+        public static string SignatureClassName(string? className, bool rootWasArray,  OutputCollectionType outputCollectionType)
+        {
+            if (className == null)
+            {
+                return "Stream";
+            }
+            if (rootWasArray)
+            {
+                return outputCollectionType switch
+                {
+                    OutputCollectionType.Array or OutputCollectionType.ImmutableArray => $"{className}[]",
+                    OutputCollectionType.MutableList or OutputCollectionType.IReadOnlyList => $"List<{className}>",
+                    _ => throw new ArgumentOutOfRangeException(nameof(outputCollectionType), outputCollectionType, null)
+                };
+            }
+            return className;
         }
     }
 }

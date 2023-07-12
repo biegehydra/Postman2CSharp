@@ -75,6 +75,7 @@ public class ApiClient
     public required string InterfaceSourceCode { get; set; }
     public required List<VariableUsage> VariableUsages { get; set; }
     public required ApiClientOptions Options { get; set; }
+    public required OutputCollectionType CollectionType { get; set; }
     public required int TotalClassesGenerated { get; set; }
 
     private List<AuthSettings>? _uniqueAuths;
@@ -100,7 +101,8 @@ public class ApiClient
 #pragma warning disable CS8618
     public ApiClient(string name, string? description, string nameSpace, string? baseUrl, List<HttpCall> httpCalls,
 #pragma warning restore CS8618
-        List<Header> commonHeaders, AuthSettings? collectionAuth, List<VariableUsage> variableUsages, ApiClientOptions options, int totalClassesGenerated, List<DuplicateRoot> duplicateRoots)
+        List<Header> commonHeaders, AuthSettings? collectionAuth, List<VariableUsage> variableUsages, ApiClientOptions options, 
+        int totalClassesGenerated, List<DuplicateRoot> duplicateRoots, OutputCollectionType collectionType)
     {
         Name = name;
         Description = description;
@@ -113,12 +115,13 @@ public class ApiClient
         Options = options;
         TotalClassesGenerated = totalClassesGenerated;
         DuplicateRoots = duplicateRoots;
+        CollectionType = collectionType;
     }
 
     public void GenerateSourceCode()
     {
         SourceCode = ApiClientSerializer.SerializeApiClient(this);
-        InterfaceSourceCode = InterfaceSerializer.CreateInterface(HttpCalls, NameSpace, Name, Options.HandleMultipleResponses, Options.MultipleResponseHandling, Options.UseCancellationTokens);
+        InterfaceSourceCode = InterfaceSerializer.CreateInterface(HttpCalls, NameSpace, Name, Options.HandleMultipleResponses, Options.MultipleResponseHandling, Options.UseCancellationTokens, CollectionType);
         TestClassSourceCode = TestSerializer.SerializeTestClass(this);
         ControllerSourceCode = ControllerSerializer.SerializeController(this);
     }

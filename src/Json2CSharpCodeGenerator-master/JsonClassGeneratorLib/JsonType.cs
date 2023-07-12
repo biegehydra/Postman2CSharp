@@ -358,7 +358,8 @@ namespace Xamasoft.JsonClassGenerator
             }
         }
 
-
+        public bool RootWasArray { get; set; }
+        public bool IsArray => RootWasArray || Type == JsonTypeEnum.Array;
         public List<JsonFieldInfo> Fields { get; internal set; }
         public bool IsRoot { get; internal set; }
     }

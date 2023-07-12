@@ -17,7 +17,7 @@ public static class HttpCallSerializer
 {
     public static void SerializeHttpCall(StringBuilder sb, AuthSettings? auth, string? baseUrl, HttpCall call, bool constructorHasAuthHeader,
         bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
-        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool handleMultipleResponses, MultipleResponseHandling multipleResponseHandling, bool useCancellationTokens)
+        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool handleMultipleResponses, MultipleResponseHandling multipleResponseHandling, bool useCancellationTokens, OutputCollectionType outputCollectionType)
     {
         string relativePath;
         try
@@ -28,7 +28,7 @@ public static class HttpCallSerializer
         {
             throw new ArgumentException(nameof(call.Request.Url.Raw), $"Invalid URL: {call.Request.Url.Raw}");
         }
-        var methodParameters = call.MethodParameters();
+        var methodParameters = call.MethodParameters(outputCollectionType);
         if (useCancellationTokens)
         {
             methodParameters.Add(HttpCallMethodParameter.CancellationToken);
@@ -36,7 +36,7 @@ public static class HttpCallSerializer
 
         var indent = Consts.Indent(1);
         XmlComment(sb, commentTypes, call.Request.Description, call.Request.Url.Path, call.Request.Url.Variable, indent);
-        sb.FunctionSignature(call, indent, methodParameters, handleMultipleResponses, multipleResponseHandling);
+        sb.FunctionSignature(call, indent, outputCollectionType, methodParameters, handleMultipleResponses, multipleResponseHandling);
         sb.AppendLine(indent + "{");
 
         indent = Consts.Indent(2);

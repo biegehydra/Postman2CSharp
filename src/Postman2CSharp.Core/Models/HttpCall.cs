@@ -7,6 +7,7 @@ using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
 using Postman2CSharp.Core.Utilities;
+using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Models;
 
@@ -17,6 +18,7 @@ public class ApiResponse
     public string? ClassName { get; set; }
     public string? SourceCode { get; set; }
     public DataType DataType { get; }
+    public bool RootWasArray { get; set; }
 
     private string? _statusCode;
     public string StatusCode()
@@ -24,12 +26,13 @@ public class ApiResponse
         return _statusCode ??= $"Status{Code}{(HttpStatusCode)Code}";
     }
 
-    public ApiResponse(int code, string? className, string? sourceCode, DataType dataType)
+    public ApiResponse(int code, string? className, string? sourceCode, DataType dataType, bool rootWasArray)
     {
         Code = code;
         ClassName = className;
         SourceCode = sourceCode;
         DataType = dataType;
+        RootWasArray = rootWasArray;
     }
 }
 
@@ -52,6 +55,7 @@ public class HttpCall
     public string? RequestSourceCode { get; set; }
     public required Request Request { get; init; }
     public required string? RequestClassName { get; set; }
+    public required bool RequestRootWasArray { get; set; }
     public required List<ClassType>? RequestTypes { get; set; }
 
     public required string? QueryParameterClassName { get; set; }
@@ -67,7 +71,7 @@ public class HttpCall
 
     public required List<Header> UniqueHeaders { get; init; }
 
-    public List<HttpCallMethodParameter> MethodParameters()
+    public List<HttpCallMethodParameter> MethodParameters(OutputCollectionType outputCollectionType)
     {
         List<HttpCallMethodParameter> methodParameters = new();
         if (QueryParameterClassName != null)
@@ -78,7 +82,8 @@ public class HttpCall
 
         if (RequestClassName != null)
         {
-            var request = new HttpCallMethodParameter(HttpCallMethodParameterType.Request, RequestClassName, "request");
+            var signatureClassName = Common.SignatureClassName(RequestClassName, RequestRootWasArray, outputCollectionType);
+            var request = new HttpCallMethodParameter(HttpCallMethodParameterType.Request, signatureClassName, "request");
             methodParameters.Add(request);
         }
 

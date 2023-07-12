@@ -39,7 +39,7 @@ namespace Postman2CSharp.Core.Serialization
                 sb.AppendLine(indent + "{");
                 indent = Consts.Indent(3);
                 List<string> parameterNames = new List<string>();
-                foreach (var httpCallMethodParameter in httpCall.MethodParameters())
+                foreach (var httpCallMethodParameter in httpCall.MethodParameters(apiclient.CollectionType))
                 {
                     switch (httpCallMethodParameter.Type)
                     {
