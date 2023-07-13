@@ -104,10 +104,18 @@
         }
         catch (JsonException exception)
         {
+            if (ProgressSnackbar != null)
+            {
+                SnackBar.Value?.Remove(ProgressSnackbar);
+            }
             SnackBar.Value?.Add($"Json could not be deserialized. {exception.Message}", Severity.Error);
         }
         catch (Exception exception)
 		{
+		    if (ProgressSnackbar != null)
+		    {
+		        SnackBar.Value?.Remove(ProgressSnackbar);
+		    }
 			SnackBar.Value?.Add($"Something went wrong. {exception.Message}", Severity.Error);
 		}
         finally
@@ -115,14 +123,14 @@
             _uploadedFile = null;
         }
     }
-
+    private Snackbar? ProgressSnackbar { get; set; }
     private void StartTrackingGenerator(ApiClientGenerator apiClientGenerator)
     {
         var options = new ProgressPopupOptions("Deserializing collection...", "Finished Generating ApiClients!");
         apiClientGenerator.ProgressCallback += options.InvokeProgressCallback;
         apiClientGenerator.OnStageChanged += options.InvokeStageChangedCallback;
 
-        var snackBar = SnackBar.Value?.Add<ProgressPopup>(new Dictionary<string, object>()
+        ProgressSnackbar = SnackBar.Value?.Add<ProgressPopup>(new Dictionary<string, object>()
         {
             {"Options", options }
         }, Severity.Normal, configure =>
@@ -134,7 +142,7 @@
             configure.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
             configure.VisibleStateDuration = 200000;
         });
-        if (snackBar == null) return;
-        options.Snackbar = snackBar;
+        if (ProgressSnackbar == null) return;
+        options.Snackbar = ProgressSnackbar;
     }
 }
