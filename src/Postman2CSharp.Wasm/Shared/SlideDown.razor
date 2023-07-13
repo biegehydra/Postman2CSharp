@@ -34,7 +34,7 @@
     }
 </style>
 
-@if (_firstRenderComplete)
+@if (_firstRenderComplete && _firstShowContent)
 {
     <div class="@AnimationClass" style="@Style">
         @ChildContent
@@ -74,6 +74,7 @@ else
     public string MaxHeight { get; set; } = "500px";
 
     private bool _firstRenderComplete = false;
+    private bool _firstShowContent = false;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -85,6 +86,7 @@ else
 
     private void ToggleContent()
     {
+        _firstShowContent = true;
         ShowContent = !ShowContent;
     }
 }
