@@ -74,25 +74,17 @@ else
     public string MaxHeight { get; set; } = "500px";
 
     private bool _firstRenderComplete = false;
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _firstRenderComplete = true;
+        if (firstRender)
+        {
+            await Task.Delay((int)Math.Ceiling(AnimationDuration * 1.4) * 1000);
+            _firstRenderComplete = true;
+        }
     }
 
     private void ToggleContent()
     {
         ShowContent = !ShowContent;
     }
-
-    private bool _cachedShowContent;
-    protected override bool ShouldRender()
-    {
-        if (_cachedShowContent != ShowContent)
-        {
-            _cachedShowContent = ShowContent;
-            return true;
-        }
-        return false;
-    }
-
 }
