@@ -11,11 +11,11 @@
 <br/>
 <p>
     If you are seeing this page, it's because you enabled the remove duplicate roots option on the Convert page.
-    What that settings does, is it removes duplicate classes from the generated code even if it is a root class.
-    What this means, is that if DeleteUserResponse and DeleteItemResponse (and every duplicate root after) 
-    both have the same properties, only the root will be generated. This is usually ideal in most situations, be it a
-    request or response, however it can cause some confusion due to naming; you don't want the DeleteItem function
-    returning a DeleteUserResponse. This page allows you to rename the duplicate roots to something more appropriate.
+    What that settings does is it removes duplicate classes from the generated code even if it is a root class.
+    For example, if DeleteUserResponse and DeleteItemResponse (and every duplicate root after) 
+    both a single bool property called "Success", only the first example would be generated. This is usually ideal in most situations,
+    be it a request or response, however it can cause some confusion due to naming; you don't want the DeleteItem function
+    returning a DeleteUserResponse. Instead, you would probably want them to both return a SuccessResponse. That is what this page is for.
 </p>
 <br/>
 <br/>
