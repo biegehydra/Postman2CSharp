@@ -195,3 +195,27 @@ function emptyElement(elementId) {
 
     window.scrollTo(0, scrollPosition);
 }
+let jsonEditor = null;
+function initJsonEditor() {
+    jsonEditor = ace.edit("json-editor");
+    jsonEditor.setTheme("ace/theme/monokai");
+    jsonEditor.session.setMode("ace/mode/json");
+    jsonEditor.setValue("the new text here");
+    jsonEditor.setShowPrintMargin(false);
+
+    autoResize(jsonEditor);
+}
+function getJsonEditorValue() {
+    return jsonEditor.getValue();
+}
+
+function autoResize(editor) {
+    var height = window.innerHeight;
+    editor.container.style.height = `${height / 2}px`;
+    editor.resize();
+}
+
+// Call autoResize whenever the window is resized
+window.addEventListener('resize', function () {
+    autoResize(jsonEditor);
+});

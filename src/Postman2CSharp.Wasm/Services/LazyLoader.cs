@@ -106,7 +106,7 @@ namespace Postman2CSharp.Wasm.Services
                 {
 
                 }
-                if (uri.Contains("Upload") || uri.Contains("Collection") || uri.Contains("Convert"))
+                if (uri.Contains("Upload") || uri.Contains("Collection") || uri.Contains("Convert") || uri.Contains("json"))
                 {
                     await LoadConvertAssemblies();
                 }

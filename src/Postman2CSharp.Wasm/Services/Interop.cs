@@ -142,5 +142,14 @@ namespace Postman2CSharp.Wasm.Services
         {
             await _jsRuntime.InvokeVoidAsync("emptyElement", elementId);
         }
+
+        public async Task InitJsonEditor()
+        {
+            await _jsRuntime.InvokeVoidAsync("initJsonEditor");
+        }
+        public async Task<string> GetJsonEditorValue()
+        {
+            return await _jsRuntime.InvokeAsync<string>("getJsonEditorValue");
+        }
     }
 }

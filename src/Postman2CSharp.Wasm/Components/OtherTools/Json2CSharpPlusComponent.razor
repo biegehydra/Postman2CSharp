@@ -1,0 +1,22 @@
+﻿@using Xamasoft.JsonClassGenerator
+<div id="json-editor" style="min-height: 800px; max-height: 800px"></div>
+<MudButton OnClick="Process">Process</MudButton>
+<br/>
+<pre><code @key="@_result" class="language-csharp">@_result</code></pre>
+@code {
+    [Inject] private Interop Interop { get; set; } = default!;
+    private string? _result;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Interop.InitJsonEditor();
+    }
+    private Json2CSharpPlusSimple? _json2CSharpPlusSimple;
+    private async Task Process()
+    {
+        var json = await Interop.GetJsonEditorValue();
+        _json2CSharpPlusSimple ??= new Json2CSharpPlusSimple(new CSharpCodeWriterConfig(), new DuplicateOptions());
+        _result = _json2CSharpPlusSimple.GenerateMoreClasses(json);
+    }
+
+}
