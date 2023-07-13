@@ -120,7 +120,7 @@ namespace Xamasoft.JsonClassGenerator
             {
                 if (this.CodeWriter == null) this.CodeWriter = new CSharpCodeWriter();
                 this.Types = new List<JsonType>();
-                this.Names.Add(_rootClassName ?? "Root"); //TODO Make sure this doesn't break anything
+                this.Names.Add(_rootClassName ?? "Root");
                 JsonType rootType = new JsonType(this, examples[0]);
                 rootType.IsRoot = true;
                 rootType.OriginalAssignedName = _rootClassName ?? "Root";
