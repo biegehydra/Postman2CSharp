@@ -3,8 +3,11 @@
     <div class="f-row" style="justify-content: space-between">
         <div class="f-row" style="justify-content: space-between; gap: 10px; width: 100%;">
             <div style="width: 75%">
-                <Detail Key="Postman Id" Value="@Info.PostmanId" FontSize="FontSize.Larger"></Detail>
-                <Detail Key="Collection Name" Value="@Info.Name" FontSize="FontSize.Larger"></Detail>
+                <MudText Typo="Typo.h1" Class="mb-5">@Info.Name</MudText>
+                @if (!string.IsNullOrWhiteSpace(Info.PostmanId))
+                {
+                    <Detail Key="Postman Id" Value="@Info.PostmanId" FontSize="FontSize.Larger"></Detail>
+                }
                 @{ var shortDescription = Info.Description?.Length > 250 ? Info.Description?[..250] : Info.Description; }
                 <span style="font-size: larger;">
                     <b>Description:&emsp;</b>
@@ -22,9 +25,9 @@
                 }
             </div>
             <div>
-                <Detail Key="ApiClients" Value="@ApiClientCount.ToString()" FontSize="FontSize.Larger" Flip ></Detail>
+                <Detail Key="ApiClients" Value="@ApiClientCount.ToString()" FontSize="FontSize.Larger" Flip></Detail>
                 <Detail Key="Http Calls" Value="@HttpCallsCount.ToString()" FontSize="FontSize.Larger" Flip></Detail>
-                <Detail Key="Classes" Value="@TotalGeneratedClasses.ToString()" FontSize="FontSize.Larger" Flip ></Detail>
+                <Detail Key="Classes" Value="@TotalGeneratedClasses.ToString()" FontSize="FontSize.Larger" Flip></Detail>
             </div>
         </div>
     </div>

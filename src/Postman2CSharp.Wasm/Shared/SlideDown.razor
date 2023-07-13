@@ -1,0 +1,98 @@
+﻿<style>
+    @@keyframes @($"slide-down{_guid}") {
+        0% {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        100% {
+            max-height: @MaxHeight;
+            opacity: 1;
+        }
+    }
+
+    @@keyframes @($"slide-up{_guid}") {
+        0% {
+            max-height: @MaxHeight;
+            opacity: 1;
+        }
+
+        100% {
+            max-height: 0;
+            opacity: 0;
+        }
+    }
+
+    .@($"slide-down{_guid}") {
+        animation-name: @($"slide-down{_guid}");
+        overflow: hidden;
+    }
+
+    .@($"slide-up{_guid}") {
+        animation-name: @($"slide-up{_guid}");
+        overflow: hidden;
+    }
+</style>
+
+@if (_firstRenderComplete)
+{
+    <div class="@AnimationClass" style="@Style">
+        @ChildContent
+    </div>
+}
+@if (ShowContent)
+{
+    <Small OnClick="ToggleContent">@ShowLessText</Small>
+}
+else
+{
+    <Small OnClick="ToggleContent">@ShowMoreText</Small>
+}
+
+@code {
+    private string _guid = Guid.NewGuid().ToString();
+
+    private bool ShowContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public double AnimationDuration { get; set; } = 0.5; // Default duration is 0.5s
+
+    [Parameter] public string? ShowMoreText { get; set; }
+
+    [Parameter] public string? ShowLessText { get; set; }
+
+    private double InternalAnimationDuration => ShowContent ? AnimationDuration : .8 * AnimationDuration;
+
+    private string Style => $"animation: {AnimationClass} {InternalAnimationDuration}s forwards;";
+
+    private string AnimationClass => ShowContent ? $"slide-down{_guid}" : $"slide-up{_guid}";
+
+    [Parameter]
+    public string MaxHeight { get; set; } = "500px";
+
+    private bool _firstRenderComplete = false;
+    protected override void OnAfterRender(bool firstRender)
+    {
+        _firstRenderComplete = true;
+    }
+
+    private void ToggleContent()
+    {
+        ShowContent = !ShowContent;
+    }
+
+    private bool _cachedShowContent;
+    protected override bool ShouldRender()
+    {
+        if (_cachedShowContent != ShowContent)
+        {
+            _cachedShowContent = ShowContent;
+            return true;
+        }
+        return false;
+    }
+
+}
