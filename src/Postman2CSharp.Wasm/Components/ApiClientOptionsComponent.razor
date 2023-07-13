@@ -33,7 +33,8 @@
 <MudText Class="setting-section-header" Typo="Typo.h5">Multiple Response Handling</MudText>
 <MudGrid Spacing="3">
 
-    <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle Multiple Responses is enabled and a request has multiple response types.">
+    <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle is enabled and a request has multiple response types. Turning this on after generation 
+has no effect since only the first success response is saved when the api client is generated. Turning it off will work as intended">
         <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="ApiClientOptions.MultipleResponseHandling" Disabled="ApiClientOptions.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
     </AdvancedSettingItem>
 

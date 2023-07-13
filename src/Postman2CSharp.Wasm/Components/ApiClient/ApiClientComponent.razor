@@ -56,12 +56,100 @@
             }
         </MudGrid>
     </div>
+    <MudText Typo="Typo.h2" Class="mt-4">Configure This ApiClient</MudText>
     <br />
+    <p>
+        At this point it is to late to change class generation options and a few others but most can still be configured.
+    </p>
+    <Small Disabled="ShowConfigurations" OnClick="() => ShowConfigurations = true">Show Configurations</Small>
+    @if (ShowConfigurations)
+    {
+        <MudGrid Spacing="3">
+            <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
+                <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="SelectedApiClient.Options.XmlCommentTypes" SelectedValuesChanged="SelectedCommentTypesChanged" Label="Comment Types"></MultiEnumSelectComponent>
+            </AdvancedSettingItem>
+        </MudGrid>
+        <MudDivider Class="my-divider" Light="true" FlexItem="true" />
+        <MudGrid Spacing="3">
+            <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle is enabled and a request has multiple response types.">
+                <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="SelectedApiClient.Options.MultipleResponseHandling" Disabled="SelectedApiClient.Options.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
+            </AdvancedSettingItem>
 
-    <pre><code @key="@SelectedApiClient.Id" class="language-csharp">@SelectedApiClient.SourceCode</code></pre>
+            <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+                <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.HandleMultipleResponses">Handle</MudCheckBox>
+            </AdvancedSettingItem>
+        </MudGrid>
+        <MudDivider Class="my-divider" Light="true" FlexItem="true" />
+        <MudGrid Spacing="3">
+            <AdvancedSettingItem ToolTip="Determines whether or not to handle errors when making http client calls and how to handle them when they happen.">
+                <EnumSelectComponent @bind-Value="SelectedApiClient.Options.ErrorHandlingStrategy" AlwaysShowAllEnumValues Label="Error Handling Strategy"></EnumSelectComponent>
+             </AdvancedSettingItem>
+
+             <AdvancedSettingItem ToolTip="Choose how to output your exceptions, if at all.">
+                 <MultiEnumSelectComponent Disabled="SelectedApiClient.Options.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="ErrorHandlingSinks" Value="SelectedApiClient.Options.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged" ></MultiEnumSelectComponent>
+             </AdvancedSettingItem>
+
+             <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handled by the sinks.">
+                 <MultiEnumSelectComponent Disabled="SelectedApiClient.Options.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="SelectedApiClient.Options.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged" ></MultiEnumSelectComponent>
+             </AdvancedSettingItem>
+
+             <AdvancedSettingItem ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
+                 <EnumSelectComponent Disabled="SelectedApiClient.Options.ErrorHandlingStrategy == ErrorHandlingStrategy.None || !SelectedApiClient.Options.ErrorHandlingSinks.Contains(ErrorHandlingSinks.LogException)" @bind-Value="SelectedApiClient.Options.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
+             </AdvancedSettingItem>
+         </MudGrid>
+        <MudDivider Class="my-divider" Light="true" FlexItem="true" />
+        <MudText Class="setting-section-header mb-3" Typo="Typo.h5">Function Configurations</MudText>
+        <MudGrid Spacing="3">
+            <AdvancedSettingItem ToolTip="Each request in the generated ApiClient will call EnsureSuccessStatusCode() on the HttpResponseMessage before deserializing or returning the response stream.">
+                <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudCheckBox>
+            </AdvancedSettingItem>
+
+            <AdvancedSettingItem ToolTip="@(@"All actual ""path variables"" (/:pathVariable/) are automatically treated as function parameters, but collection variables in paths (/{{variable}}/) will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
+                <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudCheckBox>
+            </AdvancedSettingItem>
+
+            <AdvancedSettingItem ToolTip="@(@"If true each request function on the generated ApiClient will be have a Cancellation token parameter with a default value of default.")">
+                <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.UseCancellationTokens">Use Cancellation Tokens</MudCheckBox>
+            </AdvancedSettingItem>
+        </MudGrid>
+        <MudButton Style="margin:10px;" Variant="Variant.Filled" Color="Color.Tertiary" EndIcon="@Icons.Build" OnClick="RegenerateApiClient">
+            Regenerate
+        </MudButton>
+        <Small Disabled="!ShowConfigurations" OnClick="() => ShowConfigurations = false">Hide Configurations</Small>
+    }
+    <br />
+    <br/>
+
+    <pre><code @key="@SelectedApiClient.SourceCode" class="language-csharp">@SelectedApiClient.SourceCode</code></pre>
 }
 
 @code {
     [Parameter] public string? CollectionId { get; set; }
     [Parameter] public ApiClient? SelectedApiClient { get; set; }
+
+    private bool ShowConfigurations { get; set; }
+
+    private void SelectedErrorHandlingSinksChanged(IEnumerable<string> errorHandlingSinks)
+    {
+        if (SelectedApiClient == null) return;
+        SelectedApiClient.Options.ErrorHandlingSinks = errorHandlingSinks.Select(Enum.Parse<ErrorHandlingSinks>).ToList();
+    }
+    private void SelectedCatchExceptionTypesChanged(IEnumerable<string> catchTypes)
+    {
+        if (SelectedApiClient == null) return;
+        SelectedApiClient.Options.CatchExceptionTypes = catchTypes.Select(Enum.Parse<CatchExceptionTypes>).ToList();
+    }
+    private void SelectedCommentTypesChanged(IEnumerable<string> commentTypes)
+    {
+        if (SelectedApiClient == null) return;
+        SelectedApiClient.Options.XmlCommentTypes = commentTypes.Select(Enum.Parse<XmlCommentTypes>).ToList();
+    }
+
+    private void RegenerateApiClient()
+    {
+        if (SelectedApiClient == null) return;
+        SelectedApiClient.GenerateSourceCode();
+        StateHasChanged();
+    }
+
 }

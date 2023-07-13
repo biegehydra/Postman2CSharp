@@ -143,7 +143,7 @@
             {
                 await JsRuntime.InvokeVoidAsync("clearLocalStorage");
                 await SetSiteSettings();
-                SnackBar?.Add($"New website version detected. Your workspace has been reset.", Severity.Info);
+                SnackBar?.Add($"New website version detected. Your workspace has been reset.", Severity.Info, configure => configure.VisibleStateDuration = 15000);
             }
             else
             {

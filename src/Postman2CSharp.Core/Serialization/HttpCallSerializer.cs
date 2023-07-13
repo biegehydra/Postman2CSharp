@@ -42,7 +42,7 @@ public static class HttpCallSerializer
 
         if (options.ErrorHandlingStrategy == ErrorHandlingStrategy.None)
         {
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary, options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary, options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType, options.HandleMultipleResponses);
         }
         else
         {
@@ -52,7 +52,7 @@ public static class HttpCallSerializer
             }
             sb.AppendLine(indent + "try");
             sb.AppendLine(indent + "{");
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary, options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary, options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType, options.HandleMultipleResponses);
             indent = Consts.Indent(2);
             sb.AppendLine(indent + "}");
             foreach (var catchExceptionType in options.CatchExceptionTypes)
@@ -162,10 +162,10 @@ public static class HttpCallSerializer
 
     private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool authHasHeader,
         int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary, bool useCancellationTokens,
-        ErrorHandlingStrategy errorHandlingStrategy, OutputCollectionType outputCollectionType)
+        ErrorHandlingStrategy errorHandlingStrategy, OutputCollectionType outputCollectionType, bool handleMultipleResponse)
     {
         if (call.AllResponses.Count == 0) throw new UnreachableException("No success responses found. Should never happen.");
-        if (call.AllResponses.Count > 1 && )
+        if (call.AllResponses.Count > 1 && handleMultipleResponse)
         {
             HttpCallMultipleResponseTypesBody(sb, auth, call, authHasHeader, intIndent, relativePath, ensureSuccessStatusCode, jsonLibrary, errorHandlingStrategy, useCancellationTokens, outputCollectionType);
         }

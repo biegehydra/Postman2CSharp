@@ -1,0 +1,10 @@
+﻿@if (!Disabled)
+{
+    <small class="show-more" @onclick="OnClick"><b>@ChildContent</b></small>
+}
+
+@code {
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
