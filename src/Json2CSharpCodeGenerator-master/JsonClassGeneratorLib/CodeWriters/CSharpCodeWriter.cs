@@ -655,14 +655,23 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
         }
         private bool UsePropertyAttribute(JsonFieldInfo field)
         {
+            var memberName = CheckSyntax(field.MemberName);
+            if (config.UsePascalCase)
+            {
+                memberName = memberName.ToTitleCase();
+            }
             return config.AttributeUsage switch
             {
                 JsonPropertyAttributeUsage.Always => true,
-                JsonPropertyAttributeUsage.OnlyWhenNecessary => field.ContainsSpecialChars,
+                JsonPropertyAttributeUsage.OnlyWhenNecessary => field.ContainsSpecialChars || IsAttributeNeeded(field.MemberName, memberName),
                 JsonPropertyAttributeUsage.Never => false,
                 _ => throw new InvalidOperationException("Unrecognized " + nameof(config.AttributeUsage) + " value: " +
                                                          config.AttributeUsage)
             };
+        }
+        private static bool IsAttributeNeeded(string csharpPropertyName, string jsonPropertyName)
+        {
+            return !csharpPropertyName.Equals(jsonPropertyName, StringComparison.InvariantCultureIgnoreCase);
         }
         #endregion
 

@@ -6,7 +6,7 @@
     --mud-palette-error: #9c5c64;
 }
 .enum-select-container {
-    min-width: 11em;
+    min-width: 15em;
 }
 
 img {
@@ -300,6 +300,9 @@ li {
     }
     .small-w-100 {
         width: 100% !important;
+    }
+    .enum-select-container {
+        min-width: 10em;
     }
 }
 @media (max-width: 270px) {

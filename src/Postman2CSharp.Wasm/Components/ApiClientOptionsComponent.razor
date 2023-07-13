@@ -21,6 +21,10 @@
         <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="ApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
     </AdvancedSettingItem>
     
+    <AdvancedSettingItem ToolTip="Controls when [JsonProperty] or [JsonPropertyName] are added. It's safest to keep this at always but it is also safe to change if you know what you are doing.">
+        <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="ApiClientOptions.AttributeUsage" Label="JsonProperty Attribute Usage"></EnumSelectComponent>
+    </AdvancedSettingItem>
+
     <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
         <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="ApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>

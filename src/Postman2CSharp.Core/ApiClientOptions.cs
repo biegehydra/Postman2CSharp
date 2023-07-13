@@ -25,6 +25,7 @@ namespace Postman2CSharp.Core
         {
             Infrastructure.CatchExceptionTypes.HttpRequestException
         };
+        public JsonPropertyAttributeUsage AttributeUsage { get; set; } = JsonPropertyAttributeUsage.Always;
         public RootDefinition RootDefinition { get; set; } = RootDefinition.PerAuthorityPerFolder;
         public ErrorHandlingStrategy ErrorHandlingStrategy { get; set; } = ErrorHandlingStrategy.None;
         public LogLevel LogLevel { get; set; } = LogLevel.Error;

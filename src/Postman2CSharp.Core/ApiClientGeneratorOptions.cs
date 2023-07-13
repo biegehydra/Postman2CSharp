@@ -14,6 +14,7 @@ namespace Postman2CSharp.Core
             CSharpCodeWriterConfig = config;
             ApiClientOptions = apiClientOptions;
             CSharpCodeWriterConfig.AttributeLibrary = ApiClientOptions.JsonLibrary;
+            CSharpCodeWriterConfig.AttributeUsage = ApiClientOptions.AttributeUsage;
         }
     }
 
