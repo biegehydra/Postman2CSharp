@@ -46,10 +46,7 @@ public static class ApiClientSerializer
             AddOAuth2Methods(sb, uniqueAuthOAuth2, client.BaseUrl, 1);
         }
 
-        var options = client.Options;
-        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: addAuthHeaderToConstructor, options.EnsureResponseIsSuccessStatusCode,
-            options.XmlCommentTypes, options.CatchExceptionTypes, options.ErrorHandlingSinks, options.ErrorHandlingStrategy, options.LogLevel, options.JsonLibrary, options.HandleMultipleResponses,
-            options.MultipleResponseHandling, options.UseCancellationTokens, client.CollectionType);
+        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: addAuthHeaderToConstructor, client.Options, client.CollectionType);
         sb.AppendLine();
         sb.AppendLine("}");
         return sb.ToString();
@@ -121,15 +118,13 @@ public static class ApiClientSerializer
     }
 
     private static void ApiClientCalls(StringBuilder sb, AuthSettings? auth, string? baseUrl, List<HttpCall> calls, bool constructorHasAuthHeader, 
-        bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
-        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool handleMultipleResponses, MultipleResponseHandling multipleResponseHandling, bool useCancellationTokens, OutputCollectionType outputCollectionType)
+        ApiClientOptions options, OutputCollectionType outputCollectionType)
     {
         var last = calls.Last();
         foreach (var call in calls)
         {
             sb.AppendLine();
-            HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, constructorHasAuthHeader, ensureSuccessStatusCode, commentTypes, catchExceptionTypes,
-                errorHandlingSinks, errorHandlingStrategy, logLevel, jsonLibrary, handleMultipleResponses, multipleResponseHandling, useCancellationTokens, outputCollectionType);
+            HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, constructorHasAuthHeader, options, outputCollectionType);
             if (!Equals(call, last))
             {
                 sb.AppendLine();

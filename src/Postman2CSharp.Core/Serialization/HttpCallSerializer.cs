@@ -16,8 +16,7 @@ namespace Postman2CSharp.Core.Serialization;
 public static class HttpCallSerializer
 {
     public static void SerializeHttpCall(StringBuilder sb, AuthSettings? auth, string? baseUrl, HttpCall call, bool constructorHasAuthHeader,
-        bool ensureSuccessStatusCode, List<XmlCommentTypes> commentTypes, List<CatchExceptionTypes> catchExceptionTypes, List<ErrorHandlingSinks> errorHandlingSinks,
-        ErrorHandlingStrategy errorHandlingStrategy, LogLevel logLevel, JsonLibrary jsonLibrary, bool handleMultipleResponses, MultipleResponseHandling multipleResponseHandling, bool useCancellationTokens, OutputCollectionType outputCollectionType)
+        ApiClientOptions options, OutputCollectionType outputCollectionType)
     {
         string relativePath;
         try
@@ -29,36 +28,36 @@ public static class HttpCallSerializer
             throw new ArgumentException(nameof(call.Request.Url.Raw), $"Invalid URL: {call.Request.Url.Raw}");
         }
         var methodParameters = call.MethodParameters(outputCollectionType);
-        if (useCancellationTokens)
+        if (options.UseCancellationTokens)
         {
             methodParameters.Add(HttpCallMethodParameter.CancellationToken);
         }
 
         var indent = Consts.Indent(1);
-        XmlComment(sb, commentTypes, call.Request.Description, call.Request.Url.Path, call.Request.Url.Variable, indent);
-        sb.FunctionSignature(call, indent, outputCollectionType, methodParameters, handleMultipleResponses, multipleResponseHandling);
+        XmlComment(sb, options.XmlCommentTypes, call.Request.Description, call.Request.Url.Path, call.Request.Url.Variable, indent);
+        sb.FunctionSignature(call, indent, outputCollectionType, methodParameters, options.HandleMultipleResponses, options.MultipleResponseHandling);
         sb.AppendLine(indent + "{");
 
         indent = Consts.Indent(2);
 
-        if (errorHandlingStrategy == ErrorHandlingStrategy.None)
+        if (options.ErrorHandlingStrategy == ErrorHandlingStrategy.None)
         {
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens, errorHandlingStrategy, outputCollectionType);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary, options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType);
         }
         else
         {
-            if (catchExceptionTypes.Count == 0)
+            if (options.CatchExceptionTypes.Count == 0)
             {
-                catchExceptionTypes = new List<CatchExceptionTypes> { CatchExceptionTypes.HttpRequestException };
+                options.CatchExceptionTypes = new List<CatchExceptionTypes> { CatchExceptionTypes.HttpRequestException };
             }
             sb.AppendLine(indent + "try");
             sb.AppendLine(indent + "{");
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens, errorHandlingStrategy, outputCollectionType);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary, options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType);
             indent = Consts.Indent(2);
             sb.AppendLine(indent + "}");
-            foreach (var catchExceptionType in catchExceptionTypes)
+            foreach (var catchExceptionType in options.CatchExceptionTypes)
             {
-                Catch(sb, catchExceptionType, errorHandlingSinks, errorHandlingStrategy, logLevel, indent);
+                Catch(sb, catchExceptionType, options.ErrorHandlingSinks, options.ErrorHandlingStrategy, options.LogLevel, indent);
             }
         }
 
@@ -166,7 +165,7 @@ public static class HttpCallSerializer
         ErrorHandlingStrategy errorHandlingStrategy, OutputCollectionType outputCollectionType)
     {
         if (call.AllResponses.Count == 0) throw new UnreachableException("No success responses found. Should never happen.");
-        if (call.AllResponses.Count > 1)
+        if (call.AllResponses.Count > 1 && )
         {
             HttpCallMultipleResponseTypesBody(sb, auth, call, authHasHeader, intIndent, relativePath, ensureSuccessStatusCode, jsonLibrary, errorHandlingStrategy, useCancellationTokens, outputCollectionType);
         }

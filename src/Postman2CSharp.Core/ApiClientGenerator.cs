@@ -69,7 +69,10 @@ public class ApiClientGenerator
 
     private int _processedRequests = 0;
     private int _totalRequests = 0;
-    private int TotalRequest => _totalRequests != 0 ? _totalRequests : _totalRequests = PostmanCollection.GetRootCollections().Sum(x => x.RequestItems()?.Where(x => Uri.TryCreate(x.Request?.Url.Raw.ReplaceBrackets(), UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)).Count() ?? 0);
+    private int TotalRequest => _totalRequests != 0 ? _totalRequests : _totalRequests = PostmanCollection
+        .GetRootCollections().Sum(x => x.RequestItems()?
+            .Where(y => Uri.TryCreate(y.Request?.Url.Raw.ReplaceBrackets(), UriKind.Absolute, out var uri) && 
+                        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)).Count() ?? 0);
 
     public async Task<List<ApiClient>> GenerateApiClients()
     {
