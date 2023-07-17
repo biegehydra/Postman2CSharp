@@ -12,7 +12,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
         public bool WriteDescriptions { get; set; }
         public CSharpCodeWriter()
         {
-            this.config = new CSharpCodeWriterConfig("Root");
+            this.config = new CSharpCodeWriterConfig();
 
         }
 
@@ -114,7 +114,6 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             Boolean rootNamespace = false;
 
             this.WriteFileStart(sw);
-            this.WriteDeserializationComment(sw, rootIsArray);
 
             foreach (JsonType type in types)
             {
@@ -150,7 +149,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             }
         }
 
-        public void WriteDeserializationComment(StringBuilder sw, bool rootIsArray = false)
+        public void WriteDeserializationComment(StringBuilder sw, string className, bool rootIsArray = false)
         {
             String deserializer;
             switch (config.AttributeLibrary)
@@ -165,7 +164,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
                     return;
             }
 
-            var rootType = rootIsArray ? $"List<{config.RootClassName}>" : config.RootClassName;
+            var rootType = rootIsArray ? $"List<{className}>" : className;
 
             sw.AppendLine($"// Root myDeserializedClass = {deserializer}<{rootType}>(myJsonResponse);");
         }
@@ -185,6 +184,11 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
 
         public void WriteClass(StringBuilder sw, JsonType type)
         {
+            if (type.IsRoot)
+            {
+                this.WriteDeserializationComment(sw, type.NewAssignedName, type.IsArray);
+            }
+
             string indentTypes   = this.GetTypeIndent(type.IsRoot);
             string indentMembers = indentTypes   + "    ";
             string indentBodies  = indentMembers + "    ";

@@ -15,7 +15,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
         string GetFieldDescription(JsonType type, JsonFieldInfo fieldInfo);
         void WriteFileStart(StringBuilder sw);
         void WriteFileEnd(StringBuilder sw);
-        void WriteDeserializationComment(StringBuilder sw, bool rootIsArray = false);
+        void WriteDeserializationComment(StringBuilder sw, string className, bool rootIsArray = false);
         void WriteNamespaceStart(StringBuilder sw, bool root);
         void WriteClassesToFile(StringBuilder sw, IEnumerable<JsonType> types, bool rootIsArray = false);
         void WriteNamespaceEnd(StringBuilder sw, bool root);

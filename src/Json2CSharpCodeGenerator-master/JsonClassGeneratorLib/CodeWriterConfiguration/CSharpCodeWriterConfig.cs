@@ -7,27 +7,10 @@ namespace Xamasoft.JsonClassGenerator.CodeWriterConfiguration
         /// <summary>
         /// The default constructor with default property values
         /// </summary>
-        public CSharpCodeWriterConfig(string rootClassName)
-        {
-            UsePascalCase = true;
-            UseNestedClasses = false;
-            AttributeLibrary = JsonLibrary.SystemTextJson;
-            AttributeUsage = JsonPropertyAttributeUsage.OnlyWhenNecessary;
-            OutputType = OutputTypes.MutableClass;
-            OutputMembers = OutputMembers.AsProperties;
-            ReadOnlyCollectionProperties = false;
-            CollectionType = OutputCollectionType.MutableList;
-            AlwaysUseNullables = false;
-            NullValueHandlingIgnore = false;
-            RootClassName = rootClassName;
-            Namespace = "Postman2CSharp";
-        }
-
         public CSharpCodeWriterConfig()
         {
             UsePascalCase = true;
             UseNestedClasses = false;
-            OutputType = OutputTypes.MutableClass;
             AttributeLibrary = JsonLibrary.SystemTextJson;
             AttributeUsage = JsonPropertyAttributeUsage.OnlyWhenNecessary;
             OutputType = OutputTypes.MutableClass;
@@ -49,10 +32,8 @@ namespace Xamasoft.JsonClassGenerator.CodeWriterConfiguration
             bool readOnlyCollectionProperties,
             OutputCollectionType collectionType,
             bool alwaysUseNullables,
-            bool nullValueHandlingIgnore,
-            string rootClassName)
+            bool nullValueHandlingIgnore)
         {
-            RootClassName = rootClassName;
             this.UsePascalCase = usePascalCase;
             this.UseNestedClasses = useNestedClasses;
             this.AttributeLibrary = attributeLibrary;
@@ -66,16 +47,11 @@ namespace Xamasoft.JsonClassGenerator.CodeWriterConfiguration
             Namespace = "Postman2CSharp";
         }
 
-        public void SetRootClassName(string rootClassName)
-        {
-            RootClassName = rootClassName;
-        }
-
         public CSharpCodeWriterConfig Clone()
         {
             return (CSharpCodeWriterConfig) this.MemberwiseClone();
         }
-        public string RootClassName { get; set; }
+
         public bool UsePascalCase { get; set; }
         public bool UseNestedClasses { get; set; }
         public JsonLibrary AttributeLibrary { get; set; }
