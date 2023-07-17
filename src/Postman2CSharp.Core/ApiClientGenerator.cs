@@ -455,7 +455,6 @@ public class ApiClientGenerator
             {
                 var codeWriterClone = Options.CSharpCodeWriterConfig.Clone();
                 codeWriterClone.Namespace = nameSpace;
-                codeWriterClone.RootClassName = className;
                 classGenerator.CodeWriter = new CSharpCodeWriter(codeWriterClone, writeComments);
                 classGenerator.SetCurrentRootIsQueryParameters(false);
             }
@@ -477,7 +476,7 @@ public class ApiClientGenerator
 
             CSharpCodeWriter ParametersConfig(string name, string nameSpacee, bool writeDescriptions)
             {
-                var config = new CSharpCodeWriterConfig(name);
+                var config = new CSharpCodeWriterConfig();
                 config.AttributeUsage = JsonPropertyAttributeUsage.Never;
                 config.Namespace = nameSpacee;
                 return new CSharpCodeWriter(config, writeDescriptions);
@@ -509,7 +508,7 @@ public class ApiClientGenerator
 
     private static (string SourceCode, int ClassCount, bool RootWasArray) GenerateClasses(JsonClassGenerator jsonClassGenerator, string json, ref List<ClassType>? types, string rootClassName)
     {
-        var (sb, rootWasArray) = jsonClassGenerator.GenerateClasses(json, out var errorMessage);
+        var (sb, rootWasArray) = jsonClassGenerator.GenerateClasses(json, false, false, out var errorMessage);
         types = jsonClassGenerator.Types?.Select(x => new ClassType()
         {
             AssignedName = x.NewAssignedName,
