@@ -89,7 +89,7 @@ namespace Xamasoft.JsonClassGenerator
         /// <param name="jsonInput"></param>
         /// <param name="errorMessage"></param>
         /// <returns></returns>
-        public (StringBuilder Sb, bool RootWasArray) GenerateClasses(string jsonInput, out string errorMessage)
+        public (StringBuilder Sb, bool RootWasArray) GenerateClasses(string jsonInput, bool generateAllClasses, bool oneOriginalName, out string errorMessage)
         {
             JObject[] examples = null;
             bool rootWasArray = false;
@@ -136,11 +136,18 @@ namespace Xamasoft.JsonClassGenerator
                     }
 
                 }
-                this.Types = this.HandleDuplicateClassesJustTypes(this.Types);
+                this.Types = this.HandleDuplicateClasses(this.Types, oneOriginalName);
                 AllTypes.AddRange(Types);
 
-                StringBuilder builder = new StringBuilder();
-                CodeWriter.WriteClassesToFile(builder, this.Types, rootWasArray);
+                StringBuilder builder = new ();
+                if (generateAllClasses)
+                {
+                    CodeWriter.WriteClassesToFile(builder, this.AllTypes, rootWasArray);
+                }
+                else
+                {
+                    CodeWriter.WriteClassesToFile(builder, this.Types, rootWasArray);
+                }
 
                 errorMessage = String.Empty;
                 return (builder, rootWasArray);
@@ -154,6 +161,55 @@ namespace Xamasoft.JsonClassGenerator
                 errorMessage = ex.ToString();
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Main Method for parsing json input
+        /// </summary>
+        /// <param name="jsonInput"></param>
+        /// <param name="errorMessage"></param>
+        /// <returns></returns>
+        public (IList<JsonType> Types, bool RootWasArray) GenerateTypes(string jsonInput, bool generateAllClasses, bool oneOriginalName)
+        {
+            JObject[] examples = null;
+            bool rootWasArray = false;
+            using (StringReader sr = new StringReader(jsonInput))
+            using (JsonTextReader reader = new JsonTextReader(sr))
+            {
+                JToken json = JToken.ReadFrom(reader);
+                if (json is JArray jArray && ( jArray.Count == 0 || jArray.All(el => el is JObject) ))
+                {
+                    rootWasArray = true;
+                    examples = jArray.Cast<JObject>().ToArray();
+                }
+                else if (json is JObject jObject)
+                {
+                    examples = new[] { jObject };
+                }
+            }
+
+            if (this.CodeWriter == null) this.CodeWriter = new CSharpCodeWriter();
+            this.Types = new List<JsonType>();
+            this.Names.Add(_rootClassName ?? "Root");
+            JsonType rootType = new JsonType(this, examples[0]);
+            rootType.IsRoot = true;
+            rootType.OriginalAssignedName = _rootClassName ?? "Root";
+            rootType.NewAssignedName = _rootClassName ?? "Root";
+            rootType.RootWasArray = rootWasArray;
+            this.GenerateClass(examples, rootType);
+            if (_currentRootIsQueryParameters)
+            {
+                var root = Types.FirstOrDefault(x => x.IsRoot);
+                if (root != null)
+                {
+                    root.IsQueryParameters = true;
+                }
+
+            }
+            this.Types = this.HandleDuplicateClasses(this.Types, oneOriginalName);
+            AllTypes.AddRange(Types);
+
+            return (Types, rootWasArray);
         }
 
         private void GenerateClass(JObject[] examples, JsonType type)
@@ -311,12 +367,19 @@ namespace Xamasoft.JsonClassGenerator
         /// </summary>
         /// <param name="types"></param>
         /// <returns></returns>
-        private IList<JsonType> HandleDuplicateClassesJustTypes(IList<JsonType> types)
+        private IList<JsonType> HandleDuplicateClasses(IList<JsonType> types, bool oneOriginalName)
         {
             // TODO: This is currently O(n*n) because it iterates through List<T> on every loop iteration. This can be optimized.
 
             List<JsonType> typesWithNoDuplicates = new List<JsonType>();
-            types = types.OrderByDescending(x => x.IsRoot).ThenBy(p => p.NewAssignedName).ToList();
+            if (oneOriginalName)
+            {
+                types = types.OrderByDescending(x => !x.IsRoot).ThenBy(p => p.NewAssignedName).ToList();
+            }
+            else
+            {
+                types = types.OrderByDescending(x => x.IsRoot).ThenBy(p => p.NewAssignedName).ToList();
+            }
             AllTypes = AllTypes.OrderBy(x => x.NewAssignedName).ToList();
 
             foreach (JsonType potentialDuplicate in types)
@@ -333,6 +396,11 @@ namespace Xamasoft.JsonClassGenerator
 #endif
                 var firstMatchingType =
                     typesWithNoDuplicates.FirstOrDefault(x => x.OriginalName == potentialDuplicate.OriginalName);
+
+                if (oneOriginalName)
+                {
+                    firstMatchingType ??= AllTypes.FirstOrDefault(x => !x.IsRoot && x.OriginalName == potentialDuplicate.OriginalName);
+                }
                 if (firstMatchingType is null)
                 {
                     typesWithNoDuplicates.Add(potentialDuplicate);
@@ -373,7 +441,7 @@ namespace Xamasoft.JsonClassGenerator
                     }
                     else
                     {
-                        ChangeNewAssignedNamesByNewAssignedNameInList(types, potentialType.NewAssignedName, allTypesMatchedType.NewAssignedName);
+                        ChangeNewAssignedNamesByNewAssignedNameInList(typesWithNoDuplicates, potentialType.NewAssignedName, allTypesMatchedType.NewAssignedName);
                     }
                 }
                 else if (!this.DuplicateOptions.RemoveSemiDuplicates && AllTypes.FirstOrDefault(allTypeType =>
@@ -389,13 +457,13 @@ namespace Xamasoft.JsonClassGenerator
                 {
                     var confirmedNotDuplicate = potentialType;
                     confirmedNotDuplicate.IsVariant = true;
-                    if (AllTypes.Any(x => !x.IsRoot && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName) || types.Any(x => !x.IsRoot && x != confirmedNotDuplicate && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName))
+                    if (AllTypes.Any(x => !x.IsRoot && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName))
                     {
                         do
                         {
                             var newnewAssignedName = IncrementString(confirmedNotDuplicate.NewAssignedName);
                             confirmedNotDuplicate.NewAssignedName = newnewAssignedName;
-                        } while (AllTypes.Any(x => !x.IsRoot && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName) || types.Any(x => !x.IsRoot && x != confirmedNotDuplicate &&  x.NewAssignedName == confirmedNotDuplicate.NewAssignedName));
+                        } while (AllTypes.Any(x => !x.IsRoot && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName));
                         ChangeNewAssignedNamesByOriginalInList(typesWithNoDuplicates, confirmedNotDuplicate.OriginalName, confirmedNotDuplicate.NewAssignedName);
                     }
                 }

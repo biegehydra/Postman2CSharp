@@ -6,20 +6,6 @@ namespace Postman2CSharp.Wasm.Models
 {
     public partial class CSharpCodeWriterConfigInputModel : INotifyPropertyChanged
     {
-        private string? _rootClassName;
-        public string? RootClassName
-        {
-            get => _rootClassName;
-            set
-            {
-                if (_rootClassName != value)
-                {
-                    _rootClassName = value;
-                    OnPropertyChanged(nameof(RootClassName));
-                }
-            }
-        }
-
         private OutputCollectionType _collectionType;
         public OutputCollectionType CollectionType
         {
@@ -172,8 +158,7 @@ namespace Postman2CSharp.Wasm.Models
                 ReadOnlyCollectionProperties,
                 CollectionType,
                 AlwaysUseNullables,
-                NullValueHandlingIgnore,
-                RootClassName);
+                NullValueHandlingIgnore);
         }
 
         public bool Equals(CSharpCodeWriterConfigInputModel other)
@@ -187,8 +172,7 @@ namespace Postman2CSharp.Wasm.Models
                    ReadOnlyCollectionProperties == other.ReadOnlyCollectionProperties &&
                    CollectionType == other.CollectionType &&
                    AlwaysUseNullables == other.AlwaysUseNullables &&
-                   NullValueHandlingIgnore == other.NullValueHandlingIgnore &&
-                   RootClassName == other.RootClassName;
+                   NullValueHandlingIgnore == other.NullValueHandlingIgnore;
         }
 
         public CSharpCodeWriterConfigInputModel Clone()

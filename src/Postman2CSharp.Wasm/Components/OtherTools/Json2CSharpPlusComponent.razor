@@ -1,21 +1,33 @@
 ﻿@using Xamasoft.JsonClassGenerator
-<div id="json-editor" style="min-height: 800px; max-height: 800px"></div>
+<div id="json-editor" ></div>
 <MudButton OnClick="Process">Process</MudButton>
 <br/>
-<pre><code @key="@_result" class="language-csharp">@_result</code></pre>
+@if (_result.Count > 0)
+{
+    <MudTabs>
+        @foreach (var (key, value) in _result)
+        {
+            <MudTabPanel Text="@key" Icon="@Icons.Code">
+                <br />
+                <pre><code class="language-csharp">@value</code></pre>
+            </MudTabPanel>
+        }
+    </MudTabs>
+}
+
 @code {
     [Inject] private Interop Interop { get; set; } = default!;
-    private string? _result;
+    private Dictionary<string, string> _result = new ();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await Interop.InitJsonEditor();
     }
-    private Json2CSharpPlusSimple? _json2CSharpPlusSimple;
+    private Json2CSharpPlus? _json2CSharpPlusSimple;
     private async Task Process()
     {
         var json = await Interop.GetJsonEditorValue();
-        _json2CSharpPlusSimple ??= new Json2CSharpPlusSimple(new CSharpCodeWriterConfig(), new DuplicateOptions());
+        _json2CSharpPlusSimple ??= new Json2CSharpPlus(new CSharpCodeWriterConfig(), new DuplicateOptions());
         _result = _json2CSharpPlusSimple.GenerateMoreClasses(json);
     }
 
