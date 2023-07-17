@@ -29,13 +29,13 @@
         <br />
         <MudGrid Spacing="3">
             <MudItem xs="12" sm="6" md="4" lg="3">
-                <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowSnackbarPopups">Show SnackBar Popups</MudSwitch>
+                <MudCheckBox Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowSnackbarPopups">Show SnackBar Popups</MudCheckBox>
             </MudItem>
             <MudItem>
-                <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.SaveCollectionsToLocalStorage">Save Collections to Local Storage</MudSwitch>
+                <MudCheckBox Color="Color.Primary" @bind-Checked="SiteSettings.Instance.SaveCollectionsToLocalStorage">Save Collections to Local Storage</MudCheckBox>
             </MudItem>
             <MudItem>
-                <MudSwitch Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowDownloadInTreeView">Show Download Button In Tree View</MudSwitch>
+                <MudCheckBox Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowDownloadInTreeView">Show Download Button In Tree View</MudCheckBox>
             </MudItem>
         </MudGrid>
     }
