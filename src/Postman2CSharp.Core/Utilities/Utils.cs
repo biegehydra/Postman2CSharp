@@ -490,4 +490,23 @@ public static class Utils
             return input;
         }
     }
+
+    public static string GenerateUniqueName(string baseName, List<string> existingNames)
+    {
+        // If the base name doesn't exist in the list, return it as is
+        if (!existingNames.Contains(baseName))
+        {
+            existingNames.Add(baseName);
+            return baseName;
+        }
+
+        // If the base name does exist, append numbers starting from 2 until a unique name is found
+        int counter = 2;
+        while (existingNames.Contains(baseName + counter))
+        {
+            counter++;
+        }
+        existingNames.Add(baseName + counter);
+        return baseName + counter;
+    }
 }

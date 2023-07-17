@@ -11,6 +11,7 @@ namespace Postman2CSharp.Core
         private JsonClassGenerator _classGenerator;
         public Json2CSharpPlusSimple(CSharpCodeWriterConfig config, DuplicateOptions duplicateOptions)
         {
+            config.SetNoNamespace();
             var codeWriter = new CSharpCodeWriter(config, false);
             _classGenerator = new JsonClassGenerator(codeWriter, duplicateOptions);
         }
@@ -22,14 +23,8 @@ namespace Postman2CSharp.Core
         public string GenerateMoreClasses(string json)
         {
             _rootClassName = Utils.IncrementString(_rootClassName);
-            var sb = _classGenerator.GenerateClasses(json, out var errorMessage);
-            var consolidated = CodeAnalysisUtils.ConsolidateNamespaces(sb.ToString(), _rootClassName);
-            var reordered = CodeAnalysisUtils.ReorderClasses(consolidated, _rootClassName, out var classCount);
-            GeneratedSourceCodes.Add(reordered);
-            TotalGeneratedClasses += classCount;
-            var consolidatedAll = CodeAnalysisUtils.ConsolidateNamespaces(GeneratedSourceCodes, _rootClassName);
-            var reorderedAll = CodeAnalysisUtils.ReorderClasses(consolidatedAll, _rootClassName, out _);
-            return reorderedAll;
+            var (sb, _) = _classGenerator.GenerateClasses(json, out var errorMessage);
+            return sb.ToString();
         }
     }
 }

@@ -552,6 +552,10 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             }
             else
             {
+                if (!config.HasNamespace)
+                {
+                    return string.Empty;
+                }
                 return "    "; // 4x
             }
         }

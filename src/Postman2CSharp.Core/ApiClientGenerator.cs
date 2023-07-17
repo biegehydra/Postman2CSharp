@@ -174,25 +174,6 @@ public class ApiClientGenerator
         return apiClient;
     }
 
-    public string GenerateUniqueName(string baseName, List<string> existingNames)
-    {
-        // If the base name doesn't exist in the list, return it as is
-        if (!existingNames.Contains(baseName))
-        {
-            existingNames.Add(baseName);
-            return baseName;
-        }
-
-        // If the base name does exist, append numbers starting from 2 until a unique name is found
-        int counter = 2;
-        while (existingNames.Contains(baseName + counter))
-        {
-            counter++;
-        }
-        existingNames.Add(baseName + counter);
-        return baseName + counter;
-    }
-
     private async Task<(List<HttpCall> HttpCalls, int TotalClassesGenerated, List<DuplicateRoot> DuplicateRoots)> GetHttpCalls(CollectionItem item, List<Header> commonHeaders, string nameSpace, List<string> uniqueNames)
     {
         List<DuplicateRoot> duplicateRoots = new();
@@ -217,7 +198,7 @@ public class ApiClientGenerator
             var uniqueName = normalizedName;
             if (normalizedName != nameSpace)
             {
-                uniqueName = GenerateUniqueName(normalizedName, uniqueNames);
+                uniqueName = Utils.GenerateUniqueName(normalizedName, uniqueNames);
             }
 
             requestItem.Request!.Description = requestItem.Request.Description.HtmlToPlainText();
@@ -287,7 +268,7 @@ public class ApiClientGenerator
             if (requestDataType is DataType.ComplexFormData or DataType.SimpleFormData)
             {
                 formClassName = uniqueName + (requestDataType is DataType.ComplexFormData ? Consts.Classes.MultipartFormData : Consts.Classes.FormData);
-                formClassName = GenerateUniqueName(formClassName, uniqueNames);
+                formClassName = Utils.GenerateUniqueName(formClassName, uniqueNames);
                 if (requestItem.Request!.Body!.Formdata != null)
                 {
                     var iFormData = requestItem.Request!.Body!.Formdata.Cast<IFormData>().ToList();
@@ -462,7 +443,7 @@ public class ApiClientGenerator
         void ProcessItem(JsonClassGenerator classGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, 
             ref List<ClassType>? types, ref bool rootWasArray, Dictionary<string, string?>? descriptionDict = null)
         {
-            className = GenerateUniqueName(itemName + itemType, uniqueNames);
+            className = Utils.GenerateUniqueName(itemName + itemType, uniqueNames);
             var writeComments = Options.ApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.QueryParameters);
             classGenerator.SetRootName(className);
             if (itemType == Consts.Parameters)

@@ -139,8 +139,6 @@ namespace Xamasoft.JsonClassGenerator
                 this.Types = this.HandleDuplicateClassesJustTypes(this.Types);
                 AllTypes.AddRange(Types);
 
-                var test = Types.FirstOrDefault(x => x.IsRoot);
-
                 StringBuilder builder = new StringBuilder();
                 CodeWriter.WriteClassesToFile(builder, this.Types, rootWasArray);
 

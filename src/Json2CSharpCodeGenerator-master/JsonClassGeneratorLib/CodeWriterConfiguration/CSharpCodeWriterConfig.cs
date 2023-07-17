@@ -85,5 +85,10 @@ namespace Xamasoft.JsonClassGenerator.CodeWriterConfiguration
         public OutputMembers OutputMembers { get; set; }
         public bool ReadOnlyCollectionProperties { get; set; }
         public bool AlwaysUseNullables { get; set; }
+
+        public void SetNoNamespace()
+        {
+            Namespace = null;
+        }
     }
 }
