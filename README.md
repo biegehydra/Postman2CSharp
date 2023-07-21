@@ -2,7 +2,7 @@
 
 ### Save yourself hours, days, or even weeks
 
-[Postman2CSharp](https://postman2csharp.com) , a FREE tool that allows you to generate fully featured ApiClients by simply inputting your Postman collections. I hope this tool can make your development process easier, quicker, and more efficient. All generated ApiClient projects come fully packaged and have no dependencies on outside libraries. (Unless you choose Newtonsoft.Json as your json library).
+[Postman2CSharp](https://postman2csharp.com) , a FREE tool that allows you to generate fully featured ApiClients by simply inputting your Postman collections. I hope this tool can make your development process easier, quicker, and more efficient. All generated ApiClient projects come fully packaged and have no dependencies on outside libraries. (Unless you choose Newtonsoft.Json as your json library or choose to handle multiple types with OneOf<,>).
 
 Generated ApiClients are highly configurable to suit your needs. Full explanations about configurations can be found [here](https://postman2csharp.com/ApiClient-Configurations-Explained).
 
@@ -38,7 +38,7 @@ Samples are available in the source code of this repo [here](https://github.com/
 
 ## Data Privacy
 
-Your collections never leave your computer. My website is a standalone blazor wasm app and makes no http calls to a backend. 
+Your collections never leave your computer. The website is a standalone blazor wasm app and makes no http calls to a backend. 
 
 ## Contributions, Feature Requests, Feedback
 
