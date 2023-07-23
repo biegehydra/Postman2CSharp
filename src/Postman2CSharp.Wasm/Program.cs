@@ -37,13 +37,15 @@ static void ConfigureServices(IServiceCollection services, string baseAddress)
         config.SnackbarConfiguration.PreventDuplicates = false;
         config.SnackbarConfiguration.NewestOnTop = false;
         config.SnackbarConfiguration.ShowCloseIcon = true;
-        config.SnackbarConfiguration.VisibleStateDuration = 2000;
-        config.SnackbarConfiguration.HideTransitionDuration = 500;
-        config.SnackbarConfiguration.ShowTransitionDuration = 500;
+        config.SnackbarConfiguration.VisibleStateDuration = 4000;
+        config.SnackbarConfiguration.HideTransitionDuration = 700;
+        config.SnackbarConfiguration.ShowTransitionDuration = 700;
         config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
     });
     services.AddScoped<Navigate>();
     services.AddScoped<Interop>();
+    services.AddScoped<AnalyticsInterop>();
+    services.AddScoped<JsonEditorInterop>();
     services.AddScoped<TabsService>();
     services.AddScoped(typeof(Lazy<>), typeof(Lazy<>));
     services.AddScoped<LazyLoader>();

@@ -51,6 +51,18 @@ namespace Postman2CSharp.Wasm.Services
             "System.Security.Cryptography.dll"
         };
 
+        private static List<string> Json2CsharpPlusJsFiles { get; set; } = new()
+        {
+            "json-editor/json-editor-interop.js",
+            "ace/ace.js",
+            "ace/worker-json.js"
+        };
+
+        private static List<string> Json2CsharpPlusCssFiles { get; set; } = new()
+        {
+            "ace/ace.css",
+        };
+
         private NavigationManager NavigationManager { get; }
 
         private Interop Interop { get; }
@@ -93,6 +105,14 @@ namespace Postman2CSharp.Wasm.Services
             _ = Task.WhenAll(tasks);
         }
 
+        private async Task LoadJson2CsharpPlusFile()
+        {
+            var tasks = Json2CsharpPlusJsFiles.Select(Interop.LoadFile).ToList();
+            var getCssTask = Json2CsharpPlusCssFiles.Select(Interop.LoadStyle).ToList();
+            tasks.AddRange(getCssTask);
+            await Task.WhenAll(tasks);
+        }
+
         private static int _uploadAttempts;
         public async Task OnNavigating()
         {
@@ -109,6 +129,10 @@ namespace Postman2CSharp.Wasm.Services
                 if (uri.Contains("Upload") || uri.Contains("Collection") || uri.Contains("Convert") || uri.Contains("json"))
                 {
                     await LoadConvertAssemblies();
+                }
+                if (uri.Contains("json"))
+                {
+                    await LoadJson2CsharpPlusFile();
                 }
                 if (uri.Contains("Collection"))
                 {
