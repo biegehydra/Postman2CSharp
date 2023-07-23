@@ -24,7 +24,7 @@
         <EnumSelectComponent @bind-Value="InputModel.OutputMembers" Label="Output Members"></EnumSelectComponent>
     </MudItem>
     <MudItem xs="12" sm="6" md="4" lg="3">
-        <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.NullValueHandlingIgnore" Label="Null Value Handling Ignore"></MudCheckBox>
+        <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.NullValueHandlingIgnore" Disabled="ApiClientOptionsComponent.ApiClientOptions.JsonLibrary == JsonLibrary.SystemTextJson" Label="Null Value Handling Ignore"></MudCheckBox>
     </MudItem>
     <MudItem xs="12" sm="6" md="4" lg="3">
         <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.ReadOnlyCollectionProperties" Label="Read Only Collection Properties"></MudCheckBox>

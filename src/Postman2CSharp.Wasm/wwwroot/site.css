@@ -276,6 +276,10 @@ li {
         display: none !important;
     }
 
+    .hide-not-desktop {
+        display: none !important;
+    }
+
     .file-tree-item p {
         max-width: 8em;
     }

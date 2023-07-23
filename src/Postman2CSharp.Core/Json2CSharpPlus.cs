@@ -21,28 +21,20 @@ namespace Postman2CSharp.Core
         private int TotalGeneratedClasses { get; set; }
 
         private string _rootClassName = "Root";
-        private List<string> GeneratedSourceCodes { get; set; } = new();
         private List<string> UsedNames { get; set; } = new();
 
         private Dictionary<string, (IList<JsonType> Types, bool RootWasArray)> TypeDictionary { get; set; } = new();
 
-        public Dictionary<string,string> GenerateMoreClasses(string json)
+        public Dictionary<string,string> GenerateMoreClasses(string json, bool oneTypePerJsonMemberName)
         {
             _rootClassName = Utils.GenerateUniqueName(_rootClassName, UsedNames);
             _classGenerator.SetRootName(_rootClassName);
             try
             {
-                var types = _classGenerator.GenerateTypes(json, true, true);
+                var types = _classGenerator.GenerateTypes(json, true, oneTypePerJsonMemberName);
                 TypeDictionary.Add(_rootClassName, types);
 
-                var sourceCodeDict = new Dictionary<string, string>();
-                foreach (var (rootName, (classTypes, rootWasArray)) in TypeDictionary)
-                {
-                    var sb = new StringBuilder();
-                    _codeWriter.WriteClassesToFile(sb, classTypes, rootWasArray);
-                    sourceCodeDict.Add(rootName, sb.ToString());
-                }
-                return sourceCodeDict;
+                return GenerateSourceCodeDict();
             }
             catch (JsonException ex)
             {
@@ -52,7 +44,21 @@ namespace Postman2CSharp.Core
             catch (DuplicateRootException ex)
             {
                 UsedNames.Remove(_rootClassName);
-                throw;
+                return GenerateSourceCodeDict();
+            }
+
+            Dictionary<string, string> GenerateSourceCodeDict()
+            {
+                TotalGeneratedClasses = 0;
+                var sourceCodeDict = new Dictionary<string, string>();
+                foreach (var (rootName, (classTypes, rootWasArray)) in TypeDictionary)
+                {
+                    var sb = new StringBuilder();
+                    _codeWriter.WriteClassesToFile(sb, classTypes, rootWasArray);
+                    sourceCodeDict.Add(rootName, CodeAnalysisUtils.ReorderClassesNoNamespace(sb.ToString(), rootName, out var classCount));
+                    TotalGeneratedClasses += classCount;
+                }
+                return sourceCodeDict;
             }
         }
     }

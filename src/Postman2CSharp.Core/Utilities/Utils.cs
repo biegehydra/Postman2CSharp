@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -491,22 +492,51 @@ public static class Utils
         }
     }
 
-    public static string GenerateUniqueName(string baseName, List<string> existingNames)
+    public static string GenerateUniqueName(string name, List<string> existingNames)
     {
         // If the base name doesn't exist in the list, return it as is
-        if (!existingNames.Contains(baseName))
+        if (!existingNames.Contains(name))
         {
-            existingNames.Add(baseName);
-            return baseName;
+            existingNames.Add(name);
+            return name;
         }
 
-        // If the base name does exist, append numbers starting from 2 until a unique name is found
-        int counter = 2;
-        while (existingNames.Contains(baseName + counter))
+        if (TryParseStringNumberEnding(name, out var nameBase, out var numberPart))
         {
-            counter++;
+            int counter = numberPart;
+            while (existingNames.Contains(nameBase + counter))
+            {
+                counter++;
+            }
+            existingNames.Add(nameBase + counter);
+            return nameBase + counter;
         }
-        existingNames.Add(baseName + counter);
-        return baseName + counter;
+        else
+        {
+            int counter = 2;
+            while (existingNames.Contains(name + counter))
+            {
+                counter++;
+            }
+            existingNames.Add(name + counter);
+            return name + counter;
+        }
+    }
+
+    private static bool TryParseStringNumberEnding(string input, out string basePart, out int numberPart)
+    {
+        var match = Regex.Match(input, @"(.*?)(\d+)$");
+
+        if (!match.Success)
+        {
+            basePart = string.Empty;
+            numberPart = -1;
+            return false;
+        }
+
+        basePart = match.Groups[1].Value;
+        numberPart = int.Parse(match.Groups[2].Value);
+
+        return true;
     }
 }

@@ -4,6 +4,7 @@ using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Utilities;
 using Postman2CSharp.Wasm.Components;
+using Postman2CSharp.Wasm.Components.OtherTools;
 using Postman2CSharp.Wasm.Models;
 
 namespace Postman2CSharp.Wasm.Services
@@ -143,13 +144,18 @@ namespace Postman2CSharp.Wasm.Services
             await _jsRuntime.InvokeVoidAsync("emptyElement", elementId);
         }
 
-        public async Task InitJsonEditor()
+        public async Task InitJsonEditor(DotNetObjectReference<Json2CSharpPlusComponent> dotNetObjRef)
         {
-            await _jsRuntime.InvokeVoidAsync("initJsonEditor");
+            await _jsRuntime.InvokeVoidAsync("initJsonEditor", dotNetObjRef);
         }
         public async Task<string> GetJsonEditorValue()
         {
             return await _jsRuntime.InvokeAsync<string>("getJsonEditorValue");
+        }
+
+        public async Task ResetJsonEditorValue()
+        { 
+            await _jsRuntime.InvokeVoidAsync("resetJsonEditor");
         }
     }
 }

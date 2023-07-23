@@ -1,34 +1,127 @@
 ﻿@using Xamasoft.JsonClassGenerator
-<div id="json-editor" ></div>
-<MudButton OnClick="Process">Process</MudButton>
-<br/>
-@if (_result.Count > 0)
-{
-    <MudTabs>
-        @foreach (var (key, value) in _result)
+@using System.Reflection
+@implements IAsyncDisposable
+<style>
+    .display-contents .mud-tabs-panels {
+        display: contents;
+    }
+</style>
+
+<Json2CSharpPlusOptions @bind-OneTypePerJsonMemberName="_oneTypePerJsonMemberName" DuplicateOptionsChanged="duplicateOptions => _duplicateOptions = duplicateOptions"
+                        OptionsChanged="options => _options = options" FirstProcessComplete="_firstProcess" ResetClicked="Reset" ></Json2CSharpPlusOptions>
+
+<br />
+<MudDivider DividerType="DividerType.Middle"></MudDivider>
+<br />
+<br />
+
+<div class="f-row-column" style="gap: 15px;">
+    <div style="width: 50%;" class="small-w-100" >
+        <MudText Typo="Typo.h2">Json Editor</MudText>
+        <br />
+        <div id="json-editor"></div>
+    </div>
+    <div style="width: 50%;" class="small-w-100" >
+        @if (_result.Count > 0)
         {
-            <MudTabPanel Text="@key" Icon="@Icons.Code">
-                <br />
-                <pre><code class="language-csharp">@value</code></pre>
-            </MudTabPanel>
+            <MudText Typo="Typo.h2">Generated Classes</MudText>
+            <br />
+            <MudBreakpointProvider>
+                <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                    <MudTabs @bind-ActivePanelIndex="_activePanelIndex" Class="display-contents" Border Elevation="3" Position="Position.Bottom">
+                        @foreach (var (key, value) in _result)
+                        {
+                            <MudTabPanel Text="@key" Icon="@Icons.Code">
+                                <pre style="margin-top: 0; height: 60vh;"><code @key="@value" class="language-csharp">@value</code></pre>
+                            </MudTabPanel>
+                        }
+                    </MudTabs>
+                </MudHidden>
+                <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                    <MudTabs @bind-ActivePanelIndex="_activePanelIndex" Class="display-contents" Border Elevation="3" Position="Position.Right">
+                        @foreach (var (key, value) in _result)
+                        {
+                            <MudTabPanel Text="@key" Icon="@Icons.Code">
+                                <pre style="margin-top: 0; height: 60vh;"><code @key="@value" class="language-csharp">@value</code></pre>
+                            </MudTabPanel>
+                        }
+                    </MudTabs>
+                </MudHidden>
+            </MudBreakpointProvider>
         }
-    </MudTabs>
-}
+    </div>
+</div>
+<br />
+<div class="f-row-column">
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Tertiary"
+               EndIcon="@Icons.Build"
+               OnClick="Process" Disabled="!IsJsonValid" >
+        Process
+    </MudButton>
+    <div style="flex-grow: 1;"></div>
+    <MudText Class="hide-not-desktop mr-6" Typo="Typo.caption"><b>Tip: Shift + Scroll Mouse Wheel = Horizontal Scroll</b></MudText>
+</div>
 
 @code {
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     [Inject] private Interop Interop { get; set; } = default!;
     private Dictionary<string, string> _result = new ();
 
+    private bool _firstProcess = false;
+    private bool _oneTypePerJsonMemberName = true;
+    private CSharpCodeWriterConfig _options = new();
+    private DuplicateOptions _duplicateOptions = new();
+    private DotNetObjectReference<Json2CSharpPlusComponent>? _dotNetObjectReference;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Interop.InitJsonEditor();
+        if (firstRender)
+        {
+            _dotNetObjectReference = DotNetObjectReference.Create(this);
+        }
+        await Interop.InitJsonEditor(_dotNetObjectReference!);
     }
+
+    private int _activePanelIndex;
     private Json2CSharpPlus? _json2CSharpPlusSimple;
     private async Task Process()
     {
+        _firstProcess = true;
         var json = await Interop.GetJsonEditorValue();
-        _json2CSharpPlusSimple ??= new Json2CSharpPlus(new CSharpCodeWriterConfig(), new DuplicateOptions());
-        _result = _json2CSharpPlusSimple.GenerateMoreClasses(json);
+        _json2CSharpPlusSimple ??= new Json2CSharpPlus(_options, _duplicateOptions);
+        _result = _json2CSharpPlusSimple.GenerateMoreClasses(json, _oneTypePerJsonMemberName);
+        await Interop.ResetJsonEditorValue();
+        StateHasChanged();
+        await Task.Delay(1);
+        _activePanelIndex = _result.Count - 1;
+    }
+
+    private bool IsJsonValid { get; set; } = true;
+
+    [JSInvokable]
+    public void CheckJsonValidity(string json)
+    {
+        try
+        {
+            JsonDocument.Parse(json);
+            IsJsonValid = true;
+        }
+        catch
+        {
+            IsJsonValid = false;
+        }
+        StateHasChanged();
+    }
+
+    private void Reset()
+    {
+        _firstProcess = false;
+        _result.Clear();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("destroyJsonEditor");
     }
 
 }

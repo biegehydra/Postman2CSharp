@@ -40,6 +40,10 @@
         @ChildContent
     </div>
 }
+else
+{
+    <div></div>
+}
 @if (ShowContent)
 {
     <Small OnClick="ToggleContent">@ShowLessText</Small>
@@ -54,15 +58,19 @@ else
 
     private bool ShowContent { get; set; }
 
+    [Parameter] public EventCallback<bool> ShowContentChanged { get; set; }
+
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
     public double AnimationDuration { get; set; } = 0.5; // Default duration is 0.5s
 
-    [Parameter] public string? ShowMoreText { get; set; }
+    [Parameter]
+    public string ShowMoreText { get; set; } = "Show more";
 
-    [Parameter] public string? ShowLessText { get; set; }
+    [Parameter]
+    public string ShowLessText { get; set; } = "Show less";
 
     private double InternalAnimationDuration => ShowContent ? AnimationDuration : .8 * AnimationDuration;
 
@@ -88,5 +96,6 @@ else
     {
         _firstShowContent = true;
         ShowContent = !ShowContent;
+        ShowContentChanged.InvokeAsync(ShowContent);
     }
 }
