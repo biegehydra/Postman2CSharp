@@ -17,15 +17,15 @@
 <MudText Class="setting-section-header" Typo="Typo.h5">Important</MudText>
 <MudGrid Spacing="3">
     <AdvancedSettingItem ToolTip="This will determine the attributes used on classes generated from Json and the extension methods used on http client calls.">
-        <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="ApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
+        <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="_dirtyApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
     </AdvancedSettingItem>
     
     <AdvancedSettingItem ToolTip="Controls when [JsonProperty] or [JsonPropertyName] are added. It's safest to keep this at always but it is also safe to change if you know what you are doing.">
-        <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="ApiClientOptions.AttributeUsage" Label="JsonProperty Attribute Usage"></EnumSelectComponent>
+        <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="_dirtyApiClientOptions.AttributeUsage" Label="JsonProperty Attribute Usage"></EnumSelectComponent>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
-        <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="ApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
+        <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="_dirtyApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
@@ -34,45 +34,45 @@
 
     <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle is enabled and a request has multiple response types. Turning this on after generation 
 has no effect since only the first success response is saved when the api client is generated. Turning it off will work as intended">
-        <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="ApiClientOptions.MultipleResponseHandling" Disabled="ApiClientOptions.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
+        <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="_dirtyApiClientOptions.MultipleResponseHandling" Disabled="_dirtyApiClientOptions.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
-        <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.HandleMultipleResponses">Handle</MudCheckBox>
+        <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.HandleMultipleResponses">Handle</MudCheckBox>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
 <MudText Class="setting-section-header" Typo="Typo.h5">Error Handling</MudText>
 <MudGrid Spacing="3">
     <AdvancedSettingItem ToolTip="Determines whether or not to handle errors when making http client calls and how to handle them when they happen.">
-        <EnumSelectComponent @bind-Value="ApiClientOptions.ErrorHandlingStrategy" AlwaysShowAllEnumValues Label="Error Handling Strategy"></EnumSelectComponent>
+        <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.ErrorHandlingStrategy" AlwaysShowAllEnumValues Label="Error Handling Strategy"></EnumSelectComponent>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="Choose how to output your exceptions, if at all.">
-        <MultiEnumSelectComponent Disabled="ApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="ErrorHandlingSinks" Value="ApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
+        <MultiEnumSelectComponent Disabled="_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="ErrorHandlingSinks" Value="_dirtyApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handled by the sinks.">
-         <MultiEnumSelectComponent Disabled="ApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="ApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
+         <MultiEnumSelectComponent Disabled="_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="_dirtyApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
     
     <AdvancedSettingItem ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
-         <EnumSelectComponent Disabled="ApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None || !ApiClientOptions.ErrorHandlingSinks.Contains(ErrorHandlingSinks.LogException)" @bind-Value="ApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
+         <EnumSelectComponent Disabled="_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None || !_dirtyApiClientOptions.ErrorHandlingSinks.Contains(ErrorHandlingSinks.LogException)" @bind-Value="_dirtyApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
 <MudText Class="setting-section-header" Typo="Typo.h5">Function Configurations</MudText>
 <MudGrid Spacing="3">
     <AdvancedSettingItem ToolTip="Each request in the generated ApiClient will call EnsureSuccessStatusCode() on the HttpResponseMessage before deserializing or returning the response stream.">
-         <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudCheckBox>
+         <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudCheckBox>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="@(@"All actual ""path variables"" (/:pathVariable/) are automatically treated as function parameters, but collection variables in paths (/{{variable}}/) will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
-         <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudCheckBox>
+         <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudCheckBox>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="@(@"If true each request function on the generated ApiClient will be have a Cancellation token parameter with a default value of default.")">
-         <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.UseCancellationTokens">Use Cancellation Tokens</MudCheckBox>
+         <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.UseCancellationTokens">Use Cancellation Tokens</MudCheckBox>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
@@ -81,114 +81,130 @@ has no effect since only the first success response is saved when the api client
 </p>
 <MudGrid Spacing="3">
     <AdvancedSettingItem ToolTip="This will determine whether root classes are considered for deduping. A root class being one that is not is not used in any other classes. Generally these are used directly in the generated ApiClient class.">
-        <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.DuplicateOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudCheckBox>
+        <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.DuplicateOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudCheckBox>
     </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="This will determine whether or not you want any leniency in the deduping process. If you set this to false, the type matching will be strict and only dedupe when all properties match exactly by name and type.">
-        <MudCheckBox Color="Color.Primary" @bind-Checked="ApiClientOptions.DuplicateOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
+        <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
     </AdvancedSettingItem>
     
     <AdvancedSettingItem ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
                          be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
 potential duplicate as a duplicate. WHEN the json names DO match. The lower this number is, the more often you will have numbered classes. Amount, Amount2, Amount3">
-         <MudNumericField @bind-Value="ApiClientOptions.DuplicateOptions.SameOriginalNameSensitivity" Disabled="ApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Same Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="50" />
+         <MudNumericField @bind-Value="_dirtyApiClientOptions.DuplicateOptions.SameOriginalNameSensitivity" Disabled="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Same Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="50" />
     </AdvancedSettingItem>
     <AdvancedSettingItem ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
                          be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
 potential duplicate as a duplicate. WHEN the json names DONT match. The higher this number is, the fewer classes that will be generated. Raising this number will also increase the likely
 hood of an error in generated code (minor issues usually) and increase the likelyhood of confusing class names.">
-         <MudNumericField @bind-Value="ApiClientOptions.DuplicateOptions.DifferentOriginalNameSensitivity" Disabled="ApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Different Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="6" />
+         <MudNumericField @bind-Value="_dirtyApiClientOptions.DuplicateOptions.DifferentOriginalNameSensitivity" Disabled="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Different Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="6" />
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
 <MudText Class="setting-section-header" Typo="Typo.h5">Miscellaneous</MudText>
 <MudGrid Spacing="3">
-     <AdvancedSettingItem ToolTip="Any types choosen in here will cause disabled parameters of that type to be removed in pre-processing..">
-         <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="ApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
-     </AdvancedSettingItem>
+    <AdvancedSettingItem ToolTip="Any types choosen in here will cause disabled parameters of that type to be removed in pre-processing..">
+        <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="_dirtyApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
+    </AdvancedSettingItem>
 
     <AdvancedSettingItem ToolTip="WARNING: Authorizations will be lost is this setting is enabled. This will reorganize requests by authority. See options explained page for full explanation.">
-         <EnumSelectComponent @bind-Value="ApiClientOptions.RootDefinition" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
-     </AdvancedSettingItem>
+        <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
+    </AdvancedSettingItem>
 </MudGrid>
-@{
+
+@if (!AutoSave)
+{
     var toolTipColor = Color.Warning;
     var toolTipVisible = false;
     string toolTipMessage = "";
-    if (!Equals(ApiClientOptions, LastSavedApiClientOptions))
+    if (!Equals(_dirtyApiClientOptions, ApiClientOptions))
     {
         toolTipColor = Color.Warning;
         toolTipVisible = true;
         toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
     }
-}
-<div class="f-row" style="margin-top: 25px; gap: 20px;" >
-    <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="Equals(ApiClientOptions, LastSavedApiClientOptions)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
-    <MudTooltip Text="Resets settings to default values">
-        <MudButton Disabled="Equals(LastSavedApiClientOptions, new ApiClientOptions())" Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { ApiClientOptions = new ApiClientOptions();  }">Reset to default</MudButton>
-    </MudTooltip>
-    @if (toolTipVisible)
-    {
-        <MudTooltip Style="position: absolute; top: 10px; right: 10px;" Text="@toolTipMessage">
-            <MudIcon Icon="@Icons.Warning" Color="@toolTipColor" Title="Warning" Size="Size.Large"></MudIcon>
+    <div class="f-row" style="margin-top: 25px; gap: 20px;" >
+        <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="Equals(_dirtyApiClientOptions, ApiClientOptions)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
+        <MudTooltip Text="Resets settings to default values">
+            <MudButton Disabled="Equals(ApiClientOptions, new ApiClientOptions())" Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { _dirtyApiClientOptions = new ApiClientOptions();  }">Reset to default</MudButton>
         </MudTooltip>
-    }
-</div>
+        @if (toolTipVisible)
+        {
+            <MudTooltip Style="position: absolute; top: 10px; right: 10px;" Text="@toolTipMessage">
+                <MudIcon Icon="@Icons.Warning" Color="@toolTipColor" Title="Warning" Size="Size.Large"></MudIcon>
+            </MudTooltip>
+        }
+    </div>
+}
 
 @code {
     [Inject] private ISnackbar? Snackbar { get; set; }
 
-    [Parameter]
-    public ApiClientOptions ApiClientOptions { get; set; } = new();
+    private ApiClientOptions _dirtyApiClientOptions = new();
 
-    private ApiClientOptions _lastSavedApiClientOptions = new();
     [Parameter]
-    public ApiClientOptions LastSavedApiClientOptions
+    public bool AutoSave { get; set; }
+
+    private ApiClientOptions _apiClientOptions = new();
+    [Parameter]
+    public ApiClientOptions ApiClientOptions
     {
-        get => _lastSavedApiClientOptions;
+        get => _apiClientOptions;
         set
         {
-            if (_lastSavedApiClientOptions == value) return;
-            _lastSavedApiClientOptions = value;
-            LastSavedApiClientOptionsChanged.InvokeAsync(value);
+            if (Equals(_apiClientOptions, value))
+            {
+                return;
+            }
+            SetApiClientOptions(value);
         }
     }
+
     [Parameter]
-    public EventCallback<ApiClientOptions> LastSavedApiClientOptionsChanged { get; set; }
+    public EventCallback<ApiClientOptions> ApiClientOptionsChanged { get; set; }
 
     protected override void OnParametersSet()
     {
-        if (!Equals(ApiClientOptions, LastSavedApiClientOptions))
+        if (!Equals(_dirtyApiClientOptions, ApiClientOptions))
         {
-            ApiClientOptions = LastSavedApiClientOptions.Clone();
+            SetApiClientOptions(ApiClientOptions);
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (AutoSave && !Equals(_dirtyApiClientOptions, ApiClientOptions))
+        {
+            SetApiClientOptions(_dirtyApiClientOptions);
         }
     }
 
     public void SetApiClientOptions(ApiClientOptions options)
     {
-        LastSavedApiClientOptions = options.Clone();
-        ApiClientOptions = options.Clone();
+        _apiClientOptions = options.Clone();
+        _dirtyApiClientOptions = options.Clone();
+        ApiClientOptionsChanged.InvokeAsync(options);
     }
 
     private void SelectedErrorHandlingSinksChanged(IEnumerable<string> errorHandlingSinks)
     {
-        ApiClientOptions.ErrorHandlingSinks = errorHandlingSinks.Select(Enum.Parse<ErrorHandlingSinks>).ToList();
+        _dirtyApiClientOptions.ErrorHandlingSinks = errorHandlingSinks.Select(Enum.Parse<ErrorHandlingSinks>).ToList();
     }
     private void SelectedCatchExceptionTypesChanged(IEnumerable<string> catchTypes)
     {
-        ApiClientOptions.CatchExceptionTypes = catchTypes.Select(Enum.Parse<CatchExceptionTypes>).ToList();
+        _dirtyApiClientOptions.CatchExceptionTypes = catchTypes.Select(Enum.Parse<CatchExceptionTypes>).ToList();
     }
     private void SelectedCommentTypesChanged(IEnumerable<string> commentTypes)
     {
-        ApiClientOptions.XmlCommentTypes = commentTypes.Select(Enum.Parse<XmlCommentTypes>).ToList();
+        _dirtyApiClientOptions.XmlCommentTypes = commentTypes.Select(Enum.Parse<XmlCommentTypes>).ToList();
     }
     private void SelectedRemovedDisabledChanged(IEnumerable<string> commentTypes)
     {
-        ApiClientOptions.RemoveDisabled = commentTypes.Select(Enum.Parse<RemoveDisabled>).ToList();
+        _dirtyApiClientOptions.RemoveDisabled = commentTypes.Select(Enum.Parse<RemoveDisabled>).ToList();
     }
 
     private static ApiClientOptions DefaultOptions() => new();
-    private static bool Equals(ApiClientOptions options1, ApiClientOptions options2)
+    public static bool Equals(ApiClientOptions options1, ApiClientOptions options2)
     {
         var allRemovedDisabledMatch = options1.RemoveDisabled.Count == options2.RemoveDisabled.Count && options1.RemoveDisabled.All(type => options2.RemoveDisabled.Contains(type));
         var allCommentTypesMatch = options1.XmlCommentTypes.Count == options2.XmlCommentTypes.Count && options1.XmlCommentTypes.All(type => options2.XmlCommentTypes.Contains(type));
@@ -213,7 +229,7 @@ hood of an error in generated code (minor issues usually) and increase the likel
 
     private void SaveOptions()
     {
-        LastSavedApiClientOptions = ApiClientOptions.Clone();
-        Snackbar?.Add($"Saved {nameof(ApiClientOptions)}", Severity.Success);
+        SetApiClientOptions(_dirtyApiClientOptions);
+        Snackbar?.Add($"Saved {nameof(_dirtyApiClientOptions)}", Severity.Success);
     }
 }

@@ -105,7 +105,7 @@ namespace Postman2CSharp.Wasm.Services
             _ = Task.WhenAll(tasks);
         }
 
-        private async Task LoadJson2CsharpPlusFile()
+        private async Task LoadJson2CsharpPlusFiles()
         {
             var tasks = Json2CsharpPlusJsFiles.Select(Interop.LoadFile).ToList();
             var getCssTask = Json2CsharpPlusCssFiles.Select(Interop.LoadStyle).ToList();
@@ -119,26 +119,26 @@ namespace Postman2CSharp.Wasm.Services
             _uploadAttempts = 0;
             retry:
             _uploadAttempts++;
-            var uri = NavigationManager.Uri;
+            var uri = NavigationManager.Uri.ToLower();
             try
             {
                 if (string.IsNullOrEmpty(uri))
                 {
 
                 }
-                if (uri.Contains("Upload") || uri.Contains("Collection") || uri.Contains("Convert") || uri.Contains("json"))
+                if (uri.Contains("upload") || uri.Contains("collection") || uri.Contains("convert") || uri.Contains("json") || uri.Contains("interactive-demo"))
                 {
                     await LoadConvertAssemblies();
                 }
                 if (uri.Contains("json"))
                 {
-                    await LoadJson2CsharpPlusFile();
+                    await LoadJson2CsharpPlusFiles();
                 }
-                if (uri.Contains("Collection"))
+                if (uri.Contains("collection"))
                 {
                     LoadCollectionJs();
                 }
-                if (uri.Contains("Advanced-Settings"))
+                if (uri.Contains("advanced-settings"))
                 {
                     await LoadAdvancedSettingsAssemblies();
                 }

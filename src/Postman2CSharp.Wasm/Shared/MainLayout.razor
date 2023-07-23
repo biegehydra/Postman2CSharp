@@ -16,7 +16,7 @@
 
 <MudLayout>
     <MudAppBar Class="appbar" Elevation="0" ToolBarClass="toolbar-class">
-    <MudIconButton Icon="@Icons.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(DrawerToggle)"/>
+    <MudIconButton Icon="@Icons.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="() => ToggleDrawer()"/>
     <AppBarTabs ></AppBarTabs>
     <MudSpacer></MudSpacer>
     @if (SiteSettings.Instance.ShowSnackbarPopups)
@@ -61,7 +61,7 @@
     </MudDrawer>
     <MudMainContent>
         <div style="display: flex; flex-direction: column; min-height: calc(100vh - var(--mud-appbar-height));">
-            <MudContainer MaxWidth="MaxWidth.Large" Class="main-container">
+            <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="main-container">
                 <CascadingValue Value="this">
                     <CascadingValue Value="ApiCollections">
                         @Body
@@ -202,10 +202,16 @@
         await JsRuntime.InvokeVoidAsync("setLocalStorage", "apiClientOptions", Convert.LastSavedApiClientOptions);
     }
 
-
-    void DrawerToggle()
+    public void ToggleDrawer(bool? value = null)
     {
-        _drawerOpen = !_drawerOpen;
+        if (value.HasValue)
+        {
+            _drawerOpen = value.Value;
+        }
+        else
+        {
+            _drawerOpen = !_drawerOpen;
+        }
     }
 
     public async Task AddApiCollection(ApiCollection apiCollection)

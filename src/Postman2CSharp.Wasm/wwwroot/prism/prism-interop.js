@@ -28,3 +28,7 @@ window.removePrismObserver = function () {
         prismObserver = null;
     }
 }
+
+window.registerButtons = function () {
+    registeredCodeBlocks[id] = dotnetObjectRef;
+}

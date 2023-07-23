@@ -1,4 +1,6 @@
-﻿<pre class="@PreClass()" style="@Style" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@Value" class="@CodeClass()">@Value</code></pre>
+﻿<div class="container-@Id">
+    <pre @key="Value" id="@Id" class="@PreClass()" style="@Style" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">@Value</code></pre>
+</div>
 
 @code {
     [Parameter]
@@ -13,8 +15,34 @@
     [Parameter, EditorRequired]
     public PrismLanguage Language { get; set; }
 
+    private string _value = null;
     [Parameter, EditorRequired]
-    public string? Value { get; set; }
+    public string? Value
+    {
+        get => _value;
+        set
+        {
+            if (_value == value) return;
+            _value = value;
+            Id = Guid.NewGuid().ToString();
+            StateHasChanged();
+            
+        }
+    }
+    [Inject] private Interop Interop { get; set; } = default!;
+
+    private string Id = Guid.NewGuid().ToString();
+    private string test;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender && test != Value)
+        {
+            Id = Guid.NewGuid().ToString();
+            await Interop.EmptyElement($"container-{Id}");
+            StateHasChanged();
+        }
+        test = Value;
+    }
 
     private string DataUrl()
     {

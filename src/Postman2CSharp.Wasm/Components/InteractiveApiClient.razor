@@ -1,0 +1,71 @@
+﻿@using Xamasoft.JsonClassGenerator
+<style>
+    .api-client-options-container {
+        width: 50%;
+    }
+    .code-block-container {
+        width: 50%;
+    }
+</style>
+
+<div class="f-row" >
+    <div class="api-client-options-container">
+        <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AutoSave></ApiClientOptionsComponent>
+    </div>
+    <div class="code-block-container" >
+        @CodeBlock(_apiClientOptions)
+    </div>
+</div>
+ @code {
+
+    [Inject] private LazyLoader LazyLoader { get; set; } = null!;
+    [Inject] private Navigate Navigate { get; set; } = null!;
+
+    private ApiClientOptions _apiClientOptions = new()
+    {
+        HandleMultipleResponses = false
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetTestData();
+    }
+
+    private static string? _testData;
+    private async Task GetTestData()
+    {
+        if (_testData != null) return;
+        await LazyLoader.LoadHttpSecurityAssemblies();
+        var httpClient = new HttpClient();
+        var getUrl = Navigate.BaseUrl + "InteractiveDemo.json";
+        var response = await httpClient.GetAsync(getUrl);
+        _testData = await new StreamReader(await response.Content.ReadAsStreamAsync()).ReadToEndAsync();
+    }
+
+    private static ApiClientOptions? _lastApiClientOptions;
+    private static string? _lastApiClientName;
+    private static string? _lastSourceCode;
+    private static RenderFragment? CodeBlock(ApiClientOptions options)
+    {
+        if (_testData == null) return null;
+        if (_lastApiClientOptions != null)
+        {
+            if (ApiClientOptionsComponent.Equals(_lastApiClientOptions, options))
+            {
+                return @<PrismCodeBlock FileName="@_lastApiClientName" Language="PrismLanguage.CSharp" Value="@_lastSourceCode" />;
+            }
+        }
+        _lastApiClientOptions = options;
+        var postmanCollection = JsonSerializer.Deserialize<PostmanCollection>(_testData, SerializerSettings.Web);
+        if (postmanCollection == null) return null;
+        var apiClientGenerationOptions = new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, options);
+        var apiClientGenerator = new ApiClientGenerator(postmanCollection, apiClientGenerationOptions);
+        var generateTask = apiClientGenerator.GenerateApiClients();
+        generateTask.Wait();
+        var apiClient = generateTask.Result.First();
+        var baseUrl = apiClient.BaseUrl;
+        _lastSourceCode = apiClient.SourceCode;
+        _lastApiClientName = apiClient.Name;
+        return @<PrismCodeBlock @key="apiClient" FileName="@_lastApiClientName" Language="PrismLanguage.CSharp" Value="@_lastSourceCode" />;
+    }
+}

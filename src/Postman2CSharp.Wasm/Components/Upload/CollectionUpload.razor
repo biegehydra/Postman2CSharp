@@ -38,6 +38,7 @@
     [Parameter] public EventCallback<ApiCollection> SuccessfulUpload { get; set; }
 
     private IBrowserFile? _uploadedFile;
+    private const string TestDataName = "GoogleMapsPlatform.json";
 
     private void UploadFiles(IReadOnlyList<IBrowserFile> files)
     {
@@ -59,27 +60,10 @@
         await LazyLoader.LoadHttpSecurityAssemblies();
         var httpClient = new HttpClient();
         var response = await httpClient.GetAsync("https://files.postman2csharp.com/GoogleMapsPlatform.json");
-        _uploadedFile = new TestBrowserFile(await response.Content.ReadAsStreamAsync());
+        _uploadedFile = new TestBrowserFile(await response.Content.ReadAsStreamAsync(), TestDataName);
     }
 
-    private const string TestDataName = "GoogleMapsPlatform.json";
-    public class TestBrowserFile : IBrowserFile
-    {
-        private Stream Stream { get; set; }
-        public TestBrowserFile(Stream stream)
-        {
-            Stream = stream;
-        }
-        public Stream OpenReadStream(long maxAllowedSize = 512000, CancellationToken cancellationToken = new CancellationToken())
-        {
-            return Stream;
-        }
 
-        public string Name => TestDataName;
-        public DateTimeOffset LastModified => throw new NotImplementedException();
-        public long Size => throw new NotImplementedException();
-        public string ContentType => throw new NotImplementedException();
-    }
 
     private async Task Process()
     {

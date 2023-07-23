@@ -36,7 +36,7 @@
 @if (LazyLoader.ConvertLoaded)
 {
     <div class="code-writing-options-contianer">
-        <ApiClientOptionsComponent @ref="ApiClientOptionsComponent" @bind-LastSavedApiClientOptions="LastSavedApiClientOptions" ></ApiClientOptionsComponent>
+        <ApiClientOptionsComponent @ref="ApiClientOptionsComponent" @bind-ApiClientOptions="LastSavedApiClientOptions" ></ApiClientOptionsComponent>
     </div>
     <br />
     <CollectionUpload SuccessfulUpload="OnSuccessfulUpload"></CollectionUpload>

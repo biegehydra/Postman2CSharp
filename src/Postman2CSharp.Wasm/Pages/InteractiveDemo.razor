@@ -1,0 +1,35 @@
+﻿@page "/Interactive-Demo"
+@inherits MainLayoutComponent
+
+<PageHeader Title="Interactive Demo"
+            SubTitle="Test out all the different configurations Postman2CSharp has to offer with this interactive demo. See how configurations affected the generated ApiClient and Json classes."
+            Keywords="Interactive, Demo, Interactive Demo, Example, Text" />
+
+<BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
+
+<br/>
+
+<MudText Typo="Typo.h1" Class="mt-4">Interactive Demo</MudText>
+<br />
+<MudText Typo="Typo.subtitle1">
+    Try out all the different configurations Postman2CSharp has to offer with this interactive demo. See how configurations affected the
+    generated ApiClient and Json classes. Changes are automatically saved on this page.
+</MudText>
+
+<br/>
+
+<InteractiveApiClient></InteractiveApiClient>
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        Layout.ToggleDrawer(false);
+    }
+
+    private static readonly List<BreadcrumbItem> BreadCrumbs = new()
+    {
+        new("Home", "/", icon: Icons.Home),
+        new("Interactive Demo", "/", true, Icons.PlayArrow)
+    };
+}
