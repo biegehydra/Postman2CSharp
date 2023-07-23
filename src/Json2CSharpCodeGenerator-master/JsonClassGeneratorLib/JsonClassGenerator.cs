@@ -430,7 +430,8 @@ namespace Xamasoft.JsonClassGenerator
                 var test7 = potentialType.IsRoot;
                 var test8 = potentialType.IsVariant;
 #endif
-                if (this.DuplicateOptions.RemoveSemiDuplicates && AllTypes.FirstOrDefault(allTypeType => ( potentialType.IsRoot && TypesMatch(potentialType, allTypeType, this.DuplicateOptions.RemoveDuplicateRoots, DuplicateOptions.SameOriginalNameSensitivity, DuplicateOptions.DifferentOriginalNameSensitivity) ) ||
+                if (this.DuplicateOptions.RemoveSemiDuplicates && 
+                    AllTypes.FirstOrDefault(allTypeType => ( potentialType.IsRoot && TypesMatch(potentialType, allTypeType, this.DuplicateOptions.RemoveDuplicateRoots, DuplicateOptions.SameOriginalNameSensitivity, DuplicateOptions.DifferentOriginalNameSensitivity) ) ||
                                                            ( !potentialType.IsRoot && potentialType.OriginalName == allTypeType.OriginalName && TypesMatch(potentialType, allTypeType, this.DuplicateOptions.RemoveDuplicateRoots, DuplicateOptions.SameOriginalNameSensitivity, DuplicateOptions.DifferentOriginalNameSensitivity) )) is
                     { } allTypesMatchedType)
                 {

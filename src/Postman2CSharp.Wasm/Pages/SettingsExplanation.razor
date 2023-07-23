@@ -1,4 +1,5 @@
 ﻿@page "/ApiClient-Configurations-Explained"
+
 <PageHeader Keywords="Explanations, Explained, Configure" Title="Configuring ApiClient Generation" SubTitle="Take even more control over your Api Clients by configuring ApiClient Generation Options."></PageHeader>
 
 <BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
@@ -7,21 +8,19 @@
 <br/>
 <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
-@Explanation("Remove Duplicate Classes", RemoveDuplicateClasses_False, RemoveDuplicateClasses_True, RemoveDuplicateClasses_Description)
-
-<br/>
 
 @Explanation("Ensure Response Status Code", EnsureResponseStatusCode_False, EnsureResponseStatusCode_True)
 
-<br />
+<MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+
 @Explanation("Make Path Collection Variables Function Parameters", MakePathCollectionVariablesFunctionParameters_False, MakePathCollectionVariablesFunctionParameters_True, MakePathCollectionVariablesFunctionParameters_Description)
 
-<br />
+<MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
 @Explanation("Use Cancellation Tokens", UseCancellationTokens_False, UseCancellationTokens_True)
 
 
-<br/>
+<MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
 <div>
     <MudText Typo="Typo.h3">Attribute Library</MudText>
@@ -35,7 +34,33 @@
     </p>
 </div>
 
-<br/>
+<MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+
+<div>
+    <MudText Typo="Typo.h3">Multiple Response Handling</MudText>
+    <br/>
+    <p>
+        Enabling this setting is a great way to ensure that you are handling all possible responses from an api.
+        When you enabled this setting, the status code of the response will be used to determine how the response is deserialized.
+    </p>
+    <br />
+    <p>
+        <b>Handle:</b> The first option you have is whether or not you handle multiple responses at all. If you choose not to handle multiple response,
+        then only the first success response - status code &gt;= 200 and &lt; 300, preference to 200 if present - will be uses in the generation process. 
+        All others will be discarded. <u>This means that classes won't be generated for all other responses, this setting can't be enabled after generation.</u>
+    </p>
+    <br/>
+    <p>
+        <b>Multiple Response Handling:</b> If you do decide to handle multiple responses by setting "Handle" to true, then you will need to decide
+        what you want the return type to be when there are multiple responses. You can either return an object and allow the caller to determine the type... ew.
+        Or you can use a discriminated union via the popular OneOf library. A discriminated union is a type that can be one of many types, but only ever ONE OF.
+        In this case, the discriminated union will be one of the possible response types. This is the recommended option.
+    </p>
+    <br/>
+    <pre><code class="language-csharp">@ErrorHandlingStrategy_ThrowException</code></pre>
+</div>
+
+<MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
 <div>
     <MudText Typo="Typo.h3">Xml Comments Type</MudText>
@@ -51,7 +76,7 @@
     </p>
 </div>
 
-<br/>
+<MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
 <div>
     <MudText Typo="Typo.h3">Error Handling Strategy</MudText>
@@ -63,7 +88,7 @@
     <pre><code class="language-csharp" >@ErrorHandlingStrategy_ReturnDefault</code></pre>
 </div>
 
-<br/>
+<MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
 <div>
     <MudText Typo="Typo.h3">Catch Exception Types</MudText>
@@ -74,7 +99,7 @@
     <pre><code class="language-csharp">@CatchExceptionTypes_Example</code></pre>
 </div>
 
-<br/>
+<MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
 <div>
     <MudText Typo="Typo.h3">Error Handling Sinks</MudText>
@@ -83,24 +108,63 @@
     <pre><code class="language-csharp">@ErrorHandlingSinks_Example</code></pre>
 </div>
 
-<br/>
+<MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
 <div>
     <MudText Typo="Typo.h3">Root Definition</MudText>
 
-    <br />
-    <p>Warning: It is almost never advisable to change this.</p>
     <br/>
     <p>
         Api Clients are generated for each root in the Collection. By default a root is defined by any folder that has a request.
         Also by default, if there are requests that have different authority in a root, they will be split up into different Api Clients;
         Enabling this settings triggers a complete reorganization of the structure to put all requests with the same authority in the same root.
-        This can cause unexpected behaviour including the loss of authorization types, as such it is not recommended to change this setting.
+        This can cause unexpected behaviour including the loss of authorization types however it can drastically reduce the number of ApiClients and classes generated.
+    </p>
+</div>
+
+<MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+
+<div>
+    <MudText Typo="Typo.h3">Class Deduding</MudText>
+
+    <br />
+    <p>
+        By default, with all other settings disabled. Root classes are never deduped, and non-root classes are only deduped
+        when every single property matches by name and type on the original and duplicate and their property counts match.
+    </p>
+    <ul>
+        <li>Root: A class that's not a member of any other class</li>
+        <li>Non-Root: A class generated to be a member of another class.</li>
+        <li>Json Example: A key-value pair in json. In this section, it generally refers to a key-value pair where the value is an object. Denoted by "{}" in value. "person" : { }</li>
+        <li>Original Name: A value of the key in the json example.</li>
+        <li>Duplicate: A json example who's members match every single member by type and name on a previously process json example. <u>And the original and potential duplicate have the exact same amount of properties.</u></li>
+        <li>Semi-Duplicate: A json example who's members match every single member by type and name on a previously process json example. <u>And the original (already processed) has more properties than the potential duplicate.</u></li>
+    </ul>
+    <p>
+        <b>Duplicate Roots:</b> You are given a couple of options to help reduce the number of classes generated. The first option lets you choose
+        whether or not to remove duplicate ROOT classes. A root class is essentially one that is not a child of another class.
+        These are your Request, Response, and Parameter classes. * Note: Root classes are subject to the same rules for deduping as non-root classes.
+    </p>
+    <br/>
+    <p>
+        <b>Semi-Duplicate Classes:</b> The second option lets you choose whether or not to remove "semi-duplciates", see definition above. Enabling this setting lets you dedupe these semi-duplicate classes. This is useful for json that
+        has multiple examples of the same class but examples differ in name. For example, if you have Response that both have a Person object, but the json property names
+        are different, this setting would let you dedupe the second example and put all unique properties in the first example. You are also able to adjust the sensitivity of this
+        settings. The sensitivity is how many more properties the original can have than the duplicate. For example, if the original has 3 properties and the duplicate has 2 (all matching the original).
+        The Same Original Name Sensitivity or Different Name Sensitivity would have to be at least 6, depending on whether the names are the same or different.
+    </p>
+    <br/>
+    <p>
+        <b>One Original Name:</b> At the moment, this setting is only available for the <a class="link-normal" href="/other-tools/json-to-csharp-plus">Json2CSharpPlus</a> tool found in other tools.
+        Enabling this setting will enforce an additional rule during the dedupe process. Class deduping will work the same but 2 classes have the same name (in the json),
+        the first one will be kept and all examples after will add their properties to the first class. This is useful for json that has multiple examples of the same object
+        but examples have different amounts of properties. It is not useful when two classes have the same name but represent different models. Then you will have one model
+        to represent 2 objects. The default depends is create a second class with a number appended to the end if all the properties don't match.
     </p>
 </div>
 
 <br/>
-<br/>
+
 @code
 {
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
@@ -109,69 +173,6 @@
         new("Convert", "/Convert", icon: Icons.Settings),
         new("ApiClient Configurations Explained", "/ApiClient-Configurations-Explained", true)
     };
-
-    #region RemoveDuplicateClasses
-    private const string RemoveDuplicateClasses_False =
-    @"// RemoveDuplicateClasses = false
-
-// Request 1
-public class Person
-{
-    public string FirstName { get; set; }
-    public string LasteName { get; set; }
-}
-
-public class GetPersonByIdRequest
-{
-    public string Id { get; set; }
-    public Person Person { get; set; }
-}
-
-// Request 2
-public class Person2
-{
-    public string FirstName { get; set; }
-    public string LasteName { get; set; }
-}
-
-public class GetPersonByNameRequest
-{
-    public string Name { get; set; }
-    public Person2 Person { get; set; }
-}";
-
-
-    private const string RemoveDuplicateClasses_True =
-@"// RemoveDuplicateClasses = true
-
-// Request 1
-public class Person
-{
-    public string FirstName { get; set; }
-    public string LasteName { get; set; }
-}
-
-public class GetPersonByIdRequest
-{
-    public string Id { get; set; }
-    public Person Person { get; set; }
-}
-
-// Request 2
-public class GetItemByNameRequest
-{
-    public string Name { get; set; }
-    public Person Person { get; set; }
-}";
-
-    public const string RemoveDuplicateClasses_Description =
-    @"Imagine the follow scenario. You are interacting with an endpoint that returns
-the same object types in multiple endpoints. Endpoint1 returns a response that includes
-a Person object and Endpoint2 returns does too. By default, a Person class will be generated
-for each of these objects (Person and Person2). Sometimes this is what you want, but most of the time it is not.
-Enabling this setting will remove the duplicate classes and use the existing one. The matching is done
-by whether or not the class name and all properties match. If they do, the duplicate is removed.";
-    #endregion
 
     #region EnsureResponseStatusCode
 private const string EnsureResponseStatusCode_False =
@@ -197,21 +198,19 @@ This changes that and makes collection variables function parameters.";
     public const string MakePathCollectionVariablesFunctionParameters_False =
 @"// MakePathCollectionVariablesFunctionParameters = false
 
-private readonly string _someVariable; // Collection Variable
-public async Task<Stream> GetTickets()
+private readonly string _someVariable; // Priate variable
+public async Task<List<Ticket>> GetTickets()
 {
-    var response = await _httpClient.GetAsync(""{_someVariable}/ticket.php"");
-    return await response.Content.ReadAsStreamAsync();
+    return await _httpClient.GetFromJsonAsync<List<Ticket>>(""{_someVariable}/ticket.php"");
 }";
     
     public const string MakePathCollectionVariablesFunctionParameters_True = 
 @"// MakePathCollectionVariablesFunctionParameters = true
 
-// No collection Variable
+// No priate Variable
 public async Task<Stream> GetTickets(string someVariable) // Now a function parameter
 {
-    var response = await _httpClient.GetAsync(""{someVariable}/ticket.php"");
-    return await response.Content.ReadAsStreamAsync();
+    return await _httpClient.GetFromJsonAsync<List<Ticket>>(""{_someVariable}/ticket.php"");
 }";
     #endregion
 
@@ -232,7 +231,7 @@ public async Task<Stream> GetTickets()
 public async Task<Stream> GetTickets(CancellationToken cancellationToken) // Now a function parameter
 {
     var response = await _httpClient.GetAsync(""{someVariable}/ticket.php"", cancellationToken);
-    return await response.Content.ReadAsStreamAsync();
+    return await response.Content.ReadAsStreamAsync(cancellationToken);
 }";
     #endregion
 
@@ -284,6 +283,7 @@ catch (Exception ex)
 
     #endregion
 
+    #region ErrorHandlingSinks
     public const string ErrorHandlingSinks_Example =
 @"catch (// CatchExceptionType ex)
 {
@@ -292,6 +292,15 @@ catch (Exception ex)
     Debug.WriteLine(ex); // Debug Writeline
     // Error Handling Strategy
 }";
+    #endregion
+
+    #region MultipleResponses
+
+    public const string MultipleResponse_ObjectExample =
+@"
+";
+
+    #endregion
 
     public static RenderFragment Explanation(string title, string falsee, string truee, string? description = null)
     {
