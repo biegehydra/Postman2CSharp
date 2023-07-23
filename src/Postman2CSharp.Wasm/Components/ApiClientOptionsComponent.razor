@@ -1,5 +1,4 @@
-﻿@implements IDisposable
-<style>
+﻿<style>
     .setting-section-header {
         margin-bottom: 10px; 
         font-weight: 100;
@@ -138,20 +137,34 @@ hood of an error in generated code (minor issues usually) and increase the likel
 
 @code {
     [Inject] private ISnackbar? Snackbar { get; set; }
-    public static ApiClientOptions ApiClientOptions { get; private set; } = new();
-    public static ApiClientOptions LastSavedApiClientOptions { get; private set; } = new();
 
-    protected override void OnInitialized()
+    [Parameter]
+    public ApiClientOptions ApiClientOptions { get; set; } = new();
+
+    private ApiClientOptions _lastSavedApiClientOptions = new();
+    [Parameter]
+    public ApiClientOptions LastSavedApiClientOptions
     {
-        MainLayout.OnSettingsChanged += OnSettingsChanged;
+        get => _lastSavedApiClientOptions;
+        set
+        {
+            if (_lastSavedApiClientOptions == value) return;
+            _lastSavedApiClientOptions = value;
+            LastSavedApiClientOptionsChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter]
+    public EventCallback<ApiClientOptions> LastSavedApiClientOptionsChanged { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (!Equals(ApiClientOptions, LastSavedApiClientOptions))
+        {
+            ApiClientOptions = LastSavedApiClientOptions.Clone();
+        }
     }
 
-    private void OnSettingsChanged()
-    {
-        StateHasChanged();
-    }
-
-    public static void SetApiClientOptions(ApiClientOptions options)
+    public void SetApiClientOptions(ApiClientOptions options)
     {
         LastSavedApiClientOptions = options.Clone();
         ApiClientOptions = options.Clone();
@@ -188,6 +201,7 @@ hood of an error in generated code (minor issues usually) and increase the likel
                && options1.RootDefinition == options2.RootDefinition
                && options1.UseCancellationTokens == options2.UseCancellationTokens
                && options1.JsonLibrary == options2.JsonLibrary
+               && options1.AttributeUsage == options2.AttributeUsage
                && options1.MultipleResponseHandling == options2.MultipleResponseHandling
                && options1.HandleMultipleResponses == options2.HandleMultipleResponses
                && options1.DuplicateOptions.RemoveDuplicateRoots == options2.DuplicateOptions.RemoveDuplicateRoots
@@ -202,10 +216,4 @@ hood of an error in generated code (minor issues usually) and increase the likel
         LastSavedApiClientOptions = ApiClientOptions.Clone();
         Snackbar?.Add($"Saved {nameof(ApiClientOptions)}", Severity.Success);
     }
-
-    public void Dispose()
-    {
-        MainLayout.OnSettingsChanged -= OnSettingsChanged;
-    }
-
 }

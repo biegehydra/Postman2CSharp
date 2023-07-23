@@ -1,4 +1,5 @@
-﻿<div class="f-row" style="gap: 15px; align-items: end; flex-wrap: wrap;">
+﻿@using Convert = Postman2CSharp.Wasm.Pages.Convert
+<div class="f-row" style="gap: 15px; align-items: end; flex-wrap: wrap;">
     <MudTooltip Text="Looads in a Google Maps collection to let you see how the website works with dumby data.">
         <MudButton Color="Color.Secondary" OnClick="GetTestData" Variant="Variant.Filled">Test Data</MudButton>
     </MudTooltip>
@@ -92,7 +93,7 @@
                 return;
             }
 
-            var apiClientGenerator = new ApiClientGenerator(collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, ApiClientOptionsComponent.LastSavedApiClientOptions));
+            var apiClientGenerator = new ApiClientGenerator(collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, Convert.LastSavedApiClientOptions));
             StartTrackingGenerator(apiClientGenerator);
             await Task.Delay(1);
             var apiClients = await apiClientGenerator.GenerateApiClients();

@@ -36,7 +36,7 @@
 @if (LazyLoader.ConvertLoaded)
 {
     <div class="code-writing-options-contianer">
-        <ApiClientOptionsComponent></ApiClientOptionsComponent>
+        <ApiClientOptionsComponent @ref="ApiClientOptionsComponent" @bind-LastSavedApiClientOptions="LastSavedApiClientOptions" ></ApiClientOptionsComponent>
     </div>
     <br />
     <CollectionUpload SuccessfulUpload="OnSuccessfulUpload"></CollectionUpload>
@@ -44,6 +44,9 @@
 
 
 @code {
+    public static ApiClientOptions LastSavedApiClientOptions { get; private set; } = new();
+    private static ApiClientOptionsComponent? ApiClientOptionsComponent { get; set; }
+
     [Inject] private LazyLoader? LazyAssemblyLoader { get; set; }
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
     {
@@ -59,6 +62,19 @@
             throw new Exception("Something went wrong. Reload the page.");
         }
         LazyLoader.UploadLoadedChanged += OnUploadLoaded;
+        MainLayout.OnSettingsChanged += OnSettingsChanged;
+
+    }
+
+    public static void SetApiClientOptions(ApiClientOptions apiClientOptions)
+    {
+        LastSavedApiClientOptions = apiClientOptions.Clone();
+        ApiClientOptionsComponent?.SetApiClientOptions(apiClientOptions);
+    }
+
+    private async void OnSettingsChanged()
+    {
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task OnSuccessfulUpload(ApiCollection apiCollection)
@@ -80,6 +96,7 @@
     public void Dispose()
     {
         LazyLoader.UploadLoadedChanged -= OnUploadLoaded;
+        MainLayout.OnSettingsChanged -= OnSettingsChanged;
     }
 
 }
