@@ -3,13 +3,13 @@
 
 <PageTitle>@SelectedApiClient?.ControllerClassName</PageTitle>
 
-    <BreadCrumbs Items="@_breadCrumbs"></BreadCrumbs>
+<BreadCrumbs Items="@_breadCrumbs"></BreadCrumbs>
 
-    <br />
+<br />
 
-    @if (SelectedApiClient != null)
+@if (SelectedApiClient != null)
 {
-    <pre><code @key="SelectedApiClient.Id" class="language-csharp">@SelectedApiClient.ControllerSourceCode</code></pre>
+    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@SelectedApiClient.ControllerSourceCode" />
 }
 
 @code {

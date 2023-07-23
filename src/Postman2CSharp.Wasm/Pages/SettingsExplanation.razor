@@ -57,7 +57,7 @@
         In this case, the discriminated union will be one of the possible response types. This is the recommended option.
     </p>
     <br/>
-    <pre><code class="language-csharp">@ErrorHandlingStrategy_ThrowException</code></pre>
+    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingStrategy_ThrowException" />
 </div>
 
 <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
@@ -83,9 +83,9 @@
     <br/>
     <p>None - Request will be with no catch clause.</p>
     <br/>
-    <pre><code class="language-csharp">@ErrorHandlingStrategy_ThrowException</code></pre>
+    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingStrategy_ThrowException" />
     <hr/>
-    <pre><code class="language-csharp" >@ErrorHandlingStrategy_ReturnDefault</code></pre>
+    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingStrategy_ReturnDefault" />
 </div>
 
 <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
@@ -96,7 +96,7 @@
     <br/>
     <p>Each catch type chosen will be caught. Only takes affect if Error Handling Strategy is not None</p>
     <br/>
-    <pre><code class="language-csharp">@CatchExceptionTypes_Example</code></pre>
+    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@CatchExceptionTypes_Example" />
 </div>
 
 <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
@@ -105,7 +105,7 @@
     <MudText Typo="Typo.h3">Error Handling Sinks</MudText>
 
     <br />
-    <pre><code class="language-csharp">@ErrorHandlingSinks_Example</code></pre>
+    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingSinks_Example" />
 </div>
 
 <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
@@ -314,9 +314,9 @@ catch (Exception ex)
                        </p>
                    }
                    <br/>
-                   <pre><code class="language-csharp" >@falsee</code></pre>
+                   <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@falsee" />
                    <hr/>
-                   <pre><code class="language-csharp">@truee</code></pre>
+                   <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@truee" />
                </div>;
     }
 }

@@ -9,7 +9,7 @@
 
 @if (SelectedApiClient != null)
 {
-    <pre><code @key="@SelectedApiClient.Id" class="language-csharp">@SelectedApiClient.TestClassSourceCode</code></pre>
+    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@SelectedApiClient.TestClassSourceCode" />
 }
 
 @code {

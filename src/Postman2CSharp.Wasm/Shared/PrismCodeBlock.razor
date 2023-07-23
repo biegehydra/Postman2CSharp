@@ -1,16 +1,51 @@
-﻿@using Postman2CSharp.Wasm.Infrastructure.Prism
-<pre class="@PreClass()"><code @key="@Value" class="@CodeClass()">@Value</code></pre>
+﻿<pre class="@PreClass()" style="@Style" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@Value" class="@CodeClass()">@Value</code></pre>
 
 @code {
+    [Parameter]
+    public string? Style { get; set; }
+
+    [Parameter]
+    public string FileName { get; set; } = "download";
 
     [Parameter]
     public bool UseLineNumbers { get; set; } = true;
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public PrismLanguage Language { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public string? Value { get; set; }
+
+    private string DataUrl()
+    {
+        if (string.IsNullOrEmpty(Value))
+        {
+            throw new ArgumentException("Value cannot be null or empty");
+        }
+
+        var mimeType = Language switch
+        {
+            PrismLanguage.CSharp => "text/plain",
+            PrismLanguage.Json => "application/json",
+            _ => throw new ArgumentOutOfRangeException()
+            };
+
+        var bytes = Encoding.UTF8.GetBytes(Value);
+        var base64String = System.Convert.ToBase64String(bytes);
+
+        return $"data:{mimeType};base64,{base64String}";
+    }
+
+    private string FileNameWithExtension()
+    {
+        var extension = Language switch
+        {
+            PrismLanguage.CSharp => ".cs",
+            PrismLanguage.Json => ".json",
+            _ => throw new ArgumentOutOfRangeException()
+            };
+        return FileName + extension;
+    }
 
     private string PreClass()
     {

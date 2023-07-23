@@ -1,0 +1,12 @@
+﻿@code {
+    private static PostmanCollection ExampleCollection { get; set; }
+
+    public static RenderFragment Fragment(ApiClientGeneratorOptions options)
+    {
+        var apiClientGenerator = new ApiClientGenerator(ExampleCollection, options);
+        var generateTask = apiClientGenerator.GenerateApiClients();
+        generateTask.Wait();
+        var apiClient = generateTask.Result.First();
+        return @<PrismCodeBlock Language="PrismLanguage.CSharp" Value="@apiClient.SourceCode" />;
+    }
+}

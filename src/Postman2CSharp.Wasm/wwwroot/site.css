@@ -2,6 +2,10 @@
     color: #a576ea;
 }
 
+div.code-toolbar > .toolbar > .toolbar-item {
+    margin-right: 5px;
+}
+
 .mud-paper {
     --mud-palette-error: #9c5c64;
 }

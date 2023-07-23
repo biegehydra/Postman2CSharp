@@ -30,7 +30,7 @@
             <div style="width: fit-content; padding-left: 20px;">
                 @if (ApiClient.GetClassSourceCode(apiClientDuplicateRoot.ClassName) is { } sourceCode)
                 {
-                    <pre><code @key="apiClientDuplicateRoot.ClassName" class="language-csharp">@sourceCode</code></pre>
+                    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@sourceCode" />
                 }
             </div>
             <div style="padding-left: 20px;">
