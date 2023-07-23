@@ -1,8 +1,9 @@
 ﻿@using Xamasoft.JsonClassGenerator
 @using System.Reflection
-@implements IAsyncDisposable
+@using Postman2CSharp.Wasm.Infrastructure.Prism
 <style>
-    .display-contents .mud-tabs-panels {
+    .display-contents .mud-tabs-panels,
+    .display-contents .code-toolbar {
         display: contents;
     }
 </style>
@@ -19,7 +20,7 @@
     <div style="width: 50%;" class="small-w-100" >
         <MudText Typo="Typo.h2">Json Editor</MudText>
         <br />
-        <div id="@_jsonEditorId"></div>
+        <JsonEditor @ref="_jsonEditor" @bind-IsJsonValid="_isJsonValid" ></JsonEditor>
     </div>
     <div style="width: 50%;" class="small-w-100" >
         @if (_result.Count > 0)
@@ -56,82 +57,69 @@
     <MudButton Variant="Variant.Filled"
                Color="Color.Tertiary"
                EndIcon="@Icons.Build"
-               OnClick="Process" Disabled="!IsJsonValid" >
+               OnClick="Process" Disabled="!_isJsonValid" >
         Process
     </MudButton>
     <div style="flex-grow: 1;"></div>
     <MudText Class="hide-not-desktop mr-6" Typo="Typo.caption"><b>Tip: Shift + Scroll Mouse Wheel = Horizontal Scroll</b></MudText>
 </div>
 
-<pre style="margin-top: 0; height: 60vh;"><code @key="@_exampleJson" class="language-json">@_exampleJson</code></pre>
+<PrismCodeBlockrazor Language="PrismLanguage.Json" Value="@_exampleJson" ></PrismCodeBlockrazor>
 
 @code {
     private string _exampleJson = "{\n    \"put\" : \"your\",\n    \"json\" : \"here\",\n    \"to\" : \"be converted\"\n}";
     private string _pasteMoreText = "Paste more json without resetting\nto take advantage of class deduping";
 
     [Inject] private AnalyticsInterop Analytics { get; set; } = default!;
-    [Inject] private JsonEditorInterop JsonEditorInterop { get; set; } = default!;
     private Dictionary<string, string> _result = new ();
 
     private bool _firstProcess = false;
     private bool _oneTypePerJsonMemberName = true;
     private CSharpCodeWriterConfig _options = new();
     private DuplicateOptions _duplicateOptions = new();
-    private DotNetObjectReference<Json2CSharpPlusComponent>? _dotNetObjectReference;
-    private readonly string _jsonEditorId = "json-editor";
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _dotNetObjectReference = DotNetObjectReference.Create(this);
-            await JsonEditorInterop.Init(_dotNetObjectReference!, _jsonEditorId!);
-            await JsonEditorInterop.SetValue(_jsonEditorId, _exampleJson);
-        }
-    }
+    private JsonEditor? _jsonEditor;
+    private bool _isJsonValid = false;
 
     private int _activePanelIndex;
     private Json2CSharpPlus? _json2CSharpPlusSimple;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _jsonEditor != null)
+        {
+            while (!_jsonEditor.Initialized)
+            {
+                await Task.Delay(1);
+            }
+            await _jsonEditor.SetValue(_exampleJson);
+        }
+    }
+
     private async Task Process()
     {
+        if (_jsonEditor == null) return;
+
         _firstProcess = true;
-        var json = await JsonEditorInterop.GetValue(_jsonEditorId);
+        var json = await _jsonEditor.GetValue();
         _json2CSharpPlusSimple ??= new Json2CSharpPlus(_options, _duplicateOptions);
+
         _result = _json2CSharpPlusSimple.GenerateMoreClasses(json, _oneTypePerJsonMemberName);
-        await JsonEditorInterop.SetValue(_jsonEditorId, _pasteMoreText);
+        await _jsonEditor.SetValue(_pasteMoreText);
         await Analytics.TrackAction("Json2CSharp Process");
+
         StateHasChanged();
         await Task.Delay(1);
         _activePanelIndex = _result.Count - 1;
-    }
-
-    private bool IsJsonValid { get; set; } = true;
-
-    [JSInvokable]
-    public void CheckJsonValidity(string json)
-    {
-        try
-        {
-            JsonDocument.Parse(json);
-            IsJsonValid = true;
-        }
-        catch
-        {
-            IsJsonValid = false;
-        }
-        StateHasChanged();
     }
 
     private async Task Reset()
     {
         _firstProcess = false;
         _result.Clear();
-        await JsonEditorInterop.SetValue(_jsonEditorId, _exampleJson);
+        if (_jsonEditor != null)
+        {
+            await _jsonEditor.SetValue(_exampleJson);
+        }
         _json2CSharpPlusSimple = null;
     }
-
-    public async ValueTask DisposeAsync()
-    {
-        await JsonEditorInterop.Destroy(_jsonEditorId);
-    }
-
 }

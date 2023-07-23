@@ -1,5 +1,6 @@
 ﻿using Microsoft.JSInterop;
 using Postman2CSharp.Wasm.Components.OtherTools;
+using Postman2CSharp.Wasm.Shared;
 
 namespace Postman2CSharp.Wasm.Services
 {
@@ -12,7 +13,7 @@ namespace Postman2CSharp.Wasm.Services
             _jsRuntime = jsRuntime;
         }
 
-        public async Task Init(DotNetObjectReference<Json2CSharpPlusComponent> dotNetObjRef, string id)
+        public async Task Init(DotNetObjectReference<JsonEditor> dotNetObjRef, string id)
         {
             await _jsRuntime.InvokeVoidAsync("initJsonEditor", dotNetObjRef, id);
         }

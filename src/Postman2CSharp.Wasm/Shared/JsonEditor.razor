@@ -1,0 +1,68 @@
+﻿@implements IAsyncDisposable
+<div id="@_jsonEditorId"></div>
+@code {
+    [Inject] private JsonEditorInterop JsonEditorInterop { get; set; } = default!;
+
+    public bool Initialized = false;
+
+    private DotNetObjectReference<JsonEditor>? _dotNetObjectReference;
+    private readonly string _jsonEditorId = Guid.NewGuid().ToString();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetObjectReference = DotNetObjectReference.Create(this);
+            await JsonEditorInterop.Init(_dotNetObjectReference!, _jsonEditorId!);
+            Initialized = true;
+        }
+    }
+
+    public async Task<string> GetValue()
+    {
+        return await JsonEditorInterop.GetValue(_jsonEditorId);
+    }
+
+    public async Task SetValue(string value)
+    {
+        await JsonEditorInterop.SetValue(_jsonEditorId, value);
+    }
+
+    private bool _isJsonValid;
+
+    [Parameter]
+    public bool IsJsonValid
+    {
+        get => _isJsonValid;
+        set
+        {
+            if (_isJsonValid == value) return;
+            _isJsonValid = value;
+            IsJsonValidChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter] public EventCallback<bool> IsJsonValidChanged { get; set; }
+
+
+    [JSInvokable]
+    public void CheckJsonValidity(string json)
+    {
+        try
+        {
+            JsonDocument.Parse(json);
+            IsJsonValid = true;
+        }
+        catch
+        {
+            IsJsonValid = false;
+        }
+        StateHasChanged();
+    }
+
+
+    public async ValueTask DisposeAsync()
+    {
+        await JsonEditorInterop.Destroy(_jsonEditorId);
+        _dotNetObjectReference?.Dispose();
+    }
+}
