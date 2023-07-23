@@ -11,17 +11,20 @@ namespace Postman2CSharp.Wasm.Services
 {
     public class Interop
     {
+        private readonly AnalyticsInterop _analytics;
         private readonly IJSRuntime _jsRuntime;
         private readonly Lazy<ISnackbar?> _snackBar;
 
-        public Interop(IJSRuntime jsRuntime, Lazy<ISnackbar?> snackBar)
+        public Interop(IJSRuntime jsRuntime, Lazy<ISnackbar?> snackBar, AnalyticsInterop analytics)
         {
             _jsRuntime = jsRuntime;
             _snackBar = snackBar;
+            _analytics = analytics;
         }
 
         public async Task DownloadFile(string fileName, string fileContent, string fileExtension = ".cs")
         {
+            await _analytics.TrackDownload("Download Singular File");
             await _jsRuntime.InvokeVoidAsync("downloadFile", fileName, fileContent, fileExtension);
         }
 
@@ -55,8 +58,11 @@ namespace Postman2CSharp.Wasm.Services
                     fileNamePathDict.Add(fileName, httpCall!);
                 }
 
-                await _jsRuntime.InvokeVoidAsync("createZipAndDownload", apiClient.Name, sourceCodeDict,
-                    fileNamePathDict);
+                await _jsRuntime.InvokeVoidAsync("createZipAndDownload", apiClient.Name, sourceCodeDict, fileNamePathDict);
+
+                bool isTestData = apiClient.BaseUrl?.Contains("googleapis") ?? false;
+                var dataType = isTestData ? "Test Data" : "Real Data";
+                await _analytics.TrackAction($"Download ApiClient - {dataType}");
             }
             catch (OutOfMemoryException)
             {
@@ -142,20 +148,6 @@ namespace Postman2CSharp.Wasm.Services
         public async Task EmptyElement(string elementId)
         {
             await _jsRuntime.InvokeVoidAsync("emptyElement", elementId);
-        }
-
-        public async Task InitJsonEditor(DotNetObjectReference<Json2CSharpPlusComponent> dotNetObjRef)
-        {
-            await _jsRuntime.InvokeVoidAsync("initJsonEditor", dotNetObjRef);
-        }
-        public async Task<string> GetJsonEditorValue()
-        {
-            return await _jsRuntime.InvokeAsync<string>("getJsonEditorValue");
-        }
-
-        public async Task ResetJsonEditorValue()
-        { 
-            await _jsRuntime.InvokeVoidAsync("resetJsonEditor");
         }
     }
 }

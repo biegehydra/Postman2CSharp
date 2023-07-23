@@ -64,8 +64,9 @@
 </div>
 
 @code {
-    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
-    [Inject] private Interop Interop { get; set; } = default!;
+
+    [Inject] private AnalyticsInterop Analytics { get; set; } = default!;
+    [Inject] private JsonEditorInterop JsonEditorInterop { get; set; } = default!;
     private Dictionary<string, string> _result = new ();
 
     private bool _firstProcess = false;
@@ -79,7 +80,7 @@
         {
             _dotNetObjectReference = DotNetObjectReference.Create(this);
         }
-        await Interop.InitJsonEditor(_dotNetObjectReference!);
+        await JsonEditorInterop.InitJsonEditor(_dotNetObjectReference!);
     }
 
     private int _activePanelIndex;
@@ -87,10 +88,11 @@
     private async Task Process()
     {
         _firstProcess = true;
-        var json = await Interop.GetJsonEditorValue();
+        var json = await JsonEditorInterop.GetJsonEditorValue();
         _json2CSharpPlusSimple ??= new Json2CSharpPlus(_options, _duplicateOptions);
         _result = _json2CSharpPlusSimple.GenerateMoreClasses(json, _oneTypePerJsonMemberName);
-        await Interop.ResetJsonEditorValue();
+        await JsonEditorInterop.ResetJsonEditorValue();
+        await Analytics.TrackAction("Json2CSharp Process");
         StateHasChanged();
         await Task.Delay(1);
         _activePanelIndex = _result.Count - 1;
@@ -117,11 +119,12 @@
     {
         _firstProcess = false;
         _result.Clear();
+        _json2CSharpPlusSimple = null;
     }
 
     public async ValueTask DisposeAsync()
     {
-        await JSRuntime.InvokeVoidAsync("destroyJsonEditor");
+        await JsonEditorInterop.DestroyJsonEditor();
     }
 
 }

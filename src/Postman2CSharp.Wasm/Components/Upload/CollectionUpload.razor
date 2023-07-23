@@ -33,6 +33,7 @@
 {
     [Inject] private LazyLoader LazyLoader { get; set; } = null!;
     [Inject] private Lazy<ISnackbar?> SnackBar { get; set; } = null!;
+    [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
     [Parameter] public EventCallback<ApiCollection> SuccessfulUpload { get; set; }
 
     private IBrowserFile? _uploadedFile;
@@ -60,6 +61,7 @@
         _uploadedFile = new TestBrowserFile(await response.Content.ReadAsStreamAsync());
     }
 
+    private const string TestDataName = "GoogleMapsPlatform.json";
     public class TestBrowserFile : IBrowserFile
     {
         private Stream Stream { get; set; }
@@ -72,7 +74,7 @@
             return Stream;
         }
 
-        public string Name => "GoogleMapsPlatform.json";
+        public string Name => TestDataName;
         public DateTimeOffset LastModified => throw new NotImplementedException();
         public long Size => throw new NotImplementedException();
         public string ContentType => throw new NotImplementedException();
@@ -100,6 +102,10 @@
                 CollectionInfo = collection.Info
             };
 
+            var isTestData = _uploadedFile.Name == TestDataName;
+            var dataType = isTestData ? "Test Data" : "Real Data";
+            var message = $"Generate ApiClient - {dataType}";
+            await AnalyticsInterop.TrackAction(message);
             await SuccessfulUpload.InvokeAsync(apiCollection);
         }
         catch (JsonException exception)

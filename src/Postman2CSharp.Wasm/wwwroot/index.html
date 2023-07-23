@@ -30,8 +30,6 @@
     <link rel="icon" href="https://files.postman2csharp.com/favicon.ico" type="image/x-icon">
     <link rel="icon" type="image/x-icon" href="https://files.postman2csharp.com/postman2csharp.svg">
 
-    <link href="ace/ace.css" />
-    <link href="ace/monokai.css" />
     <link href="manifest.json" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
@@ -124,23 +122,19 @@
     <script src="https://files.postman2csharp.com/prism.js"></script>
     <script src="prism/prism-interop.js"></script>
 
+    <script src="google-ads/google-ads-interop.js" ></script>
+
     <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-46CJ5SEEP0"></script>
-    <script src="ace/ace.js"></script>
-    <script src="ace/mode-json.js"></script>
-    <script src="ace/theme-monokai.js"></script>
-    <script src="ace/worker-json.js"></script>
-
-
     <script>
         // Define the function that initiates tracking
         function startTracking(trackingId) {
             window.dataLayer = window.dataLayer || [];
-            function gtag() { dataLayer.push(arguments); }
             gtag('js', new Date());
 
             gtag('config', trackingId);
         };
+        function gtag() { dataLayer.push(arguments); }
         if (window.location.href.includes("postman2csharp")) {
             startTracking('G-46CJ5SEEP0');
         }
