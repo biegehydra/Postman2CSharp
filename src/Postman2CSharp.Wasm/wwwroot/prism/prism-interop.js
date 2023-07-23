@@ -10,7 +10,7 @@ window.setupPrismObserver = function () {
             // If new nodes are added and they contain 'code' elements, highlight them
             if (mutation.addedNodes) {
                 mutation.addedNodes.forEach(function (node) {
-                    if (node.nodeType === Node.ELEMENT_NODE && node.className === 'language-csharp') {
+                    if (node.nodeType === Node.ELEMENT_NODE && (node.className === 'language-csharp' || node.className === 'language-json')) {
                         Prism.highlightElement(node);
                     }
                 });

@@ -1,0 +1,28 @@
+﻿@using Postman2CSharp.Wasm.Infrastructure.Prism
+<pre class="@PreClass()"><code @key="@Value" class="@CodeClass()">@Value</code></pre>
+
+@code {
+
+    [Parameter]
+    public bool UseLineNumbers { get; set; } = true;
+
+    [Parameter]
+    public PrismLanguage Language { get; set; }
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    private string PreClass()
+    {
+        return UseLineNumbers ? "line-numbers" : "no-line-numbers";
+    }
+
+    private string CodeClass()
+    {
+        return Language switch{
+            PrismLanguage.CSharp => "language-csharp",
+            PrismLanguage.Json => "language-json",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+}
