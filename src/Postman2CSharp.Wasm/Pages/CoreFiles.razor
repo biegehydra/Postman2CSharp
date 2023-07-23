@@ -41,7 +41,7 @@
             <br/>
             <p>@FileExplanations[coreFile.Key]</p>
             <br/>
-            <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@coreFile.Value" />
+            <PrismCodeBlock FileName="@coreFile.Key" Language="PrismLanguage.CSharp" Value="@coreFile.Value" />
         </MudTabPanel>
     }
 </MudTabs>

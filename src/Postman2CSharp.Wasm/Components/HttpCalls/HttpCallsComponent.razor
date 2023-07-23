@@ -54,19 +54,19 @@
                 {
                     @if (SelectedClassName == httpCall.RequestClassName)
                     {
-                        <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@httpCall.RequestSourceCode"/>
+                        <PrismCodeBlock FileName="@httpCall.RequestClassName" Language="PrismLanguage.CSharp" Value="@httpCall.RequestSourceCode"/>
                     }
                     @if (httpCall.AllResponses.FirstOrDefault(x => x.ClassName == SelectedClassName) is { } response)
                     {
-                        <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@response.SourceCode" />
+                        <PrismCodeBlock FileName="@response.ClassName" Language="PrismLanguage.CSharp" Value="@response.SourceCode" />
                     }
                     @if (SelectedClassName == httpCall.QueryParameterClassName)
                     {
-                        <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@httpCall.QueryParameterSourceCode" />
+                        <PrismCodeBlock FileName="@httpCall.QueryParameterClassName" Language="PrismLanguage.CSharp" Value="@httpCall.QueryParameterSourceCode" />
                     }
                     @if (SelectedClassName == httpCall.FormDataClassName)
                     {
-                        <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@httpCall.FormDataSourceCode" />
+                        <PrismCodeBlock FileName="@httpCall.FormDataClassName" Language="PrismLanguage.CSharp" Value="@httpCall.FormDataSourceCode" />
                     }
                 }
             </MudTabPanel>

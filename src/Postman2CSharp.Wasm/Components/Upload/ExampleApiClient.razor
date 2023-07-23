@@ -7,6 +7,6 @@
         var generateTask = apiClientGenerator.GenerateApiClients();
         generateTask.Wait();
         var apiClient = generateTask.Result.First();
-        return @<PrismCodeBlock Language="PrismLanguage.CSharp" Value="@apiClient.SourceCode" />;
+        return @<PrismCodeBlock FileName="@apiClient.Name" Language="PrismLanguage.CSharp" Value="@apiClient.SourceCode" />;
     }
 }

@@ -5,7 +5,7 @@
 
 @if (!string.IsNullOrWhiteSpace(FileName))
 {
-    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@CoreCsFile.Dict[FileName]" />
+    <PrismCodeBlock FileName="@FileName" Language="PrismLanguage.CSharp" Value="@CoreCsFile.Dict[FileName]" />
 }
 @code {
     [Parameter] public string? FileName { get; set; }
