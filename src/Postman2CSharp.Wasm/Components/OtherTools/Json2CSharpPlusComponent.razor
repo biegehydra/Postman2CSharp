@@ -19,7 +19,7 @@
     <div style="width: 50%;" class="small-w-100" >
         <MudText Typo="Typo.h2">Json Editor</MudText>
         <br />
-        <div id="json-editor"></div>
+        <div id="@_jsonEditorId"></div>
     </div>
     <div style="width: 50%;" class="small-w-100" >
         @if (_result.Count > 0)
@@ -63,7 +63,11 @@
     <MudText Class="hide-not-desktop mr-6" Typo="Typo.caption"><b>Tip: Shift + Scroll Mouse Wheel = Horizontal Scroll</b></MudText>
 </div>
 
+<pre style="margin-top: 0; height: 60vh;"><code @key="@_exampleJson" class="language-json">@_exampleJson</code></pre>
+
 @code {
+    private string _exampleJson = "{\n    \"put\" : \"your\",\n    \"json\" : \"here\",\n    \"to\" : \"be converted\"\n}";
+    private string _pasteMoreText = "Paste more json without resetting\nto take advantage of class deduping";
 
     [Inject] private AnalyticsInterop Analytics { get; set; } = default!;
     [Inject] private JsonEditorInterop JsonEditorInterop { get; set; } = default!;
@@ -74,13 +78,15 @@
     private CSharpCodeWriterConfig _options = new();
     private DuplicateOptions _duplicateOptions = new();
     private DotNetObjectReference<Json2CSharpPlusComponent>? _dotNetObjectReference;
+    private readonly string _jsonEditorId = "json-editor";
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _dotNetObjectReference = DotNetObjectReference.Create(this);
+            await JsonEditorInterop.Init(_dotNetObjectReference!, _jsonEditorId!);
+            await JsonEditorInterop.SetValue(_jsonEditorId, _exampleJson);
         }
-        await JsonEditorInterop.InitJsonEditor(_dotNetObjectReference!);
     }
 
     private int _activePanelIndex;
@@ -88,10 +94,10 @@
     private async Task Process()
     {
         _firstProcess = true;
-        var json = await JsonEditorInterop.GetJsonEditorValue();
+        var json = await JsonEditorInterop.GetValue(_jsonEditorId);
         _json2CSharpPlusSimple ??= new Json2CSharpPlus(_options, _duplicateOptions);
         _result = _json2CSharpPlusSimple.GenerateMoreClasses(json, _oneTypePerJsonMemberName);
-        await JsonEditorInterop.ResetJsonEditorValue();
+        await JsonEditorInterop.SetValue(_jsonEditorId, _pasteMoreText);
         await Analytics.TrackAction("Json2CSharp Process");
         StateHasChanged();
         await Task.Delay(1);
@@ -115,16 +121,17 @@
         StateHasChanged();
     }
 
-    private void Reset()
+    private async Task Reset()
     {
         _firstProcess = false;
         _result.Clear();
+        await JsonEditorInterop.SetValue(_jsonEditorId, _exampleJson);
         _json2CSharpPlusSimple = null;
     }
 
     public async ValueTask DisposeAsync()
     {
-        await JsonEditorInterop.DestroyJsonEditor();
+        await JsonEditorInterop.Destroy(_jsonEditorId);
     }
 
 }

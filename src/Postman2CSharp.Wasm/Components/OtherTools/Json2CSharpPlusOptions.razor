@@ -42,9 +42,6 @@
             <EnumSelectComponent @bind-Value="InputModel.OutputMembers" Disabled="FirstProcessComplete" Label="Output Members"></EnumSelectComponent>
         </MudItem>
         <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudCheckBox Color="Color.Primary" @bind-Checked="OneTypePerJsonMemberName" Disabled="FirstProcessComplete" Label="One Type Per Json Member Name"></MudCheckBox>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
             <MudCheckBox Color="Color.Primary" Disabled="InputModel.AttributeLibrary == JsonLibrary.SystemTextJson || FirstProcessComplete" @bind-Checked="InputModel.NullValueHandlingIgnore" Label="Null Value Handling Ignore"></MudCheckBox>
         </MudItem>
         <MudItem xs="12" sm="6" md="4" lg="3">
@@ -97,6 +94,10 @@
         <AdvancedSettingItem ToolTip="This will determine whether or not you want any leniency in the deduping process. If you set this to false, the type matching will be strict and only dedupe when all properties match exactly by name and type.">
             <MudCheckBox Color="Color.Primary" Disabled="FirstProcessComplete" @bind-Checked="_duplicateOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
         </AdvancedSettingItem>
+        
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCheckBox Color="Color.Primary" @bind-Checked="OneTypePerJsonMemberName" Disabled="FirstProcessComplete" Label="One Type Per Json Member Name"></MudCheckBox>
+        </MudItem>
 
         <AdvancedSettingItem ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
                          be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the

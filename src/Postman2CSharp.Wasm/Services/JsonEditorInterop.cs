@@ -12,23 +12,28 @@ namespace Postman2CSharp.Wasm.Services
             _jsRuntime = jsRuntime;
         }
 
-        public async Task InitJsonEditor(DotNetObjectReference<Json2CSharpPlusComponent> dotNetObjRef)
+        public async Task Init(DotNetObjectReference<Json2CSharpPlusComponent> dotNetObjRef, string id)
         {
-            await _jsRuntime.InvokeVoidAsync("initJsonEditor", dotNetObjRef);
+            await _jsRuntime.InvokeVoidAsync("initJsonEditor", dotNetObjRef, id);
         }
-        public async Task<string> GetJsonEditorValue()
+        public async Task<string> GetValue(string id)
         {
-            return await _jsRuntime.InvokeAsync<string>("getJsonEditorValue");
-        }
-
-        public async Task ResetJsonEditorValue()
-        {
-            await _jsRuntime.InvokeVoidAsync("resetJsonEditor");
+            return await _jsRuntime.InvokeAsync<string>("getJsonEditorValue", id);
         }
 
-        public async Task DestroyJsonEditor()
+        public async Task SetValue(string id, string value)
+        { 
+            await _jsRuntime.InvokeVoidAsync("setJsonEditorValue", id, value);
+        }
+
+        public async Task ResetValue(string id)
         {
-            await _jsRuntime.InvokeVoidAsync("destroyJsonEditor");
+            await _jsRuntime.InvokeVoidAsync("resetJsonEditor", id);
+        }
+
+        public async Task Destroy(string id)
+        {
+            await _jsRuntime.InvokeVoidAsync("destroyJsonEditor", id);
         }
     }
 }

@@ -1,31 +1,42 @@
-let jsonEditor = null;
-function initJsonEditor(dotNetObjRef) {
-    if (jsonEditor != null) return;
-    jsonEditor = ace.edit("json-editor");
+let jsonEditors = {};
+function initJsonEditor(dotNetObjRef, id) {
+    if (jsonEditors[id] != null) return;
+    let jsonEditor = ace.edit(id);
     jsonEditor.setTheme("ace/theme/monokai");
     jsonEditor.session.setMode("ace/mode/json");
-    jsonEditor.setValue("{\n    \"put\" : \"your\",\n    \"json\" : \"here\",\n    \"to\" : \"be converted\"\n}");
-    jsonEditor.clearSelection();
     jsonEditor.setShowPrintMargin(false);
 
     jsonEditor.on('change', function () {
         var json = jsonEditor.getValue();
-
-        // Call the C# function
         dotNetObjRef.invokeMethodAsync('CheckJsonValidity', json);
     });
 
     autoResize(jsonEditor);
-}
-function getJsonEditorValue() {
-    return jsonEditor.getValue();
-}
-function resetJsonEditor() {
-    jsonEditor.setValue("");
+    jsonEditors[id] = jsonEditor;
 }
 
-function destroyJsonEditor() {
-    jsonEditor = null;
+function getJsonEditorValue(id) {
+    return jsonEditors[id] ? jsonEditors[id].getValue() : null;
+}
+
+function setJsonEditorValue(id, value) {
+    if (jsonEditors[id]) {
+        jsonEditors[id].setValue(value);
+        jsonEditors[id].clearSelection();
+    }
+}
+
+function resetJsonEditor(id) {
+    if (jsonEditors[id]) {
+        jsonEditors[id].setValue("");
+    }
+}
+
+function destroyJsonEditor(id) {
+    if (jsonEditors[id]) {
+        jsonEditors[id].destroy();
+        delete jsonEditors[id];
+    }
 }
 
 function autoResize(editor) {
@@ -37,7 +48,8 @@ function autoResize(editor) {
     editor.resize();
 }
 
-// Call autoResize whenever the window is resized
 window.addEventListener('resize', function () {
-    autoResize(jsonEditor);
+    for (let id in jsonEditors) {
+        autoResize(jsonEditors[id]);
+    }
 });
