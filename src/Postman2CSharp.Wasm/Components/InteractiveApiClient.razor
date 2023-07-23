@@ -6,17 +6,33 @@
     .code-block-container {
         width: 50%;
     }
+    .mud-tabs {
+        text-transform: none;
+    }
 </style>
+<div style="width: 100%;">
+    <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" >
+        <MudButton OnClick="() => SetApiClientView(true)" Disabled="_apiClientView" >ApiClient</MudButton>
+        <MudButton OnClick="() => SetApiClientView(false)" Disabled="!_apiClientView" >Classes</MudButton>
+    </MudButtonGroup>
+</div>
 
 <div class="f-row" >
     <div class="api-client-options-container">
         <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AutoSave></ApiClientOptionsComponent>
     </div>
-    <div class="code-block-container" >
-        @CodeBlock(_apiClientOptions)
+    <div class="code-block-container">
+        @CodeBlock(_apiClientOptions, _apiClientView)
     </div>
 </div>
  @code {
+     private bool _apiClientView = true;
+
+     private void SetApiClientView(bool value)
+     {
+         _apiClientView = value;
+         StateHasChanged();
+     }
 
     [Inject] private LazyLoader LazyLoader { get; set; } = null!;
     [Inject] private Navigate Navigate { get; set; } = null!;
@@ -43,16 +59,15 @@
     }
 
     private static ApiClientOptions? _lastApiClientOptions;
-    private static string? _lastApiClientName;
-    private static string? _lastSourceCode;
-    private static RenderFragment? CodeBlock(ApiClientOptions options)
+    private static Core.Models.ApiClient? _lastApiClient;
+     private static RenderFragment? CodeBlock(ApiClientOptions options, bool apiClientView)
     {
         if (_testData == null) return null;
-        if (_lastApiClientOptions != null)
+         if (_lastApiClientOptions != null && _lastApiClient != null)
         {
             if (ApiClientOptionsComponent.Equals(_lastApiClientOptions, options))
             {
-                return @<PrismCodeBlock FileName="@_lastApiClientName" Language="PrismLanguage.CSharp" Value="@_lastSourceCode" />;
+                return Test(_lastApiClient, apiClientView);
             }
         }
         _lastApiClientOptions = options;
@@ -62,10 +77,66 @@
         var apiClientGenerator = new ApiClientGenerator(postmanCollection, apiClientGenerationOptions);
         var generateTask = apiClientGenerator.GenerateApiClients();
         generateTask.Wait();
-        var apiClient = generateTask.Result.First();
-        var baseUrl = apiClient.BaseUrl;
-        _lastSourceCode = apiClient.SourceCode;
-        _lastApiClientName = apiClient.Name;
-        return @<PrismCodeBlock @key="apiClient" FileName="@_lastApiClientName" Language="PrismLanguage.CSharp" Value="@_lastSourceCode" />;
+         var firstApiClient  = generateTask.Result.First();
+        _lastApiClient = firstApiClient;
+        return Test(firstApiClient, apiClientView);
+         static RenderFragment Test(Core.Models.ApiClient apiClient, bool apiClientView)
+         {
+            if (apiClientView)
+            {
+                return @<PrismCodeBlock @key="apiClient" FileName="@apiClient.Name" Language="PrismLanguage.CSharp" Value="@apiClient.SourceCode" />;
+            }
+            else
+            {
+                return @<MudBreakpointProvider>
+        <MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <MudTabs Class="display-contents" Border Elevation="3" Position="Position.Bottom">
+
+            </MudTabs>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <MudTabs Class="display-contents" Border Elevation="3" Position="Position.Right">
+                <MudTabPanel Text="@apiClient.Name" Icon="@Icons.Code">
+                    <PrismCodeBlock FileName="@apiClient.Name" Style="margin-top: 0; height: 60vh;" Value="@apiClient.SourceCode" Language="PrismLanguage.CSharp" />
+                </MudTabPanel>
+                <MudTabPanel Text="@apiClient.InterfaceName" Icon="@Icons.Code">
+                    <PrismCodeBlock FileName="@apiClient.InterfaceName" Style="margin-top: 0; height: 60vh;" Value="@apiClient.InterfaceSourceCode" Language="PrismLanguage.CSharp" />
+                </MudTabPanel>
+                @foreach (var httpCall in apiClient.HttpCalls.OrderBy(x => x.Name))
+                        {
+                @if (httpCall.RequestSourceCode != null)
+                {
+                    <MudTabPanel Text="@httpCall.RequestSourceCode" Icon="@Icons.Code">
+                        <PrismCodeBlock FileName="@httpCall.RequestClassName" Style="margin-top: 0; height: 60vh;" Value="@httpCall.RequestSourceCode" Language="PrismLanguage.CSharp" />
+                    </MudTabPanel>
+                }
+                @if (httpCall.FormDataSourceCode != null)
+                {
+                    <MudTabPanel Text="@httpCall.FormDataClassName" Icon="@Icons.Code">
+                        <PrismCodeBlock FileName="@httpCall.FormDataClassName" Style="margin-top: 0; height: 60vh;" Value="@httpCall.FormDataSourceCode" Language="PrismLanguage.CSharp" />
+                    </MudTabPanel>
+                }
+                @if (httpCall.QueryParameterSourceCode != null)
+                {
+                    <MudTabPanel Text="@httpCall.QueryParameterClassName" Icon="@Icons.Code">
+                        <PrismCodeBlock FileName="@httpCall.QueryParameterClassName" Style="margin-top: 0; height: 60vh;" Value="@httpCall.QueryParameterSourceCode" Language="PrismLanguage.CSharp" />
+                    </MudTabPanel>
+                }
+                foreach (var response in httpCall.AllResponses)
+                {
+                    if (response.SourceCode != null)
+                    {
+                        <MudTabPanel Text="@response.ClassName" Icon="@Icons.Code">
+                            <PrismCodeBlock FileName="@response.ClassName" Style="margin-top: 0; height: 60vh;" Value="@response.SourceCode" Language="PrismLanguage.CSharp" />
+                        </MudTabPanel>
+                    }
+                }
+                        }
+            </MudTabs>
+        </MudHidden>
+    </MudBreakpointProvider>;
+            }
+         }
+       
     }
 }
