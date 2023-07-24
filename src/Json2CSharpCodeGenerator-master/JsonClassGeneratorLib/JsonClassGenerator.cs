@@ -470,9 +470,45 @@ namespace Xamasoft.JsonClassGenerator
                 }
             }
 
+            // There are some weird issues that occur when a json property starts with a number.
+            // This is a hack to fix that.
+            while (true)
+            {
+                JsonType duplicate = null;
+                foreach (JsonType notDuplicate in typesWithNoDuplicates)
+                {
+                    if (typesWithNoDuplicates.FirstOrDefault(x =>
+                            !ReferenceEquals(x, notDuplicate) &&
+                            x.NewAssignedName == notDuplicate.NewAssignedName) is { } dup)
+                    {
+#if DEBUG
+                        Console.WriteLine($"Dup Orig: {dup.OriginalName}, Dup Assigned: {dup.OriginalAssignedName}, Dup New Assigned: {dup.NewAssignedName}" +
+                                        $", Not Dup Orig: {notDuplicate.OriginalName}, Not Dup Assigned: {notDuplicate.OriginalAssignedName}, Not Dup New Assigned: {notDuplicate.NewAssignedName}");
+#endif
+                        duplicate = dup;
+                        foreach (JsonFieldInfo field in dup.Fields)
+                        {
+                            if (notDuplicate.Fields.All(x => x.JsonMemberName != field.JsonMemberName))
+                            {
+                                notDuplicate.Fields.Add(field);
+                            }
+                        }
+                        break;
+                    }
+                }
+                typesWithNoDuplicates.Remove(duplicate);
+                if (duplicate == null)
+                {
+                    break;
+                }
+            }
+
             foreach (JsonType duplicate in duplicates)
             {
-                typesWithNoDuplicates.Remove(duplicate);
+                if (typesWithNoDuplicates.Contains(duplicate))
+                {
+                    typesWithNoDuplicates.Remove(duplicate);
+                }
             }
 
             RemoveUnusedTypes(typesWithNoDuplicates);
