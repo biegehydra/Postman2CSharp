@@ -19,6 +19,7 @@ using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 using Postman2CSharp.Core.Utilities;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace Postman2CSharp.Core;
 
@@ -161,6 +162,9 @@ public class ApiClientGenerator
         var normalizedNameSpace = Utils.NormalizeToCsharpPropertyName(commonBase ?? Options.CSharpCodeWriterConfig.Namespace);
         var name = normalizedNameSpace + "ApiClient";
         var leastPossibleUri = rootItem.FindLeastPossibleUri();
+
+        ReplaceHttpSchemaIfInUrlAndVariableInsideOfUrl(variableUsages, leastPossibleUri);
+
         var commonHeaders = rootItem.GetCommonHeaders();
         var uniqueNamesList = new List<string>() { normalizedNameSpace, name };
         var (httpCalls, totalClassesGeneratedFromHttpCalls, duplicateRoots) = await GetHttpCalls(rootItem, commonHeaders, normalizedNameSpace, uniqueNamesList);
@@ -172,6 +176,37 @@ public class ApiClientGenerator
         // that are used in the generation process. GenerateSourceCode was being called when I deserialized api clients from local storage
         apiClient.GenerateSourceCode();
         return apiClient;
+    }
+
+    private static void ReplaceHttpSchemaIfInUrlAndVariableInsideOfUrl(List<VariableUsage> variableUsages, string? leastPossibleUri)
+    {
+        if (leastPossibleUri != null)
+        {
+            var lower = leastPossibleUri.ToLower();
+            if (GetContentInBrackets(lower) is { } variableName)
+            {
+                if (variableUsages.FirstOrDefault(x =>
+                        x.CSPropertyUsage(CsharpPropertyType.Private).ToLower() == variableName) is
+                    { } matchingVariableUsage)
+                {
+                    matchingVariableUsage.Value = matchingVariableUsage.Value?.ToLower().Replace("https://", string.Empty)
+                        .Replace("https://", string.Empty);
+                }
+            }
+
+            static string GetContentInBrackets(string input)
+            {
+                string pattern = @"https?://\{([^}]*)\}";
+                Match m = Regex.Match(input, pattern);
+
+                if (m.Success)
+                {
+                    return m.Groups[1].Value; // return the first capturing group
+                }
+
+                return null;
+            }
+        }
     }
 
     private async Task<(List<HttpCall> HttpCalls, int TotalClassesGenerated, List<DuplicateRoot> DuplicateRoots)> GetHttpCalls(CollectionItem item, List<Header> commonHeaders, string nameSpace, List<string> uniqueNames)
