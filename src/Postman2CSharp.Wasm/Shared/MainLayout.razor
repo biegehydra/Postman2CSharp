@@ -207,6 +207,7 @@
         if (value.HasValue)
         {
             _drawerOpen = value.Value;
+            StateHasChanged();
         }
         else
         {

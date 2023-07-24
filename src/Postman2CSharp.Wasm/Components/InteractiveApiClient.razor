@@ -16,30 +16,52 @@
 
 </style>
 
-<div style="width: 100%;" class="f-row">
-    <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" >
-        <MudButton OnClick="() => SetApiClientView(true)" Disabled="_apiClientView" >ApiClient</MudButton>
-        <MudButton OnClick="() => SetApiClientView(false)" Disabled="!_apiClientView" >Classes</MudButton>
+<div style="width: 100%;" class="f-row hide-not-desktop">
+      <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" >
+        <MudIconButton Icon="@Icons.WidthFull" OnClick="() => SetLayout(true)" Disabled="_wideLayout == true"></MudIconButton>
+        <MudIconButton Icon="@Icons.WidthNormal" OnClick="() => SetLayout(false)" Disabled="_wideLayout == false">Classes</MudIconButton>
+        <MudIconButton Icon="@Icons.PanoramaWideAngle" OnClick="() => SetLayout(null)" Disabled="_wideLayout == null">Classes</MudIconButton>
+      </MudButtonGroup>
+    <div style="flex-grow: 1;"></div>
+    <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled">
+        <MudButton OnClick="() => SetApiClientView(true)" Disabled="_apiClientView">ApiClient</MudButton>
+        <MudButton OnClick="() => SetApiClientView(false)" Disabled="!_apiClientView">Classes</MudButton>
     </MudButtonGroup>
 </div>
 <br/>
-<div class="f-row" >
-    <div class="api-client-options-container">
-        <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvanctedItemSize="AdvancedItemSize.ExtraLarge" AutoSave></ApiClientOptionsComponent>
-    </div>
-    <div class="code-block-container">
-        @CodeBlock(_apiClientOptions, _apiClientView)
+<div class="f-row">
+    <div class="f-row">
+        <div id="split-0">
+            <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvancedItemSize="ItemSize" AutoSave></ApiClientOptionsComponent>
+        </div>
+        <div id="split-1">
+            @CodeBlock(_apiClientOptions, _apiClientView)
+        </div>
     </div>
 </div>
  @code {
      private bool _apiClientView = true;
+     private bool? _wideLayout = false;
+
+     private AdvancedItemSize ItemSize => _wideLayout switch{
+         true => AdvancedItemSize.ExtraExtraLarge,
+         false => AdvancedItemSize.ExtraLarge,
+         _ => AdvancedItemSize.Large
+     };
+
+     private void SetLayout(bool? wide)
+     {
+         _wideLayout = wide;
+         StateHasChanged();
+     }
 
      private void SetApiClientView(bool value)
      {
          _apiClientView = value;
          StateHasChanged();
      }
-
+     
+    [Inject] private Interop Interop { get; set; }
     [Inject] private LazyLoader LazyLoader { get; set; } = null!;
     [Inject] private Navigate Navigate { get; set; } = null!;
 
@@ -53,7 +75,15 @@
         await GetTestData();
     }
 
-    private static string? _testData;
+     protected override async Task OnAfterRenderAsync(bool firstRender)
+     {
+         if (firstRender)
+         {
+             await Interop.SplitVertical("split-0", "split-1");
+         }
+     }
+
+     private static string? _testData;
     private async Task GetTestData()
     {
         if (_testData != null) return;

@@ -28,19 +28,19 @@
     };
 
     private int Sm => Size switch{
-        AdvancedItemSize.Small => 2,
-        AdvancedItemSize.Medium => 4,
-        AdvancedItemSize.Large => 6,
+        AdvancedItemSize.Small => 3,
+        AdvancedItemSize.Medium => 6,
+        AdvancedItemSize.Large => 9,
         AdvancedItemSize.ExtraLarge => 12,
         AdvancedItemSize.ExtraExtraLarge => 12,
         _ => throw new ArgumentOutOfRangeException()
     };
 
     private int Md => Size switch{
-        AdvancedItemSize.Small => 1,
-        AdvancedItemSize.Medium => 3,
-        AdvancedItemSize.Large => 4,
-        AdvancedItemSize.ExtraLarge => 8,
+        AdvancedItemSize.Small => 2,
+        AdvancedItemSize.Medium => 4,
+        AdvancedItemSize.Large => 8,
+        AdvancedItemSize.ExtraLarge => 12,
         AdvancedItemSize.ExtraExtraLarge => 12,
         _ => throw new ArgumentOutOfRangeException()
     };

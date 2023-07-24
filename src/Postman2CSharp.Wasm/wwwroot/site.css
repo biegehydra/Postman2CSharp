@@ -6,6 +6,20 @@ div.code-toolbar > .toolbar > .toolbar-item {
     margin-right: 5px;
 }
 
+/* split.js */
+.gutter {
+    background-color: rgba(111, 89, 153, 0.42);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    margin: 0px 15px;
+}
+
+.gutter.gutter-horizontal {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+    cursor: col-resize;
+}
+/* split.js */
+
 .display-contents .mud-tabs-panels,
 .display-contents .code-toolbar {
     display: contents;
@@ -178,7 +192,7 @@ li {
     align-items: center;
     flex-direction: column;
     min-height: 100vh;
-    background-color: rgba(109, 98, 216, 1);
+    background-color: rgb(148 144 194);
     font-family: Roboto;
     overflow: hidden;
 }

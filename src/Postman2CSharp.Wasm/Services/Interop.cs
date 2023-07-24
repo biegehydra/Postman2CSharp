@@ -149,5 +149,10 @@ namespace Postman2CSharp.Wasm.Services
         {
             await _jsRuntime.InvokeVoidAsync("emptyElement", elementId);
         }
+
+        public async Task SplitVertical(string id1, string id2)
+        {
+            await _jsRuntime.InvokeVoidAsync("splitVertical", id1, id2);
+        }
     }
 }

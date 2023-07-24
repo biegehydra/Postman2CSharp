@@ -195,3 +195,6 @@ function emptyElement(elementId) {
 
     window.scrollTo(0, scrollPosition);
 }
+function splitVertical(id1, id2) {
+    Split(['#' + id1, '#' + id2])
+}

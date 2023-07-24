@@ -8,7 +8,7 @@
 </style>
 @if (DisplayContents)
 {
-    <div style="position: relative; display: grid;">
+    <div style="position: relative; display: grid; width: 100%;">
         <div class="container-@Id">
             <pre @key="Value" id="@Id" class="@PreClass()" style="@Style" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">@Value</code></pre>
         </div>
