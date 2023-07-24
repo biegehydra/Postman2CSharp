@@ -112,6 +112,10 @@ hood of an error in generated code (minor issues usually) and increase the likel
     <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="WARNING: Authorizations will be lost is this setting is enabled. This will reorganize requests by authority. See options explained page for full explanation.">
         <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
     </AdvancedSettingItem>
+    
+    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="Emabling this will cause each HttpClient request made in your ApiClient to be called within a retry function.">
+        <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.ExecuteWithRetry">Execute With Retry</MudCheckBox>
+    </AdvancedSettingItem>
 </MudGrid>
 
 @if (!AutoSave)
@@ -227,6 +231,7 @@ hood of an error in generated code (minor issues usually) and increase the likel
                && options1.UseCancellationTokens == options2.UseCancellationTokens
                && options1.JsonLibrary == options2.JsonLibrary
                && options1.AttributeUsage == options2.AttributeUsage
+               && options1.ExecuteWithRetry == options2.ExecuteWithRetry
                && options1.MultipleResponseHandling == options2.MultipleResponseHandling
                && options1.HandleMultipleResponses == options2.HandleMultipleResponses
                && options1.DuplicateOptions.RemoveDuplicateRoots == options2.DuplicateOptions.RemoveDuplicateRoots

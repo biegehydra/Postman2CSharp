@@ -16,6 +16,8 @@ namespace Postman2CSharp.Core
 
         public JsonLibrary JsonLibrary { get; set; } = JsonLibrary.SystemTextJson;
 
+        public bool ExecuteWithRetry = false;
+
         public List<ErrorHandlingSinks> ErrorHandlingSinks { get; set; } = new()
         {
             Infrastructure.ErrorHandlingSinks.LogException

@@ -26,7 +26,14 @@ public static class ApiClientSerializer
         sb.AppendLine($"public class {client.Name} : {client.InterfaceName}");
         sb.AppendLine("{");
         var indent = Consts.Indent(1);
-        sb.AppendLine(indent + "private readonly HttpClient _httpClient;");
+        if (client.Options.ExecuteWithRetry)
+        {
+            sb.AppendLine(indent + "private HttpClient _httpClient;");
+        }
+        else
+        {
+            sb.AppendLine(indent + "private readonly HttpClient _httpClient;");
+        }
         if (logsExceptions)
         {
             sb.AppendLine(indent + $"private readonly ILogger<{client.Name}> _logger;");
@@ -48,12 +55,17 @@ public static class ApiClientSerializer
 
         ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: addAuthHeaderToConstructor, client.Options, client.CollectionType);
         sb.AppendLine();
+        if (client.Options.ExecuteWithRetry)
+        {
+            sb.AppendLine();
+            ExecuteWithRetryFunction(sb, 1, client.Name, client.BaseUrl ?? string.Empty);
+        }
         sb.AppendLine("}");
         return sb.ToString();
     }
 
     private static void ApiClientConstructor(StringBuilder sb, List<Header> headers, List<AuthSettings> uniqueAuths, string apiClientName, 
-        string? leastPossibleUri, bool addAuthHeaderToConstructor, bool logsExceptions)
+        string? baseUrl, bool addAuthHeaderToConstructor, bool logsExceptions)
     {
         var indent = Consts.Indent(1);
         sb.Append(indent + $"public {apiClientName}(HttpClient httpClient");
@@ -71,13 +83,13 @@ public static class ApiClientSerializer
 
         indent = Consts.Indent(2);
         sb.AppendLine(indent + "_httpClient = httpClient;");
-        if (leastPossibleUri != null)
+        if (baseUrl != null)
         {
-            if (!leastPossibleUri.EndsWith("/"))
+            if (!baseUrl.EndsWith("/"))
             {
-                leastPossibleUri += "/";
+                baseUrl += "/";
             }
-            sb.AppendLine(indent + $"_httpClient.BaseAddress = new Uri($\"{leastPossibleUri}\");");
+            sb.AppendLine(indent + $"_httpClient.BaseAddress = new Uri($\"{baseUrl}\");");
         }
         if (logsExceptions)
         {
@@ -374,5 +386,40 @@ public static class ApiClientSerializer
         {
             sb.AddPrivateReadonlyString(indent, OAuth2Properties.State);
         }
+    }
+
+    private static void ExecuteWithRetryFunction(StringBuilder sb, int intIndent, string apiClientName, string baseUrl)
+    {
+        var oneIndent = Consts.Indent(1);
+        var indent = Consts.Indent(intIndent);
+        sb.AppendLine(indent + "private async Task<T> ExecuteWithRetry<T>(Func<Task<T>> operation, int retryCount = 2,");
+        sb.AppendLine(indent + $"{oneIndent}[CallerMemberName] string callerMemberName = \"\", [CallerFilePath] string sourceFilePath = \"\", [CallerLineNumber] int sourceLineNumber = 0)");
+        sb.AppendLine(indent + "{");
+        indent = Consts.Indent(intIndent + 1);
+        sb.AppendLine(indent + "for (int i = 0; i < retryCount; i++)");
+        sb.AppendLine(indent + "{");
+        indent = Consts.Indent(intIndent + 2);
+        sb.AppendLine(indent + "try");
+        sb.AppendLine(indent + "{");
+        indent = Consts.Indent(intIndent + 3);
+        sb.AppendLine(indent + "return await operation();");
+        indent = Consts.Indent(intIndent + 2);
+        sb.AppendLine(indent + "}");
+        sb.AppendLine(indent + "catch (Exception ex) when (i < retryCount - 1)");
+        sb.AppendLine(indent + "{");
+        indent = Consts.Indent(intIndent + 3);
+        sb.AppendLine(indent + "_httpClient = new HttpClient()");
+        sb.AppendLine(indent + "{");
+        indent = Consts.Indent(intIndent + 4);
+        sb.AppendLine(indent + $"BaseAddress = new Uri($\"{baseUrl}\")");
+        indent = Consts.Indent(intIndent + 3);
+        sb.AppendLine(indent + "};");
+        indent = Consts.Indent(intIndent + 2);
+        sb.AppendLine(indent + "}");
+        indent = Consts.Indent(intIndent + 1);
+        sb.AppendLine(indent + "}");
+        sb.AppendLine(indent + $"throw new Exception($\"Operation failed. {apiClientName}. Source - Member Name: {{callerMemberName}}, File Path: {{sourceFilePath}}, Line Number: {{sourceLineNumber}} \");");
+        indent = Consts.Indent(intIndent);
+        sb.AppendLine(indent + "}");
     }
 }

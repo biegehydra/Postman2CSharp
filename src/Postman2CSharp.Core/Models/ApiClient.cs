@@ -158,6 +158,10 @@ public class ApiClient
         {
             namespaces.Add("Microsoft.Extensions.Configuration");
         }
+        if (Options.ExecuteWithRetry)
+        {
+            namespaces.Add("System.Runtime.CompilerServices");
+        }
         return namespaces;
     }
 

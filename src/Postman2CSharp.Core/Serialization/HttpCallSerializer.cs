@@ -42,7 +42,8 @@ public static class HttpCallSerializer
 
         if (options.ErrorHandlingStrategy == ErrorHandlingStrategy.None)
         {
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary, options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType, options.HandleMultipleResponses);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary,
+                options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType, options.HandleMultipleResponses, options.ExecuteWithRetry);
         }
         else
         {
@@ -52,7 +53,10 @@ public static class HttpCallSerializer
             }
             sb.AppendLine(indent + "try");
             sb.AppendLine(indent + "{");
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary, options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType, options.HandleMultipleResponses);
+
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary,
+                options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType, options.HandleMultipleResponses, options.ExecuteWithRetry);
+
             indent = Consts.Indent(2);
             sb.AppendLine(indent + "}");
             foreach (var catchExceptionType in options.CatchExceptionTypes)
@@ -162,22 +166,22 @@ public static class HttpCallSerializer
 
     private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool authHasHeader,
         int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary, bool useCancellationTokens,
-        ErrorHandlingStrategy errorHandlingStrategy, OutputCollectionType outputCollectionType, bool handleMultipleResponse)
+        ErrorHandlingStrategy errorHandlingStrategy, OutputCollectionType outputCollectionType, bool handleMultipleResponse, bool executeWithRetry)
     {
         if (call.AllResponses.Count == 0) throw new UnreachableException("No success responses found. Should never happen.");
         if (call.AllResponses.Count > 1 && handleMultipleResponse)
         {
-            HttpCallMultipleResponseTypesBody(sb, auth, call, authHasHeader, intIndent, relativePath, ensureSuccessStatusCode, jsonLibrary, errorHandlingStrategy, useCancellationTokens, outputCollectionType);
+            HttpCallMultipleResponseTypesBody(sb, auth, call, authHasHeader, intIndent, relativePath, ensureSuccessStatusCode, jsonLibrary, errorHandlingStrategy, useCancellationTokens, outputCollectionType, executeWithRetry);
         }
         else
         {
-            HttpCallSingleResponseTypeBody(sb, auth, call, authHasHeader, intIndent, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens, outputCollectionType);
+            HttpCallSingleResponseTypeBody(sb, auth, call, authHasHeader, intIndent, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens, outputCollectionType, executeWithRetry);
         }
     }
 
     private static void HttpCallSingleResponseTypeBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
         bool authHasHeader, int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary,
-        bool useCancellationTokens, OutputCollectionType outputCollectionType)
+        bool useCancellationTokens, OutputCollectionType outputCollectionType, bool executeWithRetry)
     {
         var indent = Consts.Indent(intIndent);
         sb.AddAuthorizationHeader(call.Request.Auth, indent, authHasHeader);
@@ -227,7 +231,7 @@ public static class HttpCallSerializer
         ReturnOrVarResponse(sb, httpClientCallReturnsResponse, indent);
 
         HttpClientRequest(sb, call, httpClientCallReturnsResponse, requestHasQueryString, relativePath, hasUniqueHeaders,
-            useCancellationTokens, outputCollectionType);
+            useCancellationTokens, outputCollectionType, executeWithRetry);
 
         if (!httpClientCallReturnsResponse && ensureSuccessStatusCode)
         {
@@ -242,7 +246,7 @@ public static class HttpCallSerializer
 
     private static void HttpCallMultipleResponseTypesBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
         bool authHasHeader, int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary, ErrorHandlingStrategy
-         errorHandlingStrategy, bool useCancellationTokens, OutputCollectionType outputCollectionType)
+         errorHandlingStrategy, bool useCancellationTokens, OutputCollectionType outputCollectionType, bool executeWithRetry)
     {
         var indent = Consts.Indent(intIndent);
         sb.AddAuthorizationHeader(call.Request.Auth, indent, authHasHeader);
@@ -288,7 +292,7 @@ public static class HttpCallSerializer
         ReturnOrVarResponse(sb, false, indent);
 
         HttpClientRequest(sb, call, false, requestHasQueryString, relativePath, hasUniqueHeaders,
-            useCancellationTokens, outputCollectionType);
+            useCancellationTokens, outputCollectionType, executeWithRetry);
 
         int i = 0;
         foreach (var response in call.AllResponses)
@@ -310,10 +314,10 @@ public static class HttpCallSerializer
         switch (errorHandlingStrategy)
         {
             case ErrorHandlingStrategy.None:
-                sb.AppendLine(indent + "throw new Exception(\"Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}\");");
+                sb.AppendLine(indent + "throw new Exception($\"Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}\");");
                 break;
             case ErrorHandlingStrategy.ThrowException:
-                sb.AppendLine(indent + "throw new Exception(\"Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}\");");
+                sb.AppendLine(indent + "throw new Exception($\"Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}\");");
                 break;
             case ErrorHandlingStrategy.ReturnDefault:
                 sb.AppendLine(indent + "return default;");
@@ -353,9 +357,16 @@ public static class HttpCallSerializer
     }
 
     private static void HttpClientRequest(StringBuilder sb, HttpCall call, bool httpClientCallReturnsResponse,
-        bool requestHasQueryString, string relativePath, bool hasHeaders, bool useCancellationToken, OutputCollectionType outputCollectionType)
+        bool requestHasQueryString, string relativePath, bool hasHeaders, bool useCancellationToken, OutputCollectionType outputCollectionType, bool executeWithRetry)
     {
-        sb.Append($"await _httpClient.{call.HttpClientFunction}");
+        if (executeWithRetry)
+        {
+            sb.Append($"await ExecuteWithRetry(() => _httpClient.{call.HttpClientFunction}");
+        }
+        else
+        {
+            sb.Append($"await _httpClient.{call.HttpClientFunction}");
+        }
         if (httpClientCallReturnsResponse)
         {
             sb.Append($"<{Common.SignatureClassName(call.SuccessResponse!.ClassName, call.SuccessResponse.RootWasArray, outputCollectionType)}>");
@@ -366,7 +377,14 @@ public static class HttpCallSerializer
         var relativePathParameter = requestHasQueryString ? "queryString" : $@"$""{relativePath}""";
         var httpClientParameters = HttpClientParameters();
         sb.Append(string.Join(", ", httpClientParameters));
-        sb.AppendLine(");");
+        if (executeWithRetry)
+        {
+            sb.AppendLine("));");
+        }
+        else
+        {
+            sb.AppendLine(");");
+        }
 
         List<string> HttpClientParameters()
         {
