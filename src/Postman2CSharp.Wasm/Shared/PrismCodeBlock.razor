@@ -10,14 +10,14 @@
 {
     <div style="position: relative; display: grid; width: 100%;">
         <div class="container-@Id">
-            <pre @key="Value" id="@Id" class="@PreClass()" style="@Style" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">@Value</code></pre>
+            <pre @key="Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">@Value</code></pre>
         </div>
     </div>
 }
 else
 {
     <div class="container-@Id">
-        <pre @key="Value" id="@Id" class="@PreClass()" style="@Style" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">@Value</code></pre>
+        <pre @key="Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">@Value</code></pre>
     </div>
 }
 
@@ -59,7 +59,7 @@ else
     {
         if (string.IsNullOrEmpty(Value))
         {
-            throw new ArgumentException("Value cannot be null or empty");
+            return string.Empty;
         }
 
         var mimeType = Language switch
@@ -109,6 +109,17 @@ else
             return true;
         }
         return false;
+    }
+
+    [Parameter]
+    public string? MaxHeight { get; set; }
+    private string? PreStyle()
+    {
+        if (MaxHeight == null)
+        {
+            return Style;
+        }
+        return $"max-height: {MaxHeight};" + Style;
     }
 
 }

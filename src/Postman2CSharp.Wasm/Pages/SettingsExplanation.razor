@@ -28,7 +28,7 @@
     <p>
         You have two attribute libraries that you can choose from. System.Text.Json and Newtonsoft.Json.
         The attribute library you choose will have two affects. First, it will determine which JsonProperty Attribute
-        to properties/fields on generated request and response classes. Secondly, it will determine which set of
+        to use on properties/fields of generated request and response classes. Secondly, it will determine which set of
         json extension methods your project is downloaded with. If you are unsure which to choose, choose System.Text.Json.
         Additionally, all Newtonsoft.Json extension methods have Newtonsoft in them. GetAsJsonAsync (STJ) => GetAsNewtonsoftJsonAsync (Newtonsoft).
     </p>
@@ -41,12 +41,12 @@
     <br/>
     <p>
         Enabling this setting is a great way to ensure that you are handling all possible responses from an api.
-        When you enabled this setting, the status code of the response will be used to determine how the response is deserialized.
+        When you enable this setting, the status code of the response will be used to determine how the response is deserialized.
     </p>
     <br />
     <p>
         <b>Handle:</b> The first option you have is whether or not you handle multiple responses at all. If you choose not to handle multiple response,
-        then only the first success response - status code &gt;= 200 and &lt; 300, preference to 200 if present - will be uses in the generation process. 
+        then only the first success response (status code &gt;= 200 and &lt; 300, preference to 200 if present) will be uses in the generation process. 
         All others will be discarded. <u>This means that classes won't be generated for all other responses, this setting can't be enabled after generation.</u>
     </p>
     <br/>

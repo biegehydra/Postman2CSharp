@@ -8,9 +8,11 @@
     <div class="f-column small-w-100" style="width: 90%;">
         <MudText Style="font-weight: 500;" Typo="Typo.h2">ApiClient Generation Configurations</MudText>
         <br/>
-        <MudAlert Variant="Variant.Outlined" Elevation="2" Severity="Severity.Info" Style="width: fit-content;">
-            For an in depth explanation on how these settings work, see <a class="link-normal" href="/ApiClient-Configurations-Explained">ApiClient Configurations Explanation</a>.
-        </MudAlert>
+        <MudText>
+            The best way to learn how these configurations work is to mess around with the <a class="link-normal" href="/Interactive-Demo">Interactive Demo</a>. It is highly
+            recommend to fiddle around in there before generating an ApiClient to be used seriously. For an in depth explanation on how these settings work, see 
+            <a class="link-normal" href="/ApiClient-Configurations-Explained">ApiClient Configurations Explanation</a>.
+        </MudText>
     </div>
 </div>
 <br />
@@ -138,6 +140,10 @@ hood of an error in generated code (minor issues usually) and increase the likel
 }
 
 @code {
+
+    [Parameter]
+    public bool ShowInteractiveDemoMessage { get; set; } = true;
+
     [Parameter]
     public AdvancedItemSize AdvancedItemSize { get; set; } = AdvancedItemSize.Large;
 

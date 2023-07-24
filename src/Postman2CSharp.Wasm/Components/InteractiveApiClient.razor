@@ -29,17 +29,44 @@
     </MudButtonGroup>
 </div>
 <br/>
-<div class="f-row">
-    <div class="f-row">
-        <div id="split-0">
-            <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvancedItemSize="ItemSize" AutoSave></ApiClientOptionsComponent>
+<MudBreakpointProvider>
+    <MudHidden Breakpoint="Breakpoint.MdAndUp">
+        <div class="f-column">
+            <div>
+                <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvancedItemSize="ItemSize" AutoSave></ApiClientOptionsComponent>
+            </div>
+            <br/>
+            <div >
+                <MudText Style="font-weight: 500;" Typo="Typo.h2">@(_apiClientView ? "Generated Api Client" : "Other Generated Classes")</MudText>
+                <br />
+                @CodeBlock(_apiClientOptions, _apiClientView)
+            </div>
         </div>
-        <div id="split-1">
-            @CodeBlock(_apiClientOptions, _apiClientView)
+    </MudHidden>
+    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+        <div class="f-row">
+            <div class="f-row">
+                <div id="split-0">
+                    <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvancedItemSize="ItemSize" AutoSave></ApiClientOptionsComponent>
+                </div>
+                <div id="split-1">
+                     <MudText Style="font-weight: 500; text-align: end;" Typo="Typo.h2">@(_apiClientView ? "Generated Api Client" : "Other Generated Classes")</MudText>
+                    <br />
+                    @CodeBlock(_apiClientOptions, _apiClientView)
+                </div>
+            </div>
         </div>
-    </div>
+    </MudHidden>
+</MudBreakpointProvider>
+<br/>
+<br/>
+<div>
+    <MudText Typo="Typo.h4" >Json Used</MudText>
+    <br/>
+    <PrismCodeBlock Language="PrismLanguage.Json" MaxHeight="65vh" FileName="Example.json" Value="@_testData" UseLineNumbers ></PrismCodeBlock>
 </div>
- @code {
+
+@code {
      private bool _apiClientView = true;
      private bool? _wideLayout = false;
 
@@ -83,7 +110,7 @@
          }
      }
 
-     private static string? _testData;
+    private static string? _testData;
     private async Task GetTestData()
     {
         if (_testData != null) return;
