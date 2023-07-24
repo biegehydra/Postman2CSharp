@@ -1,12 +1,7 @@
 ﻿@using Xamasoft.JsonClassGenerator
 @using System.Reflection
 @using Postman2CSharp.Wasm.Infrastructure.Prism
-<style>
-    .display-contents .mud-tabs-panels,
-    .display-contents .code-toolbar {
-        display: contents;
-    }
-</style>
+
 
 <Json2CSharpPlusOptions @bind-OneTypePerJsonMemberName="_oneTypePerJsonMemberName" DuplicateOptionsChanged="duplicateOptions => _duplicateOptions = duplicateOptions"
                         OptionsChanged="options => _options = options" FirstProcessComplete="_firstProcess" ResetClicked="Reset" ></Json2CSharpPlusOptions>

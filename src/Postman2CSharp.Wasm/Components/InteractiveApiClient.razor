@@ -1,25 +1,31 @@
 ﻿@using Xamasoft.JsonClassGenerator
 <style>
     .api-client-options-container {
-        width: 50%;
+        width: 35%;
     }
     .code-block-container {
-        width: 50%;
+        width: 65%;
     }
-    .mud-tabs {
+    .mud-tab {
         text-transform: none;
     }
+
+    .d-inline-block {
+        width: 100% !important;
+    }
+
 </style>
-<div style="width: 100%;">
+
+<div style="width: 100%;" class="f-row">
     <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" >
         <MudButton OnClick="() => SetApiClientView(true)" Disabled="_apiClientView" >ApiClient</MudButton>
         <MudButton OnClick="() => SetApiClientView(false)" Disabled="!_apiClientView" >Classes</MudButton>
     </MudButtonGroup>
 </div>
-
+<br/>
 <div class="f-row" >
     <div class="api-client-options-container">
-        <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AutoSave></ApiClientOptionsComponent>
+        <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvanctedItemSize="AdvancedItemSize.ExtraLarge" AutoSave></ApiClientOptionsComponent>
     </div>
     <div class="code-block-container">
         @CodeBlock(_apiClientOptions, _apiClientView)
@@ -67,7 +73,7 @@
         {
             if (ApiClientOptionsComponent.Equals(_lastApiClientOptions, options))
             {
-                return Test(_lastApiClient, apiClientView);
+                return ApiClientOrClasses(_lastApiClient, apiClientView);
             }
         }
         _lastApiClientOptions = options;
@@ -79,8 +85,8 @@
         generateTask.Wait();
          var firstApiClient  = generateTask.Result.First();
         _lastApiClient = firstApiClient;
-        return Test(firstApiClient, apiClientView);
-         static RenderFragment Test(Core.Models.ApiClient apiClient, bool apiClientView)
+        return ApiClientOrClasses(firstApiClient, apiClientView);
+         static RenderFragment ApiClientOrClasses(Core.Models.ApiClient apiClient, bool apiClientView)
          {
             if (apiClientView)
             {
@@ -96,46 +102,51 @@
         </MudHidden>
         <MudHidden Breakpoint="Breakpoint.SmAndDown">
             <MudTabs Class="display-contents" Border Elevation="3" Position="Position.Right">
-                <MudTabPanel Text="@apiClient.Name" Icon="@Icons.Code">
-                    <PrismCodeBlock FileName="@apiClient.Name" Style="margin-top: 0; height: 60vh;" Value="@apiClient.SourceCode" Language="PrismLanguage.CSharp" />
-                </MudTabPanel>
-                <MudTabPanel Text="@apiClient.InterfaceName" Icon="@Icons.Code">
-                    <PrismCodeBlock FileName="@apiClient.InterfaceName" Style="margin-top: 0; height: 60vh;" Value="@apiClient.InterfaceSourceCode" Language="PrismLanguage.CSharp" />
-                </MudTabPanel>
                 @foreach (var httpCall in apiClient.HttpCalls.OrderBy(x => x.Name))
-                        {
-                @if (httpCall.RequestSourceCode != null)
                 {
-                    <MudTabPanel Text="@httpCall.RequestSourceCode" Icon="@Icons.Code">
-                        <PrismCodeBlock FileName="@httpCall.RequestClassName" Style="margin-top: 0; height: 60vh;" Value="@httpCall.RequestSourceCode" Language="PrismLanguage.CSharp" />
-                    </MudTabPanel>
-                }
-                @if (httpCall.FormDataSourceCode != null)
-                {
-                    <MudTabPanel Text="@httpCall.FormDataClassName" Icon="@Icons.Code">
-                        <PrismCodeBlock FileName="@httpCall.FormDataClassName" Style="margin-top: 0; height: 60vh;" Value="@httpCall.FormDataSourceCode" Language="PrismLanguage.CSharp" />
-                    </MudTabPanel>
-                }
-                @if (httpCall.QueryParameterSourceCode != null)
-                {
-                    <MudTabPanel Text="@httpCall.QueryParameterClassName" Icon="@Icons.Code">
-                        <PrismCodeBlock FileName="@httpCall.QueryParameterClassName" Style="margin-top: 0; height: 60vh;" Value="@httpCall.QueryParameterSourceCode" Language="PrismLanguage.CSharp" />
-                    </MudTabPanel>
-                }
-                foreach (var response in httpCall.AllResponses)
-                {
-                    if (response.SourceCode != null)
+                    @if (httpCall.RequestSourceCode != null)
                     {
-                        <MudTabPanel Text="@response.ClassName" Icon="@Icons.Code">
-                            <PrismCodeBlock FileName="@response.ClassName" Style="margin-top: 0; height: 60vh;" Value="@response.SourceCode" Language="PrismLanguage.CSharp" />
-                        </MudTabPanel>
+                        @TabPanel(httpCall.RequestClassName, httpCall.RequestSourceCode)
+                    }
+                    @if (httpCall.FormDataSourceCode != null)
+                    {
+                        @TabPanel(httpCall.FormDataClassName, httpCall.FormDataSourceCode)
+                    }
+                    @if (httpCall.QueryParameterSourceCode != null)
+                    {
+                        @TabPanel(httpCall.QueryParameterClassName, httpCall.QueryParameterSourceCode)
+                    }
+                    foreach (var response in httpCall.AllResponses)
+                    {
+                        if (response.SourceCode != null)
+                        {
+                        
+                            @TabPanel(response.ClassName, response.SourceCode)
+                        }
                     }
                 }
-                        }
+                @TabPanel(apiClient.InterfaceName, apiClient.InterfaceSourceCode)
+
             </MudTabs>
         </MudHidden>
     </MudBreakpointProvider>;
             }
+         }
+         static RenderFragment TabPanel(string className, string sourceCode)
+         {
+             return @<MudTabPanel>
+                        <TabContent >
+                            <div class="f-row gap-2" style="width: 100%;">
+                                <MudIcon Icon="@Icons.Code" Size="Size.Medium"></MudIcon>
+                                <div style="max-width: 11em; text-overflow: ellipsis; overflow: hidden;">
+                                    @className
+                                </div>
+                            </div>
+                        </TabContent>
+                        <ChildContent>
+                            <PrismCodeBlock @key="@sourceCode" DisplayContents FileName="@className" Style="margin-top: 0;" Value="@sourceCode" Language="PrismLanguage.CSharp"/>
+                        </ChildContent>
+                    </MudTabPanel>;
          }
        
     }

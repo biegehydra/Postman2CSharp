@@ -423,13 +423,6 @@
 						":id",
 						"details"
 					],
-					"query": [
-						{
-							"key": "",
-							"value": null,
-							"disabled": true
-						}
-					],
 					"variable": [
 						{
 							"key": "id",

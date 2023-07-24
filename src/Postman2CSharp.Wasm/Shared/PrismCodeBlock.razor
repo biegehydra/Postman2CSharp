@@ -1,8 +1,30 @@
-﻿<div class="container-@Id">
-    <pre @key="Value" id="@Id" class="@PreClass()" style="@Style" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">@Value</code></pre>
-</div>
+﻿<style>
+    .container-@Id {
+        @if (DisplayContents)
+        {
+            @:display: contents;
+        }
+    }
+</style>
+@if (DisplayContents)
+{
+    <div style="position: relative; display: grid;">
+        <div class="container-@Id">
+            <pre @key="Value" id="@Id" class="@PreClass()" style="@Style" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">@Value</code></pre>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container-@Id">
+        <pre @key="Value" id="@Id" class="@PreClass()" style="@Style" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">@Value</code></pre>
+    </div>
+}
 
 @code {
+    [Parameter]
+    public bool DisplayContents { get; set; }
+
     [Parameter]
     public string? Style { get; set; }
 
@@ -32,17 +54,6 @@
     [Inject] private Interop Interop { get; set; } = default!;
 
     private string Id = Guid.NewGuid().ToString();
-    private string test;
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender && test != Value)
-        {
-            Id = Guid.NewGuid().ToString();
-            await Interop.EmptyElement($"container-{Id}");
-            StateHasChanged();
-        }
-        test = Value;
-    }
 
     private string DataUrl()
     {
@@ -88,4 +99,16 @@
             _ => throw new ArgumentOutOfRangeException()
         };
     }
+
+    private string? _cachedValue;
+    protected override bool ShouldRender()
+    {
+        if (_cachedValue == null || _cachedValue != Value)
+        {
+            _cachedValue = Value;
+            return true;
+        }
+        return false;
+    }
+
 }

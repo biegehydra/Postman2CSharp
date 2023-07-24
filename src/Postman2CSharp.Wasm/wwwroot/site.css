@@ -6,6 +6,11 @@ div.code-toolbar > .toolbar > .toolbar-item {
     margin-right: 5px;
 }
 
+.display-contents .mud-tabs-panels,
+.display-contents .code-toolbar {
+    display: contents;
+}
+
 .mud-paper {
     --mud-palette-error: #9c5c64;
 }

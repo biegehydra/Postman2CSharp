@@ -12,4 +12,13 @@
         XLarge,
         XXLarge
     }
+
+    public enum AdvancedItemSize
+    {
+        Small,
+        Medium,
+        Large,
+        ExtraLarge,
+        ExtraExtraLarge,
+    }
 }
