@@ -379,11 +379,11 @@ namespace Xamasoft.JsonClassGenerator
             List<JsonType> typesWithNoDuplicates = new List<JsonType>();
             if (oneOriginalName)
             {
-                types = types.OrderByDescending(x => !x.IsRoot).ThenBy(p => p.NewAssignedName).ToList();
+                types = types.OrderByDescending(x => !x.IsRoot).ThenByDescending(x => x.Fields?.Count).ThenBy(p => p.NewAssignedName).ToList();
             }
             else
             {
-                types = types.OrderByDescending(x => x.IsRoot).ThenBy(p => p.NewAssignedName).ToList();
+                types = types.OrderByDescending(x => x.IsRoot).ThenByDescending(x => x.Fields?.Count).ThenBy(p => p.NewAssignedName).ToList();
             }
             AllTypes = AllTypes.OrderBy(x => x.NewAssignedName).ToList();
 
@@ -405,7 +405,8 @@ namespace Xamasoft.JsonClassGenerator
                         TypesMatch(potentialDup, x, rdp, sons, dons, !removeSemiDuplicates)) is { } matchingTypeDifferentOriginalName)
                 {
                     firstMatchingType = matchingTypeDifferentOriginalName;
-                    ChangeNewAssignedNamesByOriginalInList(typesWithNoDuplicates, potentialDup.OriginalName, matchingTypeDifferentOriginalName.NewAssignedName);
+                    ChangeNewAssignedNamesByNewAssignedNameInList(types, potentialDup.NewAssignedName, matchingTypeDifferentOriginalName.NewAssignedName);
+                    potentialDup.NewAssignedName = matchingTypeDifferentOriginalName.NewAssignedName;
 
                 }
 
@@ -441,6 +442,7 @@ namespace Xamasoft.JsonClassGenerator
 
                     }
                     ChangeNewAssignedNamesByNewAssignedNameInList(typesWithNoDuplicates, potentialDup.NewAssignedName, allTypesMatchedType.NewAssignedName);
+                    potentialDup.NewAssignedName = allTypesMatchedType.NewAssignedName;
 
                 }
                 else
