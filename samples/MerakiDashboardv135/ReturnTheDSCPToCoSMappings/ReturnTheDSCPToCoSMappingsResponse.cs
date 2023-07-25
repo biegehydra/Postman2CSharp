@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheDSCPToCoSMappingsResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheDSCPToCoSMappingsResponse>(myJsonResponse);
     public class ReturnTheDSCPToCoSMappingsResponse
     {
         public List<Mappings> Mappings { get; set; }

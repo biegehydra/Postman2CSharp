@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<DInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<DInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersParameters>(myJsonResponse);
     public class DInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersParameters : IQueryParameters
     {
         /// <summary>

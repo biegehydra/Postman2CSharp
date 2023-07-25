@@ -2,6 +2,7 @@ using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+
 namespace Newtonsoft
 {
     /// <summary>
@@ -67,7 +68,7 @@ namespace Newtonsoft
         /// <param name="requestUri">The URI that the request will be sent to.</param>
         /// <param name="content">Content for the request body. This will be JSON-encoded and sent as a string.</param>
         /// <returns>The response parsed as an object of the generic type.</returns>
-        public static Task<T> PutJsonNewtonsoftAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+        public static Task<T> PutNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
             => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Put, requestUri, content, headers, cancellationToken);
     
         /// <summary>

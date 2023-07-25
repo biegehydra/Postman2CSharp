@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<NearbySearchResponse>(myJsonResponse);
 namespace SystemTextJson
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<NearbySearchResponse>(myJsonResponse);
     public class NearbySearchResponse
     {
         public List<object> HtmlAttributions { get; set; }

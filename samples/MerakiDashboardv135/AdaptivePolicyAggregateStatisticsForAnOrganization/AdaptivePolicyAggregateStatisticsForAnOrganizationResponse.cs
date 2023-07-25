@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<AdaptivePolicyAggregateStatisticsForAnOrganizationResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<AdaptivePolicyAggregateStatisticsForAnOrganizationResponse>(myJsonResponse);
     public class AdaptivePolicyAggregateStatisticsForAnOrganizationResponse
     {
-        public Counts6 Counts { get; set; }
+        public Counts5 Counts { get; set; }
         public Limits Limits { get; set; }
     }
 
-    public class Counts6
+    public class Counts5
     {
         public int Groups { get; set; }
         public int CustomGroups { get; set; }

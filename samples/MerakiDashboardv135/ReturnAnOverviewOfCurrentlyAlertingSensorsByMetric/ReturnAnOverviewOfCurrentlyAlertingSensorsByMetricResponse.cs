@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnAnOverviewOfCurrentlyAlertingSensorsByMetricResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ReturnAnOverviewOfCurrentlyAlertingSensorsByMetricResponse>(myJsonResponse);
     public class ReturnAnOverviewOfCurrentlyAlertingSensorsByMetricResponse
     {
         public List<string> SupportedMetrics { get; set; }

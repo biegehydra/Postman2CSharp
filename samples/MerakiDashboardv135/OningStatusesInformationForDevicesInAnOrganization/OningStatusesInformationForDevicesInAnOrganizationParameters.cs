@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<OningStatusesInformationForDevicesInAnOrganizationParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<OningStatusesInformationForDevicesInAnOrganizationParameters>(myJsonResponse);
     public class OningStatusesInformationForDevicesInAnOrganizationParameters : IQueryParameters
     {
         /// <summary>

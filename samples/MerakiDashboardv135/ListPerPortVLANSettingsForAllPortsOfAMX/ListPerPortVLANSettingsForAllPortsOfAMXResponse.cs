@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListPerPortVLANSettingsForAllPortsOfAMXResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ListPerPortVLANSettingsForAllPortsOfAMXResponse>>(myJsonResponse);
     public class ListPerPortVLANSettingsForAllPortsOfAMXResponse
     {
         public int Number { get; set; }

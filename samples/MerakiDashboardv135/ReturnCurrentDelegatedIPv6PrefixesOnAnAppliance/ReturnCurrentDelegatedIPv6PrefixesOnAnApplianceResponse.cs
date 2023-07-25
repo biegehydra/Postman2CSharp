@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturnCurrentDelegatedIPv6PrefixesOnAnApplianceResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ReturnCurrentDelegatedIPv6PrefixesOnAnApplianceResponse>>(myJsonResponse);
     public class ReturnCurrentDelegatedIPv6PrefixesOnAnApplianceResponse
     {
         public Origin Origin { get; set; }

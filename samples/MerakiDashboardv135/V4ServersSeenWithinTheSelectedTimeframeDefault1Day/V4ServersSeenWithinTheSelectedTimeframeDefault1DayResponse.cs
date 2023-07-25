@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<V4ServersSeenWithinTheSelectedTimeframeDefault1DayResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<V4ServersSeenWithinTheSelectedTimeframeDefault1DayResponse>>(myJsonResponse);
     public class V4ServersSeenWithinTheSelectedTimeframeDefault1DayResponse
     {
         public string Mac { get; set; }
@@ -13,10 +12,10 @@ namespace MerakiDashboardv135
         public string ClientId { get; set; }
         public bool IsAllowed { get; set; }
         public DateTime LastSeenAt { get; set; }
-        public List<SeenBy> SeenBy { get; set; }
+        public List<Device> SeenBy { get; set; }
         public string Type { get; set; }
         public Device2 Device { get; set; }
-        public Ipv10 Ipv4 { get; set; }
+        public Ipv5 Ipv4 { get; set; }
         public bool IsConfigured { get; set; }
         public LastAck LastAck { get; set; }
         public LastPacket LastPacket { get; set; }
@@ -38,7 +37,7 @@ namespace MerakiDashboardv135
         public string Chaddr { get; set; }
         public string Sname { get; set; }
         public string MagicCookie { get; set; }
-        public List<Options> Options { get; set; }
+        public List<Parameters2> Options { get; set; }
     }
 
     public class Ip
@@ -54,10 +53,10 @@ namespace MerakiDashboardv135
 
     public class LastPacket
     {
-        public Source Source { get; set; }
+        public Destination Source { get; set; }
         public Destination Destination { get; set; }
         public string Type { get; set; }
-        public Ethernet Ethernet { get; set; }
+        public DhcpOptions Ethernet { get; set; }
         public Ip Ip { get; set; }
         public Udp Udp { get; set; }
         public Fields Fields { get; set; }
@@ -68,35 +67,21 @@ namespace MerakiDashboardv135
         public string Serial { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
-        public Interface Interface { get; set; }
+        public Device Interface { get; set; }
     }
 
     public class Destination
     {
         public string Mac { get; set; }
-        public Ipv10 Ipv4 { get; set; }
+        public Ipv5 Ipv4 { get; set; }
         public int Port { get; set; }
     }
 
-    public class Ipv10
+    public class Ipv5
     {
         public string Address { get; set; }
         public string Subnet { get; set; }
         public string Gateway { get; set; }
-    }
-
-    public class SeenBy
-    {
-        public string Serial { get; set; }
-        public string Name { get; set; }
-        public string Url { get; set; }
-    }
-
-    public class Source
-    {
-        public string Mac { get; set; }
-        public Ipv10 Ipv4 { get; set; }
-        public int Port { get; set; }
     }
 
     public class Dscp
@@ -105,32 +90,15 @@ namespace MerakiDashboardv135
         public int Ecn { get; set; }
     }
 
-    public class Interface
-    {
-        public string Name { get; set; }
-        public string Url { get; set; }
-    }
-
     public class LastAck
     {
         public DateTime Ts { get; set; }
-        public Ipv10 Ipv4 { get; set; }
-    }
-
-    public class Options
-    {
-        public string Name { get; set; }
-        public string Value { get; set; }
+        public Ipv5 Ipv4 { get; set; }
     }
 
     public class Udp
     {
         public int Length { get; set; }
         public string Checksum { get; set; }
-    }
-
-    public class Ethernet
-    {
-        public string Type { get; set; }
     }
 }

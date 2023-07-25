@@ -10,6 +10,6 @@ namespace Newtonsoft
         Task<TextSearchResponse> TextSearch(TextSearchParameters queryParameters);
         Task<Stream> PlacePhoto(PlacePhotoParameters queryParameters);
         Task<QueryAutocompleteResponse> QueryAutocomplete(QueryAutocompleteParameters queryParameters);
-        Task<AutocompleteResponse> Autocomplete(AutocompleteParameters queryParameters);
+        Task<QueryAutocompleteResponse> Autocomplete(AutocompleteParameters queryParameters);
     }
 }

@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheFirewallSettingsForThisNetworkResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheFirewallSettingsForThisNetworkResponse>(myJsonResponse);
     public class ReturnTheFirewallSettingsForThisNetworkResponse
     {
         public SpoofingProtection SpoofingProtection { get; set; }

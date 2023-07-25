@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
 
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
     /// <summary>
     /// Extension methods for working with JSON APIs.

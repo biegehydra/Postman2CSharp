@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<TaUsageInMbOverGivenTimeRangeGroupedByManufacturerResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<TaUsageInMbOverGivenTimeRangeGroupedByManufacturerResponse>>(myJsonResponse);
     public class TaUsageInMbOverGivenTimeRangeGroupedByManufacturerResponse
     {
         public string Name { get; set; }
-        public Clients2 Clients { get; set; }
-        public Usage3 Usage { get; set; }
+        public AdaptivePolicyAggregateStatisticsForAnOrganizationResponse Clients { get; set; }
+        public ClientsInTheGivenOrganizationWithinAGivenTimeRangeResponse Usage { get; set; }
     }
 }

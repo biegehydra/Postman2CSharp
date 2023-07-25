@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheThirdPartyVPNPeersForAnOrganizationResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheThirdPartyVPNPeersForAnOrganizationResponse>(myJsonResponse);
     public class ReturnTheThirdPartyVPNPeersForAnOrganizationResponse
     {
         public List<Peers> Peers { get; set; }

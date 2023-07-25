@@ -4,16 +4,17 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 // Generated using Postman2CSharp https://postman2csharp.com/Convert
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
-    public class MerakiDashboardv135ApiClient : IMerakiDashboardv135ApiClient
+    public class MerakiDashboardApiClient : IMerakiDashboardApiClient
     {
         private readonly HttpClient _httpClient;
-        private string _baseUrl = "https://api.meraki.com/api/v1";
+        private string _baseUrl = "api.meraki.com/api/v1";
         private readonly string _apiKey;
-        public MerakiDashboardv135ApiClient(HttpClient httpClient, IConfiguration config)
+        public MerakiDashboardApiClient(HttpClient httpClient, IConfiguration config)
         {
             _httpClient = httpClient;
             _httpClient.BaseAddress = new Uri($"https://{_baseUrl}/");
@@ -24,21 +25,21 @@ namespace MerakiDashboardv135
         /// <summary>
         /// List the organizations that the user has privileges on 
         /// </summary>
-        public async Task<ListTheOrganizationsResponse> ListTheOrganizations()
+        public async Task<List<ListTheOrganizationsResponse>> ListTheOrganizations()
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"X-Cisco-Meraki-API-Key", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheOrganizationsResponse>($"organizations", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheOrganizationsResponse>>($"organizations", headers);
         }
     
         /// <summary>
         /// List the networks that the user has privileges on in an organization 
         /// </summary>
         /// <param name="organizationId">(Required) </param>
-        public async Task<ListTheNetworksInAnOrganizationResponse> ListTheNetworksInAnOrganization(ListTheNetworksInAnOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<ListTheNetworksInAnOrganizationResponse>> ListTheNetworksInAnOrganization(ListTheNetworksInAnOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -47,14 +48,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/networks", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheNetworksInAnOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheNetworksInAnOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the devices in an organization 
         /// </summary>
         /// <param name="organizationId">(Required) </param>
-        public async Task<ListTheDevicesInAnOrganizationResponse> ListTheDevicesInAnOrganization(ListTheDevicesInAnOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<ListTheDevicesInAnOrganizationResponse>> ListTheDevicesInAnOrganization(ListTheDevicesInAnOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -63,14 +64,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/devices", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheDevicesInAnOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheDevicesInAnOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the clients that have used this network in the timespan 
         /// </summary>
         /// <param name="networkId">(Required) </param>
-        public async Task<ListTheClientsInANetworkResponse> ListTheClientsInANetwork(ListTheClientsInANetworkParameters queryParameters, string networkId)
+        public async Task<List<ListTheClientsInANetworkResponse>> ListTheClientsInANetwork(ListTheClientsInANetworkParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -79,7 +80,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/clients", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheClientsInANetworkResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheClientsInANetworkResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -99,14 +100,14 @@ namespace MerakiDashboardv135
         /// Return the DHCP subnet information for an appliance 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<ReturnTheDHCPSubnetInformationForAnApplianceResponse> ReturnTheDHCPSubnetInformationForAnAppliance(string serial)
+        public async Task<List<ReturnTheDHCPSubnetInformationForAnApplianceResponse>> ReturnTheDHCPSubnetInformationForAnAppliance(string serial)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ReturnTheDHCPSubnetInformationForAnApplianceResponse>($"devices/{serial}/appliance/dhcp/subnets", headers);
+            return await _httpClient.GetFromJsonAsync<List<ReturnTheDHCPSubnetInformationForAnApplianceResponse>>($"devices/{serial}/appliance/dhcp/subnets", headers);
         }
     
         /// <summary>
@@ -128,14 +129,14 @@ namespace MerakiDashboardv135
         /// Return current delegated IPv6 prefixes on an appliance. 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<ReturnCurrentDelegatedIPv6PrefixesOnAnApplianceResponse> ReturnCurrentDelegatedIPv6PrefixesOnAnAppliance(string serial)
+        public async Task<List<ReturnCurrentDelegatedIPv6PrefixesOnAnApplianceResponse>> ReturnCurrentDelegatedIPv6PrefixesOnAnAppliance(string serial)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ReturnCurrentDelegatedIPv6PrefixesOnAnApplianceResponse>($"devices/{serial}/appliance/prefixes/delegated", headers);
+            return await _httpClient.GetFromJsonAsync<List<ReturnCurrentDelegatedIPv6PrefixesOnAnApplianceResponse>>($"devices/{serial}/appliance/prefixes/delegated", headers);
         }
     
         /// <summary>
@@ -144,7 +145,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="clientId">(Required) Client ID</param>
-        public async Task<ListTheSecurityEventsForAClientResponse> ListTheSecurityEventsForAClient(ListTheSecurityEventsForAClientParameters queryParameters, string networkId, string clientId)
+        public async Task<List<ListTheSecurityEventsForAClientResponse>> ListTheSecurityEventsForAClient(ListTheSecurityEventsForAClientParameters queryParameters, string networkId, string clientId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -153,14 +154,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/appliance/clients/{clientId}/security/events", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheSecurityEventsForAClientResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheSecurityEventsForAClientResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the security events for a network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheSecurityEventsForAClientResponse> ListTheSecurityEventsForANetwork(ListTheSecurityEventsForANetworkParameters queryParameters, string networkId)
+        public async Task<List<ListTheSecurityEventsForAClientResponse>> ListTheSecurityEventsForANetwork(ListTheSecurityEventsForANetworkParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -169,14 +170,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/appliance/security/events", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheSecurityEventsForAClientResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheSecurityEventsForAClientResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the security events for an organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ListTheSecurityEventsForAClientResponse> ListTheSecurityEventsForAnOrganization(ListTheSecurityEventsForAnOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<ListTheSecurityEventsForAClientResponse>> ListTheSecurityEventsForAnOrganization(ListTheSecurityEventsForAnOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -185,14 +186,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/appliance/security/events", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheSecurityEventsForAClientResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheSecurityEventsForAClientResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Get the sent and received bytes for each uplink of a network. 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<GetTheSentAndReceivedBytesForEachUplinkOfANetworkResponse> GetTheSentAndReceivedBytesForEachUplinkOfANetwork(GetTheSentAndReceivedBytesForEachUplinkOfANetworkParameters queryParameters, string networkId)
+        public async Task<List<GetTheSentAndReceivedBytesForEachUplinkOfANetworkResponse>> GetTheSentAndReceivedBytesForEachUplinkOfANetwork(GetTheSentAndReceivedBytesForEachUplinkOfANetworkParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -201,14 +202,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/appliance/uplinks/usageHistory", parametersDict);
-            return await _httpClient.GetFromJsonAsync<GetTheSentAndReceivedBytesForEachUplinkOfANetworkResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<GetTheSentAndReceivedBytesForEachUplinkOfANetworkResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the uplink status of every Meraki MX and Z series appliances in the organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse> EveryMerakiMXAndZSeriesAppliancesInTheOrganization(EveryMerakiMXAndZSeriesAppliancesInTheOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse>> EveryMerakiMXAndZSeriesAppliancesInTheOrganization(EveryMerakiMXAndZSeriesAppliancesInTheOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -217,7 +218,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/appliance/uplink/statuses", parametersDict);
-            return await _httpClient.GetFromJsonAsync<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -226,7 +227,7 @@ namespace MerakiDashboardv135
         /// be aggregated by interface. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<REachUplinkOfAllMXAndZNetworksWithinAnOrganizationResponse> REachUplinkOfAllMXAndZNetworksWithinAnOrganization(REachUplinkOfAllMXAndZNetworksWithinAnOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<REachUplinkOfAllMXAndZNetworksWithinAnOrganizationResponse>> REachUplinkOfAllMXAndZNetworksWithinAnOrganization(REachUplinkOfAllMXAndZNetworksWithinAnOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -235,14 +236,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/appliance/uplinks/usage/byNetwork", parametersDict);
-            return await _httpClient.GetFromJsonAsync<REachUplinkOfAllMXAndZNetworksWithinAnOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<REachUplinkOfAllMXAndZNetworksWithinAnOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Show VPN history stat for networks in an organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ShowVPNHistoryStatForNetworksInAnOrganizationResponse> ShowVPNHistoryStatForNetworksInAnOrganization(ShowVPNHistoryStatForNetworksInAnOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<ShowVPNHistoryStatForNetworksInAnOrganizationResponse>> ShowVPNHistoryStatForNetworksInAnOrganization(ShowVPNHistoryStatForNetworksInAnOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -251,14 +252,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/appliance/vpn/stats", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ShowVPNHistoryStatForNetworksInAnOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ShowVPNHistoryStatForNetworksInAnOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Show VPN status for networks in an organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ShowVPNStatusForNetworksInAnOrganizationResponse> ShowVPNStatusForNetworksInAnOrganization(ShowVPNStatusForNetworksInAnOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<ShowVPNStatusForNetworksInAnOrganizationResponse>> ShowVPNStatusForNetworksInAnOrganization(ShowVPNStatusForNetworksInAnOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -267,7 +268,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/appliance/vpn/statuses", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ShowVPNStatusForNetworksInAnOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ShowVPNStatusForNetworksInAnOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -501,14 +502,14 @@ namespace MerakiDashboardv135
         /// List the appliance services and their accessibility rules 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheApplianceServicesAndTheirAccessibilityRulesResponse> ListTheApplianceServicesAndTheirAccessibilityRules(string networkId)
+        public async Task<List<ListTheApplianceServicesAndTheirAccessibilityRulesResponse>> ListTheApplianceServicesAndTheirAccessibilityRules(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheApplianceServicesAndTheirAccessibilityRulesResponse>($"networks/{networkId}/appliance/firewall/firewalledServices", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheApplianceServicesAndTheirAccessibilityRulesResponse>>($"networks/{networkId}/appliance/firewall/firewalledServices", headers);
         }
     
         /// <summary>
@@ -557,14 +558,14 @@ namespace MerakiDashboardv135
         /// Return the inbound cellular firewall rules for an MX network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Rules> EturnTheInboundCellularFirewallRulesForAnMXNetwork(string networkId)
+        public async Task<List<Rules>> EturnTheInboundCellularFirewallRulesForAnMXNetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<Rules>($"networks/{networkId}/appliance/firewall/inboundCellularFirewallRules", headers);
+            return await _httpClient.GetFromJsonAsync<List<Rules>>($"networks/{networkId}/appliance/firewall/inboundCellularFirewallRules", headers);
         }
     
         /// <summary>
@@ -578,14 +579,14 @@ namespace MerakiDashboardv135
         ///  
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<Rules> UpdateTheInboundCellularFirewallRulesOfAnMXNetwork(ReturnTheCellularFirewallRulesForAnMXNetworkResponse request, string networkId)
+        public async Task<List<Rules>> UpdateTheInboundCellularFirewallRulesOfAnMXNetwork(ReturnTheCellularFirewallRulesForAnMXNetworkResponse request, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.PutJsonAsync<Rules>($"networks/{networkId}/appliance/firewall/inboundCellularFirewallRules", request, headers);
+            return await _httpClient.PutJsonAsync<List<Rules>>($"networks/{networkId}/appliance/firewall/inboundCellularFirewallRules", request, headers);
         }
     
         /// <summary>
@@ -852,14 +853,14 @@ namespace MerakiDashboardv135
         /// List per-port VLAN settings for all ports of a MX. 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListPerPortVLANSettingsForAllPortsOfAMXResponse> ListPerPortVLANSettingsForAllPortsOfAMX(string networkId)
+        public async Task<List<ListPerPortVLANSettingsForAllPortsOfAMXResponse>> ListPerPortVLANSettingsForAllPortsOfAMX(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListPerPortVLANSettingsForAllPortsOfAMXResponse>($"networks/{networkId}/appliance/ports", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListPerPortVLANSettingsForAllPortsOfAMXResponse>>($"networks/{networkId}/appliance/ports", headers);
         }
     
         /// <summary>
@@ -925,14 +926,14 @@ namespace MerakiDashboardv135
         /// List static delegated prefixes for a network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListStaticDelegatedPrefixesForANetworkResponse> ListStaticDelegatedPrefixesForANetwork(string networkId)
+        public async Task<List<ListStaticDelegatedPrefixesForANetworkResponse>> ListStaticDelegatedPrefixesForANetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListStaticDelegatedPrefixesForANetworkResponse>($"networks/{networkId}/appliance/prefixes/delegated/statics", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListStaticDelegatedPrefixesForANetworkResponse>>($"networks/{networkId}/appliance/prefixes/delegated/statics", headers);
         }
     
         /// <summary>
@@ -957,7 +958,7 @@ namespace MerakiDashboardv135
         ///  
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListStaticDelegatedPrefixesForANetworkResponse> AddAStaticDelegatedPrefixFromANetwork(ReturnCurrentDelegatedIPv6PrefixesOnAnApplianceResponse request, string networkId)
+        public async Task<ListStaticDelegatedPrefixesForANetworkResponse> AddAStaticDelegatedPrefixFromANetwork(ListStaticDelegatedPrefixesForANetworkResponse request, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -1006,7 +1007,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="staticDelegatedPrefixId">(Required) Static delegated prefix ID</param>
-        public async Task<ListStaticDelegatedPrefixesForANetworkResponse> UpdateAStaticDelegatedPrefixFromANetwork(ReturnCurrentDelegatedIPv6PrefixesOnAnApplianceResponse request, string networkId, string staticDelegatedPrefixId)
+        public async Task<ListStaticDelegatedPrefixesForANetworkResponse> UpdateAStaticDelegatedPrefixFromANetwork(ListStaticDelegatedPrefixesForANetworkResponse request, string networkId, string staticDelegatedPrefixId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -1275,14 +1276,14 @@ namespace MerakiDashboardv135
         /// List the MX SSIDs in a network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheMXSSIDsInANetworkResponse> ListTheMXSSIDsInANetwork(string networkId)
+        public async Task<List<ListTheMXSSIDsInANetworkResponse>> ListTheMXSSIDsInANetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheMXSSIDsInANetworkResponse>($"networks/{networkId}/appliance/ssids", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheMXSSIDsInANetworkResponse>>($"networks/{networkId}/appliance/ssids", headers);
         }
     
         /// <summary>
@@ -1358,14 +1359,14 @@ namespace MerakiDashboardv135
         /// List the static routes for an MX or teleworker network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheStaticRoutesForAnMXOrTeleworkerNetworkResponse> ListTheStaticRoutesForAnMXOrTeleworkerNetwork(string networkId)
+        public async Task<List<ListTheStaticRoutesForAnMXOrTeleworkerNetworkResponse>> ListTheStaticRoutesForAnMXOrTeleworkerNetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheStaticRoutesForAnMXOrTeleworkerNetworkResponse>($"networks/{networkId}/appliance/staticRoutes", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheStaticRoutesForAnMXOrTeleworkerNetworkResponse>>($"networks/{networkId}/appliance/staticRoutes", headers);
         }
     
         /// <summary>
@@ -1399,14 +1400,14 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="staticRouteId">(Required) Static route ID</param>
-        public async Task<ListTheStaticRoutesForAnMXOrTeleworkerNetworkResponse> ReturnAStaticRouteForAnMXOrTeleworkerNetwork(string networkId, string staticRouteId)
+        public async Task<AddAStaticRouteForAnMXOrTeleworkerNetworkResponse> ReturnAStaticRouteForAnMXOrTeleworkerNetwork(string networkId, string staticRouteId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheStaticRoutesForAnMXOrTeleworkerNetworkResponse>($"networks/{networkId}/appliance/staticRoutes/{staticRouteId}", headers);
+            return await _httpClient.GetFromJsonAsync<AddAStaticRouteForAnMXOrTeleworkerNetworkResponse>($"networks/{networkId}/appliance/staticRoutes/{staticRouteId}", headers);
         }
     
         /// <summary>
@@ -1433,14 +1434,14 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="staticRouteId">(Required) Static route ID</param>
-        public async Task<ListTheStaticRoutesForAnMXOrTeleworkerNetworkResponse> UpdateAStaticRouteForAnMXOrTeleworkerNetwork(UpdateAStaticRouteForAnMXOrTeleworkerNetworkRequest request, string networkId, string staticRouteId)
+        public async Task<AddAStaticRouteForAnMXOrTeleworkerNetworkResponse> UpdateAStaticRouteForAnMXOrTeleworkerNetwork(UpdateAStaticRouteForAnMXOrTeleworkerNetworkRequest request, string networkId, string staticRouteId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.PutJsonAsync<ListTheStaticRoutesForAnMXOrTeleworkerNetworkResponse>($"networks/{networkId}/appliance/staticRoutes/{staticRouteId}", request, headers);
+            return await _httpClient.PutJsonAsync<AddAStaticRouteForAnMXOrTeleworkerNetworkResponse>($"networks/{networkId}/appliance/staticRoutes/{staticRouteId}", request, headers);
         }
     
         /// <summary>
@@ -1497,14 +1498,14 @@ namespace MerakiDashboardv135
         /// List the VLANs for an MX network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheVLANsForAnMXNetworkResponse> ListTheVLANsForAnMXNetwork(string networkId)
+        public async Task<List<ListTheVLANsForAnMXNetworkResponse>> ListTheVLANsForAnMXNetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheVLANsForAnMXNetworkResponse>($"networks/{networkId}/appliance/vlans", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheVLANsForAnMXNetworkResponse>>($"networks/{networkId}/appliance/vlans", headers);
         }
     
         /// <summary>
@@ -1545,14 +1546,14 @@ namespace MerakiDashboardv135
         ///  
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheVLANsForAnMXNetworkResponse> AddAVLAN(AddAVLANRequest request, string networkId)
+        public async Task<AddAVLANResponse> AddAVLAN(AddAVLANRequest request, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.PostJsonAsync<ListTheVLANsForAnMXNetworkResponse>($"networks/{networkId}/appliance/vlans", request, headers);
+            return await _httpClient.PostJsonAsync<AddAVLANResponse>($"networks/{networkId}/appliance/vlans", request, headers);
         }
     
         /// <summary>
@@ -2127,7 +2128,7 @@ namespace MerakiDashboardv135
         /// Returns video link to the specified camera. If a timestamp is supplied, it links to that timestamp. 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<ListTheOrganizationsResponse> ReturnsVideoLinkToTheSpecifiedCamera(ReturnsVideoLinkToTheSpecifiedCameraParameters queryParameters, string serial)
+        public async Task<AllowedUrls> ReturnsVideoLinkToTheSpecifiedCamera(ReturnsVideoLinkToTheSpecifiedCameraParameters queryParameters, string serial)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -2136,7 +2137,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"devices/{serial}/camera/videoLink", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheOrganizationsResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<AllowedUrls>(queryString, headers);
         }
     
         /// <summary>
@@ -2197,14 +2198,14 @@ namespace MerakiDashboardv135
         /// List the camera wireless profiles for this network. 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<CreatesANewCameraWirelessProfileForThisNetworkResponse> ListTheCameraWirelessProfilesForThisNetwork(string networkId)
+        public async Task<List<CreatesANewCameraWirelessProfileForThisNetworkResponse>> ListTheCameraWirelessProfilesForThisNetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<CreatesANewCameraWirelessProfileForThisNetworkResponse>($"networks/{networkId}/camera/wirelessProfiles", headers);
+            return await _httpClient.GetFromJsonAsync<List<CreatesANewCameraWirelessProfileForThisNetworkResponse>>($"networks/{networkId}/camera/wirelessProfiles", headers);
         }
     
         /// <summary>
@@ -2267,14 +2268,14 @@ namespace MerakiDashboardv135
         /// List the quality retention profiles for this network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheQualityRetentionProfilesForThisNetworkResponse> ListTheQualityRetentionProfilesForThisNetwork(string networkId)
+        public async Task<List<ListTheQualityRetentionProfilesForThisNetworkResponse>> ListTheQualityRetentionProfilesForThisNetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheQualityRetentionProfilesForThisNetworkResponse>($"networks/{networkId}/camera/qualityRetentionProfiles", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheQualityRetentionProfilesForThisNetworkResponse>>($"networks/{networkId}/camera/qualityRetentionProfiles", headers);
         }
     
         /// <summary>
@@ -2395,21 +2396,21 @@ namespace MerakiDashboardv135
         /// Returns a list of all camera recording schedules. 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheOrganizationsResponse> ReturnsAListOfAllCameraRecordingSchedules(string networkId)
+        public async Task<List<CreatesANewCameraWirelessProfileForThisNetworkResponse>> ReturnsAListOfAllCameraRecordingSchedules(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheOrganizationsResponse>($"networks/{networkId}/camera/schedules", headers);
+            return await _httpClient.GetFromJsonAsync<List<CreatesANewCameraWirelessProfileForThisNetworkResponse>>($"networks/{networkId}/camera/schedules", headers);
         }
     
         /// <summary>
         /// Fetch onboarding status of cameras 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<FetchOnboardingStatusOfCamerasResponse> FetchOnboardingStatusOfCameras(FetchOnboardingStatusOfCamerasParameters queryParameters, string organizationId)
+        public async Task<List<FetchOnboardingStatusOfCamerasResponse>> FetchOnboardingStatusOfCameras(FetchOnboardingStatusOfCamerasParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -2418,7 +2419,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/camera/onboarding/statuses", parametersDict);
-            return await _httpClient.GetFromJsonAsync<FetchOnboardingStatusOfCamerasResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<FetchOnboardingStatusOfCamerasResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -2664,7 +2665,7 @@ namespace MerakiDashboardv135
         ///  
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<RnTheSubnetPoolAndMaskConfiguredForMGsInTheNetworkResponse> HeSubnetPoolAndMaskConfigurationForMGsInTheNetwork(AddAVLANRequest request, string networkId)
+        public async Task<RnTheSubnetPoolAndMaskConfiguredForMGsInTheNetworkResponse> HeSubnetPoolAndMaskConfigurationForMGsInTheNetwork(HeSubnetPoolAndMaskConfigurationForMGsInTheNetworkRequest request, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -2722,7 +2723,7 @@ namespace MerakiDashboardv135
         /// List the uplink status of every Meraki MG cellular gateway in the organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse> TusOfEveryMerakiMGCellularGatewayInTheOrganization(TusOfEveryMerakiMGCellularGatewayInTheOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse>> TusOfEveryMerakiMGCellularGatewayInTheOrganization(TusOfEveryMerakiMGCellularGatewayInTheOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -2731,21 +2732,21 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/cellularGateway/uplink/statuses", parametersDict);
-            return await _httpClient.GetFromJsonAsync<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the sensor roles for a given sensor or camera device. 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<ListTheSensorRolesForAGivenSensorOrCameraDeviceResponse> ListTheSensorRolesForAGivenSensorOrCameraDevice(string serial)
+        public async Task<List<ListTheSensorRolesForAGivenSensorOrCameraDeviceResponse>> ListTheSensorRolesForAGivenSensorOrCameraDevice(string serial)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheSensorRolesForAGivenSensorOrCameraDeviceResponse>($"devices/{serial}/sensor/relationships", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheSensorRolesForAGivenSensorOrCameraDeviceResponse>>($"devices/{serial}/sensor/relationships", headers);
         }
     
         /// <summary>
@@ -2784,28 +2785,28 @@ namespace MerakiDashboardv135
         /// List the sensor roles for devices in a given network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheSensorRolesForDevicesInAGivenNetworkResponse> ListTheSensorRolesForDevicesInAGivenNetwork(string networkId)
+        public async Task<List<ListTheSensorRolesForDevicesInAGivenNetworkResponse>> ListTheSensorRolesForDevicesInAGivenNetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheSensorRolesForDevicesInAGivenNetworkResponse>($"networks/{networkId}/sensor/relationships", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheSensorRolesForDevicesInAGivenNetworkResponse>>($"networks/{networkId}/sensor/relationships", headers);
         }
     
         /// <summary>
         /// Lists all sensor alert profiles for a network. 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListsAllSensorAlertProfilesForANetworkResponse> ListsAllSensorAlertProfilesForANetwork(string networkId)
+        public async Task<List<ListsAllSensorAlertProfilesForANetworkResponse>> ListsAllSensorAlertProfilesForANetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListsAllSensorAlertProfilesForANetworkResponse>($"networks/{networkId}/sensor/alerts/profiles", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListsAllSensorAlertProfilesForANetworkResponse>>($"networks/{networkId}/sensor/alerts/profiles", headers);
         }
     
         /// <summary>
@@ -2927,14 +2928,14 @@ namespace MerakiDashboardv135
         /// /networks/{networkId}/mqttBrokers. 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<IstTheSensorSettingsOfAllMQTTBrokersForThisNetworkResponse> IstTheSensorSettingsOfAllMQTTBrokersForThisNetwork(string networkId)
+        public async Task<List<IstTheSensorSettingsOfAllMQTTBrokersForThisNetworkResponse>> IstTheSensorSettingsOfAllMQTTBrokersForThisNetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<IstTheSensorSettingsOfAllMQTTBrokersForThisNetworkResponse>($"networks/{networkId}/sensor/mqttBrokers", headers);
+            return await _httpClient.GetFromJsonAsync<List<IstTheSensorSettingsOfAllMQTTBrokersForThisNetworkResponse>>($"networks/{networkId}/sensor/mqttBrokers", headers);
         }
     
         /// <summary>
@@ -2959,7 +2960,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="mqttBrokerId">(Required) Mqtt broker ID</param>
-        public async Task<IstTheSensorSettingsOfAllMQTTBrokersForThisNetworkResponse> UpdateTheSensorSettingsOfAnMQTTBroker(UpdateThePerPortVLANSettingsForASingleMXPortRequest request, string networkId, string mqttBrokerId)
+        public async Task<IstTheSensorSettingsOfAllMQTTBrokersForThisNetworkResponse> UpdateTheSensorSettingsOfAnMQTTBroker(Dot11w request, string networkId, string mqttBrokerId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -2987,7 +2988,7 @@ namespace MerakiDashboardv135
         /// Return an overview of alert occurrences over a timespan, by metric 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<NAnOverviewOfAlertOccurrencesOverATimespanByMetricResponse> NAnOverviewOfAlertOccurrencesOverATimespanByMetric(NAnOverviewOfAlertOccurrencesOverATimespanByMetricParameters queryParameters, string networkId)
+        public async Task<List<NAnOverviewOfAlertOccurrencesOverATimespanByMetricResponse>> NAnOverviewOfAlertOccurrencesOverATimespanByMetric(NAnOverviewOfAlertOccurrencesOverATimespanByMetricParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -2996,14 +2997,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/sensor/alerts/overview/byMetric", parametersDict);
-            return await _httpClient.GetFromJsonAsync<NAnOverviewOfAlertOccurrencesOverATimespanByMetricResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<NAnOverviewOfAlertOccurrencesOverATimespanByMetricResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Return all reported readings from sensors in a given timespan, sorted by timestamp 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<AdingsFromSensorsInAGivenTimespanSortedByTimestampResponse> AdingsFromSensorsInAGivenTimespanSortedByTimestamp(AdingsFromSensorsInAGivenTimespanSortedByTimestampParameters queryParameters, string organizationId)
+        public async Task<List<AdingsFromSensorsInAGivenTimespanSortedByTimestampResponse>> AdingsFromSensorsInAGivenTimespanSortedByTimestamp(AdingsFromSensorsInAGivenTimespanSortedByTimestampParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -3012,14 +3013,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/sensor/readings/history", parametersDict);
-            return await _httpClient.GetFromJsonAsync<AdingsFromSensorsInAGivenTimespanSortedByTimestampResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<AdingsFromSensorsInAGivenTimespanSortedByTimestampResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Return the latest available reading for each metric from each sensor, sorted by sensor serial 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<IngForEachMetricFromEachSensorSortedBySensorSerialResponse> IngForEachMetricFromEachSensorSortedBySensorSerial(IngForEachMetricFromEachSensorSortedBySensorSerialParameters queryParameters, string organizationId)
+        public async Task<List<IngForEachMetricFromEachSensorSortedBySensorSerialResponse>> IngForEachMetricFromEachSensorSortedBySensorSerial(IngForEachMetricFromEachSensorSortedBySensorSerialParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -3028,21 +3029,21 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/sensor/readings/latest", parametersDict);
-            return await _httpClient.GetFromJsonAsync<IngForEachMetricFromEachSensorSortedBySensorSerialResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<IngForEachMetricFromEachSensorSortedBySensorSerialResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the switch ports for a switch 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<ListTheSwitchPortsForASwitchResponse> ListTheSwitchPortsForASwitch(string serial)
+        public async Task<List<ListTheSwitchPortsForASwitchResponse>> ListTheSwitchPortsForASwitch(string serial)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheSwitchPortsForASwitchResponse>($"devices/{serial}/switch/ports", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheSwitchPortsForASwitchResponse>>($"devices/{serial}/switch/ports", headers);
         }
     
         /// <summary>
@@ -3147,14 +3148,14 @@ namespace MerakiDashboardv135
         /// List layer 3 interfaces for a switch. Those for a stack may be found under switch stack routing. 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<ListLayer3InterfacesForASwitchResponse> ListLayer3InterfacesForASwitch(string serial)
+        public async Task<List<ListLayer3InterfacesForASwitchResponse>> ListLayer3InterfacesForASwitch(string serial)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListLayer3InterfacesForASwitchResponse>($"devices/{serial}/switch/routing/interfaces", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListLayer3InterfacesForASwitchResponse>>($"devices/{serial}/switch/routing/interfaces", headers);
         }
     
         /// <summary>
@@ -3297,14 +3298,14 @@ namespace MerakiDashboardv135
         /// List layer 3 static routes for a switch 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<ListLayer3StaticRoutesForASwitchResponse> ListLayer3StaticRoutesForASwitch(string serial)
+        public async Task<List<ListLayer3StaticRoutesForASwitchResponse>> ListLayer3StaticRoutesForASwitch(string serial)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListLayer3StaticRoutesForASwitchResponse>($"devices/{serial}/switch/routing/staticRoutes", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListLayer3StaticRoutesForASwitchResponse>>($"devices/{serial}/switch/routing/staticRoutes", headers);
         }
     
         /// <summary>
@@ -3597,14 +3598,14 @@ namespace MerakiDashboardv135
         /// as authentication method 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheAccessPoliciesForASwitchNetworkResponse> ListTheAccessPoliciesForASwitchNetwork(string networkId)
+        public async Task<List<ListTheAccessPoliciesForASwitchNetworkResponse>> ListTheAccessPoliciesForASwitchNetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheAccessPoliciesForASwitchNetworkResponse>($"networks/{networkId}/switch/accessPolicies", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheAccessPoliciesForASwitchNetworkResponse>>($"networks/{networkId}/switch/accessPolicies", headers);
         }
     
         /// <summary>
@@ -3734,7 +3735,7 @@ namespace MerakiDashboardv135
         /// Return the network's DHCPv4 servers seen within the selected timeframe (default 1 day) 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<V4ServersSeenWithinTheSelectedTimeframeDefault1DayResponse> V4ServersSeenWithinTheSelectedTimeframeDefault1Day(V4ServersSeenWithinTheSelectedTimeframeDefault1DayParameters queryParameters, string networkId)
+        public async Task<List<V4ServersSeenWithinTheSelectedTimeframeDefault1DayResponse>> V4ServersSeenWithinTheSelectedTimeframeDefault1Day(V4ServersSeenWithinTheSelectedTimeframeDefault1DayParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -3743,7 +3744,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/switch/dhcp/v4/servers/seen", parametersDict);
-            return await _httpClient.GetFromJsonAsync<V4ServersSeenWithinTheSelectedTimeframeDefault1DayResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<V4ServersSeenWithinTheSelectedTimeframeDefault1DayResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -3824,14 +3825,14 @@ namespace MerakiDashboardv135
         /// List link aggregation groups 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListLinkAggregationGroupsResponse> ListLinkAggregationGroups(string networkId)
+        public async Task<List<ListLinkAggregationGroupsResponse>> ListLinkAggregationGroups(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListLinkAggregationGroupsResponse>($"networks/{networkId}/switch/linkAggregations", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListLinkAggregationGroupsResponse>>($"networks/{networkId}/switch/linkAggregations", headers);
         }
     
         /// <summary>
@@ -3975,14 +3976,14 @@ namespace MerakiDashboardv135
         /// List switch port schedules 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListSwitchPortSchedulesResponse> ListSwitchPortSchedules(string networkId)
+        public async Task<List<ListSwitchPortSchedulesResponse>> ListSwitchPortSchedules(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListSwitchPortSchedulesResponse>($"networks/{networkId}/switch/portSchedules", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListSwitchPortSchedulesResponse>>($"networks/{networkId}/switch/portSchedules", headers);
         }
     
         /// <summary>
@@ -4068,14 +4069,14 @@ namespace MerakiDashboardv135
         /// List quality of service rules 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListQualityOfServiceRulesResponse> ListQualityOfServiceRules(string networkId)
+        public async Task<List<ListQualityOfServiceRulesResponse>> ListQualityOfServiceRules(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListQualityOfServiceRulesResponse>($"networks/{networkId}/switch/qosRules", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListQualityOfServiceRulesResponse>>($"networks/{networkId}/switch/qosRules", headers);
         }
     
         /// <summary>
@@ -4257,14 +4258,14 @@ namespace MerakiDashboardv135
         /// List the switch stacks in a network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheSwitchStacksInANetworkResponse> ListTheSwitchStacksInANetwork(string networkId)
+        public async Task<List<ListTheSwitchStacksInANetworkResponse>> ListTheSwitchStacksInANetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheSwitchStacksInANetworkResponse>($"networks/{networkId}/switch/stacks", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheSwitchStacksInANetworkResponse>>($"networks/{networkId}/switch/stacks", headers);
         }
     
         /// <summary>
@@ -4279,7 +4280,7 @@ namespace MerakiDashboardv135
         ///  
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheSwitchStacksInANetworkResponse> CreateAStack(ListsAllSensorAlertProfilesForANetworkResponse request, string networkId)
+        public async Task<ListTheSwitchStacksInANetworkResponse> CreateAStack(ListTheSwitchStacksInANetworkResponse request, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -4331,7 +4332,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="switchStackId">(Required) Switch stack ID</param>
-        public async Task<ListTheSwitchStacksInANetworkResponse> AddASwitchToAStack(ListTheDevicesInAnOrganizationResponse request, string networkId, string switchStackId)
+        public async Task<ListTheSwitchStacksInANetworkResponse> AddASwitchToAStack(Device request, string networkId, string switchStackId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -4353,7 +4354,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="switchStackId">(Required) Switch stack ID</param>
-        public async Task<ListTheSwitchStacksInANetworkResponse> RemoveASwitchFromAStack(ListTheDevicesInAnOrganizationResponse request, string networkId, string switchStackId)
+        public async Task<ListTheSwitchStacksInANetworkResponse> RemoveASwitchFromAStack(Device request, string networkId, string switchStackId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -4465,14 +4466,14 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
         /// <param name="configTemplateId">(Required) Config template ID</param>
-        public async Task<ESwitchTemplatesForYourSwitchTemplateConfigurationResponse> ESwitchTemplatesForYourSwitchTemplateConfiguration(string organizationId, string configTemplateId)
+        public async Task<List<ESwitchTemplatesForYourSwitchTemplateConfigurationResponse>> ESwitchTemplatesForYourSwitchTemplateConfiguration(string organizationId, string configTemplateId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ESwitchTemplatesForYourSwitchTemplateConfigurationResponse>($"organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles", headers);
+            return await _httpClient.GetFromJsonAsync<List<ESwitchTemplatesForYourSwitchTemplateConfigurationResponse>>($"organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles", headers);
         }
     
         /// <summary>
@@ -4524,7 +4525,7 @@ namespace MerakiDashboardv135
         /// Return the status for all the ports of a switch 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<ReturnTheStatusForAllThePortsOfASwitchResponse> ReturnTheStatusForAllThePortsOfASwitch(ReturnTheStatusForAllThePortsOfASwitchParameters queryParameters, string serial)
+        public async Task<List<ReturnTheStatusForAllThePortsOfASwitchResponse>> ReturnTheStatusForAllThePortsOfASwitch(ReturnTheStatusForAllThePortsOfASwitchParameters queryParameters, string serial)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -4533,7 +4534,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"devices/{serial}/switch/ports/statuses", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ReturnTheStatusForAllThePortsOfASwitchResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ReturnTheStatusForAllThePortsOfASwitchResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -4833,14 +4834,14 @@ namespace MerakiDashboardv135
         /// List the MR SSIDs in a network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheMRSSIDsInANetworkResponse> ListTheMRSSIDsInANetwork(string networkId)
+        public async Task<List<ListTheMRSSIDsInANetworkResponse>> ListTheMRSSIDsInANetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheMRSSIDsInANetworkResponse>($"networks/{networkId}/wireless/ssids", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheMRSSIDsInANetworkResponse>>($"networks/{networkId}/wireless/ssids", headers);
         }
     
         /// <summary>
@@ -5122,7 +5123,7 @@ namespace MerakiDashboardv135
         /// List Air Marshal scan results from a network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListAirMarshalScanResultsFromANetworkResponse> ListAirMarshalScanResultsFromANetwork(ListAirMarshalScanResultsFromANetworkParameters queryParameters, string networkId)
+        public async Task<List<ListAirMarshalScanResultsFromANetworkResponse>> ListAirMarshalScanResultsFromANetwork(ListAirMarshalScanResultsFromANetworkParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5131,14 +5132,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/airMarshal", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListAirMarshalScanResultsFromANetworkResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListAirMarshalScanResultsFromANetworkResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Return AP channel utilization over time for a device or network client 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<HannelUtilizationOverTimeForADeviceOrNetworkClientResponse> HannelUtilizationOverTimeForADeviceOrNetworkClient(HannelUtilizationOverTimeForADeviceOrNetworkClientParameters queryParameters, string networkId)
+        public async Task<List<HannelUtilizationOverTimeForADeviceOrNetworkClientResponse>> HannelUtilizationOverTimeForADeviceOrNetworkClient(HannelUtilizationOverTimeForADeviceOrNetworkClientParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5147,14 +5148,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/channelUtilizationHistory", parametersDict);
-            return await _httpClient.GetFromJsonAsync<HannelUtilizationOverTimeForADeviceOrNetworkClientResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<HannelUtilizationOverTimeForADeviceOrNetworkClientResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Return wireless client counts over time for a network, device, or network client 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<IentCountsOverTimeForANetworkDeviceOrNetworkClientResponse> IentCountsOverTimeForANetworkDeviceOrNetworkClient(IentCountsOverTimeForANetworkDeviceOrNetworkClientParameters queryParameters, string networkId)
+        public async Task<List<IentCountsOverTimeForANetworkDeviceOrNetworkClientResponse>> IentCountsOverTimeForANetworkDeviceOrNetworkClient(IentCountsOverTimeForANetworkDeviceOrNetworkClientParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5163,14 +5164,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/clientCountHistory", parametersDict);
-            return await _httpClient.GetFromJsonAsync<IentCountsOverTimeForANetworkDeviceOrNetworkClientResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<IentCountsOverTimeForANetworkDeviceOrNetworkClientResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Aggregated connectivity info for this network, grouped by clients 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<AtedConnectivityInfoForThisNetworkGroupedByClientsResponse> AtedConnectivityInfoForThisNetworkGroupedByClients(AtedConnectivityInfoForThisNetworkGroupedByClientsParameters queryParameters, string networkId)
+        public async Task<List<AtedConnectivityInfoForThisNetworkGroupedByClientsResponse>> AtedConnectivityInfoForThisNetworkGroupedByClients(AtedConnectivityInfoForThisNetworkGroupedByClientsParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5179,7 +5180,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/clients/connectionStats", parametersDict);
-            return await _httpClient.GetFromJsonAsync<AtedConnectivityInfoForThisNetworkGroupedByClientsResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<AtedConnectivityInfoForThisNetworkGroupedByClientsResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -5204,7 +5205,7 @@ namespace MerakiDashboardv135
         /// Aggregated latency info for this network, grouped by clients 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<GgregatedLatencyInfoForThisNetworkGroupedByClientsResponse> GgregatedLatencyInfoForThisNetworkGroupedByClients(GgregatedLatencyInfoForThisNetworkGroupedByClientsParameters queryParameters, string networkId)
+        public async Task<List<GgregatedLatencyInfoForThisNetworkGroupedByClientsResponse>> GgregatedLatencyInfoForThisNetworkGroupedByClients(GgregatedLatencyInfoForThisNetworkGroupedByClientsParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5213,7 +5214,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/clients/latencyStats", parametersDict);
-            return await _httpClient.GetFromJsonAsync<GgregatedLatencyInfoForThisNetworkGroupedByClientsResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<GgregatedLatencyInfoForThisNetworkGroupedByClientsResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -5238,7 +5239,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="clientId">(Required) Client ID</param>
-        public async Task<CtivityEventsForAClientWithinANetworkInTheTimespanResponse> CtivityEventsForAClientWithinANetworkInTheTimespan(CtivityEventsForAClientWithinANetworkInTheTimespanParameters queryParameters, string networkId, string clientId)
+        public async Task<List<CtivityEventsForAClientWithinANetworkInTheTimespanResponse>> CtivityEventsForAClientWithinANetworkInTheTimespan(CtivityEventsForAClientWithinANetworkInTheTimespanParameters queryParameters, string networkId, string clientId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5247,7 +5248,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/clients/{clientId}/connectivityEvents", parametersDict);
-            return await _httpClient.GetFromJsonAsync<CtivityEventsForAClientWithinANetworkInTheTimespanResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<CtivityEventsForAClientWithinANetworkInTheTimespanResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -5258,7 +5259,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="clientId">(Required) Client ID</param>
-        public async Task<ReturnTheLatencyHistoryForAClientResponse> ReturnTheLatencyHistoryForAClient(ReturnTheLatencyHistoryForAClientParameters queryParameters, string networkId, string clientId)
+        public async Task<List<ReturnTheLatencyHistoryForAClientResponse>> ReturnTheLatencyHistoryForAClient(ReturnTheLatencyHistoryForAClientParameters queryParameters, string networkId, string clientId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5267,14 +5268,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/clients/{clientId}/latencyHistory", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ReturnTheLatencyHistoryForAClientResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ReturnTheLatencyHistoryForAClientResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Return PHY data rates over time for a network, device, or network client 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<YDataRatesOverTimeForANetworkDeviceOrNetworkClientResponse> YDataRatesOverTimeForANetworkDeviceOrNetworkClient(YDataRatesOverTimeForANetworkDeviceOrNetworkClientParameters queryParameters, string networkId)
+        public async Task<List<YDataRatesOverTimeForANetworkDeviceOrNetworkClientResponse>> YDataRatesOverTimeForANetworkDeviceOrNetworkClient(YDataRatesOverTimeForANetworkDeviceOrNetworkClientParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5283,14 +5284,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/dataRateHistory", parametersDict);
-            return await _httpClient.GetFromJsonAsync<YDataRatesOverTimeForANetworkDeviceOrNetworkClientResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<YDataRatesOverTimeForANetworkDeviceOrNetworkClientResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Aggregated connectivity info for this network, grouped by node 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<AggregatedConnectivityInfoForAGivenAPOnThisNetworkResponse> RegatedConnectivityInfoForThisNetworkGroupedByNode(RegatedConnectivityInfoForThisNetworkGroupedByNodeParameters queryParameters, string networkId)
+        public async Task<List<AggregatedConnectivityInfoForAGivenAPOnThisNetworkResponse>> RegatedConnectivityInfoForThisNetworkGroupedByNode(RegatedConnectivityInfoForThisNetworkGroupedByNodeParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5299,14 +5300,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/devices/connectionStats", parametersDict);
-            return await _httpClient.GetFromJsonAsync<AggregatedConnectivityInfoForAGivenAPOnThisNetworkResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<AggregatedConnectivityInfoForAGivenAPOnThisNetworkResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Aggregated latency info for this network, grouped by node 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<AggregatedLatencyInfoForAGivenAPOnThisNetworkResponse> AggregatedLatencyInfoForThisNetworkGroupedByNode(AggregatedLatencyInfoForThisNetworkGroupedByNodeParameters queryParameters, string networkId)
+        public async Task<List<AggregatedLatencyInfoForAGivenAPOnThisNetworkResponse>> AggregatedLatencyInfoForThisNetworkGroupedByNode(AggregatedLatencyInfoForThisNetworkGroupedByNodeParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5315,14 +5316,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/devices/latencyStats", parametersDict);
-            return await _httpClient.GetFromJsonAsync<AggregatedLatencyInfoForAGivenAPOnThisNetworkResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<AggregatedLatencyInfoForAGivenAPOnThisNetworkResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Get average channel utilization for all bands in a network, split by AP 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<GeChannelUtilizationForAllBandsInANetworkSplitByAPResponse> GeChannelUtilizationForAllBandsInANetworkSplitByAP(GeChannelUtilizationForAllBandsInANetworkSplitByAPParameters queryParameters, string organizationId)
+        public async Task<List<GeChannelUtilizationForAllBandsInANetworkSplitByAPResponse>> GeChannelUtilizationForAllBandsInANetworkSplitByAP(GeChannelUtilizationForAllBandsInANetworkSplitByAPParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5331,14 +5332,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/wireless/devices/channelUtilization/byDevice", parametersDict);
-            return await _httpClient.GetFromJsonAsync<GeChannelUtilizationForAllBandsInANetworkSplitByAPResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<GeChannelUtilizationForAllBandsInANetworkSplitByAPResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Get average channel utilization across all bands for all networks in the organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<GeChannelUtilizationForAllBandsInANetworkSplitByAPResponse> AtionAcrossAllBandsForAllNetworksInTheOrganization(AtionAcrossAllBandsForAllNetworksInTheOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<GeChannelUtilizationForAllBandsInANetworkSplitByAPResponse>> AtionAcrossAllBandsForAllNetworksInTheOrganization(AtionAcrossAllBandsForAllNetworksInTheOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5347,14 +5348,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/wireless/devices/channelUtilization/byNetwork", parametersDict);
-            return await _httpClient.GetFromJsonAsync<GeChannelUtilizationForAllBandsInANetworkSplitByAPResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<GeChannelUtilizationForAllBandsInANetworkSplitByAPResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Get a time-series of average channel utilization for all bands, segmented by device. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<RageChannelUtilizationForAllBandsSegmentedByDeviceResponse> RageChannelUtilizationForAllBandsSegmentedByDevice(RageChannelUtilizationForAllBandsSegmentedByDeviceParameters queryParameters, string organizationId)
+        public async Task<List<RageChannelUtilizationForAllBandsSegmentedByDeviceResponse>> RageChannelUtilizationForAllBandsSegmentedByDevice(RageChannelUtilizationForAllBandsSegmentedByDeviceParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5363,14 +5364,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/wireless/devices/channelUtilization/history/byDevice/byInterval", parametersDict);
-            return await _httpClient.GetFromJsonAsync<RageChannelUtilizationForAllBandsSegmentedByDeviceResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<RageChannelUtilizationForAllBandsSegmentedByDeviceResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Get a time-series of average channel utilization for all bands 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<RageChannelUtilizationForAllBandsSegmentedByDeviceResponse> TATimeSeriesOfAverageChannelUtilizationForAllBands(TATimeSeriesOfAverageChannelUtilizationForAllBandsParameters queryParameters, string organizationId)
+        public async Task<List<RageChannelUtilizationForAllBandsSegmentedByDeviceResponse>> TATimeSeriesOfAverageChannelUtilizationForAllBands(TATimeSeriesOfAverageChannelUtilizationForAllBandsParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5379,14 +5380,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/wireless/devices/channelUtilization/history/byNetwork/byInterval", parametersDict);
-            return await _httpClient.GetFromJsonAsync<RageChannelUtilizationForAllBandsSegmentedByDeviceResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<RageChannelUtilizationForAllBandsSegmentedByDeviceResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Endpoint to see power status for wireless devices 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<EndpointToSeePowerStatusForWirelessDevicesResponse> EndpointToSeePowerStatusForWirelessDevices(EndpointToSeePowerStatusForWirelessDevicesParameters queryParameters, string organizationId)
+        public async Task<List<EndpointToSeePowerStatusForWirelessDevicesResponse>> EndpointToSeePowerStatusForWirelessDevices(EndpointToSeePowerStatusForWirelessDevicesParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5395,14 +5396,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/wireless/devices/ethernet/statuses", parametersDict);
-            return await _httpClient.GetFromJsonAsync<EndpointToSeePowerStatusForWirelessDevicesResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<EndpointToSeePowerStatusForWirelessDevicesResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List of all failed client connection events on this network in a given time range 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<IentConnectionEventsOnThisNetworkInAGivenTimeRangeResponse> IentConnectionEventsOnThisNetworkInAGivenTimeRange(IentConnectionEventsOnThisNetworkInAGivenTimeRangeParameters queryParameters, string networkId)
+        public async Task<List<IentConnectionEventsOnThisNetworkInAGivenTimeRangeResponse>> IentConnectionEventsOnThisNetworkInAGivenTimeRange(IentConnectionEventsOnThisNetworkInAGivenTimeRangeParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5411,14 +5412,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/failedConnections", parametersDict);
-            return await _httpClient.GetFromJsonAsync<IentConnectionEventsOnThisNetworkInAGivenTimeRangeResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<IentConnectionEventsOnThisNetworkInAGivenTimeRangeResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Return average wireless latency over time for a network, device, or network client 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<EssLatencyOverTimeForANetworkDeviceOrNetworkClientResponse> EssLatencyOverTimeForANetworkDeviceOrNetworkClient(EssLatencyOverTimeForANetworkDeviceOrNetworkClientParameters queryParameters, string networkId)
+        public async Task<List<EssLatencyOverTimeForANetworkDeviceOrNetworkClientResponse>> EssLatencyOverTimeForANetworkDeviceOrNetworkClient(EssLatencyOverTimeForANetworkDeviceOrNetworkClientParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5427,7 +5428,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/latencyHistory", parametersDict);
-            return await _httpClient.GetFromJsonAsync<EssLatencyOverTimeForANetworkDeviceOrNetworkClientResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<EssLatencyOverTimeForANetworkDeviceOrNetworkClientResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -5450,7 +5451,7 @@ namespace MerakiDashboardv135
         /// Return signal quality (SNR/RSSI) over time for a device or network client 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<NalQualitySNRRSSIOverTimeForADeviceOrNetworkClientResponse> NalQualitySNRRSSIOverTimeForADeviceOrNetworkClient(NalQualitySNRRSSIOverTimeForADeviceOrNetworkClientParameters queryParameters, string networkId)
+        public async Task<List<NalQualitySNRRSSIOverTimeForADeviceOrNetworkClientResponse>> NalQualitySNRRSSIOverTimeForADeviceOrNetworkClient(NalQualitySNRRSSIOverTimeForADeviceOrNetworkClientParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5459,14 +5460,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/signalQualityHistory", parametersDict);
-            return await _httpClient.GetFromJsonAsync<NalQualitySNRRSSIOverTimeForADeviceOrNetworkClientResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<NalQualitySNRRSSIOverTimeForADeviceOrNetworkClientResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Return AP usage over time for a device or network client 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ReturnAPUsageOverTimeForADeviceOrNetworkClientResponse> ReturnAPUsageOverTimeForADeviceOrNetworkClient(ReturnAPUsageOverTimeForADeviceOrNetworkClientParameters queryParameters, string networkId)
+        public async Task<List<ReturnAPUsageOverTimeForADeviceOrNetworkClientResponse>> ReturnAPUsageOverTimeForADeviceOrNetworkClient(ReturnAPUsageOverTimeForADeviceOrNetworkClientParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5475,7 +5476,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/wireless/usageHistory", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ReturnAPUsageOverTimeForADeviceOrNetworkClientResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ReturnAPUsageOverTimeForADeviceOrNetworkClientResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -5753,7 +5754,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="applicationId">(Required) Application ID</param>
-        public async Task<GetApplicationHealthByTimeResponse> GetApplicationHealthByTime(GetApplicationHealthByTimeParameters queryParameters, string networkId, string applicationId)
+        public async Task<List<GetApplicationHealthByTimeResponse>> GetApplicationHealthByTime(GetApplicationHealthByTimeParameters queryParameters, string networkId, string applicationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5762,21 +5763,21 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/insight/applications/{applicationId}/healthByTime", parametersDict);
-            return await _httpClient.GetFromJsonAsync<GetApplicationHealthByTimeResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<GetApplicationHealthByTimeResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List all Insight tracked applications 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ListAllInsightTrackedApplicationsResponse> ListAllInsightTrackedApplications(string organizationId)
+        public async Task<List<ListAllInsightTrackedApplicationsResponse>> ListAllInsightTrackedApplications(string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListAllInsightTrackedApplicationsResponse>($"organizations/{organizationId}/insight/applications", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListAllInsightTrackedApplicationsResponse>>($"organizations/{organizationId}/insight/applications", headers);
         }
     
         /// <summary>
@@ -5784,14 +5785,14 @@ namespace MerakiDashboardv135
         /// Insight. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ListTheMonitoredMediaServersForThisOrganizationResponse> ListTheMonitoredMediaServersForThisOrganization(string organizationId)
+        public async Task<List<ListTheMonitoredMediaServersForThisOrganizationResponse>> ListTheMonitoredMediaServersForThisOrganization(string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheMonitoredMediaServersForThisOrganizationResponse>($"organizations/{organizationId}/insight/monitoredMediaServers", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheMonitoredMediaServersForThisOrganizationResponse>>($"organizations/{organizationId}/insight/monitoredMediaServers", headers);
         }
     
         /// <summary>
@@ -5897,7 +5898,7 @@ namespace MerakiDashboardv135
         /// List the devices enrolled in an SM network with various specified fields and filters 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<DInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersResponse> DInAnSMNetworkWithVariousSpecifiedFieldsAndFilters(DInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersParameters queryParameters, string networkId)
+        public async Task<List<DInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersResponse>> DInAnSMNetworkWithVariousSpecifiedFieldsAndFilters(DInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -5906,7 +5907,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/sm/devices", parametersDict);
-            return await _httpClient.GetFromJsonAsync<DInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<DInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -5983,14 +5984,14 @@ namespace MerakiDashboardv135
         ///  
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<DInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersResponse> AddDeleteOrUpdateTheTagsOfASetOfDevices(AddDeleteOrUpdateTheTagsOfASetOfDevicesRequest request, string networkId)
+        public async Task<List<AddDeleteOrUpdateTheTagsOfASetOfDevicesResponse>> AddDeleteOrUpdateTheTagsOfASetOfDevices(AddDeleteOrUpdateTheTagsOfASetOfDevicesRequest request, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.PostJsonAsync<DInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersResponse>($"networks/{networkId}/sm/devices/modifyTags", request, headers);
+            return await _httpClient.PostJsonAsync<List<AddDeleteOrUpdateTheTagsOfASetOfDevicesResponse>>($"networks/{networkId}/sm/devices/modifyTags", request, headers);
         }
     
         /// <summary>
@@ -6037,14 +6038,14 @@ namespace MerakiDashboardv135
         ///  
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheOrganizationsResponse> WipeADevice(WipeADeviceRequest request, string networkId)
+        public async Task<AddDeleteOrUpdateTheTagsOfASetOfDevicesResponse> WipeADevice(WipeADeviceRequest request, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.PostJsonAsync<ListTheOrganizationsResponse>($"networks/{networkId}/sm/devices/wipe", request, headers);
+            return await _httpClient.PostJsonAsync<AddDeleteOrUpdateTheTagsOfASetOfDevicesResponse>($"networks/{networkId}/sm/devices/wipe", request, headers);
         }
     
         /// <summary>
@@ -6081,21 +6082,21 @@ namespace MerakiDashboardv135
         /// List all profiles in a network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListAllProfilesInANetworkResponse> ListAllProfilesInANetwork(string networkId)
+        public async Task<List<ListAllProfilesInANetworkResponse>> ListAllProfilesInANetwork(string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListAllProfilesInANetworkResponse>($"networks/{networkId}/sm/profiles", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListAllProfilesInANetworkResponse>>($"networks/{networkId}/sm/profiles", headers);
         }
     
         /// <summary>
         /// List the target groups in this network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheTargetGroupsInThisNetworkResponse> ListTheTargetGroupsInThisNetwork(ListTheTargetGroupsInThisNetworkParameters queryParameters, string networkId)
+        public async Task<List<ListTheTargetGroupsInThisNetworkResponse>> ListTheTargetGroupsInThisNetwork(ListTheTargetGroupsInThisNetworkParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6104,7 +6105,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/sm/targetGroups", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheTargetGroupsInThisNetworkResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheTargetGroupsInThisNetworkResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6191,7 +6192,7 @@ namespace MerakiDashboardv135
         /// List Trusted Access Configs 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTrustedAccessConfigsResponse> ListTrustedAccessConfigs(ListTrustedAccessConfigsParameters queryParameters, string networkId)
+        public async Task<List<ListTrustedAccessConfigsResponse>> ListTrustedAccessConfigs(ListTrustedAccessConfigsParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6200,14 +6201,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/sm/trustedAccessConfigs", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTrustedAccessConfigsResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTrustedAccessConfigsResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List User Access Devices and its Trusted Access Connections 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<IstUserAccessDevicesAndItsTrustedAccessConnectionsResponse> IstUserAccessDevicesAndItsTrustedAccessConnections(IstUserAccessDevicesAndItsTrustedAccessConnectionsParameters queryParameters, string networkId)
+        public async Task<List<IstUserAccessDevicesAndItsTrustedAccessConnectionsResponse>> IstUserAccessDevicesAndItsTrustedAccessConnections(IstUserAccessDevicesAndItsTrustedAccessConnectionsParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6216,7 +6217,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/sm/userAccessDevices", parametersDict);
-            return await _httpClient.GetFromJsonAsync<IstUserAccessDevicesAndItsTrustedAccessConnectionsResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<IstUserAccessDevicesAndItsTrustedAccessConnectionsResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6246,7 +6247,7 @@ namespace MerakiDashboardv135
         /// List the owners in an SM network with various specified fields and filters 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<SInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersResponse> SInAnSMNetworkWithVariousSpecifiedFieldsAndFilters(SInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersParameters queryParameters, string networkId)
+        public async Task<List<SInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersResponse>> SInAnSMNetworkWithVariousSpecifiedFieldsAndFilters(SInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6255,7 +6256,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/sm/users", parametersDict);
-            return await _httpClient.GetFromJsonAsync<SInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<SInAnSMNetworkWithVariousSpecifiedFieldsAndFiltersResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6276,14 +6277,14 @@ namespace MerakiDashboardv135
         /// List the VPP accounts in the organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ListTheVPPAccountsInTheOrganizationResponse> ListTheVPPAccountsInTheOrganization(string organizationId)
+        public async Task<List<ListTheVPPAccountsInTheOrganizationResponse>> ListTheVPPAccountsInTheOrganization(string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ListTheVPPAccountsInTheOrganizationResponse>($"organizations/{organizationId}/sm/vppAccounts", headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheVPPAccountsInTheOrganizationResponse>>($"organizations/{organizationId}/sm/vppAccounts", headers);
         }
     
         /// <summary>
@@ -6306,14 +6307,14 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="deviceId">(Required) Device ID</param>
-        public async Task<ReturnTheClientsDailyCellularDataUsageHistoryResponse> ReturnTheClientsDailyCellularDataUsageHistory(string networkId, string deviceId)
+        public async Task<List<ReturnTheClientsDailyCellularDataUsageHistoryResponse>> ReturnTheClientsDailyCellularDataUsageHistory(string networkId, string deviceId)
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<ReturnTheClientsDailyCellularDataUsageHistoryResponse>($"networks/{networkId}/sm/devices/{deviceId}/cellularUsageHistory", headers);
+            return await _httpClient.GetFromJsonAsync<List<ReturnTheClientsDailyCellularDataUsageHistoryResponse>>($"networks/{networkId}/sm/devices/{deviceId}/cellularUsageHistory", headers);
         }
     
         /// <summary>
@@ -6321,7 +6322,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="deviceId">(Required) Device ID</param>
-        public async Task<DataWhetherADeviceIsRegularlyCheckingInToDashboardResponse> DataWhetherADeviceIsRegularlyCheckingInToDashboard(DataWhetherADeviceIsRegularlyCheckingInToDashboardParameters queryParameters, string networkId, string deviceId)
+        public async Task<List<DataWhetherADeviceIsRegularlyCheckingInToDashboardResponse>> DataWhetherADeviceIsRegularlyCheckingInToDashboard(DataWhetherADeviceIsRegularlyCheckingInToDashboardParameters queryParameters, string networkId, string deviceId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6330,7 +6331,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/sm/devices/{deviceId}/connectivity", parametersDict);
-            return await _httpClient.GetFromJsonAsync<DataWhetherADeviceIsRegularlyCheckingInToDashboardResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<DataWhetherADeviceIsRegularlyCheckingInToDashboardResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6338,7 +6339,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="deviceId">(Required) Device ID</param>
-        public async Task<MsManagerNetworkConnectionDetailsForDesktopDevicesResponse> MsManagerNetworkConnectionDetailsForDesktopDevices(MsManagerNetworkConnectionDetailsForDesktopDevicesParameters queryParameters, string networkId, string deviceId)
+        public async Task<List<MsManagerNetworkConnectionDetailsForDesktopDevicesResponse>> MsManagerNetworkConnectionDetailsForDesktopDevices(MsManagerNetworkConnectionDetailsForDesktopDevicesParameters queryParameters, string networkId, string deviceId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6347,7 +6348,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/sm/devices/{deviceId}/desktopLogs", parametersDict);
-            return await _httpClient.GetFromJsonAsync<MsManagerNetworkConnectionDetailsForDesktopDevicesResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<MsManagerNetworkConnectionDetailsForDesktopDevicesResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6357,7 +6358,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="deviceId">(Required) Device ID</param>
-        public async Task<OricalRecordsOfCommandsSentToSystemsManagerDevicesResponse> OricalRecordsOfCommandsSentToSystemsManagerDevices(OricalRecordsOfCommandsSentToSystemsManagerDevicesParameters queryParameters, string networkId, string deviceId)
+        public async Task<List<OricalRecordsOfCommandsSentToSystemsManagerDevicesResponse>> OricalRecordsOfCommandsSentToSystemsManagerDevices(OricalRecordsOfCommandsSentToSystemsManagerDevicesParameters queryParameters, string networkId, string deviceId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6366,7 +6367,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/sm/devices/{deviceId}/deviceCommandLogs", parametersDict);
-            return await _httpClient.GetFromJsonAsync<OricalRecordsOfCommandsSentToSystemsManagerDevicesResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<OricalRecordsOfCommandsSentToSystemsManagerDevicesResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6374,7 +6375,7 @@ namespace MerakiDashboardv135
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
         /// <param name="deviceId">(Required) Device ID</param>
-        public async Task<AriousSystemsManagerClientMetricsForDesktopDevicesResponse> AriousSystemsManagerClientMetricsForDesktopDevices(AriousSystemsManagerClientMetricsForDesktopDevicesParameters queryParameters, string networkId, string deviceId)
+        public async Task<List<AriousSystemsManagerClientMetricsForDesktopDevicesResponse>> AriousSystemsManagerClientMetricsForDesktopDevices(AriousSystemsManagerClientMetricsForDesktopDevicesParameters queryParameters, string networkId, string deviceId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6383,14 +6384,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/sm/devices/{deviceId}/performanceHistory", parametersDict);
-            return await _httpClient.GetFromJsonAsync<AriousSystemsManagerClientMetricsForDesktopDevicesResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<AriousSystemsManagerClientMetricsForDesktopDevicesResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the licenses in a coterm organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ListTheLicensesInACotermOrganizationResponse> ListTheLicensesInACotermOrganization(ListTheLicensesInACotermOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<ListTheLicensesInACotermOrganizationResponse>> ListTheLicensesInACotermOrganization(ListTheLicensesInACotermOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6399,7 +6400,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/licensing/coterm/licenses", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheLicensesInACotermOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheLicensesInACotermOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6530,7 +6531,7 @@ namespace MerakiDashboardv135
         /// is null. 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<ListTheClientsOfADeviceUpToAMaximumOfAMonthAgoResponse> ListTheClientsOfADeviceUpToAMaximumOfAMonthAgo(ListTheClientsOfADeviceUpToAMaximumOfAMonthAgoParameters queryParameters, string serial)
+        public async Task<List<ListTheClientsOfADeviceUpToAMaximumOfAMonthAgoResponse>> ListTheClientsOfADeviceUpToAMaximumOfAMonthAgo(ListTheClientsOfADeviceUpToAMaximumOfAMonthAgoParameters queryParameters, string serial)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6539,7 +6540,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"devices/{serial}/clients", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheClientsOfADeviceUpToAMaximumOfAMonthAgoResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheClientsOfADeviceUpToAMaximumOfAMonthAgoResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6561,7 +6562,7 @@ namespace MerakiDashboardv135
         /// wired network device. 
         /// </summary>
         /// <param name="serial">(Required) Serial</param>
-        public async Task<NdGoodputInKilobitsPerSecondForAWiredNetworkDeviceResponse> NdGoodputInKilobitsPerSecondForAWiredNetworkDevice(NdGoodputInKilobitsPerSecondForAWiredNetworkDeviceParameters queryParameters, string serial)
+        public async Task<List<NdGoodputInKilobitsPerSecondForAWiredNetworkDeviceResponse>> NdGoodputInKilobitsPerSecondForAWiredNetworkDevice(NdGoodputInKilobitsPerSecondForAWiredNetworkDeviceParameters queryParameters, string serial)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6570,7 +6571,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"devices/{serial}/lossAndLatencyHistory", parametersDict);
-            return await _httpClient.GetFromJsonAsync<NdGoodputInKilobitsPerSecondForAWiredNetworkDeviceResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<NdGoodputInKilobitsPerSecondForAWiredNetworkDeviceResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6715,7 +6716,7 @@ namespace MerakiDashboardv135
         ///  
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ReturnANetworkResponse> UpdateANetwork(BindANetworkToATemplateResponse request, string networkId)
+        public async Task<ReturnANetworkResponse> UpdateANetwork(UpdateANetworkRequest request, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6729,7 +6730,7 @@ namespace MerakiDashboardv135
         /// Return the alert history for this network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ReturnTheAlertHistoryForThisNetworkResponse> ReturnTheAlertHistoryForThisNetwork(ReturnTheAlertHistoryForThisNetworkParameters queryParameters, string networkId)
+        public async Task<List<ReturnTheAlertHistoryForThisNetworkResponse>> ReturnTheAlertHistoryForThisNetwork(ReturnTheAlertHistoryForThisNetworkParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6738,14 +6739,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/alerts/history", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ReturnTheAlertHistoryForThisNetworkResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ReturnTheAlertHistoryForThisNetworkResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the Bluetooth clients seen by APs in this network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheBluetoothClientsSeenByAPsInThisNetworkResponse> ListTheBluetoothClientsSeenByAPsInThisNetwork(ListTheBluetoothClientsSeenByAPsInThisNetworkParameters queryParameters, string networkId)
+        public async Task<List<ListTheBluetoothClientsSeenByAPsInThisNetworkResponse>> ListTheBluetoothClientsSeenByAPsInThisNetwork(ListTheBluetoothClientsSeenByAPsInThisNetworkParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6754,7 +6755,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/bluetoothClients", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheBluetoothClientsSeenByAPsInThisNetworkResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheBluetoothClientsSeenByAPsInThisNetworkResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6826,7 +6827,7 @@ namespace MerakiDashboardv135
         /// Get the channel utilization over each radio for all APs in a network. 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ChannelUtilizationOverEachRadioForAllAPsInANetworkResponse> ChannelUtilizationOverEachRadioForAllAPsInANetwork(ChannelUtilizationOverEachRadioForAllAPsInANetworkParameters queryParameters, string networkId)
+        public async Task<List<ChannelUtilizationOverEachRadioForAllAPsInANetworkResponse>> ChannelUtilizationOverEachRadioForAllAPsInANetwork(ChannelUtilizationOverEachRadioForAllAPsInANetworkParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6835,14 +6836,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/networkHealth/channelUtilization", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ChannelUtilizationOverEachRadioForAllAPsInANetworkResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ChannelUtilizationOverEachRadioForAllAPsInANetworkResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the splash login attempts for a network 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ListTheSplashLoginAttemptsForANetworkResponse> ListTheSplashLoginAttemptsForANetwork(ListTheSplashLoginAttemptsForANetworkParameters queryParameters, string networkId)
+        public async Task<List<ListTheSplashLoginAttemptsForANetworkResponse>> ListTheSplashLoginAttemptsForANetwork(ListTheSplashLoginAttemptsForANetworkParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6851,7 +6852,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/splashLoginAttempts", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheSplashLoginAttemptsForANetworkResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheSplashLoginAttemptsForANetworkResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6874,7 +6875,7 @@ namespace MerakiDashboardv135
         /// enabled on the network. 
         /// </summary>
         /// <param name="networkId">(Required) Network ID</param>
-        public async Task<ReturnTheTrafficAnalysisDataForThisNetworkResponse> ReturnTheTrafficAnalysisDataForThisNetwork(ReturnTheTrafficAnalysisDataForThisNetworkParameters queryParameters, string networkId)
+        public async Task<List<ReturnTheTrafficAnalysisDataForThisNetworkResponse>> ReturnTheTrafficAnalysisDataForThisNetwork(ReturnTheTrafficAnalysisDataForThisNetworkParameters queryParameters, string networkId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6883,7 +6884,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"networks/{networkId}/traffic", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ReturnTheTrafficAnalysisDataForThisNetworkResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ReturnTheTrafficAnalysisDataForThisNetworkResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -6934,7 +6935,7 @@ namespace MerakiDashboardv135
         ///  
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<CreateANewOrganizationResponse> EANewOrganizationByCloningTheAddressedOrganization(ListTheOrganizationsResponse request, string organizationId)
+        public async Task<CreateANewOrganizationResponse> EANewOrganizationByCloningTheAddressedOrganization(AddAMediaServerToBeMonitoredForThisOrganizationRequest request, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -6961,14 +6962,14 @@ namespace MerakiDashboardv135
         /// <summary>
         /// List the organizations that the user has privileges on 
         /// </summary>
-        public async Task<CreateANewOrganizationResponse> ListTheOrganizationsThatTheUserHasPrivilegesOn()
+        public async Task<List<CreateANewOrganizationResponse>> ListTheOrganizationsThatTheUserHasPrivilegesOn()
         {
             var headers = new Dictionary<string, string>()
             {
                 { $"Authorization", $"" }
             };
     
-            return await _httpClient.GetFromJsonAsync<CreateANewOrganizationResponse>($"organizations", headers);
+            return await _httpClient.GetFromJsonAsync<List<CreateANewOrganizationResponse>>($"organizations", headers);
         }
     
         /// <summary>
@@ -6999,7 +7000,7 @@ namespace MerakiDashboardv135
         ///  
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<CreateANewOrganizationResponse> UpdateAnOrganization(CreateANewOrganizationResponse request, string organizationId)
+        public async Task<CreateANewOrganizationResponse> UpdateAnOrganization(UpdateAnOrganizationRequest request, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7027,7 +7028,7 @@ namespace MerakiDashboardv135
         /// List the API requests made by an organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ListTheAPIRequestsMadeByAnOrganizationResponse> ListTheAPIRequestsMadeByAnOrganization(ListTheAPIRequestsMadeByAnOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<ListTheAPIRequestsMadeByAnOrganizationResponse>> ListTheAPIRequestsMadeByAnOrganization(ListTheAPIRequestsMadeByAnOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7036,7 +7037,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/apiRequests", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheAPIRequestsMadeByAnOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheAPIRequestsMadeByAnOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -7044,7 +7045,7 @@ namespace MerakiDashboardv135
         /// within a given time range. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ClientsInTheGivenOrganizationWithinAGivenTimeRangeResponse> ClientsInTheGivenOrganizationWithinAGivenTimeRange(ClientsInTheGivenOrganizationWithinAGivenTimeRangeParameters queryParameters, string organizationId)
+        public async Task<List<ClientsInTheGivenOrganizationWithinAGivenTimeRangeResponse>> ClientsInTheGivenOrganizationWithinAGivenTimeRange(ClientsInTheGivenOrganizationWithinAGivenTimeRangeParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7053,7 +7054,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/clients/bandwidthUsageHistory", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ClientsInTheGivenOrganizationWithinAGivenTimeRangeResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ClientsInTheGivenOrganizationWithinAGivenTimeRangeResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -7076,7 +7077,7 @@ namespace MerakiDashboardv135
         /// View the Change Log for your organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ViewTheChangeLogForYourOrganizationResponse> ViewTheChangeLogForYourOrganization(ViewTheChangeLogForYourOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<ViewTheChangeLogForYourOrganizationResponse>> ViewTheChangeLogForYourOrganization(ViewTheChangeLogForYourOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7085,7 +7086,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/configurationChanges", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ViewTheChangeLogForYourOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ViewTheChangeLogForYourOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -7093,7 +7094,7 @@ namespace MerakiDashboardv135
         /// is updated every 5 minutes. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<EAvailabilityInformationForDevicesInAnOrganizationResponse> EAvailabilityInformationForDevicesInAnOrganization(EAvailabilityInformationForDevicesInAnOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<EAvailabilityInformationForDevicesInAnOrganizationResponse>> EAvailabilityInformationForDevicesInAnOrganization(EAvailabilityInformationForDevicesInAnOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7102,7 +7103,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/devices/availabilities", parametersDict);
-            return await _httpClient.GetFromJsonAsync<EAvailabilityInformationForDevicesInAnOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<EAvailabilityInformationForDevicesInAnOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -7110,7 +7111,7 @@ namespace MerakiDashboardv135
         /// is updated every 5 minutes. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<HePowerStatusInformationForDevicesInAnOrganizationResponse> HePowerStatusInformationForDevicesInAnOrganization(HePowerStatusInformationForDevicesInAnOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<HePowerStatusInformationForDevicesInAnOrganizationResponse>> HePowerStatusInformationForDevicesInAnOrganization(HePowerStatusInformationForDevicesInAnOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7119,14 +7120,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/devices/powerModules/statuses/byDevice", parametersDict);
-            return await _httpClient.GetFromJsonAsync<HePowerStatusInformationForDevicesInAnOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<HePowerStatusInformationForDevicesInAnOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the provisioning statuses information for devices in an organization. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<EAvailabilityInformationForDevicesInAnOrganizationResponse> OningStatusesInformationForDevicesInAnOrganization(OningStatusesInformationForDevicesInAnOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<EAvailabilityInformationForDevicesInAnOrganizationResponse>> OningStatusesInformationForDevicesInAnOrganization(OningStatusesInformationForDevicesInAnOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7135,14 +7136,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/devices/provisioning/statuses", parametersDict);
-            return await _httpClient.GetFromJsonAsync<EAvailabilityInformationForDevicesInAnOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<EAvailabilityInformationForDevicesInAnOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the status of every Meraki device in the organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ListTheStatusOfEveryMerakiDeviceInTheOrganizationResponse> ListTheStatusOfEveryMerakiDeviceInTheOrganization(ListTheStatusOfEveryMerakiDeviceInTheOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<ListTheStatusOfEveryMerakiDeviceInTheOrganizationResponse>> ListTheStatusOfEveryMerakiDeviceInTheOrganization(ListTheStatusOfEveryMerakiDeviceInTheOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7151,14 +7152,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/devices/statuses", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ListTheStatusOfEveryMerakiDeviceInTheOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ListTheStatusOfEveryMerakiDeviceInTheOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the current uplink addresses for devices in an organization. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<HeCurrentUplinkAddressesForDevicesInAnOrganizationResponse> HeCurrentUplinkAddressesForDevicesInAnOrganization(HeCurrentUplinkAddressesForDevicesInAnOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<HeCurrentUplinkAddressesForDevicesInAnOrganizationResponse>> HeCurrentUplinkAddressesForDevicesInAnOrganization(HeCurrentUplinkAddressesForDevicesInAnOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7167,14 +7168,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/devices/uplinks/addresses/byDevice", parametersDict);
-            return await _httpClient.GetFromJsonAsync<HeCurrentUplinkAddressesForDevicesInAnOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<HeCurrentUplinkAddressesForDevicesInAnOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Return the uplink loss and latency for every MX in the organization from at latest 2 minutes ago 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ForEveryMXInTheOrganizationFromAtLatest2MinutesAgoResponse> ForEveryMXInTheOrganizationFromAtLatest2MinutesAgo(ForEveryMXInTheOrganizationFromAtLatest2MinutesAgoParameters queryParameters, string organizationId)
+        public async Task<List<ForEveryMXInTheOrganizationFromAtLatest2MinutesAgoResponse>> ForEveryMXInTheOrganizationFromAtLatest2MinutesAgo(ForEveryMXInTheOrganizationFromAtLatest2MinutesAgoParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7183,7 +7184,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/devices/uplinksLossAndLatency", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ForEveryMXInTheOrganizationFromAtLatest2MinutesAgoResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ForEveryMXInTheOrganizationFromAtLatest2MinutesAgoResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -7220,7 +7221,7 @@ namespace MerakiDashboardv135
         /// Return the top 10 appliances sorted by utilization over given time range. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<P10AppliancesSortedByUtilizationOverGivenTimeRangeResponse> P10AppliancesSortedByUtilizationOverGivenTimeRange(P10AppliancesSortedByUtilizationOverGivenTimeRangeParameters queryParameters, string organizationId)
+        public async Task<List<P10AppliancesSortedByUtilizationOverGivenTimeRangeResponse>> P10AppliancesSortedByUtilizationOverGivenTimeRange(P10AppliancesSortedByUtilizationOverGivenTimeRangeParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7229,14 +7230,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/summary/top/appliances/byUtilization", parametersDict);
-            return await _httpClient.GetFromJsonAsync<P10AppliancesSortedByUtilizationOverGivenTimeRangeResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<P10AppliancesSortedByUtilizationOverGivenTimeRangeResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Return metrics for organization's top 10 clients by data usage (in mb) over given time range. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<TionsTop10ClientsByDataUsageInMbOverGivenTimeRangeResponse> TionsTop10ClientsByDataUsageInMbOverGivenTimeRange(TionsTop10ClientsByDataUsageInMbOverGivenTimeRangeParameters queryParameters, string organizationId)
+        public async Task<List<TionsTop10ClientsByDataUsageInMbOverGivenTimeRangeResponse>> TionsTop10ClientsByDataUsageInMbOverGivenTimeRange(TionsTop10ClientsByDataUsageInMbOverGivenTimeRangeParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7245,7 +7246,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/summary/top/clients/byUsage", parametersDict);
-            return await _httpClient.GetFromJsonAsync<TionsTop10ClientsByDataUsageInMbOverGivenTimeRangeResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<TionsTop10ClientsByDataUsageInMbOverGivenTimeRangeResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -7253,7 +7254,7 @@ namespace MerakiDashboardv135
         /// by manufacturer. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<TaUsageInMbOverGivenTimeRangeGroupedByManufacturerResponse> TaUsageInMbOverGivenTimeRangeGroupedByManufacturer(TaUsageInMbOverGivenTimeRangeGroupedByManufacturerParameters queryParameters, string organizationId)
+        public async Task<List<TaUsageInMbOverGivenTimeRangeGroupedByManufacturerResponse>> TaUsageInMbOverGivenTimeRangeGroupedByManufacturer(TaUsageInMbOverGivenTimeRangeGroupedByManufacturerParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7262,7 +7263,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/summary/top/clients/manufacturers/byUsage", parametersDict);
-            return await _httpClient.GetFromJsonAsync<TaUsageInMbOverGivenTimeRangeGroupedByManufacturerResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<TaUsageInMbOverGivenTimeRangeGroupedByManufacturerResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -7270,7 +7271,7 @@ namespace MerakiDashboardv135
         /// unit is megabytes. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<OnsTop10DevicesSortedByDataUsageOverGivenTimeRangeResponse> OnsTop10DevicesSortedByDataUsageOverGivenTimeRange(OnsTop10DevicesSortedByDataUsageOverGivenTimeRangeParameters queryParameters, string organizationId)
+        public async Task<List<OnsTop10DevicesSortedByDataUsageOverGivenTimeRangeResponse>> OnsTop10DevicesSortedByDataUsageOverGivenTimeRange(OnsTop10DevicesSortedByDataUsageOverGivenTimeRangeParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7279,7 +7280,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/summary/top/devices/byUsage", parametersDict);
-            return await _httpClient.GetFromJsonAsync<OnsTop10DevicesSortedByDataUsageOverGivenTimeRangeResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<OnsTop10DevicesSortedByDataUsageOverGivenTimeRangeResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -7287,7 +7288,7 @@ namespace MerakiDashboardv135
         /// Default unit is megabytes. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<P10DeviceModelsSortedByDataUsageOverGivenTimeRangeResponse> P10DeviceModelsSortedByDataUsageOverGivenTimeRange(P10DeviceModelsSortedByDataUsageOverGivenTimeRangeParameters queryParameters, string organizationId)
+        public async Task<List<P10DeviceModelsSortedByDataUsageOverGivenTimeRangeResponse>> P10DeviceModelsSortedByDataUsageOverGivenTimeRange(P10DeviceModelsSortedByDataUsageOverGivenTimeRangeParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7296,7 +7297,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/summary/top/devices/models/byUsage", parametersDict);
-            return await _httpClient.GetFromJsonAsync<P10DeviceModelsSortedByDataUsageOverGivenTimeRangeResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<P10DeviceModelsSortedByDataUsageOverGivenTimeRangeResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -7304,7 +7305,7 @@ namespace MerakiDashboardv135
         /// megabytes. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<TaUsageInMbOverGivenTimeRangeGroupedByManufacturerResponse> GanizationsTop10SsidsByDataUsageOverGivenTimeRange(GanizationsTop10SsidsByDataUsageOverGivenTimeRangeParameters queryParameters, string organizationId)
+        public async Task<List<TaUsageInMbOverGivenTimeRangeGroupedByManufacturerResponse>> GanizationsTop10SsidsByDataUsageOverGivenTimeRange(GanizationsTop10SsidsByDataUsageOverGivenTimeRangeParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7313,7 +7314,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/summary/top/ssids/byUsage", parametersDict);
-            return await _httpClient.GetFromJsonAsync<TaUsageInMbOverGivenTimeRangeGroupedByManufacturerResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<TaUsageInMbOverGivenTimeRangeGroupedByManufacturerResponse>>(queryString, headers);
         }
     
         /// <summary>
@@ -7321,7 +7322,7 @@ namespace MerakiDashboardv135
         /// unit is joules. 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<OnsTop10DevicesSortedByDataUsageOverGivenTimeRangeResponse> AtionsTop10SwitchesByEnergyUsageOverGivenTimeRange(AtionsTop10SwitchesByEnergyUsageOverGivenTimeRangeParameters queryParameters, string organizationId)
+        public async Task<List<OnsTop10DevicesSortedByDataUsageOverGivenTimeRangeResponse>> AtionsTop10SwitchesByEnergyUsageOverGivenTimeRange(AtionsTop10SwitchesByEnergyUsageOverGivenTimeRangeParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7330,14 +7331,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/summary/top/switches/byEnergyUsage", parametersDict);
-            return await _httpClient.GetFromJsonAsync<OnsTop10DevicesSortedByDataUsageOverGivenTimeRangeResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<OnsTop10DevicesSortedByDataUsageOverGivenTimeRangeResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// List the uplink status of every Meraki MX, MG and Z series devices in the organization 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse> FEveryMerakiMXMGAndZSeriesDevicesInTheOrganization(FEveryMerakiMXMGAndZSeriesDevicesInTheOrganizationParameters queryParameters, string organizationId)
+        public async Task<List<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse>> FEveryMerakiMXMGAndZSeriesDevicesInTheOrganization(FEveryMerakiMXMGAndZSeriesDevicesInTheOrganizationParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7346,14 +7347,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/uplinks/statuses", parametersDict);
-            return await _httpClient.GetFromJsonAsync<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<EveryMerakiMXAndZSeriesAppliancesInTheOrganizationResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Return a list of alert types to be used with managing webhook alerts 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<AListOfAlertTypesToBeUsedWithManagingWebhookAlertsResponse> AListOfAlertTypesToBeUsedWithManagingWebhookAlerts(AListOfAlertTypesToBeUsedWithManagingWebhookAlertsParameters queryParameters, string organizationId)
+        public async Task<List<AListOfAlertTypesToBeUsedWithManagingWebhookAlertsResponse>> AListOfAlertTypesToBeUsedWithManagingWebhookAlerts(AListOfAlertTypesToBeUsedWithManagingWebhookAlertsParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7362,14 +7363,14 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/webhooks/alertTypes", parametersDict);
-            return await _httpClient.GetFromJsonAsync<AListOfAlertTypesToBeUsedWithManagingWebhookAlertsResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<AListOfAlertTypesToBeUsedWithManagingWebhookAlertsResponse>>(queryString, headers);
         }
     
         /// <summary>
         /// Return the log of webhook POSTs sent 
         /// </summary>
         /// <param name="organizationId">(Required) Organization ID</param>
-        public async Task<ReturnTheLogOfWebhookPOSTsSentResponse> ReturnTheLogOfWebhookPOSTsSent(ReturnTheLogOfWebhookPOSTsSentParameters queryParameters, string organizationId)
+        public async Task<List<ReturnTheLogOfWebhookPOSTsSentResponse>> ReturnTheLogOfWebhookPOSTsSent(ReturnTheLogOfWebhookPOSTsSentParameters queryParameters, string organizationId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -7378,7 +7379,7 @@ namespace MerakiDashboardv135
     
             var parametersDict = queryParameters.ToDictionary();
             var queryString = QueryHelpers.AddQueryString($"organizations/{organizationId}/webhooks/logs", parametersDict);
-            return await _httpClient.GetFromJsonAsync<ReturnTheLogOfWebhookPOSTsSentResponse>(queryString, headers);
+            return await _httpClient.GetFromJsonAsync<List<ReturnTheLogOfWebhookPOSTsSentResponse>>(queryString, headers);
         }
     }
 }

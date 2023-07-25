@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<MoveASetOfDevicesToANewNetworkRequest>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<MoveASetOfDevicesToANewNetworkRequest>(myJsonResponse);
     public class MoveASetOfDevicesToANewNetworkRequest
     {
         public string NewNetwork { get; set; }

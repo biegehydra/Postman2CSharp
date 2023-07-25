@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<QueryAutocompleteResponse>(myJsonResponse);
 namespace SystemTextJson
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<QueryAutocompleteResponse>(myJsonResponse);
     public class QueryAutocompleteResponse
     {
         public List<Predictions> Predictions { get; set; }
@@ -15,7 +14,7 @@ namespace SystemTextJson
     public class Predictions
     {
         public string Description { get; set; }
-        public List<MatchedSubstrings> MatchedSubstrings { get; set; }
+        public List<MainTextMatchedSubstrings> MatchedSubstrings { get; set; }
         public StructuredFormatting StructuredFormatting { get; set; }
         public List<Terms> Terms { get; set; }
     }
@@ -25,22 +24,10 @@ namespace SystemTextJson
         public string MainText { get; set; }
         public List<MainTextMatchedSubstrings> MainTextMatchedSubstrings { get; set; }
         public string SecondaryText { get; set; }
-        public List<SecondaryTextMatchedSubstrings> SecondaryTextMatchedSubstrings { get; set; }
+        public List<MainTextMatchedSubstrings> SecondaryTextMatchedSubstrings { get; set; }
     }
 
     public class MainTextMatchedSubstrings
-    {
-        public int Length { get; set; }
-        public int Offset { get; set; }
-    }
-
-    public class MatchedSubstrings
-    {
-        public int Length { get; set; }
-        public int Offset { get; set; }
-    }
-
-    public class SecondaryTextMatchedSubstrings
     {
         public int Length { get; set; }
         public int Offset { get; set; }

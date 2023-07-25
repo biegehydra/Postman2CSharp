@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ForEveryMXInTheOrganizationFromAtLatest2MinutesAgoResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ForEveryMXInTheOrganizationFromAtLatest2MinutesAgoResponse>>(myJsonResponse);
     public class ForEveryMXInTheOrganizationFromAtLatest2MinutesAgoResponse
     {
         public string NetworkId { get; set; }

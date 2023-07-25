@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListAllInsightTrackedApplicationsResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ListAllInsightTrackedApplicationsResponse>>(myJsonResponse);
     public class ListAllInsightTrackedApplicationsResponse
     {
         public string ApplicationId { get; set; }

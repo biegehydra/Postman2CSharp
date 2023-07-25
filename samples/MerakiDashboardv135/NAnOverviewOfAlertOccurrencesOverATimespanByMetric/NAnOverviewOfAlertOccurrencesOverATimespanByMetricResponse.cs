@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<NAnOverviewOfAlertOccurrencesOverATimespanByMetricResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<NAnOverviewOfAlertOccurrencesOverATimespanByMetricResponse>>(myJsonResponse);
     public class NAnOverviewOfAlertOccurrencesOverATimespanByMetricResponse
     {
         public DateTime StartTs { get; set; }

@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<UpdateAVLANRequest>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<UpdateAVLANRequest>(myJsonResponse);
     public class UpdateAVLANRequest
     {
         public string Name { get; set; }
@@ -19,14 +18,14 @@ namespace MerakiDashboardv135
         public string DhcpBootOptionsEnabled { get; set; }
         public string DhcpBootNextServer { get; set; }
         public string DhcpBootFilename { get; set; }
-        public FixedIpAssignments FixedIpAssignments { get; set; }
+        public Ipv7 FixedIpAssignments { get; set; }
         public List<ReservedIpRanges> ReservedIpRanges { get; set; }
         public string DnsNameservers { get; set; }
         public List<DhcpOptions> DhcpOptions { get; set; }
         public string TemplateVlanType { get; set; }
         public string Cidr { get; set; }
         public string Mask { get; set; }
-        public Ipv8 Ipv6 { get; set; }
-        public MandatoryDhcp2 MandatoryDhcp { get; set; }
+        public Ipv7 Ipv6 { get; set; }
+        public Ipv7 MandatoryDhcp { get; set; }
     }
 }

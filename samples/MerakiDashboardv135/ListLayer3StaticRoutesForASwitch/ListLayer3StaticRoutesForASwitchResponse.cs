@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListLayer3StaticRoutesForASwitchResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ListLayer3StaticRoutesForASwitchResponse>>(myJsonResponse);
     public class ListLayer3StaticRoutesForASwitchResponse
     {
         public string StaticRouteId { get; set; }

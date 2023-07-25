@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheAccessPoliciesForASwitchNetworkResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheAccessPoliciesForASwitchNetworkResponse>>(myJsonResponse);
     public class ListTheAccessPoliciesForASwitchNetworkResponse
     {
         public string Name { get; set; }
@@ -15,7 +14,7 @@ namespace MerakiDashboardv135
         public bool RadiusTestingEnabled { get; set; }
         public bool RadiusCoaSupportEnabled { get; set; }
         public bool RadiusAccountingEnabled { get; set; }
-        public List<RadiusAccountingServers> RadiusAccountingServers { get; set; }
+        public List<RadiusServers> RadiusAccountingServers { get; set; }
         public string RadiusGroupAttribute { get; set; }
         public string HostMode { get; set; }
         public string AccessPolicyType { get; set; }
@@ -39,12 +38,6 @@ namespace MerakiDashboardv135
         public CriticalAuth CriticalAuth { get; set; }
         public int FailedAuthVlanId { get; set; }
         public int ReAuthenticationInterval { get; set; }
-    }
-
-    public class RadiusAccountingServers
-    {
-        public string Host { get; set; }
-        public int Port { get; set; }
     }
 
     public class Dot1x

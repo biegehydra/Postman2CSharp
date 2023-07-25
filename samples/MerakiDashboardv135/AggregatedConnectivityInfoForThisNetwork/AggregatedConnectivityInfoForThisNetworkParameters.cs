@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<AggregatedConnectivityInfoForThisNetworkParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<AggregatedConnectivityInfoForThisNetworkParameters>(myJsonResponse);
     public class AggregatedConnectivityInfoForThisNetworkParameters : IQueryParameters
     {
         /// <summary>

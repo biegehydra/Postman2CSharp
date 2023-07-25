@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<CificationOfTheOrganizationsAPIDocumentationInJSONResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<CificationOfTheOrganizationsAPIDocumentationInJSONResponse>(myJsonResponse);
     public class CificationOfTheOrganizationsAPIDocumentationInJSONResponse
     {
         public string Openapi { get; set; }
@@ -27,12 +26,6 @@ namespace MerakiDashboardv135
         public string Description { get; set; }
     }
 
-    public class ApplicationJson
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-    }
-
     public class _200
     {
         public string Description { get; set; }
@@ -41,8 +34,7 @@ namespace MerakiDashboardv135
 
     public class Examples
     {
-        [JsonPropertyName("application/json")]
-        public List<ApplicationJson> ApplicationJson { get; set; }
+        public List<ListSwitchPortSchedulesResponse> ApplicationJson { get; set; }
     }
 
     public class Organizations
@@ -52,13 +44,11 @@ namespace MerakiDashboardv135
 
     public class Paths
     {
-        [JsonPropertyName("/organizations")]
         public Organizations Organizations { get; set; }
     }
 
     public class Responses
     {
-        [JsonPropertyName("200")]
         public _200 _200 { get; set; }
     }
 }

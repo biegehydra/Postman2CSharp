@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<BlinkTheLEDsOnADeviceResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<BlinkTheLEDsOnADeviceResponse>(myJsonResponse);
     public class BlinkTheLEDsOnADeviceResponse
     {
         public int Duration { get; set; }

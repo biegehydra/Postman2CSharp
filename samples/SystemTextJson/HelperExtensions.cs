@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+
 namespace SystemTextJson
 {
     public static class HelperExtensions

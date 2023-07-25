@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<FetchOnboardingStatusOfCamerasParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<FetchOnboardingStatusOfCamerasParameters>(myJsonResponse);
     public class FetchOnboardingStatusOfCamerasParameters : IQueryParameters
     {
         /// <summary>

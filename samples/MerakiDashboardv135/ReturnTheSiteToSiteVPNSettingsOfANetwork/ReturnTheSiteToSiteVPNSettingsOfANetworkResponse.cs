@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheSiteToSiteVPNSettingsOfANetworkResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheSiteToSiteVPNSettingsOfANetworkResponse>(myJsonResponse);
     public class ReturnTheSiteToSiteVPNSettingsOfANetworkResponse
     {
         public string Mode { get; set; }

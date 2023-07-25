@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnLayer3OSPFRoutingConfigurationResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ReturnLayer3OSPFRoutingConfigurationResponse>(myJsonResponse);
     public class ReturnLayer3OSPFRoutingConfigurationResponse
     {
         public bool Enabled { get; set; }
         public int HelloTimerInSeconds { get; set; }
         public int DeadTimerInSeconds { get; set; }
-        public List<Areas2> Areas { get; set; }
+        public List<Areas> Areas { get; set; }
         public V3 V3 { get; set; }
         public bool Md5AuthenticationEnabled { get; set; }
         public Md5AuthenticationKey Md5AuthenticationKey { get; set; }
@@ -22,10 +21,10 @@ namespace MerakiDashboardv135
         public bool Enabled { get; set; }
         public int HelloTimerInSeconds { get; set; }
         public int DeadTimerInSeconds { get; set; }
-        public List<Areas2> Areas { get; set; }
+        public List<Areas> Areas { get; set; }
     }
 
-    public class Areas2
+    public class Areas
     {
         public string AreaId { get; set; }
         public string AreaName { get; set; }

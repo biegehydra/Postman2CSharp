@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheVLANsForAnMXNetworkResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheVLANsForAnMXNetworkResponse>>(myJsonResponse);
     public class ListTheVLANsForAnMXNetworkResponse
     {
         public string Id { get; set; }
@@ -27,7 +26,7 @@ namespace MerakiDashboardv135
         public string DnsNameservers { get; set; }
         public List<DhcpOptions> DhcpOptions { get; set; }
         public string VpnNatSubnet { get; set; }
-        public MandatoryDhcp MandatoryDhcp { get; set; }
+        public Ipv6 MandatoryDhcp { get; set; }
         public Ipv6 Ipv6 { get; set; }
     }
 

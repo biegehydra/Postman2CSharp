@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
     public interface IQueryParameters
     {

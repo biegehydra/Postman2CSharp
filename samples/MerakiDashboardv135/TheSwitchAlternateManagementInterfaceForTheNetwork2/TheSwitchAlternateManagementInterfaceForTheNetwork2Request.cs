@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<TheSwitchAlternateManagementInterfaceForTheNetwork2Request>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<TheSwitchAlternateManagementInterfaceForTheNetwork2Request>(myJsonResponse);
     public class TheSwitchAlternateManagementInterfaceForTheNetwork2Request
     {
         public string Enabled { get; set; }

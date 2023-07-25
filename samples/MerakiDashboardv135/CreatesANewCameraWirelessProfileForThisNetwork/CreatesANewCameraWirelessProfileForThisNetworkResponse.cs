@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<CreatesANewCameraWirelessProfileForThisNetworkResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<CreatesANewCameraWirelessProfileForThisNetworkResponse>(myJsonResponse);
     public class CreatesANewCameraWirelessProfileForThisNetworkResponse
     {
         public string Id { get; set; }

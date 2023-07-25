@@ -3,7 +3,7 @@ using System.Text.Encodings.Web;
 using System;
 using System.Collections.Generic;
 
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
     public static class QueryHelpers
     {

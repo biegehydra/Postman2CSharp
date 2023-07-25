@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<AddAVLANRequest>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<AddAVLANRequest>(myJsonResponse);
     public class AddAVLANRequest
     {
         public string Id { get; set; }
@@ -16,8 +15,8 @@ namespace MerakiDashboardv135
         public string TemplateVlanType { get; set; }
         public string Cidr { get; set; }
         public string Mask { get; set; }
-        public Ipv8 Ipv6 { get; set; }
-        public MandatoryDhcp2 MandatoryDhcp { get; set; }
+        public Ipv7 Ipv6 { get; set; }
+        public Ipv6 MandatoryDhcp { get; set; }
     }
 
     public class PrefixAssignments2
@@ -28,14 +27,9 @@ namespace MerakiDashboardv135
         public Origin2 Origin { get; set; }
     }
 
-    public class Ipv8
+    public class Ipv7
     {
         public string Enabled { get; set; }
         public List<PrefixAssignments2> PrefixAssignments { get; set; }
-    }
-
-    public class MandatoryDhcp2
-    {
-        public string Enabled { get; set; }
     }
 }

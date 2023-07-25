@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ShowTheLANSettingsOfAMGResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ShowTheLANSettingsOfAMGResponse>(myJsonResponse);
     public class ShowTheLANSettingsOfAMGResponse
     {
         public string DeviceName { get; set; }

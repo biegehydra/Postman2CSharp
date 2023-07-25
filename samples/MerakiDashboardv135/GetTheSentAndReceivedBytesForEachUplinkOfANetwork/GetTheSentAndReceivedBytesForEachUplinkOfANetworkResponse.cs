@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<GetTheSentAndReceivedBytesForEachUplinkOfANetworkResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<GetTheSentAndReceivedBytesForEachUplinkOfANetworkResponse>>(myJsonResponse);
     public class GetTheSentAndReceivedBytesForEachUplinkOfANetworkResponse
     {
         public DateTime StartTime { get; set; }

@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnsTheIdentityOfTheCurrentUserResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ReturnsTheIdentityOfTheCurrentUserResponse>(myJsonResponse);
     public class ReturnsTheIdentityOfTheCurrentUserResponse
     {
         public string Name { get; set; }
@@ -18,7 +17,7 @@ namespace MerakiDashboardv135
     {
         public string Mode { get; set; }
         public Api Api { get; set; }
-        public TwoFactor TwoFactor { get; set; }
+        public Saml TwoFactor { get; set; }
         public Saml Saml { get; set; }
     }
 
@@ -33,11 +32,6 @@ namespace MerakiDashboardv135
     }
 
     public class Saml
-    {
-        public bool Enabled { get; set; }
-    }
-
-    public class TwoFactor
     {
         public bool Enabled { get; set; }
     }

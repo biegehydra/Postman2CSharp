@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheLatencyHistoryForAClientParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheLatencyHistoryForAClientParameters>(myJsonResponse);
     public class ReturnTheLatencyHistoryForAClientParameters : IQueryParameters
     {
         /// <summary>

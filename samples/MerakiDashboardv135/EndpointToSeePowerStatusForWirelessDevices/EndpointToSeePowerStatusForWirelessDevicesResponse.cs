@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<EndpointToSeePowerStatusForWirelessDevicesResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<EndpointToSeePowerStatusForWirelessDevicesResponse>>(myJsonResponse);
     public class EndpointToSeePowerStatusForWirelessDevicesResponse
     {
         public string Serial { get; set; }
         public string Name { get; set; }
-        public Network Network { get; set; }
+        public ListLinkAggregationGroupsResponse Network { get; set; }
         public Power Power { get; set; }
         public List<Ports> Ports { get; set; }
         public Aggregation Aggregation { get; set; }
@@ -19,7 +18,7 @@ namespace MerakiDashboardv135
     public class Ports
     {
         public string Name { get; set; }
-        public Poe2 Poe { get; set; }
+        public Ac Poe { get; set; }
         public LinkNegotiation LinkNegotiation { get; set; }
     }
 
@@ -27,7 +26,7 @@ namespace MerakiDashboardv135
     {
         public string Mode { get; set; }
         public Ac Ac { get; set; }
-        public Poe2 Poe { get; set; }
+        public Ac Poe { get; set; }
     }
 
     public class Aggregation
@@ -42,14 +41,9 @@ namespace MerakiDashboardv135
         public int Speed { get; set; }
     }
 
-    public class Poe2
-    {
-        public bool IsConnected { get; set; }
-        public string Standard { get; set; }
-    }
-
     public class Ac
     {
         public bool IsConnected { get; set; }
+        public string Standard { get; set; }
     }
 }

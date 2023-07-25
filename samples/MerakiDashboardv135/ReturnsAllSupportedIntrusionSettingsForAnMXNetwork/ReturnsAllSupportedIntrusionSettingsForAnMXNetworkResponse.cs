@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnsAllSupportedIntrusionSettingsForAnMXNetworkResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ReturnsAllSupportedIntrusionSettingsForAnMXNetworkResponse>(myJsonResponse);
     public class ReturnsAllSupportedIntrusionSettingsForAnMXNetworkResponse
     {
         public string Mode { get; set; }

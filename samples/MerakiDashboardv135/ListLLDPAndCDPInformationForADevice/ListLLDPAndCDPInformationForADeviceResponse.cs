@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ListLLDPAndCDPInformationForADeviceResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ListLLDPAndCDPInformationForADeviceResponse>(myJsonResponse);
     public class ListLLDPAndCDPInformationForADeviceResponse
     {
         public string SourceMac { get; set; }
@@ -30,21 +29,13 @@ namespace MerakiDashboardv135
 
     public class Ports2
     {
-        [JsonPropertyName("8")]
-        public _20 _8 { get; set; }
-
-        [JsonPropertyName("12")]
-        public _19 _12 { get; set; }
+        public _12 _8 { get; set; }
+        public _12 _12 { get; set; }
     }
 
-    public class _19
+    public class _12
     {
         public Cdp2 Cdp { get; set; }
         public Lldp2 Lldp { get; set; }
-    }
-
-    public class _20
-    {
-        public Cdp2 Cdp { get; set; }
     }
 }

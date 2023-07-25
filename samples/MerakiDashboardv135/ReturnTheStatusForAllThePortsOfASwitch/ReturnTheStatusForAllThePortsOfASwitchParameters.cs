@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheStatusForAllThePortsOfASwitchParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheStatusForAllThePortsOfASwitchParameters>(myJsonResponse);
     public class ReturnTheStatusForAllThePortsOfASwitchParameters : IQueryParameters
     {
         /// <summary>

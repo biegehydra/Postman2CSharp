@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<P10DeviceModelsSortedByDataUsageOverGivenTimeRangeParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<P10DeviceModelsSortedByDataUsageOverGivenTimeRangeParameters>(myJsonResponse);
     public class P10DeviceModelsSortedByDataUsageOverGivenTimeRangeParameters : IQueryParameters
     {
         /// <summary>

@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<TionsTop10ClientsByDataUsageInMbOverGivenTimeRangeResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<TionsTop10ClientsByDataUsageInMbOverGivenTimeRangeResponse>>(myJsonResponse);
     public class TionsTop10ClientsByDataUsageInMbOverGivenTimeRangeResponse
     {
         public string Name { get; set; }
         public string Mac { get; set; }
         public string Id { get; set; }
-        public Network Network { get; set; }
+        public ListSwitchPortSchedulesResponse Network { get; set; }
         public Usage3 Usage { get; set; }
     }
 

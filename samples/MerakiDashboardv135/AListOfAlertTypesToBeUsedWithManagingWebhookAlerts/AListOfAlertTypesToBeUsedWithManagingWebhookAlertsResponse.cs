@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<AListOfAlertTypesToBeUsedWithManagingWebhookAlertsResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<AListOfAlertTypesToBeUsedWithManagingWebhookAlertsResponse>>(myJsonResponse);
     public class AListOfAlertTypesToBeUsedWithManagingWebhookAlertsResponse
     {
         public string AlertTypeId { get; set; }
@@ -16,7 +15,7 @@ namespace MerakiDashboardv135
         public string AlertId { get; set; }
         public string AlertLevel { get; set; }
         public DateTime OccurredAt { get; set; }
-        public AlertData AlertData { get; set; }
+        public Ac AlertData { get; set; }
         public string OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         public string OrganizationUrl { get; set; }
@@ -32,9 +31,5 @@ namespace MerakiDashboardv135
         public string EnrollmentString { get; set; }
         public string Notes { get; set; }
         public List<string> ProductTypes { get; set; }
-    }
-
-    public class AlertData
-    {
     }
 }

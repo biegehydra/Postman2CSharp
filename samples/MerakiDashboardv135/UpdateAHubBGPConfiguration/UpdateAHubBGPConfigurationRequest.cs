@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<UpdateAHubBGPConfigurationRequest>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<UpdateAHubBGPConfigurationRequest>(myJsonResponse);
     public class UpdateAHubBGPConfigurationRequest
     {
         public string Enabled { get; set; }
@@ -20,12 +19,12 @@ namespace MerakiDashboardv135
         public string EbgpHoldTimer { get; set; }
         public string EbgpMultihop { get; set; }
         public string Ip { get; set; }
-        public Ipv7 Ipv6 { get; set; }
+        public Ipv8 Ipv6 { get; set; }
         public string ReceiveLimit { get; set; }
         public string AllowTransit { get; set; }
         public string SourceInterface { get; set; }
         public string NextHopIp { get; set; }
-        public TtlSecurity TtlSecurity { get; set; }
+        public Dot11w TtlSecurity { get; set; }
         public Authentication3 Authentication { get; set; }
     }
 
@@ -34,8 +33,8 @@ namespace MerakiDashboardv135
         public string Password { get; set; }
     }
 
-    public class TtlSecurity
+    public class Ipv8
     {
-        public string Enabled { get; set; }
+        public string Address { get; set; }
     }
 }

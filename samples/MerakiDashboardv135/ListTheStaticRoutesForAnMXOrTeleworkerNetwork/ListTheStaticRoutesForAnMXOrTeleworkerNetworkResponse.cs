@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheStaticRoutesForAnMXOrTeleworkerNetworkResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheStaticRoutesForAnMXOrTeleworkerNetworkResponse>>(myJsonResponse);
     public class ListTheStaticRoutesForAnMXOrTeleworkerNetworkResponse
     {
         public string Id { get; set; }
@@ -34,7 +33,6 @@ namespace MerakiDashboardv135
 
     public class FixedIpAssignments
     {
-        [JsonPropertyName("22:33:44:55:66:77")]
         public _223344556677 _223344556677 { get; set; }
     }
 }

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<GetApplicationHealthByTimeParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<GetApplicationHealthByTimeParameters>(myJsonResponse);
     public class GetApplicationHealthByTimeParameters : IQueryParameters
     {
         /// <summary>

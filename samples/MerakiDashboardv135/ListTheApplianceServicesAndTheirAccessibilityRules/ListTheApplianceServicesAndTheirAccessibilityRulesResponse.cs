@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheApplianceServicesAndTheirAccessibilityRulesResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheApplianceServicesAndTheirAccessibilityRulesResponse>>(myJsonResponse);
     public class ListTheApplianceServicesAndTheirAccessibilityRulesResponse
     {
         public string Service { get; set; }

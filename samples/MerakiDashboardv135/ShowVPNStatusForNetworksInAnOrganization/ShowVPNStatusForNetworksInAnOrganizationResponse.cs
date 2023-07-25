@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ShowVPNStatusForNetworksInAnOrganizationResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ShowVPNStatusForNetworksInAnOrganizationResponse>>(myJsonResponse);
     public class ShowVPNStatusForNetworksInAnOrganizationResponse
     {
         public string NetworkId { get; set; }
         public string NetworkName { get; set; }
         public string DeviceSerial { get; set; }
         public string DeviceStatus { get; set; }
-        public List<Uplinks> Uplinks { get; set; }
+        public List<Uplinks2> Uplinks { get; set; }
         public string VpnMode { get; set; }
         public List<ExportedSubnets> ExportedSubnets { get; set; }
         public List<MerakiVpnPeers2> MerakiVpnPeers { get; set; }
@@ -37,5 +36,11 @@ namespace MerakiDashboardv135
     {
         public string Subnet { get; set; }
         public string Name { get; set; }
+    }
+
+    public class Uplinks2
+    {
+        public string Interface { get; set; }
+        public string PublicIp { get; set; }
     }
 }

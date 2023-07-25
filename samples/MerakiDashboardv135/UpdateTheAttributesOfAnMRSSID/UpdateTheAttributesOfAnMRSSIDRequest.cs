@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<UpdateTheAttributesOfAnMRSSIDRequest>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<UpdateTheAttributesOfAnMRSSIDRequest>(myJsonResponse);
     public class UpdateTheAttributesOfAnMRSSIDRequest
     {
         public string Name { get; set; }
@@ -22,8 +21,8 @@ namespace MerakiDashboardv135
         public Oauth Oauth { get; set; }
         public LocalRadius LocalRadius { get; set; }
         public Ldap Ldap { get; set; }
-        public ActiveDirectory ActiveDirectory { get; set; }
-        public List<RadiusServers4> RadiusServers { get; set; }
+        public Ldap ActiveDirectory { get; set; }
+        public List<RadiusServers3> RadiusServers { get; set; }
         public string RadiusProxyEnabled { get; set; }
         public string RadiusTestingEnabled { get; set; }
         public string RadiusCalledStationId { get; set; }
@@ -35,7 +34,7 @@ namespace MerakiDashboardv135
         public string RadiusFailoverPolicy { get; set; }
         public string RadiusLoadBalancingPolicy { get; set; }
         public string RadiusAccountingEnabled { get; set; }
-        public List<RadiusAccountingServers4> RadiusAccountingServers { get; set; }
+        public List<RadiusServers> RadiusAccountingServers { get; set; }
         public string RadiusAccountingInterimInterval { get; set; }
         public string RadiusAttributeForGroupPolicies { get; set; }
         public string IpAssignmentMode { get; set; }
@@ -65,10 +64,10 @@ namespace MerakiDashboardv135
         public string MandatoryDhcpEnabled { get; set; }
         public string AdultContentFilteringEnabled { get; set; }
         public DnsRewrite DnsRewrite { get; set; }
-        public SpeedBurst SpeedBurst { get; set; }
+        public DnsRewrite SpeedBurst { get; set; }
     }
 
-    public class RadiusServers4
+    public class RadiusServers3
     {
         public string Host { get; set; }
         public string Port { get; set; }
@@ -87,41 +86,26 @@ namespace MerakiDashboardv135
         public ClientRootCaCertificate ClientRootCaCertificate { get; set; }
     }
 
-    public class RadiusAccountingServers4
-    {
-        public string Host { get; set; }
-        public string Port { get; set; }
-        public string Secret { get; set; }
-        public string RadsecEnabled { get; set; }
-        public string CaCertificate { get; set; }
-    }
-
     public class Ldap
     {
-        public List<Servers2> Servers { get; set; }
-        public Credentials2 Credentials { get; set; }
+        public List<RadiusServers2> Servers { get; set; }
+        public Credentials Credentials { get; set; }
         public string BaseDistinguishedName { get; set; }
-        public ServerCaCertificate ServerCaCertificate { get; set; }
-    }
-
-    public class Credentials2
-    {
-        public string DistinguishedName { get; set; }
-        public string Password { get; set; }
-        public string LogonName { get; set; }
+        public ClientRootCaCertificate ServerCaCertificate { get; set; }
     }
 
     public class LocalRadius
     {
         public string CacheTimeout { get; set; }
-        public PasswordAuthentication PasswordAuthentication { get; set; }
+        public DnsRewrite PasswordAuthentication { get; set; }
         public CertificateAuthentication CertificateAuthentication { get; set; }
     }
 
-    public class ActiveDirectory
+    public class Credentials
     {
-        public List<Servers2> Servers { get; set; }
-        public Credentials2 Credentials { get; set; }
+        public string DistinguishedName { get; set; }
+        public string Password { get; set; }
+        public string LogonName { get; set; }
     }
 
     public class ApTagsAndVlanIds
@@ -144,14 +128,8 @@ namespace MerakiDashboardv135
 
     public class Gre
     {
-        public Concentrator Concentrator { get; set; }
+        public RadiusServers2 Concentrator { get; set; }
         public string Key { get; set; }
-    }
-
-    public class Servers2
-    {
-        public string Host { get; set; }
-        public string Port { get; set; }
     }
 
     public class ClientRootCaCertificate
@@ -159,28 +137,8 @@ namespace MerakiDashboardv135
         public string Contents { get; set; }
     }
 
-    public class Concentrator
-    {
-        public string Host { get; set; }
-    }
-
     public class Oauth
     {
         public List<string> AllowedDomains { get; set; }
-    }
-
-    public class PasswordAuthentication
-    {
-        public string Enabled { get; set; }
-    }
-
-    public class ServerCaCertificate
-    {
-        public string Contents { get; set; }
-    }
-
-    public class SpeedBurst
-    {
-        public string Enabled { get; set; }
     }
 }

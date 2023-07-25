@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<CreateALayer3InterfaceForASwitchRequest>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<CreateALayer3InterfaceForASwitchRequest>(myJsonResponse);
     public class CreateALayer3InterfaceForASwitchRequest
     {
         public string Name { get; set; }
@@ -15,18 +14,11 @@ namespace MerakiDashboardv135
         public string VlanId { get; set; }
         public string DefaultGateway { get; set; }
         public OspfSettings2 OspfSettings { get; set; }
-        public OspfV4 OspfV3 { get; set; }
+        public OspfSettings OspfV3 { get; set; }
         public Ipv9 Ipv6 { get; set; }
     }
 
     public class OspfSettings2
-    {
-        public string Area { get; set; }
-        public string Cost { get; set; }
-        public string IsPassiveEnabled { get; set; }
-    }
-
-    public class OspfV4
     {
         public string Area { get; set; }
         public string Cost { get; set; }

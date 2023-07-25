@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheMRSSIDsInANetworkResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ListTheMRSSIDsInANetworkResponse>>(myJsonResponse);
     public class ListTheMRSSIDsInANetworkResponse
     {
         public int Number { get; set; }
@@ -16,8 +15,8 @@ namespace MerakiDashboardv135
         public string AuthMode { get; set; }
         public string EncryptionMode { get; set; }
         public string WpaEncryptionMode { get; set; }
-        public List<RadiusServers3> RadiusServers { get; set; }
-        public List<RadiusAccountingServers3> RadiusAccountingServers { get; set; }
+        public List<RadiusAccountingServers> RadiusServers { get; set; }
+        public List<RadiusAccountingServers> RadiusAccountingServers { get; set; }
         public bool RadiusAccountingEnabled { get; set; }
         public bool RadiusEnabled { get; set; }
         public string RadiusAttributeForGroupPolicies { get; set; }
@@ -40,15 +39,7 @@ namespace MerakiDashboardv135
         public bool MandatoryDhcpEnabled { get; set; }
     }
 
-    public class RadiusAccountingServers3
-    {
-        public string Host { get; set; }
-        public int Port { get; set; }
-        public int OpenRoamingCertificateId { get; set; }
-        public string CaCertificate { get; set; }
-    }
-
-    public class RadiusServers3
+    public class RadiusAccountingServers
     {
         public string Host { get; set; }
         public int Port { get; set; }

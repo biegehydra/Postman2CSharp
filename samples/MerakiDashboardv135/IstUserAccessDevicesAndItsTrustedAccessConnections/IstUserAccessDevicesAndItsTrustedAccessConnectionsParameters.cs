@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<IstUserAccessDevicesAndItsTrustedAccessConnectionsParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<IstUserAccessDevicesAndItsTrustedAccessConnectionsParameters>(myJsonResponse);
     public class IstUserAccessDevicesAndItsTrustedAccessConnectionsParameters : IQueryParameters
     {
         /// <summary>

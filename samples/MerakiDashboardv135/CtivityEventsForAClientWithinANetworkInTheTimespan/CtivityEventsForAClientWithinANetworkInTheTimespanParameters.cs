@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<CtivityEventsForAClientWithinANetworkInTheTimespanParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<CtivityEventsForAClientWithinANetworkInTheTimespanParameters>(myJsonResponse);
     public class CtivityEventsForAClientWithinANetworkInTheTimespanParameters : IQueryParameters
     {
         /// <summary>

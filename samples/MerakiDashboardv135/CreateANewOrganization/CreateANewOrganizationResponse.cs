@@ -1,39 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<CreateANewOrganizationResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<CreateANewOrganizationResponse>(myJsonResponse);
     public class CreateANewOrganizationResponse
     {
         public string Id { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
-        public Api2 Api { get; set; }
-        public Licensing Licensing { get; set; }
+        public Aggregation Api { get; set; }
+        public ByModel Licensing { get; set; }
         public Cloud Cloud { get; set; }
         public Management Management { get; set; }
     }
 
-    public class Api2
-    {
-        public bool Enabled { get; set; }
-    }
-
     public class Cloud
     {
-        public Region Region { get; set; }
-    }
-
-    public class Licensing
-    {
-        public string Model { get; set; }
-    }
-
-    public class Region
-    {
-        public string Name { get; set; }
+        public Parameters2 Region { get; set; }
     }
 }

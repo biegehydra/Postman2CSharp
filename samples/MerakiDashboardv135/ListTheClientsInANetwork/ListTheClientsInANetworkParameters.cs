@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ListTheClientsInANetworkParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ListTheClientsInANetworkParameters>(myJsonResponse);
     public class ListTheClientsInANetworkParameters : IQueryParameters
     {
         /// <summary>

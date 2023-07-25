@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ListTheBluetoothClientsSeenByAPsInThisNetworkParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ListTheBluetoothClientsSeenByAPsInThisNetworkParameters>(myJsonResponse);
     public class ListTheBluetoothClientsSeenByAPsInThisNetworkParameters : IQueryParameters
     {
         /// <summary>

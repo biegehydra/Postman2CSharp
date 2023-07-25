@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<TextSearchResponse>(myJsonResponse);
 namespace SystemTextJson
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<TextSearchResponse>(myJsonResponse);
     public class TextSearchResponse
     {
         public List<object> HtmlAttributions { get; set; }

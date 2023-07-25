@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-// Root myDeserializedClass = JsonConvert.DeserializeObject<NearbySearchResponse>(myJsonResponse);
 namespace Newtonsoft
 {
+    // Root myDeserializedClass = JsonConvert.DeserializeObject<NearbySearchResponse>(myJsonResponse);
     public class NearbySearchResponse
     {
         public List<object> HtmlAttributions { get; set; }

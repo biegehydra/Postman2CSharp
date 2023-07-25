@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
     public static class HelperExtensions
     {

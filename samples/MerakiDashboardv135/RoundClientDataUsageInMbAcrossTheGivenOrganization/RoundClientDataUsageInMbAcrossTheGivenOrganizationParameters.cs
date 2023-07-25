@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<RoundClientDataUsageInMbAcrossTheGivenOrganizationParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<RoundClientDataUsageInMbAcrossTheGivenOrganizationParameters>(myJsonResponse);
     public class RoundClientDataUsageInMbAcrossTheGivenOrganizationParameters : IQueryParameters
     {
         /// <summary>

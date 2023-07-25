@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListSwitchPortSchedulesResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ListSwitchPortSchedulesResponse>>(myJsonResponse);
     public class ListSwitchPortSchedulesResponse
     {
         public string Id { get; set; }
@@ -16,58 +15,16 @@ namespace MerakiDashboardv135
 
     public class PortSchedule
     {
-        public Monday Monday { get; set; }
-        public Tuesday Tuesday { get; set; }
-        public Wednesday Wednesday { get; set; }
-        public Thursday Thursday { get; set; }
+        public Friday Monday { get; set; }
+        public Friday Tuesday { get; set; }
+        public Friday Wednesday { get; set; }
+        public Friday Thursday { get; set; }
         public Friday Friday { get; set; }
-        public Saturday Saturday { get; set; }
-        public Sunday Sunday { get; set; }
+        public Friday Saturday { get; set; }
+        public Friday Sunday { get; set; }
     }
 
     public class Friday
-    {
-        public bool Active { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
-    }
-
-    public class Monday
-    {
-        public bool Active { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
-    }
-
-    public class Saturday
-    {
-        public bool Active { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
-    }
-
-    public class Sunday
-    {
-        public bool Active { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
-    }
-
-    public class Thursday
-    {
-        public bool Active { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
-    }
-
-    public class Tuesday
-    {
-        public bool Active { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
-    }
-
-    public class Wednesday
     {
         public bool Active { get; set; }
         public string From { get; set; }

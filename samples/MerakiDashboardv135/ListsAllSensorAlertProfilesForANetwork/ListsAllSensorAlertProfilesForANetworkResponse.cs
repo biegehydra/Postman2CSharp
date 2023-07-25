@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<ListsAllSensorAlertProfilesForANetworkResponse>>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<ListsAllSensorAlertProfilesForANetworkResponse>>(myJsonResponse);
     public class ListsAllSensorAlertProfilesForANetworkResponse
     {
         public string ProfileId { get; set; }
         public string Name { get; set; }
-        public Schedule Schedule { get; set; }
+        public ListTheOrganizationsResponse Schedule { get; set; }
         public List<Conditions> Conditions { get; set; }
         public Recipients Recipients { get; set; }
         public List<string> Serials { get; set; }
@@ -22,7 +21,7 @@ namespace MerakiDashboardv135
         public Humidity Humidity { get; set; }
         public Water Water { get; set; }
         public Door Door { get; set; }
-        public Tvoc Tvoc { get; set; }
+        public Pm25 Tvoc { get; set; }
         public Pm25 Pm25 { get; set; }
         public Noise Noise { get; set; }
         public IndoorAirQuality IndoorAirQuality { get; set; }
@@ -69,18 +68,6 @@ namespace MerakiDashboardv135
     }
 
     public class Pm25
-    {
-        public int Concentration { get; set; }
-        public string Quality { get; set; }
-    }
-
-    public class Schedule
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class Tvoc
     {
         public int Concentration { get; set; }
         public string Quality { get; set; }

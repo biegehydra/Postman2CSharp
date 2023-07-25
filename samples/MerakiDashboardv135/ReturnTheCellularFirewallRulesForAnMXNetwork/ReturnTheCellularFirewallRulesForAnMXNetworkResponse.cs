@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheCellularFirewallRulesForAnMXNetworkResponse>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ReturnTheCellularFirewallRulesForAnMXNetworkResponse>(myJsonResponse);
     public class ReturnTheCellularFirewallRulesForAnMXNetworkResponse
     {
         public List<Rules> Rules { get; set; }

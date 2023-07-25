@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<PlaceDetailsResponse>(myJsonResponse);
 namespace SystemTextJson
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<PlaceDetailsResponse>(myJsonResponse);
     public class PlaceDetailsResponse
     {
         public List<object> HtmlAttributions { get; set; }
@@ -93,22 +92,10 @@ namespace SystemTextJson
         public double Lng { get; set; }
     }
 
-    public class Northeast
-    {
-        public double Lat { get; set; }
-        public double Lng { get; set; }
-    }
-
-    public class Open
-    {
-        public int Day { get; set; }
-        public string Time { get; set; }
-    }
-
     public class Periods
     {
         public Close Close { get; set; }
-        public Open Open { get; set; }
+        public Close Open { get; set; }
     }
 
     public class PlusCode
@@ -117,15 +104,9 @@ namespace SystemTextJson
         public string GlobalCode { get; set; }
     }
 
-    public class Southwest
-    {
-        public double Lat { get; set; }
-        public double Lng { get; set; }
-    }
-
     public class Viewport
     {
-        public Northeast Northeast { get; set; }
-        public Southwest Southwest { get; set; }
+        public Location Northeast { get; set; }
+        public Location Southwest { get; set; }
     }
 }

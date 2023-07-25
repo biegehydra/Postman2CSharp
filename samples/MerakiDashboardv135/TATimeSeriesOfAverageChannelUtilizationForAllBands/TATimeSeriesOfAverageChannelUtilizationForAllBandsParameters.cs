@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<TATimeSeriesOfAverageChannelUtilizationForAllBandsParameters>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<TATimeSeriesOfAverageChannelUtilizationForAllBandsParameters>(myJsonResponse);
     public class TATimeSeriesOfAverageChannelUtilizationForAllBandsParameters : IQueryParameters
     {
         /// <summary>

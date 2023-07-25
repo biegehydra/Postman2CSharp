@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<UpdateTheAttributesOfAnMXSSIDRequest>(myJsonResponse);
-namespace MerakiDashboardv135
+namespace MerakiDashboard
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<UpdateTheAttributesOfAnMXSSIDRequest>(myJsonResponse);
     public class UpdateTheAttributesOfAnMXSSIDRequest
     {
         public string Name { get; set; }
@@ -17,7 +16,7 @@ namespace MerakiDashboardv135
         public string EncryptionMode { get; set; }
         public string WpaEncryptionMode { get; set; }
         public string Visible { get; set; }
-        public DhcpEnforcedDeauthentication DhcpEnforcedDeauthentication { get; set; }
+        public Dot11w DhcpEnforcedDeauthentication { get; set; }
         public Dot11w Dot11w { get; set; }
     }
 
@@ -32,10 +31,5 @@ namespace MerakiDashboardv135
     {
         public string Enabled { get; set; }
         public string Required { get; set; }
-    }
-
-    public class DhcpEnforcedDeauthentication
-    {
-        public string Enabled { get; set; }
     }
 }
