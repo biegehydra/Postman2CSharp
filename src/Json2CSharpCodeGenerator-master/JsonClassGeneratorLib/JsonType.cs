@@ -3,18 +3,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Newtonsoft.Json.Linq;
-using System.Globalization;
-using System.Runtime.InteropServices;
 using Xamasoft.JsonClassGenerator.Models;
+using System.Diagnostics;
 
 namespace Xamasoft.JsonClassGenerator
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class JsonType
     {
         public bool IsQueryParameters { get; set; }
         public bool IsVariant { get; set; }
+
+        private string DebuggerDisplay =>
+            $"Og: {OriginalName}, Nas: {NewAssignedName}, As: {NewAssignedName}, IR: {IsRoot}, TNas: {InternalType?.NewAssignedName}";
+
         private JsonType(JsonClassGenerator generator)
         {
             this.generator = generator;

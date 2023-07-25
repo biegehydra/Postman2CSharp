@@ -3,14 +3,17 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 
 namespace Xamasoft.JsonClassGenerator 
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class JsonFieldInfo
     {
+        private string DebuggerDisplay => $"JMN: {JsonMemberName}, MN: {MemberName}, TOg: {Type?.OriginalName}, TNas: {Type?.NewAssignedName}";
         public JsonFieldInfo(
             JsonClassGenerator generator,
             string                    jsonMemberName,

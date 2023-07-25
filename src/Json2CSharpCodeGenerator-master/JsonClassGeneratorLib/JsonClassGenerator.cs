@@ -429,30 +429,26 @@ namespace Xamasoft.JsonClassGenerator
                 var test6 = potentialType.Type;
                 var test7 = potentialType.IsRoot;
                 var test8 = potentialType.IsVariant;
+
+                var rdp = this.DuplicateOptions.RemoveDuplicateRoots;
+                var sons = this.DuplicateOptions.SameOriginalNameSensitivity;
+                var dons = this.DuplicateOptions.DifferentOriginalNameSensitivity;
 #endif
-                if (this.DuplicateOptions.RemoveSemiDuplicates && 
-                    AllTypes.FirstOrDefault(allTypeType => ( potentialType.IsRoot && TypesMatch(potentialType, allTypeType, this.DuplicateOptions.RemoveDuplicateRoots, DuplicateOptions.SameOriginalNameSensitivity, DuplicateOptions.DifferentOriginalNameSensitivity) ) ||
-                                                           ( !potentialType.IsRoot && potentialType.OriginalName == allTypeType.OriginalName && TypesMatch(potentialType, allTypeType, this.DuplicateOptions.RemoveDuplicateRoots, DuplicateOptions.SameOriginalNameSensitivity, DuplicateOptions.DifferentOriginalNameSensitivity) )) is
+                bool removeSemiDuplicates = this.DuplicateOptions.RemoveSemiDuplicates;
+
+                if (AllTypes.FirstOrDefault(allTypeType => ( potentialType.IsRoot && TypesMatch(potentialType, allTypeType, rdp, sons, dons, !removeSemiDuplicates) ) ||
+                                                           ( !potentialType.IsRoot && potentialType.OriginalName == allTypeType.OriginalName && TypesMatch(potentialType, allTypeType, rdp, sons, dons, !removeSemiDuplicates) )) is
                     { } allTypesMatchedType)
                 {
                     duplicates.Add(potentialType);
-                    if ((potentialType.NewAssignedName?.StartsWith('_') ?? false) && potentialType.Fields.Count == allTypesMatchedType.Fields.Count)
+                    if (removeSemiDuplicates && ( potentialType.NewAssignedName?.StartsWith('_') ?? false ) && potentialType.Fields.Count == allTypesMatchedType.Fields.Count)
                     {
-                        
+
                     }
-                    else
+                    else if (removeSemiDuplicates)
                     {
                         ChangeNewAssignedNamesByNewAssignedNameInList(typesWithNoDuplicates, potentialType.NewAssignedName, allTypesMatchedType.NewAssignedName);
                     }
-                }
-                else if (!this.DuplicateOptions.RemoveSemiDuplicates && AllTypes.FirstOrDefault(allTypeType =>
-                                 ( potentialType.IsRoot &&
-                                   TypesMatch(potentialType, allTypeType, this.DuplicateOptions.RemoveDuplicateRoots, DuplicateOptions.SameOriginalNameSensitivity, DuplicateOptions.DifferentOriginalNameSensitivity, true) ) ||
-                                 ( !potentialType.IsRoot && potentialType.OriginalName == allTypeType.OriginalName &&
-                                   TypesMatch(potentialType, allTypeType, this.DuplicateOptions.RemoveDuplicateRoots, DuplicateOptions.SameOriginalNameSensitivity, DuplicateOptions.DifferentOriginalNameSensitivity, true) )) is
-                             { } allTypesMatchedTypeStrict)
-                {
-                    duplicates.Add(potentialType);
                 }
                 else
                 {
