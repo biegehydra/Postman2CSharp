@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<UpdateSubscriptionRequest>>(myJsonResponse);
 namespace PaypalSubscriptions
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<List<UpdateSubscriptionRequest>>(myJsonResponse);
     public class UpdateSubscriptionRequest
     {
         public string Op { get; set; }

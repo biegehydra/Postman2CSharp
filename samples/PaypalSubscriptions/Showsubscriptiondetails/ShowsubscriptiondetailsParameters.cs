@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<ShowSubscriptionDetailsParameters>(myJsonResponse);
 namespace PaypalSubscriptions
 {
+    // Root myDeserializedClass = JsonSerializer.Deserialize<ShowSubscriptionDetailsParameters>(myJsonResponse);
     public class ShowSubscriptionDetailsParameters : IQueryParameters
     {
         /// <summary>
-        /// List of fields that are to be returned in the response. Possible value for fields are last_failed_payment and plan.
+        /// List of fields that are to be returned in the response. Possible value for fields are 
+        /// last_failed_payment and plan. 
         /// </summary>
         public string Fields { get; set; }
 
