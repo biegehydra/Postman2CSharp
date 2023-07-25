@@ -17,6 +17,14 @@
 		<BlazorWasmPrerenderingUrlPathToExplicitFetch>/Collection;</BlazorWasmPrerenderingUrlPathToExplicitFetch>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <NoWarn>1701;1702;BL0007</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <NoWarn>1701;1702;BL0007</NoWarn>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="BlazorWasmPreRendering.Build" Version="2.0.0-preview.9" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.5" />

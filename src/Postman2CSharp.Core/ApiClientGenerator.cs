@@ -194,7 +194,7 @@ public class ApiClientGenerator
                 }
             }
 
-            static string GetContentInBrackets(string input)
+            static string? GetContentInBrackets(string input)
             {
                 string pattern = @"https?://\{([^}]*)\}";
                 Match m = Regex.Match(input, pattern);

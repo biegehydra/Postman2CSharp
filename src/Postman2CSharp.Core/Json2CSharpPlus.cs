@@ -36,12 +36,12 @@ namespace Postman2CSharp.Core
 
                 return GenerateSourceCodeDict();
             }
-            catch (JsonException ex)
+            catch (JsonException)
             {
                 UsedNames.Remove(_rootClassName);
                 throw;
             }
-            catch (DuplicateRootException ex)
+            catch (DuplicateRootException)
             {
                 UsedNames.Remove(_rootClassName);
                 return GenerateSourceCodeDict();

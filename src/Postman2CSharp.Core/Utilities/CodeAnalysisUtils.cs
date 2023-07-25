@@ -120,7 +120,7 @@ namespace Postman2CSharp.Core.Utilities
             var tree = CSharpSyntaxTree.ParseText(sourceCode);
             var root = tree.GetRoot() as CompilationUnitSyntax;
 
-            var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
+            var classes = root!.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
             classCount = classes.Count;
             if (classCount == 0)
             {
