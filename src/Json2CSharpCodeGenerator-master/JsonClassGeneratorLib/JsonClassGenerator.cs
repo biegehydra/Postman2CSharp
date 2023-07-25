@@ -371,6 +371,11 @@ namespace Xamasoft.JsonClassGenerator
         {
             // TODO: This is currently O(n*n) because it iterates through List<T> on every loop iteration. This can be optimized.
 
+            var rdp = this.DuplicateOptions.RemoveDuplicateRoots;
+            var sons = this.DuplicateOptions.SameOriginalNameSensitivity;
+            var dons = this.DuplicateOptions.DifferentOriginalNameSensitivity;
+            bool removeSemiDuplicates = this.DuplicateOptions.RemoveSemiDuplicates;
+
             List<JsonType> typesWithNoDuplicates = new List<JsonType>();
             if (oneOriginalName)
             {
@@ -382,32 +387,35 @@ namespace Xamasoft.JsonClassGenerator
             }
             AllTypes = AllTypes.OrderBy(x => x.NewAssignedName).ToList();
 
-            foreach (JsonType potentialDuplicate in types)
+            foreach (JsonType potentialDup in types)
             {
 #if DEBUG
-                var test = potentialDuplicate.OriginalAssignedName;
-                var test2 = potentialDuplicate.OriginalName;
-                var test3 = potentialDuplicate.NewAssignedName;
-                var test4 = potentialDuplicate.Fields;
-                var test5 = potentialDuplicate.InternalType;
-                var test6 = potentialDuplicate.Type;
-                var test7 = potentialDuplicate.IsRoot;
-                var test8 = potentialDuplicate.IsVariant;
+                var test = potentialDup;
 #endif
                 var firstMatchingType =
-                    typesWithNoDuplicates.FirstOrDefault(x => x.OriginalName == potentialDuplicate.OriginalName);
+                    typesWithNoDuplicates.FirstOrDefault(x => x.OriginalName == potentialDup.OriginalName);
 
                 if (oneOriginalName)
                 {
-                    firstMatchingType ??= AllTypes.FirstOrDefault(x => !x.IsRoot && x.OriginalName == potentialDuplicate.OriginalName);
+                    firstMatchingType ??= AllTypes.FirstOrDefault(x => !x.IsRoot && x.OriginalName == potentialDup.OriginalName);
                 }
+
+                if (firstMatchingType == null && typesWithNoDuplicates.FirstOrDefault(x =>
+                        !potentialDup.IsRoot && !ReferenceEquals(potentialDup, x) &&
+                        TypesMatch(potentialDup, x, rdp, sons, dons, !removeSemiDuplicates)) is { } matchingTypeDifferentOriginalName)
+                {
+                    firstMatchingType = matchingTypeDifferentOriginalName;
+                    ChangeNewAssignedNamesByOriginalInList(typesWithNoDuplicates, potentialDup.OriginalName, matchingTypeDifferentOriginalName.NewAssignedName);
+
+                }
+
                 if (firstMatchingType is null)
                 {
-                    typesWithNoDuplicates.Add(potentialDuplicate);
+                    typesWithNoDuplicates.Add(potentialDup);
                 }
                 else
                 {
-                    foreach (JsonFieldInfo field in potentialDuplicate.Fields)
+                    foreach (JsonFieldInfo field in potentialDup.Fields)
                     {
                         if (firstMatchingType.Fields.All(x => x.JsonMemberName != field.JsonMemberName))
                         {
@@ -418,41 +426,26 @@ namespace Xamasoft.JsonClassGenerator
             }
 
             var duplicates = new List<JsonType>();
-            foreach (JsonType potentialType in typesWithNoDuplicates)
+            foreach (JsonType potentialDup in typesWithNoDuplicates)
             {
 #if DEBUG
-                var test = potentialType.OriginalAssignedName;
-                var test2 = potentialType.OriginalName;
-                var test3 = potentialType.NewAssignedName;
-                var test4 = potentialType.Fields;
-                var test5 = potentialType.InternalType;
-                var test6 = potentialType.Type;
-                var test7 = potentialType.IsRoot;
-                var test8 = potentialType.IsVariant;
+                var test = potentialDup;
 
-                var rdp = this.DuplicateOptions.RemoveDuplicateRoots;
-                var sons = this.DuplicateOptions.SameOriginalNameSensitivity;
-                var dons = this.DuplicateOptions.DifferentOriginalNameSensitivity;
 #endif
-                bool removeSemiDuplicates = this.DuplicateOptions.RemoveSemiDuplicates;
 
-                if (AllTypes.FirstOrDefault(allTypeType => ( potentialType.IsRoot && TypesMatch(potentialType, allTypeType, rdp, sons, dons, !removeSemiDuplicates) ) ||
-                                                           ( !potentialType.IsRoot && potentialType.OriginalName == allTypeType.OriginalName && TypesMatch(potentialType, allTypeType, rdp, sons, dons, !removeSemiDuplicates) )) is
-                    { } allTypesMatchedType)
+                if (AllTypes.FirstOrDefault(allTypeType => TypesMatch(potentialDup, allTypeType, rdp, sons, dons, !removeSemiDuplicates)) is { } allTypesMatchedType)
                 {
-                    duplicates.Add(potentialType);
-                    if (removeSemiDuplicates && ( potentialType.NewAssignedName?.StartsWith('_') ?? false ) && potentialType.Fields.Count == allTypesMatchedType.Fields.Count)
+                    duplicates.Add(potentialDup);
+                    if (removeSemiDuplicates && ( potentialDup.NewAssignedName?.StartsWith('_') ?? false ) && potentialDup.Fields.Count == allTypesMatchedType.Fields.Count)
                     {
 
                     }
-                    else if (removeSemiDuplicates)
-                    {
-                        ChangeNewAssignedNamesByNewAssignedNameInList(typesWithNoDuplicates, potentialType.NewAssignedName, allTypesMatchedType.NewAssignedName);
-                    }
+                    ChangeNewAssignedNamesByNewAssignedNameInList(typesWithNoDuplicates, potentialDup.NewAssignedName, allTypesMatchedType.NewAssignedName);
+
                 }
                 else
                 {
-                    var confirmedNotDuplicate = potentialType;
+                    var confirmedNotDuplicate = potentialDup;
                     confirmedNotDuplicate.IsVariant = true;
                     if (AllTypes.Any(x => !x.IsRoot && x.NewAssignedName == confirmedNotDuplicate.NewAssignedName))
                     {
@@ -564,14 +557,7 @@ namespace Xamasoft.JsonClassGenerator
             foreach (JsonType jsonType in typesWithNoDuplicates)
             {
 #if DEBUG
-                var test = jsonType.OriginalAssignedName;
-                var test2 = jsonType.OriginalName;
-                var test3 = jsonType.NewAssignedName;
-                var test4 = jsonType.Fields;
-                var test5 = jsonType.InternalType;
-                var test6 = jsonType.Type;
-                var test7 = jsonType.IsRoot;
-                var test8 = jsonType.IsVariant;
+                var test = jsonType;
 #endif
                 if (jsonType.IsRoot)
                 {
@@ -581,14 +567,7 @@ namespace Xamasoft.JsonClassGenerator
                 foreach (JsonType typesWithNoDuplicate in typesWithNoDuplicates)
                 {
 #if DEBUG
-                    var test1 = jsonType.OriginalAssignedName;
-                    var test12 = jsonType.OriginalName;
-                    var test13 = jsonType.NewAssignedName;
-                    var test14 = jsonType.Fields;
-                    var test15 = jsonType.InternalType;
-                    var test16 = jsonType.Type;
-                    var test17 = jsonType.IsRoot;
-                    var test18 = jsonType.IsVariant;
+                    var test2 = typesWithNoDuplicate;
 #endif
                     if (typesWithNoDuplicate.Fields.Any(x =>
                             x.Type?.NewAssignedName == jsonType.NewAssignedName ||
