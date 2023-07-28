@@ -15,9 +15,11 @@ public static class ApiClientSerializer
 {
     public static string SerializeApiClient(ApiClient client)
     {
-        var logsExceptions = client.Options.ErrorHandlingStrategy != ErrorHandlingStrategy.None && client.Options.ErrorHandlingSinks.Any(x => x == ErrorHandlingSinks.LogException);
+        var logsExceptions = (client.Options.ErrorHandlingStrategy != ErrorHandlingStrategy.None
+                              && client.Options.ErrorHandlingSinks.Any(x => x == ErrorHandlingSinks.LogException)) 
+                             || client.Options.ExecuteWithRetry;
 
-        var sb = new StringBuilder();
+    var sb = new StringBuilder();
         if (client.Options.XmlCommentTypes.Contains(XmlCommentTypes.ApiClient) && !string.IsNullOrWhiteSpace(client.Description))
         {
             var xmlComment = XmlCommentHelpers.ToXmlSummary(client.Description.HtmlToPlainText(), string.Empty);
@@ -58,7 +60,7 @@ public static class ApiClientSerializer
         if (client.Options.ExecuteWithRetry)
         {
             sb.AppendLine();
-            ExecuteWithRetryFunction(sb, 1, client.Name, client.BaseUrl ?? string.Empty);
+            ExecuteWithRetryFunction(sb, 1, client.Name, client.BaseUrl ?? string.Empty, client.Options);
         }
         sb.AppendLine("}");
         return sb.ToString();
@@ -388,7 +390,7 @@ public static class ApiClientSerializer
         }
     }
 
-    private static void ExecuteWithRetryFunction(StringBuilder sb, int intIndent, string apiClientName, string baseUrl)
+    private static void ExecuteWithRetryFunction(StringBuilder sb, int intIndent, string apiClientName, string baseUrl, ApiClientOptions options)
     {
         var oneIndent = Consts.Indent(1);
         var indent = Consts.Indent(intIndent);
@@ -396,18 +398,35 @@ public static class ApiClientSerializer
         sb.AppendLine(indent + $"{oneIndent}[CallerMemberName] string callerMemberName = \"\", [CallerFilePath] string sourceFilePath = \"\", [CallerLineNumber] int sourceLineNumber = 0)");
         sb.AppendLine(indent + "{");
         indent = Consts.Indent(intIndent + 1);
+
         sb.AppendLine(indent + "for (int i = 0; i < retryCount; i++)");
         sb.AppendLine(indent + "{");
         indent = Consts.Indent(intIndent + 2);
+
         sb.AppendLine(indent + "try");
         sb.AppendLine(indent + "{");
         indent = Consts.Indent(intIndent + 3);
         sb.AppendLine(indent + "return await operation();");
         indent = Consts.Indent(intIndent + 2);
         sb.AppendLine(indent + "}");
-        sb.AppendLine(indent + "catch (Exception ex) when (i < retryCount - 1)");
+
+        sb.AppendLine(indent + "catch (Exception ex)");
         sb.AppendLine(indent + "{");
         indent = Consts.Indent(intIndent + 3);
+        sb.AppendLine(indent + "if (i >= retryCount - 1)");
+        sb.AppendLine(indent + "{");
+        indent = Consts.Indent(intIndent + 4);
+
+        var throwDeclaration = $"throw new Exception($\"{apiClientName}: Operation failed. Retries exceeded. Allowed Retries: {{retryCount}}. Source - Member Name: {{callerMemberName}}, File Path: {{sourceFilePath}}, Line Number: {{sourceLineNumber}}\", ex);";
+        sb.ErrorHandlingStrategy(throwDeclaration, options.ErrorHandlingStrategy, indent);
+
+        indent = Consts.Indent(intIndent + 3);
+        sb.AppendLine(indent + "}");
+        sb.AppendLine();
+
+        sb.ErrorHandlingSinks(options.ErrorHandlingSinks, LogLevel.Information, indent, $"{apiClientName}: Operation failed. Retrying... Retry Attempt: {{i + 1}}, Allowed Retries: {{retryCount}}. Source - Member Name: {{callerMemberName}}, File Path: {{sourceFilePath}}, Line Number: {{sourceLineNumber}}");
+        sb.AppendLine();
+
         sb.AppendLine(indent + "_httpClient = new HttpClient()");
         sb.AppendLine(indent + "{");
         indent = Consts.Indent(intIndent + 4);
@@ -416,9 +435,10 @@ public static class ApiClientSerializer
         sb.AppendLine(indent + "};");
         indent = Consts.Indent(intIndent + 2);
         sb.AppendLine(indent + "}");
+
+
         indent = Consts.Indent(intIndent + 1);
         sb.AppendLine(indent + "}");
-        sb.AppendLine(indent + $"throw new Exception($\"Operation failed. {apiClientName}. Source - Member Name: {{callerMemberName}}, File Path: {{sourceFilePath}}, Line Number: {{sourceLineNumber}} \");");
         indent = Consts.Indent(intIndent);
         sb.AppendLine(indent + "}");
     }
