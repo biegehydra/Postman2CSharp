@@ -44,18 +44,16 @@
         </div>
     </MudHidden>
     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-        <div class="f-row">
-            <div class="f-row">
-                <div id="split-0">
-                    <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvancedItemSize="ItemSize" AutoSave></ApiClientOptionsComponent>
-                </div>
-                <div id="split-1">
-                     <MudText Style="font-weight: 500; text-align: end;" Typo="Typo.h2">@(_apiClientView ? "Generated Api Client" : "Other Generated Classes")</MudText>
-                    <br />
-                    @CodeBlock(_apiClientOptions, _apiClientView)
-                </div>
-            </div>
-        </div>
+        <VerticalSplit>
+            <LeftPanel>
+                <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvancedItemSize="ItemSize" AutoSave></ApiClientOptionsComponent>
+            </LeftPanel>
+            <RightPanel>
+                <MudText Style="font-weight: 500; text-align: end;" Typo="Typo.h2">@(_apiClientView ? "Generated Api Client" : "Other Generated Classes")</MudText>
+                <br/>
+                @CodeBlock(_apiClientOptions, _apiClientView)
+            </RightPanel>
+        </VerticalSplit>
     </MudHidden>
 </MudBreakpointProvider>
 <br/>
@@ -102,14 +100,6 @@
         await GetTestData();
     }
 
-     protected override async Task OnAfterRenderAsync(bool firstRender)
-     {
-         if (firstRender)
-         {
-             await Interop.SplitVertical("split-0", "split-1");
-         }
-     }
-
     private static string? _testData;
     private async Task GetTestData()
     {
@@ -123,7 +113,7 @@
 
     private static ApiClientOptions? _lastApiClientOptions;
     private static Core.Models.ApiClient? _lastApiClient;
-     private static RenderFragment? CodeBlock(ApiClientOptions options, bool apiClientView)
+    private static RenderFragment? CodeBlock(ApiClientOptions options, bool apiClientView)
     {
         if (_testData == null) return null;
          if (_lastApiClientOptions != null && _lastApiClient != null)

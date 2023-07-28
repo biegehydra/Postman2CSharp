@@ -55,6 +55,10 @@ img {
     cursor: pointer; 
 }
 
+.w-100 {
+    width: 100% !important;
+}
+
 .main-container {
     padding: 5px 16px;
     flex-grow: 1;

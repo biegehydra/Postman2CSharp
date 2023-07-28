@@ -1,0 +1,26 @@
+﻿<div class="f-row w-100">
+    <div id="@_leftPanelId">
+        @LeftPanel
+    </div>
+    <div id="@_rightPanelId">
+        @RightPanel
+    </div>
+</div>
+
+@code {
+    [Inject] private Interop Interop { get; set; } = null!;
+
+    [Parameter, EditorRequired] public RenderFragment LeftPanel { get; set; } = default!;
+    [Parameter, EditorRequired] public RenderFragment RightPanel { get; set; } = default!;
+
+    private readonly string _rightPanelId = "right-" + Guid.NewGuid();
+    private readonly string _leftPanelId = "left-" + Guid.NewGuid();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Interop.SplitVertical(_leftPanelId, _rightPanelId);
+        }
+    }
+}

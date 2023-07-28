@@ -11,41 +11,40 @@
 <br />
 <br />
 
-<div class="f-row-column" style="gap: 15px;">
-    <div style="width: 50%;" class="small-w-100" >
-        <MudText Typo="Typo.h2">Json Editor</MudText>
-        <br />
-        <JsonEditor @ref="_jsonEditor" @bind-IsJsonValid="_isJsonValid" ></JsonEditor>
-    </div>
-    <div style="width: 50%;" class="small-w-100" >
-        @if (_result.Count > 0)
-        {
-            <MudText Typo="Typo.h2">Generated Classes</MudText>
-            <br />
-            <MudBreakpointProvider>
-                <MudHidden Breakpoint="Breakpoint.MdAndUp">
-                    <MudTabs @bind-ActivePanelIndex="_activePanelIndex" Class="display-contents" Border Elevation="3" Position="Position.Bottom">
-                        @foreach (var (key, value) in _result)
-                        {
-                            <MudTabPanel Text="@key" Icon="@Icons.Code">
-                                <PrismCodeBlock FileName="@key" Style="margin-top: 0; height: 60vh;" Value="@value" Language="PrismLanguage.CSharp" />
-                            </MudTabPanel>
-                        }
-                    </MudTabs>
-                </MudHidden>
-                <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                    <MudTabs @bind-ActivePanelIndex="_activePanelIndex" Class="display-contents" Border Elevation="3" Position="Position.Right">
-                        @foreach (var (key, value) in _result)
-                        {
-                            <MudTabPanel Text="@key" Icon="@Icons.Code">
-                                <PrismCodeBlock FileName="@key" Style="margin-top: 0; height: 60vh;" Value="@value" Language="PrismLanguage.CSharp" />
-                            </MudTabPanel>
-                        }
-                    </MudTabs>
-                </MudHidden>
-            </MudBreakpointProvider>
-        }
-    </div>
+<div class="f-row-column" style="gap: 15px; width: 100%;">
+    @if (!_hideEditor)
+    {
+        <MudBreakpointProvider>
+            <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                <div class="f-column">
+                    @JsonEditor()
+                    <br />
+                    @GeneratedClasses(Position.Bottom)
+                </div>
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <VerticalSplit>
+                    <LeftPanel>
+                        @JsonEditor()
+                    </LeftPanel>
+                    <RightPanel>
+                        @GeneratedClasses(Position.Right)
+                    </RightPanel>
+                </VerticalSplit>
+            </MudHidden>
+        </MudBreakpointProvider>
+    }
+    else
+    {
+        <MudBreakpointProvider>
+            <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                @GeneratedClasses(Position.Bottom, showSwitch: true)
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                @GeneratedClasses(Position.Right, showSwitch: true)
+            </MudHidden>
+        </MudBreakpointProvider>
+    }
 </div>
 <br />
 <div class="f-row-column">
@@ -73,6 +72,8 @@
     private DuplicateOptions _duplicateOptions = new();
     private JsonEditor? _jsonEditor;
     private bool _isJsonValid = false;
+
+    private bool _hideEditor;
 
     private int _activePanelIndex;
     private Json2CSharpPlus? _json2CSharpPlusSimple;
@@ -108,6 +109,7 @@
 
     private async Task Reset()
     {
+        _hideEditor = false;
         _firstProcess = false;
         _result.Clear();
         if (_jsonEditor != null)
@@ -115,5 +117,50 @@
             await _jsonEditor.SetValue(_exampleJson);
         }
         _json2CSharpPlusSimple = null;
+    }
+
+    private bool _showJsonEditor
+    {
+        get => !_hideEditor;
+        set => _hideEditor = !value;
+    }
+    private RenderFragment GeneratedClasses(Position tabPanelPosition, bool showSwitch = false)
+    {
+        return @<div class="f-column w-100">
+                   <div class="f-row-column gap-4">
+                       <MudText Typo="Typo.h2">Generated Classes</MudText>
+                       @if (showSwitch)
+                       {
+                           <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => _showJsonEditor = true">Show Json Editor</MudButton>
+                       }
+                   </div>
+                   <br/>
+                   @if (_result.Count > 0)
+                   {
+                       <MudTabs @bind-ActivePanelIndex="_activePanelIndex" Class="display-contents" Border Elevation="3" Position="@tabPanelPosition">
+                           @foreach (var (key, value) in _result)
+                           {
+                               <MudTabPanel Text="@key" Icon="@Icons.Code">
+                                   <PrismCodeBlock DisplayContents FileName="@key" Style="margin-top: 0; height: 60vh;" Value="@value" Language="PrismLanguage.CSharp"/>
+                               </MudTabPanel>
+                           }
+                       </MudTabs>
+                   }
+               </div>;
+    }
+
+    private RenderFragment JsonEditor()
+    {
+       return @<div class="f-column w-100">
+                  <div class="f-row-column gap-4">
+                      <MudText Typo="Typo.h2">Json Editor</MudText>
+                      @if (_result.Count > 0)
+                      {
+                          <MudButton Color="Color.Primary" OnClick="() => _hideEditor = true" Variant="Variant.Filled" >Hide</MudButton>
+                      }
+                  </div>
+                  <br />
+                  <JsonEditor @ref="_jsonEditor" @bind-IsJsonValid="_isJsonValid"></JsonEditor>
+               </div>;
     }
 }
