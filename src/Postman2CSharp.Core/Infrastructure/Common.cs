@@ -84,5 +84,59 @@ namespace Postman2CSharp.Core.Infrastructure
             }
             return className;
         }
+
+        public static void ErrorHandlingStrategy(this StringBuilder sb, string throwDeclaration, ErrorHandlingStrategy errorHandlingStrategy,
+            string indent)
+        {
+            switch (errorHandlingStrategy)
+            {
+                case Infrastructure.ErrorHandlingStrategy.None:
+                    sb.AppendLine(indent + throwDeclaration);
+                    break;
+                case Infrastructure.ErrorHandlingStrategy.ThrowException:
+                    sb.AppendLine(indent + throwDeclaration);
+                    break;
+                case Infrastructure.ErrorHandlingStrategy.ReturnDefault:
+                    sb.AppendLine(indent + "return default;");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(errorHandlingStrategy), errorHandlingStrategy, null);
+            }
+        }
+
+        public static void ErrorHandlingSinks(this StringBuilder sb, List<ErrorHandlingSinks> errorHandlingSinks, LogLevel logLevel, string indent, string? errorMessage = null)
+        {
+            var nonLoggerMessage = errorMessage == null ? "ex" : $"$\"{errorMessage} - Ex: {{ex}}\"";
+            var loggerMessage = errorMessage == null ? "ex" : $"$\"{errorMessage}\", ex";
+
+
+            foreach (var errorHandlingSink in errorHandlingSinks)
+            {
+                switch (errorHandlingSink)
+                {
+                    case Infrastructure.ErrorHandlingSinks.ConsoleWriteLine:
+                        sb.AppendLine(indent + $"Console.WriteLine({nonLoggerMessage});");
+                        break;
+                    case Infrastructure.ErrorHandlingSinks.LogException:
+                        var logFunction = logLevel switch
+                        {
+                            LogLevel.Trace => "LogTrace",
+                            LogLevel.Debug => "LogDebug",
+                            LogLevel.Information => "LogInformation",
+                            LogLevel.Warning => "LogWarning",
+                            LogLevel.Error => "LogError",
+                            LogLevel.Critical => "LogCritical",
+                            _ => throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null)
+                        };
+                        sb.AppendLine(indent + $"_logger.{logFunction}({loggerMessage});");
+                        break;
+                    case Infrastructure.ErrorHandlingSinks.DebugWriteLine:
+                        sb.AppendLine(indent + $"Debug.WriteLine({nonLoggerMessage});");
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(errorHandlingSinks), errorHandlingSink, null);
+                }
+            }
+        }
     }
 }

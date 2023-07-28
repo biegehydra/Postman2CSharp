@@ -120,45 +120,10 @@ public static class HttpCallSerializer
         sb.AppendLine(indent + $"catch ({catchExceptionType} ex)");
         sb.AppendLine(indent + "{");
         indent = Consts.Indent(3);
-        foreach (var errorHandlingSink in errorHandlingSinks)
-        {
-            switch (errorHandlingSink)
-            {
-                case ErrorHandlingSinks.ConsoleWriteLine:
-                    sb.AppendLine(indent + "Console.WriteLine(ex);");
-                    break;
-                case ErrorHandlingSinks.LogException:
-                    var logFunction = logLevel switch
-                    {
-                        LogLevel.Trace => "LogTrace",
-                        LogLevel.Debug => "LogDebug",
-                        LogLevel.Information => "LogInformation",
-                        LogLevel.Warning => "LogWarning",
-                        LogLevel.Error => "LogError",
-                        LogLevel.Critical => "LogCritical",
-                        _ => throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null)
-                    };
-                    sb.AppendLine(indent + $"_logger.{logFunction}(ex);");
-                    break;
-                case ErrorHandlingSinks.DebugWriteLine:
-                    sb.AppendLine(indent + "Debug.WriteLine(ex);");
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(errorHandlingSinks), errorHandlingSink, null);
-            }
-        }
 
-        switch (errorHandlingStrategy)
-        {
-            case ErrorHandlingStrategy.ThrowException:
-                sb.AppendLine(indent + "throw;");
-                break;
-            case ErrorHandlingStrategy.ReturnDefault:
-                sb.AppendLine(indent + "return default;");
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(errorHandlingStrategy), errorHandlingStrategy, null);
-        }
+        sb.ErrorHandlingSinks(errorHandlingSinks, logLevel, indent);
+
+        sb.ErrorHandlingStrategy("throw;", errorHandlingStrategy, indent);
 
         indent = Consts.Indent(2);
         sb.AppendLine(indent + "}");
@@ -311,20 +276,10 @@ public static class HttpCallSerializer
         sb.AppendLine(indent + "else");
         sb.AppendLine(indent + "{");
         indent = Consts.Indent(intIndent + 1);
-        switch (errorHandlingStrategy)
-        {
-            case ErrorHandlingStrategy.None:
-                sb.AppendLine(indent + "throw new Exception($\"Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}\");");
-                break;
-            case ErrorHandlingStrategy.ThrowException:
-                sb.AppendLine(indent + "throw new Exception($\"Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}\");");
-                break;
-            case ErrorHandlingStrategy.ReturnDefault:
-                sb.AppendLine(indent + "return default;");
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(errorHandlingStrategy), errorHandlingStrategy, null);
-        }
+        
+        var errorMessage = $"throw new Exception($\"{call.Name}: Unexpected response. Status Code: {{response.StatusCode}}. Content: {{await response.Content.ReadAsStringAsync()}}\");";
+        sb.ErrorHandlingStrategy(errorMessage, errorHandlingStrategy, indent);
+
         indent = Consts.Indent(intIndent);
         sb.AppendLine(indent + "}");
     }
