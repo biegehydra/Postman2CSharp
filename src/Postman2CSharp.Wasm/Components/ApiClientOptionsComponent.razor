@@ -33,14 +33,13 @@
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
 <MudText Class="setting-section-header" Typo="Typo.h5">Multiple Response Handling</MudText>
 <MudGrid Spacing="3">
+    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+        <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.HandleMultipleResponses">Handle</MudCheckBox>
+    </AdvancedSettingItem>
 
     <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="This will determine what the return type will be if Handle is enabled and a request has multiple response types. Turning this on after generation 
 has no effect since only the first success response is saved when the api client is generated. Turning it off will work as intended">
         <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="_dirtyApiClientOptions.MultipleResponseHandling" Disabled="_dirtyApiClientOptions.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
-    </AdvancedSettingItem>
-
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
-        <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.HandleMultipleResponses">Handle</MudCheckBox>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
