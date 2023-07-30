@@ -77,7 +77,7 @@
 
     private void OnSiteSettingsChanged(SiteSettings siteSettings)
     {
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     private async Task AdvancedSettingsLoadedChanged(bool loaded)

@@ -56,7 +56,7 @@
         {
             IsJsonValid = false;
         }
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
 

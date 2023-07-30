@@ -128,7 +128,7 @@
 
     private void OnSiteSettingsChanged(SiteSettings siteSettings)
     {
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     #endregion

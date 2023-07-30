@@ -168,7 +168,7 @@ hood of an error in generated code (minor issues usually) and increase the likel
 
     private void OnInputModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     private static CSharpCodeWriterConfigInputModel InputModelWithDefaults() => new()

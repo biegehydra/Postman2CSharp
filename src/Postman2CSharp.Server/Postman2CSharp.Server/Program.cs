@@ -9,6 +9,10 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddMudBlazorServices();
 builder.Services.AddPostman2CSharpServices(isServer: true);
 
+builder.Services.AddSignalR(e => {
+    e.MaximumReceiveMessageSize = 102400000;
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

@@ -98,12 +98,12 @@
     private void OnSettingsChanged()
     {
         SetInputModelToLastSaved();
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     private void OnInputModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     private static CSharpCodeWriterConfigInputModel InputModelWithDefaults() => new ()
