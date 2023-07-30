@@ -37,6 +37,7 @@ public class ApiClient
     private static readonly List<string> DefaultApiClientNamespaces = new() { "System.Net.Http.Headers", "System.Text" };
 
     private bool? _allRequestsInheritAuth;
+    public bool AddAuthHeaderToConstructor => AllRequestsInheritAuth || AllRequestsHaveSameAuth;
     public bool AllRequestsInheritAuth => _allRequestsInheritAuth ??= HttpCalls.All(x => x.Request.Auth == null);
     private bool? _allRequestsHaveSameAuth;
     public bool AllRequestsHaveSameAuth

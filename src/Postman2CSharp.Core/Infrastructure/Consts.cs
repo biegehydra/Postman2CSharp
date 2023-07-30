@@ -16,14 +16,35 @@ public static class Consts
     public const string _jwt = nameof(_jwt);
     public const string _apiKey = nameof(_apiKey);
     public const string _awsSignature = nameof(_awsSignature);
+
+    private const string OneIndent = "    ";
+    private static readonly string TwoIndents = OneIndent + OneIndent;
+    private static readonly string ThreeIndents = TwoIndents + OneIndent; 
+    private static readonly string FourIndents = ThreeIndents + OneIndent;
+    private static readonly string FiveIndents = FourIndents + OneIndent;
+    private static readonly string SixIndents = FiveIndents + OneIndent;
     public static string Indent(int indents)
     {
         var sb = new StringBuilder();
-        for (int i = 0; i < indents; i++)
+        return indents switch
         {
-            sb.Append("    ");
+            1 => OneIndent,
+            2 => TwoIndents,
+            3 => ThreeIndents,
+            4 => FourIndents,
+            5 => FiveIndents,
+            6 => SixIndents,
+            > 6 => CalculateIndent()
+        };
+
+        string CalculateIndent()
+        {
+            for (var i = 0; i < indents; i++)
+            {
+                sb.Append(OneIndent);
+            }
+            return sb.ToString();
         }
-        return sb.ToString();
     }
 
     public static class Classes

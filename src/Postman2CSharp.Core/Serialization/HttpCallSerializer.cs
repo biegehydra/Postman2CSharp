@@ -149,7 +149,10 @@ public static class HttpCallSerializer
         bool useCancellationTokens, OutputCollectionType outputCollectionType, bool executeWithRetry)
     {
         var indent = Consts.Indent(intIndent);
-        sb.AddAuthorizationHeader(call.Request.Auth, indent, authHasHeader);
+        if (authHasHeader)
+        {
+            sb.SetAuthenticationHeader(call.Request.Auth, indent);
+        }
         UniqueHeaders(sb, call, intIndent, out var hasUniqueHeaders);
 
         if (call.UniqueHeaders.Where(Header.IsImportant).Any())
@@ -214,7 +217,10 @@ public static class HttpCallSerializer
          errorHandlingStrategy, bool useCancellationTokens, OutputCollectionType outputCollectionType, bool executeWithRetry)
     {
         var indent = Consts.Indent(intIndent);
-        sb.AddAuthorizationHeader(call.Request.Auth, indent, authHasHeader);
+        if (authHasHeader)
+        {
+            sb.SetAuthenticationHeader(call.Request.Auth, indent);
+        }
         UniqueHeaders(sb, call, intIndent, out var hasUniqueHeaders);
 
         if (call.UniqueHeaders.Where(Header.IsImportant).Any())

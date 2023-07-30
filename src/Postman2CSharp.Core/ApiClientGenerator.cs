@@ -259,7 +259,7 @@ public class ApiClientGenerator
                         ProcessItem(jsonClassGenerator, json, uniqueName, Consts.Request, ref requestClassName,
                             ref requestSourceCode, ref requestTypes, ref requestRootWasArray);
                     }
-                    catch (JsonException)
+                    catch (Newtonsoft.Json.JsonException)
                     {
                         requestClassName = "EmptyRequest";
                         requestSourceCode = null;
@@ -347,7 +347,7 @@ public class ApiClientGenerator
                         ProcessItem(jsonClassGenerator, json, uniqueName, type, ref responseClassName,
                             ref responseSourceCode, ref _, ref rootWasArray);
                     }
-                    catch (JsonException)
+                    catch (Newtonsoft.Json.JsonException)
                     {
                         responseClassName = "EmptyResponse";
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));

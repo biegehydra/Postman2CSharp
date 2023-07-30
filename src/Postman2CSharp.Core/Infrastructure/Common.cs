@@ -13,7 +13,7 @@ namespace Postman2CSharp.Core.Infrastructure
         {
             sb.AppendLine(indent + $@"_httpClient.DefaultRequestHeaders.Add({key}, {value});");
         }
-        public static void AddDefaultAuthorizationHeader(this StringBuilder sb, string indent, string key, string value)
+        public static void SetDefaultAuthorizationHeader(this StringBuilder sb, string indent, string key, string value)
         {
             sb.AppendLine(indent + $@"_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue({key}, {value});");
         }
@@ -107,7 +107,7 @@ namespace Postman2CSharp.Core.Infrastructure
         public static void ErrorHandlingSinks(this StringBuilder sb, List<ErrorHandlingSinks> errorHandlingSinks, LogLevel logLevel, string indent, string? errorMessage = null)
         {
             var nonLoggerMessage = errorMessage == null ? "ex" : $"$\"{errorMessage} - Ex: {{ex}}\"";
-            var loggerMessage = errorMessage == null ? "ex" : $"$\"{errorMessage}\", ex";
+            var loggerMessage = errorMessage == null ? "ex" : $"ex, $\"{errorMessage}\"";
 
 
             foreach (var errorHandlingSink in errorHandlingSinks)

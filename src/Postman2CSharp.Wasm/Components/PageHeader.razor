@@ -41,12 +41,24 @@
     string GetKeywords()
     {
         var keywords = new HashSet<string>(Keywords.Split(",").Select(x => x.Trim()));
-        keywords.Add(Title ?? "");
-        keywords.Add("postman2csharp");
-        keywords.Add("csharp");
-        keywords.Add("c#");
-        keywords.Add("apiclient");
-        keywords.Add("httpclient");
+        AddIfNotExist(Title ?? "");
+        AddIfNotExist("postman2csharp");
+        AddIfNotExist("csharp");
+        AddIfNotExist("c#");
+        AddIfNotExist("apiclient");
+        AddIfNotExist("httpclient");
+        AddIfNotExist("convert");
+        AddIfNotExist("generate");
+        AddIfNotExist("postman");
+        AddIfNotExist("collection");
         return string.Join(", ", keywords.Where(x => !string.IsNullOrWhiteSpace(x)));
+
+        void AddIfNotExist(string keyword)
+        {
+            if (!keywords!.Any(x => x.Equals(keyword, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                keywords!.Add(keyword);
+            }
+        }
     }
 }

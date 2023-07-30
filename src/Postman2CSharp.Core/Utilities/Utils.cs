@@ -443,7 +443,7 @@ public static class Utils
         }
     }
 
-    private static readonly List<string> PossibleJsonContentTypes = new() { "application/json", "text" };
+    private static readonly List<string> PossibleJsonContentTypes = new() { "json", "text" };
     public static DataType GetResponseDataType(Response? response)
     {
         if (response?.Header?.Any(x => x.Key.ToLower() == "content-type" && PossibleJsonContentTypes.Any(type => x.Value.ToLower().Contains(type))) ?? false)
@@ -451,7 +451,7 @@ public static class Utils
             return DataType.Json;
         }
 
-        if (response == null || response.Code == null)
+        if (response?.Code == null)
         {
             return DataType.Null;
         }

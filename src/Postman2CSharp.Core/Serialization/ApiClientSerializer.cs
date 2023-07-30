@@ -19,7 +19,7 @@ public static class ApiClientSerializer
                               && client.Options.ErrorHandlingSinks.Any(x => x == ErrorHandlingSinks.LogException)) 
                              || client.Options.ExecuteWithRetry;
 
-    var sb = new StringBuilder();
+        var sb = new StringBuilder();
         if (client.Options.XmlCommentTypes.Contains(XmlCommentTypes.ApiClient) && !string.IsNullOrWhiteSpace(client.Description))
         {
             var xmlComment = XmlCommentHelpers.ToXmlSummary(client.Description.HtmlToPlainText(), string.Empty);
@@ -46,27 +46,26 @@ public static class ApiClientSerializer
         {
             AuthProperties(otherUniqueAuth, sb, indent);
         }
-        var addAuthHeaderToConstructor = client.AllRequestsInheritAuth || client.AllRequestsHaveSameAuth;
         ApiClientConstructor(sb, client.CommonHeaders, client.UniqueAuths, client.Name, client.BaseUrl,
-            addAuthHeaderToConstructor, logsExceptions);
+            client.AddAuthHeaderToConstructor, logsExceptions);
 
         if (client.UniqueAuths.FirstOrDefault(x => x.EnumType() == PostmanAuthType.oauth2) is { } uniqueAuthOAuth2)
         {
-            AddOAuth2Methods(sb, uniqueAuthOAuth2, client.BaseUrl, 1);
+            AddOAuth2Methods(sb, uniqueAuthOAuth2, 1);
         }
 
-        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: addAuthHeaderToConstructor, client.Options, client.CollectionType);
+        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: client.AddAuthHeaderToConstructor, client.Options, client.CollectionType);
         sb.AppendLine();
         if (client.Options.ExecuteWithRetry)
         {
             sb.AppendLine();
-            ExecuteWithRetryFunction(sb, 1, client.Name, client.BaseUrl ?? string.Empty, client.Options);
+            ExecuteWithRetryFunction(sb, 1, client.Name, client.BaseUrl ?? string.Empty, client.Options, client.CommonHeaders, client.UniqueAuths, client.AddAuthHeaderToConstructor);
         }
         sb.AppendLine("}");
         return sb.ToString();
     }
 
-    private static void ApiClientConstructor(StringBuilder sb, List<Header> headers, List<AuthSettings> uniqueAuths, string apiClientName, 
+    private static void ApiClientConstructor(StringBuilder sb, List<Header> commonHeaders, List<AuthSettings> uniqueAuths, string apiClientName, 
         string? baseUrl, bool addAuthHeaderToConstructor, bool logsExceptions)
     {
         var indent = Consts.Indent(1);
@@ -106,17 +105,18 @@ public static class ApiClientSerializer
         if (addAuthHeaderToConstructor)
         {
             var auth = uniqueAuths.SingleOrDefault();
-            sb.AddAuthToConstructor(auth, indent, true);
+            sb.AddAuthVariablesToConstructor(auth, indent);
+            sb.SetAuthenticationHeader(auth, indent);
         }
         else
         {
             foreach (var unique in uniqueAuths)
             {
-                sb.AddAuthToConstructor(unique, indent, false);
+                sb.AddAuthVariablesToConstructor(unique, indent);
             }
         }
 
-        var importantHeaders = headers.Where(Header.IsImportant).ToList();
+        var importantHeaders = commonHeaders.Where(Header.IsImportant).ToList();
         if (importantHeaders.Count > 0)
         {
             sb.AppendLine();
@@ -185,7 +185,7 @@ public static class ApiClientSerializer
         }
     }
 
-    private static void AddOAuth2Methods(StringBuilder sb, AuthSettings authSettings, string? baseUrl, int indent)
+    private static void AddOAuth2Methods(StringBuilder sb, AuthSettings authSettings, int indent)
     {
         AddNotImplementedFunction(sb, OAuth2Functions.GetAccessToken, indent, returnType: "string");
         sb.AppendLine();
@@ -251,7 +251,7 @@ public static class ApiClientSerializer
             indent = Consts.Indent(intIndent + 1);
             var accessToken = "accessToken";
             sb.AppendLine(indent + $"var {accessToken} = await {OAuth2Functions.GetAccessToken}();");
-            sb.AddDefaultAuthorizationHeader(indent, $"$\"{headerPrefix}\"", accessToken);
+            sb.SetDefaultAuthorizationHeader(indent, $"$\"{headerPrefix}\"", accessToken);
             indent = Consts.Indent(intIndent);
             sb.AppendLine(indent + "}");
         }
@@ -390,7 +390,8 @@ public static class ApiClientSerializer
         }
     }
 
-    private static void ExecuteWithRetryFunction(StringBuilder sb, int intIndent, string apiClientName, string baseUrl, ApiClientOptions options)
+    private static void ExecuteWithRetryFunction(StringBuilder sb, int intIndent, string apiClientName, string baseUrl, ApiClientOptions options,
+        List<Header> commonHeaders, List<AuthSettings> uniqueAuths, bool addAuthToHeader)
     {
         var oneIndent = Consts.Indent(1);
         var indent = Consts.Indent(intIndent);
@@ -433,6 +434,22 @@ public static class ApiClientSerializer
         sb.AppendLine(indent + $"BaseAddress = new Uri($\"{baseUrl}\")");
         indent = Consts.Indent(intIndent + 3);
         sb.AppendLine(indent + "};");
+
+        var importantHeaders = commonHeaders.Where(Header.IsImportant).ToList();
+        if (importantHeaders.Count > 0)
+        {
+            sb.AppendLine();
+        }
+
+        foreach (var header in importantHeaders)
+        {
+            sb.AddDefaultRequestHeader(indent, $"$\"{header.Key}\"", $"$\"{header.Value}\"");
+            if (addAuthToHeader && uniqueAuths.FirstOrDefault() is { } auth)
+            {
+                sb.SetAuthenticationHeader(auth, indent);
+            }
+        }
+
         indent = Consts.Indent(intIndent + 2);
         sb.AppendLine(indent + "}");
 

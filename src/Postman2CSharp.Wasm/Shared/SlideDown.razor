@@ -46,11 +46,11 @@ else
 }
 @if (ShowContent)
 {
-    <Small OnClick="ToggleContent">@ShowLessText</Small>
+    <Small OnClick="() => ToggleContent(false)">@ShowLessText</Small>
 }
 else
 {
-    <Small OnClick="ToggleContent">@ShowMoreText</Small>
+    <Small OnClick="() => ToggleContent(true)" >@ShowMoreText</Small>
 }
 
 @code {
@@ -72,6 +72,9 @@ else
     [Parameter]
     public string ShowLessText { get; set; } = "Show less";
 
+    [Parameter]
+    public bool StartOpen { get; set; }
+
     private double InternalAnimationDuration => ShowContent ? AnimationDuration : .8 * AnimationDuration;
 
     private string Style => $"animation: {AnimationClass} {InternalAnimationDuration}s forwards;";
@@ -87,15 +90,23 @@ else
     {
         if (firstRender)
         {
-            await Task.Delay((int)Math.Ceiling(AnimationDuration * 1.4) * 1000);
             _firstRenderComplete = true;
+            if (StartOpen)
+            {
+                ToggleContent(true);
+                StateHasChanged();
+            }
+            else
+            {
+                await Task.Delay((int)Math.Ceiling(AnimationDuration * 1.4) * 1000);
+            }
         }
     }
 
-    private void ToggleContent()
+    private void ToggleContent(bool value)
     {
         _firstShowContent = true;
-        ShowContent = !ShowContent;
-        ShowContentChanged.InvokeAsync(ShowContent);
+        ShowContent = value;
+        ShowContentChanged.InvokeAsync(value);
     }
 }
