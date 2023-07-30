@@ -1,0 +1,122 @@
+﻿<style>
+    .getting-started-container {
+        max-width: 100%;
+    }
+
+    .getting-started-image {
+        height: 400px;
+    }
+    @@media (max-width: 600px) {
+        .getting-started-image {
+            max-height: 40vh;
+            object-fit: contain;
+            max-width: 600px;
+        }
+    }
+    @@media (max-width: 400px) {
+        .getting-started-image {
+            max-height: 40vh;
+            object-fit: contain;
+            max-width: 400px;
+        }
+    }
+
+    @@media (max-width: 300px) {
+        .getting-started-image
+        {
+            max-height: 40vh;
+            object-fit: contain;
+            max-width: 300px;
+        }
+    }
+
+    .mud-list-item strong {
+        font-size: large;
+    }
+</style>
+<div class="getting-started-container">
+    <MudPaper Elevation="4" Class="header-paper">
+        <MudText Typo="Typo.h1" Class="mt-4">Getting Started</MudText>
+        <br/>
+        <MudText Typo="Typo.subtitle1">
+            <strong style="font-size: large;">Privacy Assurance:</strong> Your Postman collections never leave your computer. This tool operates with Blazor WebAssembly (Wasm),
+            a framework that allows it to run entirely in your browser without making any network calls or sharing information about your collections.
+            Your data stays on your machine.
+        </MudText>
+        <br/>
+        <MudText Typo="Typo.subtitle1">
+            <strong style="font-size: large;">Have a collection in another format?</strong> Postman supports a variety of type and specification for importing.
+            OpenAPI, GraphQL, cURL, RAML, HAR and more are all supported. For more information, visit their page: <a target="_blank" class="link-normal" href="https://learning.postman.com/docs/designing-and-developing-your-api/importing-an-api/#supported-api-definitions-formats">Supported API definitions formats</a>
+            The imports are well written and create a well-structured collection. If you have a collection in one of these formats, you can import it into Postman and then
+            follow the directions below. <MudIcon Icon="@Icons.ArrowDownward" Size="Size.Small" Style="vertical-align: bottom;"></MudIcon>
+        </MudText>
+    </MudPaper>
+    <br/>
+    <MudList>
+        <MudListItem>
+            <MudText>
+                <strong>Step 1:</strong> Open Postman and hover over the collection (root folder) you want to export. Click on the ellipsis (...), scroll down, and then select 'Export'.
+            </MudText>
+        </MudListItem>
+        <img class="getting-started-image" src="_context/Postman2CSharp.UI/images/Hover.webp" alt="Show More" fetchpriority="low" loading="lazy">
+        <MudListItem>
+            <MudText>
+                <strong>Step 2:</strong> In the 'Export Collection' dialog box, select version 'Collection v2.1'.
+            </MudText>
+        </MudListItem>
+        <img class="getting-started-image" src="_context/Postman2CSharp.UI/images/Export.webp" alt="Export" fetchpriority="low" loading="lazy">
+        <MudListItem>
+            <MudText>
+                <strong>Step 3:</strong> Click 'Export' and choose the location where you want to save the file.
+            </MudText>
+        </MudListItem>
+        <img class="getting-started-image" src="_context/Postman2CSharp.UI/images/Export2.webp" alt="Export Collection" fetchpriority="low" loading="lazy">
+        <MudListItem>
+            <MudText>
+                <strong>Step 4:</strong> Now you can convert the exported Json file on <a class="link-normal" href="/Convert">this</a> page to generate your C# API client.
+            </MudText>
+        </MudListItem>
+        <img class="getting-started-image" style="max-height: 60vh;" src="_context/Postman2CSharp.UI/images/TreeView.webp" alt="Export Collection" fetchpriority="low" loading="lazy">
+    </MudList>
+
+    <MudText Typo="Typo.h2" GutterBottom="true">Best Practices</MudText>
+    <MudText>
+        To ensure optimal conversion of your Postman collection, we recommend the following practices:
+    </MudText>
+    <MudList>
+        <MudListItem>
+            <MudText>
+                <strong>Save responses for all requests:</strong> This allows Postman2CSharp to generate classes for your response json.
+            </MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText>
+                <strong>Put example json in request bodies that use it:</strong> As above, this allows Postman2CSharp to generate classes for your request json.
+            </MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText>
+                <strong>Use inherited authorization:</strong> This helps maintain consistency and will generate the best results.
+            </MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText>
+                <strong>Remove unused parameters:</strong> To ensure clean and optimized generated code, it is advisable to remove parameters that are not being used. Remove, not disable.
+            </MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText>
+                <strong>Use collection variables instead of other types of variables:</strong> Collection variables allow Postman2CSharp to do more code generation for you because their values are included in the exported json.
+            </MudText>
+        </MudListItem>
+    </MudList>
+
+    <MudText Typo="Typo.h2" GutterBottom="true">Configuration</MudText>
+    <MudText>
+        There majority of configuration will be found on the Convert page. There are some additional configuration that you can configure
+        on the Advanced Settings page; these configurations deal with how classes are generated from Json. For an explanation of configurations
+        see <a class="link-normal" href="/ApiClient-Configurations-Explained">ApiClient Configurations Explained</a>.
+    </MudText>
+    <br/>
+</div>
+

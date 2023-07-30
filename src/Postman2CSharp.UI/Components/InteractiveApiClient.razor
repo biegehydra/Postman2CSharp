@@ -1,0 +1,200 @@
+﻿@using Xamasoft.JsonClassGenerator
+<style>
+    .api-client-options-container {
+        width: 35%;
+    }
+    .code-block-container {
+        width: 65%;
+    }
+    .mud-tab {
+        text-transform: none;
+    }
+
+    .d-inline-block {
+        width: 100% !important;
+    }
+
+</style>
+
+<div style="width: 100%;" class="f-row hide-not-desktop">
+      <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" >
+        <MudIconButton Icon="@Icons.WidthFull" OnClick="() => SetLayout(true)" Disabled="_wideLayout == true"></MudIconButton>
+        <MudIconButton Icon="@Icons.WidthNormal" OnClick="() => SetLayout(false)" Disabled="_wideLayout == false">Classes</MudIconButton>
+        <MudIconButton Icon="@Icons.PanoramaWideAngle" OnClick="() => SetLayout(null)" Disabled="_wideLayout == null">Classes</MudIconButton>
+      </MudButtonGroup>
+    <div style="flex-grow: 1;"></div>
+    <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled">
+        <MudButton OnClick="() => SetApiClientView(true)" Disabled="_apiClientView">ApiClient</MudButton>
+        <MudButton OnClick="() => SetApiClientView(false)" Disabled="!_apiClientView">Classes</MudButton>
+    </MudButtonGroup>
+</div>
+<br/>
+<MudBreakpointProvider>
+    <MudHidden Breakpoint="Breakpoint.MdAndUp">
+        <div class="f-column">
+            <div>
+                <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvancedItemSize="ItemSize" AutoSave></ApiClientOptionsComponent>
+            </div>
+            <br/>
+            <div >
+                <MudText Style="font-weight: 500;" Typo="Typo.h2">@(_apiClientView ? "Generated Api Client" : "Other Generated Classes")</MudText>
+                <br />
+                @CodeBlock(_apiClientOptions, _apiClientView)
+            </div>
+        </div>
+    </MudHidden>
+    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+        <VerticalSplit>
+            <LeftPanel>
+                <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvancedItemSize="ItemSize" AutoSave></ApiClientOptionsComponent>
+            </LeftPanel>
+            <RightPanel>
+                <MudText Style="font-weight: 500; text-align: end;" Typo="Typo.h2">@(_apiClientView ? "Generated Api Client" : "Other Generated Classes")</MudText>
+                <br/>
+                @CodeBlock(_apiClientOptions, _apiClientView)
+            </RightPanel>
+        </VerticalSplit>
+    </MudHidden>
+</MudBreakpointProvider>
+<br/>
+<br/>
+<div>
+    <MudText Typo="Typo.h4" >Json Used</MudText>
+    <br/>
+    <PrismCodeBlock Language="PrismLanguage.Json" MaxHeight="65vh" FileName="Example.json" Value="@_testData" UseLineNumbers ></PrismCodeBlock>
+</div>
+
+@code {
+     private bool _apiClientView = true;
+     private bool? _wideLayout = false;
+
+     private AdvancedItemSize ItemSize => _wideLayout switch{
+         true => AdvancedItemSize.ExtraExtraLarge,
+         false => AdvancedItemSize.ExtraLarge,
+         _ => AdvancedItemSize.Large
+     };
+
+     private void SetLayout(bool? wide)
+     {
+         _wideLayout = wide;
+         StateHasChanged();
+     }
+
+     private void SetApiClientView(bool value)
+     {
+         _apiClientView = value;
+         StateHasChanged();
+     }
+     
+    [Inject] private Interop Interop { get; set; } = null!;
+    [Inject] private LazyLoader LazyLoader { get; set; } = null!;
+    [Inject] private Navigate Navigate { get; set; } = null!;
+
+    private ApiClientOptions _apiClientOptions = new()
+    {
+        HandleMultipleResponses = false
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetTestData();
+    }
+
+    private static string? _testData;
+    private async Task GetTestData()
+    {
+        if (_testData != null) return;
+        await LazyLoader.LoadHttpSecurityAssemblies();
+        var httpClient = new HttpClient();
+        var getUrl = Navigate.BaseUrl + "_content/Postman2CSharp.UI/InteractiveDemo.json";
+        var response = await httpClient.GetAsync(getUrl);
+        _testData = await new StreamReader(await response.Content.ReadAsStreamAsync()).ReadToEndAsync();
+    }
+
+    private static ApiClientOptions? _lastApiClientOptions;
+    private static Core.Models.ApiClient? _lastApiClient;
+    private static RenderFragment? CodeBlock(ApiClientOptions options, bool apiClientView)
+    {
+        if (_testData == null) return null;
+         if (_lastApiClientOptions != null && _lastApiClient != null)
+        {
+            if (ApiClientOptionsComponent.Equals(_lastApiClientOptions, options))
+            {
+                return ApiClientOrClasses(_lastApiClient, apiClientView);
+            }
+        }
+        _lastApiClientOptions = options;
+        var postmanCollection = JsonSerializer.Deserialize<PostmanCollection>(_testData, SerializerSettings.Web);
+        if (postmanCollection == null) return null;
+        var apiClientGenerationOptions = new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, options);
+        var apiClientGenerator = new ApiClientGenerator(postmanCollection, apiClientGenerationOptions);
+        var generateTask = apiClientGenerator.GenerateApiClients();
+        generateTask.Wait();
+         var firstApiClient  = generateTask.Result.First();
+        _lastApiClient = firstApiClient;
+        return ApiClientOrClasses(firstApiClient, apiClientView);
+         static RenderFragment ApiClientOrClasses(Core.Models.ApiClient apiClient, bool apiClientView)
+         {
+            if (apiClientView)
+            {
+                return @<PrismCodeBlock @key="apiClient" FileName="@apiClient.Name" Language="PrismLanguage.CSharp" Value="@apiClient.SourceCode" />;
+            }
+            else
+            {
+                return @<MudBreakpointProvider>
+        <MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <MudTabs Class="display-contents" Border Elevation="3" Position="Position.Bottom">
+
+            </MudTabs>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <MudTabs Class="display-contents" Border Elevation="3" Position="Position.Right">
+                @foreach (var httpCall in apiClient.HttpCalls.OrderBy(x => x.Name))
+                {
+                    @if (httpCall.RequestSourceCode != null)
+                    {
+                        @TabPanel(httpCall.RequestClassName, httpCall.RequestSourceCode)
+                    }
+                    @if (httpCall.FormDataSourceCode != null)
+                    {
+                        @TabPanel(httpCall.FormDataClassName, httpCall.FormDataSourceCode)
+                    }
+                    @if (httpCall.QueryParameterSourceCode != null)
+                    {
+                        @TabPanel(httpCall.QueryParameterClassName, httpCall.QueryParameterSourceCode)
+                    }
+                    foreach (var response in httpCall.AllResponses)
+                    {
+                        if (response.SourceCode != null)
+                        {
+                        
+                            @TabPanel(response.ClassName, response.SourceCode)
+                        }
+                    }
+                }
+                @TabPanel(apiClient.InterfaceName, apiClient.InterfaceSourceCode)
+
+            </MudTabs>
+        </MudHidden>
+    </MudBreakpointProvider>;
+            }
+         }
+         static RenderFragment TabPanel(string className, string sourceCode)
+         {
+             return @<MudTabPanel>
+                        <TabContent >
+                            <div class="f-row gap-2" style="width: 100%;">
+                                <MudIcon Icon="@Icons.Code" Size="Size.Medium"></MudIcon>
+                                <div style="max-width: 11em; text-overflow: ellipsis; overflow: hidden;">
+                                    @className
+                                </div>
+                            </div>
+                        </TabContent>
+                        <ChildContent>
+                            <PrismCodeBlock @key="@sourceCode" DisplayContents FileName="@className" Style="margin-top: 0;" Value="@sourceCode" Language="PrismLanguage.CSharp"/>
+                        </ChildContent>
+                    </MudTabPanel>;
+         }
+       
+    }
+}

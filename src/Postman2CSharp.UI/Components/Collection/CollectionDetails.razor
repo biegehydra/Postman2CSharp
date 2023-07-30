@@ -1,0 +1,99 @@
+﻿@using Postman2CSharp.UI.Models
+@if (Info != null && Collection != null)
+{
+    <div class="f-row" style="justify-content: space-between">
+        <div class="f-row" style="justify-content: space-between; gap: 10px; width: 100%;">
+            <div style="width: 75%">
+                <MudText Typo="Typo.h1" Class="mb-5">@Info.Name</MudText>
+                @if (!string.IsNullOrWhiteSpace(Info.PostmanId))
+                {
+                    <Detail Key="Postman Id" Value="@Info.PostmanId" FontSize="FontSize.Larger"></Detail>
+                }
+                @{ var shortDescription = Info.Description?.Length > 250 ? Info.Description?[..250] : Info.Description; }
+                <span style="font-size: larger;">
+                    <b>Description:&emsp;</b>
+                    @if (!ShowMore)
+                    {
+                        <text>@shortDescription &nbsp;&nbsp;&nbsp;<small class="show-more" @onclick="OnClickShowMore"><b>Full View (Pretty)</b></small></text>
+                    }
+                </span>
+                <br/>
+                <div id="markdown-body" class="markdown-body"></div>
+                @if (ShowMore)
+                {
+                    <br/>
+                    <small class="show-more" @onclick="OnClickShowLess"><b>Show less</b></small>
+                }
+            </div>
+            <div>
+                <Detail Key="ApiClients" Value="@ApiClientCount.ToString()" FontSize="FontSize.Larger" Flip></Detail>
+                <Detail Key="Http Calls" Value="@HttpCallsCount.ToString()" FontSize="FontSize.Larger" Flip></Detail>
+                <Detail Key="Classes" Value="@TotalGeneratedClasses.ToString()" FontSize="FontSize.Larger" Flip></Detail>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="f-row" style="justify-content: space-between">
+        <div class="f-column" style="justify-content: space-between; gap: 10px; width: 100%;">
+            <div style="width: 75%">
+                <MudSkeleton Animation="Animation.Wave" Width="55%" />
+                <MudSkeleton Animation="Animation.Wave" Width="70%" />
+                <MudSkeleton Animation="Animation.Wave" Width="60%" />
+                <MudSkeleton Animation="Animation.Wave" Width="50%" />
+                <MudSkeleton Animation="Animation.Wave" Width="45%" />
+            </div>
+            <br />
+            <br />
+            <div>
+                <MudSkeleton Animation="Animation.Wave" Width="100%" Height="35em"/>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+
+    [Inject] private Interop Interop { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public CollectionInfo? Info { get; set; }
+
+    [Parameter, EditorRequired]
+    public ApiCollection? Collection { get; set; }
+
+    private bool ShowMore { get; set; }
+
+    private int ApiClientCount => Collection?.ApiClients.Count ?? 0;
+
+    private int HttpCallsCount => Collection?.ApiClients.Sum(x => x.HttpCalls.Count) ?? 0;
+
+    private int TotalGeneratedClasses => Collection?.ApiClients.Sum(x => x.TotalClassesGenerated) ?? 0;
+
+    private ApiCollection? _cachedCollection;
+    protected override async Task OnAfterRenderAsync(bool first)
+    {
+        if (Collection == _cachedCollection) return;
+        await Interop.EmptyElement("markdown-body");
+        _cachedCollection = Collection;
+    }
+    protected override void OnParametersSet()
+    {
+        if (Collection == _cachedCollection) return;
+        ShowMore = false;
+    }
+
+    private async Task OnClickShowMore()
+    {
+        ShowMore = true;
+        await Interop.ApplyMarkdown("markdown-body", Info?.Description ?? "");
+    }
+    private async Task OnClickShowLess()
+    {
+        ShowMore = false;
+        await Interop.EmptyElement("markdown-body");
+        StateHasChanged();
+    }
+}

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace Postman2CSharp.Core.Infrastructure;
 
@@ -34,7 +35,8 @@ public static class Consts
             4 => FourIndents,
             5 => FiveIndents,
             6 => SixIndents,
-            > 6 => CalculateIndent()
+            > 6 => CalculateIndent(),
+            _ => throw new ArgumentOutOfRangeException(nameof(indents), indents, null)
         };
 
         string CalculateIndent()
