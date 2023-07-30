@@ -5,6 +5,10 @@ using Postman2CSharp.UI.Infrastructure.Interfaces;
 
 namespace Postman2CSharp.UI.Services
 {
+    /// <summary>
+    /// When loading additional css or js files through here, make sure to add them
+    /// to the _Layout of the server project as well.
+    /// </summary>
     public class LazyLoader : ILazyLoader
     {
         private const string MarkDownSource = "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css";

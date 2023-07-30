@@ -327,7 +327,11 @@
     {
         if (_initialized)
         {
-            await JsRuntime.InvokeVoidAsync("removePrismObserver");
+            try
+            {
+                await JsRuntime.InvokeVoidAsync("removePrismObserver");
+            }
+            catch (JSDisconnectedException) { }
         }
         SiteSettings.OnSettingsChanged -= OnSiteSettingsChanged;
     }
