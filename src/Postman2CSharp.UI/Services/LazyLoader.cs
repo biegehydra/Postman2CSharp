@@ -1,12 +1,12 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Services;
+using Postman2CSharp.UI.Infrastructure;
+using Postman2CSharp.UI.Infrastructure.Interfaces;
 
 namespace Postman2CSharp.UI.Services
 {
-    public class LazyLoader
+    public class LazyLoader : ILazyLoader
     {
-        public static List<Assembly> AdditionalAssemblies { get; set; } = new();
         private const string MarkDownSource = "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css";
         private static string[] JzipJsFileSources { get; set; } = new[]
         {
@@ -14,10 +14,6 @@ namespace Postman2CSharp.UI.Services
             "_content/Postman2CSharp.UI/jzip/jzip-interop.js",
             "https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"
         };
-        public static event Func<bool, Task>? AdvancedSettingsLoadedChanged;
-        public static bool AdvancedSettingsLoaded { get; set; }
-        public static event Func<bool, Task>? UploadLoadedChanged;
-        public static bool ConvertLoaded { get; set; }
         private static List<string> UploadAssemblies { get; set; } = new()
         {
             "Microsoft.CodeAnalysis.CSharp.dll",
@@ -83,18 +79,19 @@ namespace Postman2CSharp.UI.Services
 
         public async Task LoadConvertAssemblies()
         {
-            if (ConvertLoaded) return;
+            if (LazyLoading.ConvertLoaded) return;
             await _lazyAssemblyLoader.LoadAssembliesAsync(UploadAssemblies);
-            ConvertLoaded = true;
-            UploadLoadedChanged?.Invoke(ConvertLoaded);
+            LazyLoading.ConvertLoaded = true;
+            LazyLoading.InvokeConvertLoaded(true);
         }
+
 
         public async Task LoadAdvancedSettingsAssemblies()
         {
-            if (AdvancedSettingsLoaded) return;
+            if (LazyLoading.AdvancedSettingsLoaded) return;
             await _lazyAssemblyLoader.LoadAssembliesAsync(AdvancedSettingsAssemblies);
-            AdvancedSettingsLoaded = true;
-            AdvancedSettingsLoadedChanged?.Invoke(AdvancedSettingsLoaded);
+            LazyLoading.AdvancedSettingsLoaded = true;
+            LazyLoading.InvokeAdvancedSettingsLoaded(true);
         }
 
         private void LoadCollectionJs()

@@ -1,6 +1,4 @@
-﻿@using System.Diagnostics.Tracing
-@using Postman2CSharp.UI.Models
-<style>
+﻿<style>
     .mud-collapse-entered {
         max-height: 40vh;
         overflow: auto;
@@ -64,7 +62,7 @@
     
     [Inject] private ISnackbar? Snackbar { get; set; }
 
-    [Inject] private LazyLoader LazyLoader { get; set; } = default!;
+    [Inject] private ILazyLoader LazyLoad { get; set; } = default!;
 
     [Inject] private Navigate? Navigate { get; set; }
 
@@ -99,15 +97,15 @@
     private async Task BeginEditName(ApiCollection collection)
     {
         if (Layout == null) return;
-        if (!LazyLoader.AdvancedSettingsLoaded)
+        if (!LazyLoading.AdvancedSettingsLoaded)
         {
             try
             {
-                await LazyLoader.LoadAdvancedSettingsAssemblies();
+                await LazyLoad.LoadAdvancedSettingsAssemblies();
             }
             catch { }
         }
-        if (!LazyLoader.AdvancedSettingsLoaded)
+        if (!LazyLoading.AdvancedSettingsLoaded)
         {
             Snackbar?.Add("Something went wrong. Try again.", Severity.Warning);
             return;

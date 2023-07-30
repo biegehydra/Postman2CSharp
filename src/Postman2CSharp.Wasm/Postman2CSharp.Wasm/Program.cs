@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using MudBlazor.Services;
-using MudBlazor;
 using Postman2CSharp.UI;
-using Postman2CSharp.UI.Services;
+using Postman2CSharp.UI.Infrastructure;
+using Postman2CSharp.UI.Infrastructure.Interfaces;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 if (!builder.RootComponents.Any())
@@ -12,13 +11,13 @@ if (!builder.RootComponents.Any())
     builder.RootComponents.Add<HeadOutlet>("head::after");
 }
 
-ConfigureServices(builder.Services, builder.HostEnvironment.BaseAddress);
+ConfigureServices(builder.Services);
 
 var host = builder.Build();
 var wasmEnvironment = host.Services.GetService<IWebAssemblyHostEnvironment>();
 if (wasmEnvironment?.Environment != "Prerendering")
 {
-    var lazyLoader = host.Services.GetService<LazyLoader>();
+    var lazyLoader = host.Services.GetService<ILazyLoader>();
     if (lazyLoader != null)
     {
         await lazyLoader.OnNavigating();
@@ -27,26 +26,8 @@ if (wasmEnvironment?.Environment != "Prerendering")
 }
 await host.RunAsync();
 
-static void ConfigureServices(IServiceCollection services, string baseAddress)
+static void ConfigureServices(IServiceCollection services)
 {
-    services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
-    services.AddMudServices(config =>
-    {
-        config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
-
-        config.SnackbarConfiguration.PreventDuplicates = false;
-        config.SnackbarConfiguration.NewestOnTop = false;
-        config.SnackbarConfiguration.ShowCloseIcon = true;
-        config.SnackbarConfiguration.VisibleStateDuration = 4000;
-        config.SnackbarConfiguration.HideTransitionDuration = 700;
-        config.SnackbarConfiguration.ShowTransitionDuration = 700;
-        config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
-    });
-    services.AddScoped<Navigate>();
-    services.AddScoped<Interop>();
-    services.AddScoped<AnalyticsInterop>();
-    services.AddScoped<JsonEditorInterop>();
-    services.AddScoped<TabsService>();
-    services.AddScoped(typeof(Lazy<>), typeof(Lazy<>));
-    services.AddScoped<LazyLoader>();
+    services.AddMudBlazorServices();
+    services.AddPostman2CSharpServices(isServer: false);
 }

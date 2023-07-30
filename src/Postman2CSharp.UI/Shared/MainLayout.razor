@@ -74,7 +74,7 @@
 
 @code {
     public static event Action? OnSettingsChanged;
-    [Inject] private LazyLoader LazyLoader { get; set; } = null!;
+    [Inject] private ILazyLoader LazyLoad { get; set; } = null!;
     [Inject] private TabsService TabsService { get; set; } = null!;
     [Inject] private ISnackbar? SnackBar { get; set; }
     [Inject] private Navigate? Navigate { get; set; }
@@ -133,37 +133,54 @@
 
     #endregion
 
+    private bool _initialized;
     protected override async Task OnInitializedAsync()
     {
-        if (HostEnv.Environment == "Prerendering") return;
+        if (HostEnv.Environment is "Prerendering" or "Server") return;
         try
         {
-            await JsRuntime.InvokeVoidAsync("setupPrismObserver");
-            if (ApiCollections?.Count > 0) return;
-            ApiCollections = new();
-            var newVersionDetected = await GetSiteSettings();
-            if (newVersionDetected)
-            {
-                await JsRuntime.InvokeVoidAsync("clearLocalStorage");
-                await SetSiteSettings();
-                SnackBar?.Add($"New website version detected. Your workspace has been reset.", Severity.Info, configure => configure.VisibleStateDuration = 15000);
-            }
-            else
-            {
-                var apiCollectionIds = await JsRuntime.InvokeAsync<List<string>?>("getLocalStorage", "apiCollectionIds");
-                foreach (var apiCollectionId in apiCollectionIds ?? new ())
-                {
-                    var apiCollection = await JsRuntime.InvokeAsync<ApiCollection?>("getLocalStorage", apiCollectionId);
-                    if (apiCollection != null)
-                    {
-                        ApiCollections.Add(apiCollection);
-                    }
-                }
-            }
+            await Initialize();
         }
         catch (Exception ex)
         {
             SnackBar?.Add(ex.GetBaseException().Message, Severity.Error);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (HostEnv.Environment == "Server" && firstRender)
+        {
+            await Initialize();
+        }
+    }
+
+    private async Task Initialize()
+    {
+        _initialized = true;
+        await JsRuntime.InvokeVoidAsync("setupPrismObserver");
+
+        if (ApiCollections?.Count > 0) return;
+        ApiCollections = new();
+        var newVersionDetected = await GetSiteSettings();
+        if (newVersionDetected)
+        {
+            await JsRuntime.InvokeVoidAsync("clearLocalStorage");
+            await SetSiteSettings();
+            SnackBar?.Add($"New website version detected. Your workspace has been reset.", Severity.Info,
+                configure => configure.VisibleStateDuration = 15000);
+        }
+        else
+        {
+            var apiCollectionIds = await JsRuntime.InvokeAsync<List<string>?>("getLocalStorage", "apiCollectionIds");
+            foreach (var apiCollectionId in apiCollectionIds ?? new())
+            {
+                var apiCollection = await JsRuntime.InvokeAsync<ApiCollection?>("getLocalStorage", apiCollectionId);
+                if (apiCollection != null)
+                {
+                    ApiCollections.Add(apiCollection);
+                }
+            }
         }
     }
 
@@ -255,11 +272,11 @@
             SnackBar?.Add("Saving to local storage is disabled.", Severity.Warning);
             return;
         }
-        if (!LazyLoader.ConvertLoaded)
+        if (!LazyLoading.ConvertLoaded)
         {
             try
             {
-                await LazyLoader.LoadConvertAssemblies();
+                await LazyLoad.LoadConvertAssemblies();
             }
             catch (Exception ex)
             {
@@ -308,7 +325,10 @@
 
     public async void Dispose()
     {
-        await JsRuntime.InvokeVoidAsync("removePrismObserver");
+        if (_initialized)
+        {
+            await JsRuntime.InvokeVoidAsync("removePrismObserver");
+        }
         SiteSettings.OnSettingsChanged -= OnSiteSettingsChanged;
     }
 

@@ -17,7 +17,7 @@
 </MudText>
 <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 <div id="Advanced-Settings">
-    @if (LazyLoader.AdvancedSettingsLoaded)
+    @if (LazyLoading.AdvancedSettingsLoaded)
     {
         <CSharpCodeWriterOptionsComponent />
         <br />
@@ -51,8 +51,9 @@
 </div>
 @code {
     [Inject] private ISnackbar? Snackbar { get; set; }
-    [Inject] private Interop? Interop { get; set; }
-    [Inject] private LazyLoader? LazyLoader { get; set; }
+
+    [Inject] private Interop Interop { get; set; } = null!;
+    [Inject] private ILazyLoader LazyLoader { get; set; } = null!;
 
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
     {
@@ -71,7 +72,7 @@
     protected override void OnInitialized()
     {
         SiteSettings.OnSettingsChanged += OnSiteSettingsChanged;
-        LazyLoader.AdvancedSettingsLoadedChanged += AdvancedSettingsLoadedChanged;
+        LazyLoading.AdvancedSettingsLoadedChanged += AdvancedSettingsLoadedChanged;
     }
 
     private void OnSiteSettingsChanged(SiteSettings siteSettings)
@@ -90,6 +91,6 @@
     public void Dispose()
     {
         SiteSettings.OnSettingsChanged -= OnSiteSettingsChanged;
-        LazyLoader.AdvancedSettingsLoadedChanged -= AdvancedSettingsLoadedChanged;
+        LazyLoading.AdvancedSettingsLoadedChanged -= AdvancedSettingsLoadedChanged;
     }
 }

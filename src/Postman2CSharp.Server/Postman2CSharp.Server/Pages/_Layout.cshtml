@@ -1,0 +1,81 @@
+﻿﻿@using Microsoft.AspNetCore.Components.Web
+@namespace MudBlazor.Docs.Server.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="author" content="Connor Hallman">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="keywords" content="Postman, C#, Source Generator, CSharp, HttpClient, Code generation, ApiClient, API, Postman Collection, Postman2CSharp, .net, .net core, postman to csharp, postman to C#">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Postman2CSharp - Transform Postman collections into C# ApiClients">
+    <meta property="og:url" content="https://postman2csharp.com">
+    <meta property="og:site_name" content="Postman2CSharp" />
+    <meta property="og:description" content="Convert Postman Collections to C# ApiClients online. Postman2CSharp is a free tool that will help you make ApiClients faster.">
+    <meta property="og:image" content="https://files.postman2csharp.com/postman2csharp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Postman2CSharp - Transform Postman collections into C# HttpClients">
+    <meta name="twitter:description" content="Convert Postman Collections to C# ApiClients online. Postman2CSharp is a free tool that will help you make ApiClients faster.">
+    <meta name="twitter:image" content="https://files.postman2csharp.com/postman2csharp.png">
+
+
+    <base href="/" />
+    <link href="https://files.postman2csharp.com/MudBlazor.min.css" rel="stylesheet" />
+    <link href="_content/Postman2CSharp.UI/prism/prism.css" rel="stylesheet" />
+    <link href="_content/Postman2CSharp.UI/site.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://files.postman2csharp.com/postman2csharp.svg" type="image/svg+xml">
+    <link rel="icon" href="https://files.postman2csharp.com/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/x-icon" href="https://files.postman2csharp.com/postman2csharp.svg">
+
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+</head>
+
+<body>
+    @RenderBody()
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>    
+
+    <script src="/_framework/blazor.server.js"></script>
+    <script src="_content/Postman2CSharp.UI/interop.js"></script>
+    <script src="https://files.postman2csharp.com/MudBlazor.min.js"></script>
+    <!--Prism-->
+    <script src="_content/Postman2CSharp.UI/prism/prism.js"></script>
+    <script src="_content/Postman2CSharp.UI/prism/prism-interop.js"></script>
+
+    <script src="_content/Postman2CSharp.UI/google-ads/google-ads-interop.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.2/split.min.js" integrity="sha512-to2k78YjoNUq8+hnJS8AwFg/nrLRFLdYYalb18SlcsFRXavCOTfBF3lNyplKkLJeB8YjKVTb1FPHGSy9sXfSdg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-46CJ5SEEP0"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3947763741639596" crossorigin="anonymous"></script>
+    <script>
+        // Define the function that initiates tracking
+        function startTracking(trackingId) {
+            window.dataLayer = window.dataLayer || [];
+            gtag('js', new Date());
+
+            gtag('config', trackingId);
+        };
+        function gtag() { dataLayer.push(arguments); }
+        if (window.location.href.includes("postman2csharp")) {
+            startTracking('G-46CJ5SEEP0');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,5 +1,4 @@
-﻿@using Xamasoft.JsonClassGenerator
-<style>
+﻿<style>
     .api-client-options-container {
         width: 35%;
     }
@@ -87,7 +86,7 @@
      }
      
     [Inject] private Interop Interop { get; set; } = null!;
-    [Inject] private LazyLoader LazyLoader { get; set; } = null!;
+    [Inject] private ILazyLoader LazyLoad { get; set; } = null!;
     [Inject] private Navigate Navigate { get; set; } = null!;
 
     private ApiClientOptions _apiClientOptions = new()
@@ -104,7 +103,7 @@
     private async Task GetTestData()
     {
         if (_testData != null) return;
-        await LazyLoader.LoadHttpSecurityAssemblies();
+        await LazyLoad.LoadHttpSecurityAssemblies();
         var httpClient = new HttpClient();
         var getUrl = Navigate.BaseUrl + "_content/Postman2CSharp.UI/InteractiveDemo.json";
         var response = await httpClient.GetAsync(getUrl);

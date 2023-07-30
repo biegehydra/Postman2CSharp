@@ -1,0 +1,17 @@
+﻿@using Postman2CSharp.UI.Infrastructure.Interfaces
+@using Postman2CSharp.UI.Infrastructure
+@inject ILazyLoader LazyLoad
+
+<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="LazyLoad.OnNavigating" AdditionalAssemblies="LazyLoading.AdditionalAssemblies">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+

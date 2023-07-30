@@ -31,7 +31,7 @@
 
 @code
 {
-    [Inject] private LazyLoader LazyLoader { get; set; } = null!;
+    [Inject] private ILazyLoader LazyLoad { get; set; } = null!;
     [Inject] private Lazy<ISnackbar?> SnackBar { get; set; } = null!;
     [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
     [Parameter] public EventCallback<ApiCollection> SuccessfulUpload { get; set; }
@@ -56,7 +56,7 @@
 
     private async Task GetTestData()
     {
-        await LazyLoader.LoadHttpSecurityAssemblies();
+        await LazyLoad.LoadHttpSecurityAssemblies();
         var httpClient = new HttpClient();
         var response = await httpClient.GetAsync("https://files.postman2csharp.com/GoogleMapsPlatform.json");
         _uploadedFile = new TestBrowserFile(await response.Content.ReadAsStreamAsync(), TestDataName);

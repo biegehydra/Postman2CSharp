@@ -36,7 +36,7 @@ and all it's files and paste it into your project."
 <br/>
 <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
-@if (LazyLoader.ConvertLoaded)
+@if (LazyLoading.ConvertLoaded)
 {
     <div class="code-writing-options-contianer">
         <ApiClientOptionsComponent @ref="ApiClientOptionsComponent" @bind-ApiClientOptions="LastSavedApiClientOptions" ></ApiClientOptionsComponent>
@@ -50,7 +50,7 @@ and all it's files and paste it into your project."
     public static ApiClientOptions LastSavedApiClientOptions { get; private set; } = new();
     private static ApiClientOptionsComponent? ApiClientOptionsComponent { get; set; }
 
-    [Inject] private LazyLoader? LazyAssemblyLoader { get; set; }
+    [Inject] private ILazyLoader LazyLoader { get; set; } = null!;
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
     {
         new("Home", "/", icon: Icons.Home),
@@ -60,11 +60,11 @@ and all it's files and paste it into your project."
     protected override void OnInitialized()
     {
         TabsService.Value.SetHome(null);
-        if (!LazyLoader.ConvertLoaded)
+        if (!LazyLoading.ConvertLoaded)
         {
             throw new Exception("Something went wrong. Reload the page.");
         }
-        LazyLoader.UploadLoadedChanged += OnUploadLoaded;
+        LazyLoading.UploadLoadedChanged += OnUploadLoaded;
         MainLayout.OnSettingsChanged += OnSettingsChanged;
 
     }
@@ -98,7 +98,7 @@ and all it's files and paste it into your project."
 
     public void Dispose()
     {
-        LazyLoader.UploadLoadedChanged -= OnUploadLoaded;
+        LazyLoading.UploadLoadedChanged -= OnUploadLoaded;
         MainLayout.OnSettingsChanged -= OnSettingsChanged;
     }
 

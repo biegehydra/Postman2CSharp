@@ -1,4 +1,4 @@
-﻿namespace Postman2CSharp.UI.Infrastructure.UI
+﻿namespace Postman2CSharp.UI.Infrastructure
 {
     public enum FontSize
     {
