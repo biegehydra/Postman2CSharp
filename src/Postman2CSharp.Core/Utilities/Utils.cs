@@ -320,33 +320,27 @@ public static class Utils
         text = stripFormattingRegex.Replace(text, string.Empty);
 
         // Insert new lines every 70 characters
-        text = InsertNewLinesEvery100Characters(text);
+        text = InsertNewLinesEvery100CharactersEfficient(text);
 
         return text;
     }
 
-    /// <summary>
-    /// Inserts a new line every 70 characters in a string.
-    /// </summary>
-    /// <param name="text">The text to insert new lines into.</param>
-    /// <returns>A string with new lines inserted.</returns>
-    private static string InsertNewLinesEvery100Characters(string text)
+    private static string InsertNewLinesEvery100CharactersEfficient(string text)
     {
         var sb = new StringBuilder();
-        var words = text.Split(' ');
-
-        var lineLength = 0;
-        foreach (var word in words)
+        var i = 0;
+        foreach (ReadOnlySpan<char> splitLine in text.SplitLines())
         {
-            if (lineLength + word.Length > 100)
+            foreach (var character in splitLine)
             {
-                sb.Append(Environment.NewLine);
-                lineLength = 0;
+                i++;
+                sb.Append(character);
+                if (i >= 100 && character == ' ')
+                {
+                    sb.AppendLine();
+                    i = 0;
+                }
             }
-
-            sb.Append(word);
-            sb.Append(' ');
-            lineLength += word.Length + 1;
         }
 
         return sb.ToString();

@@ -494,7 +494,7 @@ public class ApiClientGenerator
                 classGenerator.SetCurrentRootIsQueryParameters(false);
             }
             classGenerator.SetDescriptionDict(descriptionDict);
-            (sourceCode, var classCount, rootWasArray) = GenerateClasses(classGenerator, json, ref types, className);
+            (sourceCode, var classCount, rootWasArray) = GenerateClasses(classGenerator, json, ref types, className, descriptionDict?.Count > 0);
             totalClassesGenerated += classCount;
             if (sourceCode == string.Empty)
             {
@@ -541,7 +541,7 @@ public class ApiClientGenerator
         return new CSharpCodeWriter(Options.CSharpCodeWriterConfig, writeComments);
     }
 
-    private static (string SourceCode, int ClassCount, bool RootWasArray) GenerateClasses(JsonClassGenerator jsonClassGenerator, string json, ref List<ClassType>? types, string rootClassName)
+    private static (string SourceCode, int ClassCount, bool RootWasArray) GenerateClasses(JsonClassGenerator jsonClassGenerator, string json, ref List<ClassType>? types, string rootClassName, bool hasDescriptions)
     {
         var (sb, rootWasArray) = jsonClassGenerator.GenerateClasses(json, false, false, out var errorMessage);
         types = jsonClassGenerator.Types?.Select(x => new ClassType()
@@ -553,9 +553,12 @@ public class ApiClientGenerator
                 JsonMemberName = y.JsonMemberName
             }).ToList()
         }).ToList();
-        var consolidated = CodeAnalysisUtils.ConsolidateNamespaces(sb.ToString(), rootClassName);
-        var reordered = CodeAnalysisUtils.ReorderClasses(consolidated, rootClassName, out var classCount);
-        return (reordered, classCount, rootWasArray);
+        var fixedSourceCode = CodeAnalysisUtils.ConsolidateAndReorder(sb.ToString(), rootClassName, out var classCount);
+        if (hasDescriptions)
+        {
+            fixedSourceCode = fixedSourceCode.FixXmlCommentsAfterCodeAnalysis(2);
+        }
+        return (fixedSourceCode, classCount, rootWasArray);
     }
 
     private static string? GenerateFormDataClass (string? formClassName, List<IFormData>? formdatas, DataType? dataType, string nameSpace, bool writeFormDataComments)

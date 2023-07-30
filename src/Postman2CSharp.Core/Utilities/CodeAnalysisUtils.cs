@@ -21,6 +21,95 @@ namespace Postman2CSharp.Core.Utilities
             return classDeclaration?.NormalizeWhitespace().ToFullString();
         }
 
+        public static string ConsolidateAndReorder(string sourceCode, string rootClassName, out int classCount)
+        {
+            var tree = CSharpSyntaxTree.ParseText(sourceCode);
+            var root = tree.GetCompilationUnitRoot();
+
+            var namespaces = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>().ToList();
+            if (!namespaces.Any())
+            {
+#if DEBUG
+                Debug.WriteLine($"No classes generated.");
+#endif
+                throw new NoClassesGeneratedException()
+                {
+                    IntendedRootName = rootClassName
+                };
+            }
+            var namespaceGroups = namespaces.GroupBy(n => n.Name.ToString());
+
+            // Create a new root without any namespace
+            var newRoot = SyntaxFactory.CompilationUnit()
+                .WithExterns(root.Externs)
+                .WithUsings(root.Usings)
+                .WithAttributeLists(root.AttributeLists)
+                .WithLeadingTrivia(root.GetLeadingTrivia())
+                .WithTrailingTrivia(root.GetTrailingTrivia())
+                .WithMembers(new SyntaxList<MemberDeclarationSyntax>());
+
+            foreach (var namespaceGroup in namespaceGroups)
+            {
+                var consolidatedNamespace = namespaceGroup.First();
+
+                // Add all members from duplicate namespaces to the first one
+                foreach (var duplicateNamespace in namespaceGroup.Skip(1))
+                {
+                    consolidatedNamespace = consolidatedNamespace.AddMembers(duplicateNamespace.Members.ToArray());
+                }
+
+                // Add consolidated namespace to the new root
+                newRoot = newRoot.AddMembers(consolidatedNamespace);
+            }
+
+            var consolidatedNs = newRoot.DescendantNodes().OfType<NamespaceDeclarationSyntax>().FirstOrDefault();
+
+            if (consolidatedNs == null)
+            {
+#if DEBUG
+                Debug.WriteLine($"No classes generated for {rootClassName}");
+#endif
+                throw new NoClassesGeneratedException()
+                {
+                    IntendedRootName = rootClassName
+                };
+            }
+
+            var classes = consolidatedNs.Members.OfType<ClassDeclarationSyntax>().ToList();
+            classCount = classes.Count;
+            if (classCount == 0)
+            {
+#if DEBUG
+                Debug.WriteLine($"No classes generated for {rootClassName}");
+#endif
+                throw new NoClassesGeneratedException()
+                {
+                    IntendedRootName = rootClassName
+                };
+            }
+            var orderedClasses = classes
+                .OrderBy(c => c.Identifier.Text != rootClassName) // RootName class first
+                .ThenByDescending(c =>
+                    c.Members.OfType<PropertyDeclarationSyntax>().Count() +
+                    c.Members.OfType<FieldDeclarationSyntax>().Count()); // Then order by property and field count
+
+            var newNamespaceDeclaration =
+                consolidatedNs.RemoveNodes(classes, SyntaxRemoveOptions.KeepNoTrivia);
+
+            // Add the ordered classes to the namespace.
+            newNamespaceDeclaration = newNamespaceDeclaration?.AddMembers(orderedClasses.ToArray());
+
+            if (newNamespaceDeclaration == null)
+            {
+                return string.Empty;
+            }
+
+            newRoot = newRoot.ReplaceNode(consolidatedNs, newNamespaceDeclaration);
+
+            return newRoot.NormalizeWhitespace().ToFullString();
+        }
+
+
         public static string ConsolidateNamespaces(string sourceCode, string rootClassName)
         {
             var tree = CSharpSyntaxTree.ParseText(sourceCode);
@@ -62,7 +151,7 @@ namespace Postman2CSharp.Core.Utilities
                 newRoot = newRoot.AddMembers(consolidatedNamespace);
             }
 
-            return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
+            return newRoot.NormalizeWhitespace().ToFullString();
         }
 
         public static string ReorderClasses(string sourceCode, string rootName, out int classCount)
@@ -113,7 +202,7 @@ namespace Postman2CSharp.Core.Utilities
 
             root = root.ReplaceNode(namespaceDeclaration, newNamespaceDeclaration);
 
-            return root.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
+            return root.NormalizeWhitespace().ToFullString();
         }
         public static string ReorderClassesNoNamespace(string sourceCode, string rootName, out int classCount)
         {
@@ -146,7 +235,7 @@ namespace Postman2CSharp.Core.Utilities
                 newRoot = newRoot.AddMembers(c);
             }
 
-            return newRoot.NormalizeWhitespace().ToFullString().FixXmlCommentsAfterCodeAnalysis(2);
+            return newRoot.NormalizeWhitespace().ToFullString();
         }
     }
 
