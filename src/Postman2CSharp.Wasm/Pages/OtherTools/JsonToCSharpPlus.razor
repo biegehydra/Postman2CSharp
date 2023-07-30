@@ -1,6 +1,9 @@
 ﻿@page "/other-tools/json-to-csharp-plus"
-<PageHeader Keywords="@Keywords" SubTitle="Convert Json into C# classes with ultimate control over class generation."
-            Title="@Title" AddPostman2CSharpToTitle="false" ></PageHeader>
+<PageHeader Keywords="@Keywords" 
+            Description="Convert Json into C# classes with ultimate control over class generation."
+            Title="@Title" 
+            AddPostman2CSharpToTitle="false"
+            NotPrerenderingTitle="Json2CSharp+ CSharp Class Generator" />
 
 <BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
 
@@ -8,7 +11,6 @@
 
 <MudPaper Class="header-paper">
     <MudText Typo="Typo.h1" Class="mt-4">Json2CSharp+ CSharp Class Generator</MudText>
-    <MudText Typo="Typo.h2" Class="mt-4">Ultimate Control Over Class Generation</MudText>
     <br />
     <MudText Typo="Typo.body1" Class="mt-4">
         This was built on top of library used by json2csharp.com. Much thanks to the creator of that tool. Using this tool you will be able
@@ -33,6 +35,6 @@
         new("Json2CSharp+", "/other-tools/json-to-csharp-plus", true, Icons.CompareArrows)
     };
 
-    private static readonly string Title = "Json2CSharp+ The Ultimate C# Class Generation Tool";
+    private static readonly string Title = "Json2CSharp+ The Ultimate Free Online C# Class Generation Tool";
     private static readonly string Keywords = "json2csharp, json to csharp, convert json into C# classes, dedupe json, json2csharp plus, json2csharp+";
 }

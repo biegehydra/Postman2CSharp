@@ -1,5 +1,3 @@
-@inject Microsoft.AspNetCore.Components.WebAssembly.Services.LazyAssemblyLoader AssemblyLoader
-@inject IWebAssemblyHostEnvironment HostEnv
 @if (LazyLoader.ConvertLoaded)
 {
     <Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="OnNavigateAsync" AdditionalAssemblies="LazyLoader.AdditionalAssemblies">

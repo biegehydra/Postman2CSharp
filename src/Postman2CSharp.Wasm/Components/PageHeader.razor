@@ -3,29 +3,39 @@
     <meta Name="keywords" Content="@GetKeywords()" />
     <meta Property="og:title" Content="@GetTitle()" />
     <meta Name="twitter:title" Content="@GetTitle()" />
-    @if (!string.IsNullOrEmpty(SubTitle))
+    @if (!string.IsNullOrEmpty(GetDescription()))
     {
-        <meta Name="description" Content="@(SubTitle)" />
-        <meta Property="og:description" Content="@SubTitle" />
-        <meta Name="twitter:description" Content="@SubTitle" />
+        <meta Name="description" Content="@(GetDescription())" />
+        <meta Property="og:description" Content="@GetDescription()" />
+        <meta Name="twitter:description" Content="@GetDescription()" />
     }
 </HeadContent>
 
 @code {
-    [Parameter] public string? Title { get; set; }
-    [Parameter] public string? SubTitle { get; set; }
+    [Inject] private IWebAssemblyHostEnvironment Env { get; set; } = null!;
+
+
+    [Parameter, EditorRequired] public string Title { get; set; } = null!;
+    [Parameter, EditorRequired] public string NotPrerenderingTitle { get; set; } = null!;
+    [Parameter, EditorRequired] public string? Description { get; set; }
     [Parameter, EditorRequired] public string Keywords { get; set; } = null!;
 
     [Parameter] public bool AddPostman2CSharpToTitle { get; set; } = true;
 
-    string GetTitle() => Title == null ? "Postman2CSharp" : 
-        AddPostman2CSharpToTitle ? $"{Title} - Postman2CSharp" : Title;
-
-    string GetSubTitle()
+    string GetTitle()
     {
-        if (string.IsNullOrEmpty(SubTitle))
+        if (Env.Environment.Equals("Prerendering", StringComparison.InvariantCultureIgnoreCase))
+        {
+            return AddPostman2CSharpToTitle ? $"{Title} - Postman2CSharp Free Online Toolkit" : Title;
+        }
+        return NotPrerenderingTitle;
+    } 
+
+    string GetDescription()
+    {
+        if (string.IsNullOrEmpty(Description))
             return "";
-        return SubTitle.TrimEnd('.') + ".";
+        return Description.TrimEnd('.') + ".";
     }
 
     string GetKeywords()

@@ -1,11 +1,15 @@
 ﻿@page "/"
 @page "/GettingStarted"
-
+@inject IWebAssemblyHostEnvironment HostEnv
 @inherits MainLayoutComponent
-<PageHeader Keywords="@_keywords" SubTitle="Securely Convert Postman Collections into
-fully feautured ApiClients for free online, all in the browser. Just a few clicks and your done.
+<PageHeader 
+    Keywords="@Keywords" 
+    Description="Securely Convert Postman Collections into fully feautured ApiClients for free online, all in the browser in just a few clicks.
+Generated ApiClients come working right out of the box and contain no third party dependencies (unless you choose to add them).
 OpenAPI, GraphQL, cURL, RAML, HAR and other specifications can be also converted by first importing into Postman."
-             Title="@_title" ></PageHeader>
+    NotPrerenderingTitle="@NotPrerenderingTitle"
+    AddPostman2CSharpToTitle
+             Title="Convert Postman Collections Into C# ApiClients" ></PageHeader>
 
 <BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
 
@@ -15,8 +19,9 @@ OpenAPI, GraphQL, cURL, RAML, HAR and other specifications can be also converted
 
 @code 
 {
-    private string _title => Navigate.Value.BaseUrl == Navigate.Value.CurrentUrl ? "Home" : "Getting Started";
-    private string _keywords => "openapi, open api, swagger, convert, graphql, curl, raml, har";
+    private string NotPrerenderingTitle => Navigate.Value.BaseUrl == Navigate.Value.CurrentUrl ? "Home" : "Getting Started";
+    private string Keywords => "openapi, open api, swagger, convert, graphql, curl, raml, har";
+
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
     {
         new("Home", "/", true, Icons.Rocket),
