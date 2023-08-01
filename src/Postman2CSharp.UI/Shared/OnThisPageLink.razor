@@ -15,8 +15,8 @@
 </style>
 
 <div class="f-row gap-2" @onmouseenter="OnMouseEnter" @onmouseleave="OnMouseLeave" 
-     style="align-items: center; display: flex; transform: translate(-30px, 0)">
-    <a class="@LinkClass()" @onpointerup="OnCopyLink" onclick="@($"navigator.clipboard.writeText('{CopyUrl()}')")">
+     style="align-items: center; display: flex; transform: translate(-30px, 0); width: fit-content;">
+    <a class="@LinkClass()" style="cursor: pointer;" @onpointerup="OnCopyLink" onclick="@($"navigator.clipboard.writeText('{CopyUrl()}')")">
         <MudIcon Icon="@Icons.Link" Size="@Size" />
     </a>
     <div id="@Id" >
