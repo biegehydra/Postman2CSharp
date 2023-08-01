@@ -1,11 +1,24 @@
 ﻿<style>
     .getting-started-container {
         max-width: 100%;
+        padding: 0px 20px;
     }
 
     .getting-started-image {
         height: 400px;
     }
+
+    .getting-started-container h2 {
+        font-weight: 500;
+        color: white;
+    }
+
+    @@media (min-width: 768px) {
+        .getting-started-container {
+            padding: 0 45px;
+        }
+    }
+
     @@media (max-width: 600px) {
         .getting-started-image {
             max-height: 40vh;
@@ -37,13 +50,13 @@
 <div class="getting-started-container">
     <MudPaper Elevation="4" Class="header-paper">
         <MudText Typo="Typo.h1" Class="mt-4">Getting Started</MudText>
-        <br/>
+        <Break />
         <MudText Typo="Typo.subtitle1">
             <strong style="font-size: large;">Privacy Assurance:</strong> Your Postman collections never leave your computer. This tool operates with Blazor WebAssembly (Wasm),
             a framework that allows it to run entirely in your browser without making any network calls or sharing information about your collections.
             Your data stays on your machine.
         </MudText>
-        <br/>
+        <Break Size="P2CsSize.ExtraSmall" />
         <MudText Typo="Typo.subtitle1">
             <strong style="font-size: large;">Have a collection in another format?</strong> Postman supports a variety of type and specification for importing.
             OpenAPI, GraphQL, cURL, RAML, HAR and more are all supported. For more information, visit their page: <a target="_blank" class="link-normal" href="https://learning.postman.com/docs/designing-and-developing-your-api/importing-an-api/#supported-api-definitions-formats">Supported API definitions formats</a>
@@ -51,7 +64,74 @@
             follow the directions below. <MudIcon Icon="@Icons.ArrowDownward" Size="Size.Small" Style="vertical-align: bottom;"></MudIcon>
         </MudText>
     </MudPaper>
-    <br/>
+    <Break Size="P2CsSize.Medium" />
+    
+    <OnThisPage Links="@OnThisPageLinks"></OnThisPage>
+
+    <Break />
+
+    <CopyElementLocation Id="ConvertYourPostmanCollectionToCSharpApiClient">
+        <MudText Typo="Typo.h2" GutterBottom="true">Convert Your Postman Collection Into A Fully Featured C# ApiClient</MudText>
+    </CopyElementLocation>
+    <MudText>
+        Postman2CSharp is a free online tool that allows you to convert Postman Collections into fully featured CSharp ApiClients all in the browser.
+        It has tons of configurations that will let you tailor your ApiClient to your needs. Generated ApiClients come working right out of the box
+        and contain no third party dependencies (unless you choose to add them).
+    </MudText>
+
+    <Break />
+    
+    <CopyElementLocation Id="WhyNotUsePostmanSnippetGeneration">
+        <MudText Typo="Typo.h2" GutterBottom="true">Why not use Postman's built in snippet generation?</MudText>
+    </CopyElementLocation>
+    <MudText>
+        Postman's built in snippet generation does exactly what it's name implies, it generates snippets.
+        It does not generate fully featured ApiClients. It's night and day. It's the difference between generating 10 lines of code and 100,000 lines of code.
+    </MudText>
+    <Break Size="P2CsSize.ExtraSmall" />
+    <MudText>
+        Postman2CSharp also posses a lot of functionality that Postman's built in snippet generation does not support. For example,
+        Postman2CSharp generates classes for your query parameters, form data, requests, and responses. Also, since it is generating
+        code for every request instead of just 1 request it is able to determine shared headers, base url, variables, and more
+        to keep your code DRY.
+    </MudText>
+
+    <Break />
+    
+    <CopyElementLocation Id="DoesItWork">
+        <MudText Typo="Typo.h2" GutterBottom="true">Does it work?</MudText>
+    </CopyElementLocation>
+    <MudText>
+        I recently had the opportunity to use Postman2CSharp to generate an ApiClient for an integration with a third party vendor
+        on an enterprise level project. The collection wasn't very large, only 15 or so requests with api-key authentication. 
+        <Break Size="P2CsSize.ExtraSmall"/>
+        The generated ApiClient came working perfectly. It enabled me to get the integration up and running in a matter 
+        of hours instead of days. I was stoked to say the least, all the hours I had put into Postman2CSharp had paid off. <u>Well
+            not yet. It will be fully paid off once I am able to save you time too.</u>
+    </MudText>
+
+    <Break />
+    
+    <CopyElementLocation Id="StillNotSold">
+        <MudText Typo="Typo.h2" GutterBottom="true">Still not sold?</MudText>
+    </CopyElementLocation>
+    <MudText>
+        The greatest value Postman2CSharp has to offer is it's class deduping. Postman2CSharp will look at all the json in your
+        requests and responses and determine what json examples represent the same class. This process has been very finely tuned
+        and will result in fewer classes generated than even a human could do. This feature can easily <b>save you anywhere between
+        a few hours to hundreds of hours depending on the collection size.</b>
+    </MudText>
+    <Break Size="P2CsSize.ExtraSmall" />
+    <MudText>
+        Even if I weren't using Postman2CSharp for the generated ApiClient, I would still use it to generate all the classes for me since
+        it does such a good job and downloads them in neatly organized folders.
+    </MudText>
+
+    <Break />
+
+    <CopyElementLocation Id="Directions">
+        <MudText Typo="Typo.h2" >Directions</MudText>
+    </CopyElementLocation>
     <MudList>
         <MudListItem>
             <MudText>
@@ -59,18 +139,21 @@
             </MudText>
         </MudListItem>
         <img class="getting-started-image" src="_content/Postman2CSharp.UI/images/Hover.webp" alt="Show More" fetchpriority="low" loading="lazy">
+        <Break/> 
         <MudListItem>
             <MudText>
                 <strong>Step 2:</strong> In the 'Export Collection' dialog box, select version 'Collection v2.1'.
             </MudText>
         </MudListItem>
         <img class="getting-started-image" src="_content/Postman2CSharp.UI/images/Export.webp" alt="Export" fetchpriority="low" loading="lazy">
+        <Break />
         <MudListItem>
             <MudText>
                 <strong>Step 3:</strong> Click 'Export' and choose the location where you want to save the file.
             </MudText>
         </MudListItem>
         <img class="getting-started-image" src="_content/Postman2CSharp.UI/images/Export2.webp" alt="Export Collection" fetchpriority="low" loading="lazy">
+        <Break />
         <MudListItem>
             <MudText>
                 <strong>Step 4:</strong> Now you can convert the exported Json file on <a class="link-normal" href="/Convert">this</a> page to generate your C# API client.
@@ -78,15 +161,17 @@
         </MudListItem>
         <img class="getting-started-image" style="max-height: 60vh;" src="_content/Postman2CSharp.UI/images/TreeView.webp" alt="Export Collection" fetchpriority="low" loading="lazy">
     </MudList>
-
-    <MudText Typo="Typo.h2" GutterBottom="true">Best Practices</MudText>
+    
+    <CopyElementLocation Id="BestPractices" >
+        <MudText Typo="Typo.h2" GutterBottom="true">Best Practices</MudText>
+    </CopyElementLocation>
     <MudText>
-        To ensure optimal conversion of your Postman collection, we recommend the following practices:
+        To ensure optimal conversion of your Postman collection, I recommend the following practices:
     </MudText>
     <MudList>
         <MudListItem>
             <MudText>
-                <strong>Save responses for all requests:</strong> This allows Postman2CSharp to generate classes for your response json.
+                <strong>Save responses for all requests:</strong> This cannot be stressed enough. This allows Postman2CSharp to generate classes for your response json.
             </MudText>
         </MudListItem>
         <MudListItem>
@@ -101,7 +186,7 @@
         </MudListItem>
         <MudListItem>
             <MudText>
-                <strong>Remove unused parameters:</strong> To ensure clean and optimized generated code, it is advisable to remove parameters that are not being used. Remove, not disable.
+                <strong>Delete unused parameters:</strong> To ensure clean and optimized generated code, it is advisable to delete parameters that are not being used. Delete, not disable.
             </MudText>
         </MudListItem>
         <MudListItem>
@@ -110,8 +195,23 @@
             </MudText>
         </MudListItem>
     </MudList>
+    
+    <Break />
+    <CopyElementLocation Id="GetYourFeetWet">
+        <MudText Typo="Typo.h2" GutterBottom="true">Get Your Feet Wet</MudText>
+    </CopyElementLocation>
+    <MudText>
+        Before you head to the convert page and convert your collection, you should check out the
+        <a class="link-normal" href="/Interactive-Demo">Interactive Demo</a>. 
+        <Break Size="P2CsSize.ExtraSmall"/>
+        It will give you a feel for how Postman2CSharp works and apply changes to
+        configurations in real time.
+    </MudText>
 
-    <MudText Typo="Typo.h2" GutterBottom="true">Configuration</MudText>
+    <Break />
+    <CopyElementLocation Id="Configurations">
+        <MudText Typo="Typo.h2" GutterBottom="true">Configurations</MudText>
+    </CopyElementLocation>
     <MudText>
         There majority of configuration will be found on the Convert page. There are some additional configuration that you can configure
         on the Advanced Settings page; these configurations deal with how classes are generated from Json. For an explanation of configurations
@@ -120,3 +220,19 @@
     <br/>
 </div>
 
+@code
+{
+    // go through each copy element location and add it's id and short name here. 
+    // MUST BE IN ORDER THEY APPEAR ON PAGE
+    private static List<OnThisPageLink> OnThisPageLinks { get; set; } = new()
+    {
+        new("ConvertYourPostmanCollectionToCSharpApiClient", "Convert Postman Collection To C# ApiClient"),
+        new ("WhyNotUsePostmanSnippetGeneration", "Why Not Use Postman's Snippet Generation"),
+        new ("DoesItWork", "Does It Work?"),
+        new ("StillNotSold", "Still Not Sold?"),
+        new ("Directions", "Directions"),
+        new ("BestPractices", "Best Practices"),
+        new ("GetYourFeetWet", "Get Your Feet Wet"),
+        new ("Configurations", "Configurations"),
+    };
+}

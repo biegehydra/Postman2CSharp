@@ -77,7 +77,8 @@
     [Inject] private ILazyLoader LazyLoad { get; set; } = null!;
     [Inject] private TabsService TabsService { get; set; } = null!;
     [Inject] private ISnackbar? SnackBar { get; set; }
-    [Inject] private Navigate? Navigate { get; set; }
+
+    [Inject] private Navigate Navigate { get; set; } = null!;
     [Inject] private IJSRuntime JsRuntime { get; set; } = null!;
 
     private static List<ApiCollection>? ApiCollections { get; set; }
@@ -152,6 +153,12 @@
         if (HostEnv.Environment == "Server" && firstRender)
         {
             await Initialize();
+        }
+        var uri = new Uri(Navigate.CurrentUrl);
+        var fragment = uri.Fragment;
+        if (fragment.StartsWith("#"))
+        {
+            await JsRuntime.InvokeVoidAsync("scrollToElement", fragment.Replace("#", string.Empty), 100);
         }
     }
 
