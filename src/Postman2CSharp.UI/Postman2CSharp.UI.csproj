@@ -10,12 +10,8 @@
 		<langversion>latest</langversion>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <NoWarn>1701;1702;BL0007</NoWarn>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <NoWarn>1701;1702;BL0007</NoWarn>
+	<PropertyGroup>
+	  <NoWarn>1701;1702;BL0007;CSS002;CSS105;CS0168</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
