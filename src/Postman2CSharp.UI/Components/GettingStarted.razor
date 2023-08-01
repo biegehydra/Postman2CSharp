@@ -70,9 +70,9 @@
 
     <Break />
 
-    <CopyElementLocation Id="ConvertYourPostmanCollectionToCSharpApiClient">
+    <OnThisPageLink Id="ConvertYourPostmanCollectionToCSharpApiClient">
         <MudText Typo="Typo.h2" GutterBottom="true">Convert Your Postman Collection Into A Fully Featured C# ApiClient</MudText>
-    </CopyElementLocation>
+    </OnThisPageLink>
     <MudText>
         Postman2CSharp is a free online tool that allows you to convert Postman Collections into fully featured CSharp ApiClients all in the browser.
         It has tons of configurations that will let you tailor your ApiClient to your needs. Generated ApiClients come working right out of the box
@@ -81,12 +81,12 @@
 
     <Break />
     
-    <CopyElementLocation Id="WhyNotUsePostmanSnippetGeneration">
+    <OnThisPageLink Id="WhyNotUsePostmanSnippetGeneration">
         <MudText Typo="Typo.h2" GutterBottom="true">Why not use Postman's built in snippet generation?</MudText>
-    </CopyElementLocation>
+    </OnThisPageLink>
     <MudText>
         Postman's built in snippet generation does exactly what it's name implies, it generates snippets.
-        It does not generate fully featured ApiClients. It's night and day. It's the difference between generating 10 lines of code and 100,000 lines of code.
+        It does not generate fully featured ApiClients. It's night and day from Postman2CSharp. It's the difference between generating 10 lines of code and 100,000 lines of code.
     </MudText>
     <Break Size="P2CsSize.ExtraSmall" />
     <MudText>
@@ -98,9 +98,9 @@
 
     <Break />
     
-    <CopyElementLocation Id="DoesItWork">
+    <OnThisPageLink Id="DoesItWork">
         <MudText Typo="Typo.h2" GutterBottom="true">Does it work?</MudText>
-    </CopyElementLocation>
+    </OnThisPageLink>
     <MudText>
         I recently had the opportunity to use Postman2CSharp to generate an ApiClient for an integration with a third party vendor
         on an enterprise level project. The collection wasn't very large, only 15 or so requests with api-key authentication. 
@@ -112,9 +112,9 @@
 
     <Break />
     
-    <CopyElementLocation Id="StillNotSold">
+    <OnThisPageLink Id="StillNotSold">
         <MudText Typo="Typo.h2" GutterBottom="true">Still not sold?</MudText>
-    </CopyElementLocation>
+    </OnThisPageLink>
     <MudText>
         The greatest value Postman2CSharp has to offer is it's class deduping. Postman2CSharp will look at all the json in your
         requests and responses and determine what json examples represent the same class. This process has been very finely tuned
@@ -129,9 +129,9 @@
 
     <Break />
 
-    <CopyElementLocation Id="Directions">
+    <OnThisPageLink Id="Directions">
         <MudText Typo="Typo.h2" >Directions</MudText>
-    </CopyElementLocation>
+    </OnThisPageLink>
     <MudList>
         <MudListItem>
             <MudText>
@@ -162,9 +162,9 @@
         <img class="getting-started-image" style="max-height: 60vh;" src="_content/Postman2CSharp.UI/images/TreeView.webp" alt="Export Collection" fetchpriority="low" loading="lazy">
     </MudList>
     
-    <CopyElementLocation Id="BestPractices" >
+    <OnThisPageLink Id="BestPractices" >
         <MudText Typo="Typo.h2" GutterBottom="true">Best Practices</MudText>
-    </CopyElementLocation>
+    </OnThisPageLink>
     <MudText>
         To ensure optimal conversion of your Postman collection, I recommend the following practices:
     </MudText>
@@ -197,9 +197,9 @@
     </MudList>
     
     <Break />
-    <CopyElementLocation Id="GetYourFeetWet">
+    <OnThisPageLink Id="GetYourFeetWet">
         <MudText Typo="Typo.h2" GutterBottom="true">Get Your Feet Wet</MudText>
-    </CopyElementLocation>
+    </OnThisPageLink>
     <MudText>
         Before you head to the convert page and convert your collection, you should check out the
         <a class="link-normal" href="/Interactive-Demo">Interactive Demo</a>. 
@@ -209,9 +209,9 @@
     </MudText>
 
     <Break />
-    <CopyElementLocation Id="Configurations">
+    <OnThisPageLink Id="Configurations">
         <MudText Typo="Typo.h2" GutterBottom="true">Configurations</MudText>
-    </CopyElementLocation>
+    </OnThisPageLink>
     <MudText>
         There majority of configuration will be found on the Convert page. There are some additional configuration that you can configure
         on the Advanced Settings page; these configurations deal with how classes are generated from Json. For an explanation of configurations
@@ -224,7 +224,7 @@
 {
     // go through each copy element location and add it's id and short name here. 
     // MUST BE IN ORDER THEY APPEAR ON PAGE
-    private static List<OnThisPageLink> OnThisPageLinks { get; set; } = new()
+    private static List<InPageLink> OnThisPageLinks { get; set; } = new()
     {
         new("ConvertYourPostmanCollectionToCSharpApiClient", "Convert Postman Collection To C# ApiClient"),
         new ("WhyNotUsePostmanSnippetGeneration", "Why Not Use Postman's Snippet Generation"),

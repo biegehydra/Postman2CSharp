@@ -1,5 +1,5 @@
 ﻿<div>
-    <MudText Typo="Typo.h4">On This Page</MudText>
+    <MudText Typo="Typo.h6" Style="color: white; font-weight: 400;">On This Page</MudText>
     <div >
         <div class="f-row">
             <div style="padding: 20px 0px;">
@@ -35,6 +35,6 @@
 @code {
 
     [Inject] public NavigationManager NavigationManager { get; set; } = null!;
-    [Parameter] public List<OnThisPageLink> Links { get; set; } = new();
+    [Parameter] public List<InPageLink> Links { get; set; } = new();
     private bool _showMore;
 }

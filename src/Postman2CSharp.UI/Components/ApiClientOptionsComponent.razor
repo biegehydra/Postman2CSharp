@@ -9,8 +9,14 @@
         <MudText Style="font-weight: 500;" Typo="Typo.h2">ApiClient Generation Configurations</MudText>
         <br/>
         <MudText>
-            The best way to learn how these configurations work is to mess around with the <a class="link-normal" href="/Interactive-Demo">Interactive Demo</a>. It is highly
-            recommend to fiddle around in there before generating an ApiClient to be used seriously. For an in depth explanation on how these settings work, see 
+            @if (ShowInteractiveDemoMessage)
+            {
+                <text>
+                    The best way to learn how these configurations work is to mess around with the <a class="link-normal" href="/Interactive-Demo">Interactive Demo</a>. It is highly
+                    recommend to fiddle around in there before generating an ApiClient to be used seriously.
+                </text>
+            }
+            For an in depth explanation on how these settings work, see
             <a class="link-normal" href="/ApiClient-Configurations-Explained">ApiClient Configurations Explanation</a>.
         </MudText>
     </div>
@@ -143,9 +149,9 @@ hood of an error in generated code (minor issues usually) and increase the likel
 }
 
 @code {
-
     [Parameter]
-    public bool ShowInteractiveDemoMessage { get; set; } = true;
+    public bool ShowInteractiveDemoMessage { get; set; }
+    
 
     [Parameter]
     public P2CsSize P2CsSize { get; set; } = P2CsSize.Large;
