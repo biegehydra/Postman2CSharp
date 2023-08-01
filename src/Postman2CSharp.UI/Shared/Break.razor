@@ -1,0 +1,12 @@
+﻿<div style="@Style()"></div>
+@code {
+    [Parameter] public P2CsSize Size { get; set; } = P2CsSize.Medium;
+
+    private readonly int _baseSize = 10;
+
+    private string Style()
+    {
+        var breakHeight = _baseSize * ((int)Size + 1);
+        return $"height: {breakHeight}px";
+    }
+}

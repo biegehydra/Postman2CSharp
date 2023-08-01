@@ -1,0 +1,60 @@
+﻿<style>
+    @@keyframes fadeIn {
+        0%   { opacity: 0; }
+        100% { opacity: 1; }
+    }
+
+
+    .id-link-fade-in {
+        animation: fadeIn 0.2s ease-in-out;
+    }
+    .visibility-hidden {
+        opacity: 0;
+        background-color: transparent;
+    }
+</style>
+
+<div class="f-row gap-2" @onmouseenter="OnMouseEnter" @onmouseleave="OnMouseLeave" 
+     style="align-items: center; display: flex; transform: translate(-30px, 0)">
+    <a class="@LinkClass()" @onpointerup="OnCopyLink" onclick="@($"navigator.clipboard.writeText('{CopyUrl()}')")">
+        <MudIcon Icon="@Icons.Link" Size="@Size" />
+    </a>
+    <div id="@Id" >
+        @ChildContent
+    </div>
+</div>
+@code {
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] private Lazy<ISnackbar?> SnackBar { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter, EditorRequired]
+    public string Id { get; set; } = null!;
+
+    [Parameter]
+    public Size Size { get; set; } = Size.Small;
+
+    private void OnMouseEnter() => _mouseOver = true;
+    private void OnMouseLeave() => _mouseOver = false;
+    private void OnCopyLink() => SnackBar.Value?.Add("Copied link to clipboard", configure: x => x.ShowTransitionDuration = 50);
+
+
+    private bool _mouseOver;
+    private string LinkClass()
+    {
+        return _mouseOver ? "id-link-fade-in" : "visibility-hidden";
+    }
+
+    private string CopyUrl()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var absoluteUri = uri.AbsoluteUri;
+        if (!string.IsNullOrWhiteSpace(uri.Fragment))
+        {
+            absoluteUri = absoluteUri.Replace(uri.Fragment, string.Empty);
+        }
+        return $"{absoluteUri}#{Id}";
+    }
+}

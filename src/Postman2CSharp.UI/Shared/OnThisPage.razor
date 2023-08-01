@@ -1,0 +1,40 @@
+﻿<div>
+    <MudText Typo="Typo.h4">On This Page</MudText>
+    <div >
+        <div class="f-row">
+            <div style="padding: 20px 0px;">
+                <MudDivider Style="margin-left: 0;" DividerType="DividerType.Inset" Vertical="true" ></MudDivider>
+            </div>
+            <ul class="normal">
+                @{
+                    var links = _showMore ? Links : Links.Take(5).ToList();
+                }
+                @foreach (var link in links)
+                {
+                    <li onclick="scrollToElement('@link.Id', 100)" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                        <a href="#@link.Display" class="link-normal">@link.Display</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        @if (_showMore && Links.Count > 5)
+        {
+            <div style="margin-left: 45px;" @onclick="() => _showMore = false">
+                <MudText Class="link-normal">Show less</MudText>
+            </div>
+        }
+        else if (Links.Count > 5)
+        {
+            <div style="margin-left: 45px;" @onclick="() => _showMore = true">
+                <MudText Class="link-normal">Show @(Links.Count - 5) more</MudText>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    [Parameter] public List<OnThisPageLink> Links { get; set; } = new();
+    private bool _showMore;
+}
