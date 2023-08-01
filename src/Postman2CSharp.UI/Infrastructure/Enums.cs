@@ -13,8 +13,9 @@
         XXLarge
     }
 
-    public enum AdvancedItemSize
+    public enum P2CsSize
     {
+        ExtraSmall,
         Small,
         Medium,
         Large,

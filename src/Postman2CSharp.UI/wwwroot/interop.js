@@ -198,3 +198,15 @@ function emptyElement(elementId) {
 function splitVertical(id1, id2) {
     Split(['#' + id1, '#' + id2])
 }
+
+function scrollToElement(elementId, extraScrollDistance) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    const scrollToPosition = element.getBoundingClientRect().top - extraScrollDistance;
+
+    window.scrollBy({
+        top: scrollToPosition,
+        behavior: 'smooth'
+    });
+}

@@ -32,7 +32,7 @@
     <MudHidden Breakpoint="Breakpoint.MdAndUp">
         <div class="f-column">
             <div>
-                <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvancedItemSize="ItemSize" AutoSave></ApiClientOptionsComponent>
+                <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" P2CsSize="ItemSize" AutoSave></ApiClientOptionsComponent>
             </div>
             <br/>
             <div >
@@ -45,7 +45,7 @@
     <MudHidden Breakpoint="Breakpoint.SmAndDown">
         <VerticalSplit>
             <LeftPanel>
-                <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" AdvancedItemSize="ItemSize" AutoSave></ApiClientOptionsComponent>
+                <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" P2CsSize="ItemSize" AutoSave></ApiClientOptionsComponent>
             </LeftPanel>
             <RightPanel>
                 <MudText Style="font-weight: 500; text-align: end;" Typo="Typo.h2">@(_apiClientView ? "Generated Api Client" : "Other Generated Classes")</MudText>
@@ -67,10 +67,10 @@
      private bool _apiClientView = true;
      private bool? _wideLayout = false;
 
-     private AdvancedItemSize ItemSize => _wideLayout switch{
-         true => AdvancedItemSize.ExtraExtraLarge,
-         false => AdvancedItemSize.ExtraLarge,
-         _ => AdvancedItemSize.Large
+     private P2CsSize ItemSize => _wideLayout switch{
+         true => P2CsSize.ExtraExtraLarge,
+         false => P2CsSize.ExtraLarge,
+         _ => P2CsSize.Large
      };
 
      private void SetLayout(bool? wide)

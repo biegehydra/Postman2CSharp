@@ -16,41 +16,41 @@
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter, EditorRequired] public string ToolTip { get; set; } = null!;
 
-    [Parameter] public AdvancedItemSize Size { get; set; } = AdvancedItemSize.Large;
+    [Parameter] public P2CsSize Size { get; set; } = P2CsSize.Large;
 
     private int Xs => Size switch{
-        AdvancedItemSize.Small => 4,
-        AdvancedItemSize.Medium => 8,
-        AdvancedItemSize.Large => 12,
-        AdvancedItemSize.ExtraLarge => 12,
-        AdvancedItemSize.ExtraExtraLarge => 12,
+        P2CsSize.Small => 4,
+        P2CsSize.Medium => 8,
+        P2CsSize.Large => 12,
+        P2CsSize.ExtraLarge => 12,
+        P2CsSize.ExtraExtraLarge => 12,
         _ => throw new ArgumentOutOfRangeException()
     };
 
     private int Sm => Size switch{
-        AdvancedItemSize.Small => 3,
-        AdvancedItemSize.Medium => 6,
-        AdvancedItemSize.Large => 9,
-        AdvancedItemSize.ExtraLarge => 12,
-        AdvancedItemSize.ExtraExtraLarge => 12,
+        P2CsSize.Small => 3,
+        P2CsSize.Medium => 6,
+        P2CsSize.Large => 9,
+        P2CsSize.ExtraLarge => 12,
+        P2CsSize.ExtraExtraLarge => 12,
         _ => throw new ArgumentOutOfRangeException()
     };
 
     private int Md => Size switch{
-        AdvancedItemSize.Small => 2,
-        AdvancedItemSize.Medium => 4,
-        AdvancedItemSize.Large => 8,
-        AdvancedItemSize.ExtraLarge => 12,
-        AdvancedItemSize.ExtraExtraLarge => 12,
+        P2CsSize.Small => 2,
+        P2CsSize.Medium => 4,
+        P2CsSize.Large => 8,
+        P2CsSize.ExtraLarge => 12,
+        P2CsSize.ExtraExtraLarge => 12,
         _ => throw new ArgumentOutOfRangeException()
     };
 
     private int Lg => Size switch{
-        AdvancedItemSize.Small => 1,
-        AdvancedItemSize.Medium => 2,
-        AdvancedItemSize.Large => 3,
-        AdvancedItemSize.ExtraLarge => 6,
-        AdvancedItemSize.ExtraExtraLarge => 12,
+        P2CsSize.Small => 1,
+        P2CsSize.Medium => 2,
+        P2CsSize.Large => 3,
+        P2CsSize.ExtraLarge => 6,
+        P2CsSize.ExtraExtraLarge => 12,
         _ => throw new ArgumentOutOfRangeException()
     };
 

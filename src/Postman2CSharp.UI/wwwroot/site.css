@@ -6,6 +6,10 @@ div.code-toolbar > .toolbar > .toolbar-item {
     margin-right: 5px;
 }
 
+.mud-typography-gutterbottom {
+    margin-bottom: 12px;
+}
+
 /* split.js */
 .gutter {
     background-color: rgba(111, 89, 153, 0.42);
@@ -49,12 +53,6 @@ img {
     margin-bottom: 35px;
 }
 
-.link-normal {
-    color: #5d5db8;
-    text-decoration: underline;
-    cursor: pointer; 
-}
-
 .w-100 {
     width: 100% !important;
 }
@@ -77,18 +75,17 @@ strong, b {
     color: #dbdbdb;
 }
 
-.link-normal:hover {
-    text-decoration: none; 
-}
+.link-normal,
 a.normal,
 .normal a {
-    color: #0056b3;
-    text-decoration: underline;
+    color: #0065b3;
+    text-decoration: none;
     cursor: pointer;
 }
 a.normal:hover,
-.normal a:hover {
-    text-decoration: none;
+.normal a:hover,
+.link-normal:hover {
+    text-decoration: underline;
 }
 
 .f-row {
@@ -261,6 +258,31 @@ li {
     align-items: end;
     gap: 20px;
 }
+
+ul.normal {
+    list-style-type: disc;
+    list-style-position: inside;
+    padding-left: 25px;
+}
+
+ol.normal {
+    list-style-type: decimal;
+    list-style-position: inside;
+    padding-left: 25px;
+}
+
+ul.normal ul.normal, ol.normal ul.normal {
+    list-style-type: circle; 
+    list-style-position: inside;
+    margin-left: 15px;
+}
+
+ol.normal ol.normal, ul.normal ol.normal {
+    list-style-type: lower-latin;
+    list-style-position: inside;
+    margin-left: 15px;
+}
+
 
 @media (max-width: 1500px) {
     .splashscreen {

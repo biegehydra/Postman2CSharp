@@ -18,26 +18,26 @@
 <br />
 <MudText Class="setting-section-header" Typo="Typo.h5">Important</MudText>
 <MudGrid Spacing="3">
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="This will determine the attributes used on classes generated from Json and the extension methods used on http client calls.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="This will determine the attributes used on classes generated from Json and the extension methods used on http client calls.">
         <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="_dirtyApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
     </AdvancedSettingItem>
     
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="Controls when [JsonProperty] or [JsonPropertyName] are added. It's safest to keep this at always but it is also safe to change if you know what you are doing.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="Controls when [JsonProperty] or [JsonPropertyName] are added. It's safest to keep this at always but it is also safe to change if you know what you are doing.">
         <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="_dirtyApiClientOptions.AttributeUsage" Label="JsonProperty Attribute Usage"></EnumSelectComponent>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
         <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="_dirtyApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
 <MudText Class="setting-section-header" Typo="Typo.h5">Multiple Response Handling</MudText>
 <MudGrid Spacing="3">
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
         <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.HandleMultipleResponses">Handle</MudCheckBox>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="This will determine what the return type will be if Handle is enabled and a request has multiple response types. Turning this on after generation 
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="This will determine what the return type will be if Handle is enabled and a request has multiple response types. Turning this on after generation 
 has no effect since only the first success response is saved when the api client is generated. Turning it off will work as intended">
         <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="_dirtyApiClientOptions.MultipleResponseHandling" Disabled="_dirtyApiClientOptions.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
     </AdvancedSettingItem>
@@ -45,34 +45,34 @@ has no effect since only the first success response is saved when the api client
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
 <MudText Class="setting-section-header" Typo="Typo.h5">Error Handling</MudText>
 <MudGrid Spacing="3">
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="Determines whether or not to handle errors when making http client calls and how to handle them when they happen.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="Determines whether or not to handle errors when making http client calls and how to handle them when they happen.">
         <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.ErrorHandlingStrategy" AlwaysShowAllEnumValues Label="Error Handling Strategy"></EnumSelectComponent>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="Choose how to output your exceptions, if at all.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="Choose how to output your exceptions, if at all.">
         <MultiEnumSelectComponent Disabled="_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="ErrorHandlingSinks" Value="_dirtyApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handled by the sinks.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handled by the sinks.">
          <MultiEnumSelectComponent Disabled="_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="_dirtyApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
     
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
          <EnumSelectComponent Disabled="_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None || !_dirtyApiClientOptions.ErrorHandlingSinks.Contains(ErrorHandlingSinks.LogException)" @bind-Value="_dirtyApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
     </AdvancedSettingItem>
 </MudGrid>
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
 <MudText Class="setting-section-header" Typo="Typo.h5">Function Configurations</MudText>
 <MudGrid Spacing="3">
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="Each request in the generated ApiClient will call EnsureSuccessStatusCode() on the HttpResponseMessage before deserializing or returning the response stream.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="Each request in the generated ApiClient will call EnsureSuccessStatusCode() on the HttpResponseMessage before deserializing or returning the response stream.">
          <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudCheckBox>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="@(@"All actual ""path variables"" (/:pathVariable/) are automatically treated as function parameters, but collection variables in paths (/{{variable}}/) will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="@(@"All actual ""path variables"" (/:pathVariable/) are automatically treated as function parameters, but collection variables in paths (/{{variable}}/) will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
          <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudCheckBox>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="@(@"If true each request function on the generated ApiClient will be have a Cancellation token parameter with a default value of default.")">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="@(@"If true each request function on the generated ApiClient will be have a Cancellation token parameter with a default value of default.")">
          <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.UseCancellationTokens">Use Cancellation Tokens</MudCheckBox>
     </AdvancedSettingItem>
 </MudGrid>
@@ -81,20 +81,20 @@ has no effect since only the first success response is saved when the api client
 <p style="margin-bottom: 20px;">
 </p>
 <MudGrid Spacing="3">
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="This will determine whether root classes are considered for deduping. A root class being one that is not is not used in any other classes. Generally these are used directly in the generated ApiClient class.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="This will determine whether root classes are considered for deduping. A root class being one that is not is not used in any other classes. Generally these are used directly in the generated ApiClient class.">
         <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.DuplicateOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudCheckBox>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="This will determine whether or not you want any leniency in the deduping process. If you set this to false, the type matching will be strict and only dedupe when all properties match exactly by name and type.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="This will determine whether or not you want any leniency in the deduping process. If you set this to false, the type matching will be strict and only dedupe when all properties match exactly by name and type.">
         <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
     </AdvancedSettingItem>
     
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
                          be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
 potential duplicate as a duplicate. WHEN the json names DO match. The lower this number is, the more often you will have numbered classes. Amount, Amount2, Amount3">
          <MudNumericField @bind-Value="_dirtyApiClientOptions.DuplicateOptions.SameOriginalNameSensitivity" Disabled="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Same Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="50" />
     </AdvancedSettingItem>
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
                          be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
 potential duplicate as a duplicate. WHEN the json names DONT match. The higher this number is, the fewer classes that will be generated. Raising this number will also increase the likely
 hood of an error in generated code (minor issues usually) and increase the likelyhood of confusing class names.">
@@ -104,15 +104,15 @@ hood of an error in generated code (minor issues usually) and increase the likel
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
 <MudText Class="setting-section-header" Typo="Typo.h5">Miscellaneous</MudText>
 <MudGrid Spacing="3">
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="Any types choosen in here will cause disabled parameters of that type to be removed in pre-processing..">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="Any types choosen in here will cause disabled parameters of that type to be removed in pre-processing..">
         <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="_dirtyApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
     </AdvancedSettingItem>
 
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="WARNING: Authorizations will be lost is this setting is enabled. This will reorganize requests by authority. See options explained page for full explanation.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="WARNING: Authorizations will be lost is this setting is enabled. This will reorganize requests by authority. See options explained page for full explanation.">
         <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
     </AdvancedSettingItem>
     
-    <AdvancedSettingItem Size="AdvancedItemSize" ToolTip="Emabling this will cause each HttpClient request made in your ApiClient to be called within a retry function.">
+    <AdvancedSettingItem Size="P2CsSize" ToolTip="Emabling this will cause each HttpClient request made in your ApiClient to be called within a retry function.">
         <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.ExecuteWithRetry">Execute With Retry</MudCheckBox>
     </AdvancedSettingItem>
 </MudGrid>
@@ -148,7 +148,7 @@ hood of an error in generated code (minor issues usually) and increase the likel
     public bool ShowInteractiveDemoMessage { get; set; } = true;
 
     [Parameter]
-    public AdvancedItemSize AdvancedItemSize { get; set; } = AdvancedItemSize.Large;
+    public P2CsSize P2CsSize { get; set; } = P2CsSize.Large;
 
     [Inject] private ISnackbar? Snackbar { get; set; }
 
@@ -247,16 +247,16 @@ hood of an error in generated code (minor issues usually) and increase the likel
     }
 
     private ApiClientOptions? _cachedApiClientsOptions;
-    private AdvancedItemSize _cachedAdvancedItemSize;
+    private P2CsSize _cachedP2CsSize;
     protected override bool ShouldRender()
     {
         if (_cachedApiClientsOptions != null && Equals(_cachedApiClientsOptions, _apiClientOptions)
-            && Equals(_apiClientOptions, _dirtyApiClientOptions) && _cachedAdvancedItemSize == AdvancedItemSize)
+            && Equals(_apiClientOptions, _dirtyApiClientOptions) && _cachedP2CsSize == P2CsSize)
         {
             return false;
         }
         _cachedApiClientsOptions = _apiClientOptions;
-        _cachedAdvancedItemSize = AdvancedItemSize;
+        _cachedP2CsSize = P2CsSize;
         return true;
     }
 
