@@ -152,27 +152,26 @@
                 {
                     @if (httpCall.RequestSourceCode != null)
                     {
-                        @TabPanel(httpCall.RequestClassName, httpCall.RequestSourceCode)
+                        @TabPanel(httpCall.RequestClassName!, httpCall.RequestSourceCode!)
                     }
                     @if (httpCall.FormDataSourceCode != null)
                     {
-                        @TabPanel(httpCall.FormDataClassName, httpCall.FormDataSourceCode)
+                        @TabPanel(httpCall.FormDataClassName!, httpCall.FormDataSourceCode!)
                     }
                     @if (httpCall.QueryParameterSourceCode != null)
                     {
-                        @TabPanel(httpCall.QueryParameterClassName, httpCall.QueryParameterSourceCode)
+                        @TabPanel(httpCall.QueryParameterClassName!, httpCall.QueryParameterSourceCode!)
                     }
                     foreach (var response in httpCall.AllResponses)
                     {
                         if (response.SourceCode != null)
                         {
                         
-                            @TabPanel(response.ClassName, response.SourceCode)
+                            @TabPanel(response.ClassName!, response.SourceCode!)
                         }
                     }
                 }
                 @TabPanel(apiClient.InterfaceName, apiClient.InterfaceSourceCode)
-
             </MudTabs>
         </MudHidden>
     </MudBreakpointProvider>;

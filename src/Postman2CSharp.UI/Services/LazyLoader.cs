@@ -125,7 +125,7 @@ namespace Postman2CSharp.UI.Services
             {
                 if (string.IsNullOrEmpty(uri))
                 {
-
+                    return;
                 }
                 if (uri.Contains("upload") || uri.Contains("collection") || uri.Contains("convert") || uri.Contains("json") || uri.Contains("interactive-demo"))
                 {

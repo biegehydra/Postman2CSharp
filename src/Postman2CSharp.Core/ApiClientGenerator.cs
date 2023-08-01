@@ -357,10 +357,11 @@ public class ApiClientGenerator
                     {
                         responseClassName = "EmptyResponse";
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
-                        continue;
 #if DEBUG
                         Console.WriteLine($@"Response no classes generated. {requestItem.Name}");
 #endif
+
+                        continue;
                     }
                     catch (DuplicateRootException ex)
                     {
@@ -374,11 +375,11 @@ public class ApiClientGenerator
                     {
                         responseClassName = "EmptyResponse";
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
-                        continue;
 #if DEBUG
                         Console.WriteLine(ex);
                         throw;
 #endif
+                        continue;
                     }
                     allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, responseSourceCode, DataType.Json, rootWasArray));
                     continue;

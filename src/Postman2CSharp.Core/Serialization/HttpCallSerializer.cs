@@ -208,7 +208,7 @@ public static class HttpCallSerializer
 
         if (!httpClientCallReturnsResponse)
         {
-            ReturnIfRequestDidNotReturnEarlier(sb, call, call.SuccessResponse, jsonLibrary, indent, useCancellationTokens);
+            ReturnIfRequestDidNotReturnEarlier(sb, call.SuccessResponse, jsonLibrary, indent, useCancellationTokens);
         }
     }
 
@@ -265,6 +265,11 @@ public static class HttpCallSerializer
         HttpClientRequest(sb, call, false, requestHasQueryString, relativePath, hasUniqueHeaders,
             useCancellationTokens, outputCollectionType, executeWithRetry);
 
+        if (ensureSuccessStatusCode)
+        {
+            sb.AppendLine(indent + "response.EnsureSuccessStatusCode();");
+        }
+
         int i = 0;
         foreach (var response in call.AllResponses)
         {
@@ -273,7 +278,7 @@ public static class HttpCallSerializer
             sb.AppendLine(indent + "{");
             indent = Consts.Indent(intIndent + 1);
 
-            ReturnIfRequestDidNotReturnEarlier(sb, call, response, jsonLibrary, indent, useCancellationTokens);
+            ReturnIfRequestDidNotReturnEarlier(sb, response, jsonLibrary, indent, useCancellationTokens);
 
             indent = Consts.Indent(intIndent);
             sb.AppendLine(indent + "}");
@@ -290,7 +295,7 @@ public static class HttpCallSerializer
         sb.AppendLine(indent + "}");
     }
 
-    private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, HttpCall call, ApiResponse? apiResponse, JsonLibrary jsonLibrary, string indent, bool useCancellationTokens)
+    private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, ApiResponse? apiResponse, JsonLibrary jsonLibrary, string indent, bool useCancellationTokens)
     {
         sb.Append(indent + "return ");
         if (apiResponse?.ClassName != null)
@@ -473,7 +478,7 @@ public static class HttpCallSerializer
             sb.Append(indent + $"{{ $\"{uniqueHeader.Key}\", $\"{uniqueHeader.Value}\" }}");
             if (uniqueHeader != last)
             {
-                sb.Append(",");
+                sb.Append(',');
             }
             sb.AppendLine();
         }
