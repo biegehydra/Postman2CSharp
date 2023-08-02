@@ -56,7 +56,7 @@ how all the configurations work."
              The attribute library you choose will have two affects. First, it will determine which @InlineCode("[JsonProperty]") Attribute
              to use on properties/fields of generated request and response classes. Secondly, it will determine which set of
              json extension methods your project is downloaded with. If you are unsure which to choose, choose @InlineCode("System.Text.Json").
-             Additionally, all @InlineCode("Newtonsoft.Json") extension methods have Newtonsoft in them. @InlineCode("GetAsJsonAsync") - @InlineCode("GetAsNewtonsoftJsonAsync").
+             Additionally, all @InlineCode("Newtonsoft.Json") extension methods have "Newtonsoft" in them. @InlineCode("GetAsJsonAsync") - @InlineCode("GetAsNewtonsoftJsonAsync").
          </p>
      </div>
 
@@ -69,19 +69,19 @@ how all the configurations work."
          <br/>
          <p>
              Enabling this setting is a great way to ensure that you are handling all possible responses from an api.
-             When you enable this setting, the status code of the response will be used to determine how the response is deserialized.
+             When you enable this setting, the @InlineCode("StatusCode") of the response will be used to determine how the response is deserialized.
          </p>
          <br/>
          <p>
              @InlineValue("Handle"): The first option you have is whether or not you handle multiple responses at all. If you choose not to handle multiple response,
              then only the first success response (status code &gt;= 200 and &lt; 300, preference to 200 if present) will be uses in the generation process.
-             All others will be discarded. <u>This means that classes won't be generated for all other responses, this setting can't be enabled after generation.</u>
+             <u>All others will be discarded</u>. This means that classes won't be generated for all other responses. This setting <u>can't be enabled</u> after generation.
          </p>
          <br/>
          <p>
-             @InlineValue("MultipleResponseHandling"): If you do decide to handle multiple responses by setting "Handle" to true, then you will need to decide
-             what you want the return type to be when there are multiple responses. You can either return an object and allow the caller to determine the type... ew.
-             Or you can use a discriminated union via the popular OneOf library. A discriminated union is a type that can be one of many types, but only ever ONE OF.
+             @InlineValue("MultipleResponseHandling"): If you do decide to handle multiple responses by setting @InlineValue("Handle") to true, then you will need to decide
+             what you want the return type to be when there are multiple responses. You can either return an @InlineCode("object") and allow the caller to determine the type... ew.
+             Or you can use a discriminated union via the popular @InlineCode("OneOf") library. A discriminated union is a type that can be one of many types, but only ever ONE OF.
              In this case, the discriminated union will be one of the possible response types. This is the recommended option.
          </p>
          <br/>
@@ -96,9 +96,9 @@ how all the configurations work."
 
          <br/>
          <p>
-             You have full control over the type of @InlineCode("XmlCommentTypes") that are generated. Xml comments are generated
+             You have full control over the type of @InlineEmphasis("XmlCommentTypes") that are generated. Xml comments are generated
              from the description field of different parameters. Your options are ApiClient, QueryParameters, FormData,
-             PathVariables, and Request. These are the locations of the generated xml comments. Here are the locations of the generated xml comments.
+             PathVariables, and Request. These are the locations of the generated xml comments.
              
              <ul class="normal">
                  <li>@InlineValue("ApiClient"): Appear at the top of generated ApiClient, description comes from root item description.</li>
@@ -118,8 +118,9 @@ how all the configurations work."
          </OnThisPageLink>
 
          <br/>
-         <p>None - Request will be with no catch clause.</p>
+         <p>@InlineValue("None"): Request will be with no catch clause.</p>
          <br/>
+         @InlineValue("Thrown Exception"):
          <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingStrategy_ThrowException" UseLineNumbers="false"/>
          <hr/>
          <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingStrategy_ReturnDefault" UseLineNumbers="false"/>
@@ -133,7 +134,7 @@ how all the configurations work."
          </OnThisPageLink>
 
          <br/>
-         <p>Each @InlineCode("CatchExceptionType") chosen will be caught. Only takes affect if @InlineCode("ErrorHandlingStrategy") is not @InlineValue("None")</p>
+        <p>Each @InlineEmphasis("CatchExceptionType") chosen will be caught. This setting only takes affect if @InlineEmphasis("ErrorHandlingStrategy") is not @InlineValue("None")</p>
          <br/>
          <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@CatchExceptionTypes_Example" UseLineNumbers="false"/>
      </div>
@@ -157,12 +158,25 @@ how all the configurations work."
          </OnThisPageLink>
 
          <br/>
-         <p>
-             Api Clients are generated for each root in the Collection. By default a @InlineCode("root") is defined by any folder that has a request.
-             Also by default, if there are requests that have different authority in a root, they will be split up into different Api Clients;
-             Enabling this settings triggers a complete reorganization of the structure to put all requests with the same authority in the same root.
-             This can cause unexpected behaviour including the loss of authorization types however it can drastically reduce the number of ApiClients and classes generated.
-         </p>
+         <ul>
+             <li>@InlineEmphasis("Root"): A root is any folder in a collection that has a request (including the root itself).</li>
+             @* Technical definition of Host  *@
+            <li>@InlineEmphasis("Host"): The host part of a URL is the domain name or IP address that indicates where the resources are served from.</li>
+             <li>@InlineEmphasis("Authority"): The authority component of a URL includes the authentication section, the host, and the port. In the URL http://username:password@example.com:8080/path/to/file - @InlineEmphasis("Authority"): @InlineCode("\"username:password@example.com:8080\""), @InlineEmphasis("Host"): @InlineCode("\"example.com\"").</li>
+             <Break Size="P2CsSize.Small"></Break>
+             <li>@InlineValue("PerAuthorityPerFolder"): An ApiClient will be created for each root, with a caveat being that if a root uses different authorities in it's requests, the requests will be regrouped into new roots based on authority.</li>
+             <ul>
+                 <li>Useful when the postman collection is well organized and you want your ApiClients to have seperation of concerns</li>
+             </ul>
+             <li>@InlineValue("PerAuthority"): An ApiClient will be created for each authority disregarding the folders requests are in.</li>
+             <ul>
+                 <li>Useful when the you want a monolithic ApiClient.</li>
+             </ul>
+             <li>@InlineValue("Pick"): Lets you decide how to requests get group.</li>
+             <ul>
+                 <li>Best of both worlds but requires you to manually select.</li>
+             </ul>
+         </ul>
      </div>
 
      <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
@@ -171,40 +185,36 @@ how all the configurations work."
          <OnThisPageLink Id="ClassDeduping" >
              <MudText Typo="Typo.h2">Class Deduding</MudText>
          </OnThisPageLink>
-
          <br/>
-         <p>
-             By default, with all other settings disabled. Root classes are never deduped, and non-root classes are only deduped
-             when every single property matches by name and type on the original and duplicate and their property counts match.
-         </p>
          <ul>
-             <li>@InlineValue("Root"): A class that's not a member of any other class</li>
-             <li>@InlineValue("Non-Root"): A class generated to be a member of another class.</li>
-             <li>@InlineValue("Json Example"): A key-value pair in json. In this section, it generally refers to a key-value pair where the value is an object. Denoted by "{}" in value. "person" : { }</li>
-             <li>@InlineValue("Original Name"): A value of the key in the json example.</li>
-             <li>@InlineValue("Duplicate"): A json example who's members match every single member by type and name on a previously process json example. <u>And the original and potential duplicate have the exact same amount of properties.</u></li>
-             <li>@InlineValue("Semi-Duplicate"): A json example who's members match every single member by type and name on a previously process json example. <u>And the original (already processed) has more properties than the potential duplicate.</u></li>
+             <li>@InlineEmphasis("Root"): A class that's not a member of any other class</li>
+             <li>@InlineEmphasis("Non-Root"): A class generated to be a member of another class.</li>
+             <li>@InlineEmphasis("Json Example"): A key-value pair in json. In this section, it generally refers to a key-value pair where the value is an object. Denoted by "{}" in value. "person" : { }</li>
+             <li>@InlineEmphasis("Original Name"): The value of the key in the json example.</li>
+             <li>@InlineEmphasis("Duplicate"): A json example who's members match every single member by type and name on a previously processed json example. And the original and potential duplicate have the exact <u>same amount</u> of properties.</li>
+             <li>@InlineEmphasis("Semi-Duplicate"): A json example who's members match every single member by type and name on a previously processed json example. And the original (already processed) has <u>more properties</u> than the potential duplicate.</li>
          </ul>
+         <Break Size="P2CsSize.Small"></Break>
          <p>
-             <b>@InlineValue("Remove Duplicate Roots"):</b> You are given a couple of options to help reduce the number of classes generated. The first option lets you choose
+             <b>@InlineValue("RemoveDuplicateRoots"):</b> You are given a couple of options to help reduce the number of classes generated. The first option lets you choose
              whether or not to remove duplicate ROOT classes. A root class is essentially one that is not a child of another class.
              These are your Request, Response, and Parameter classes. * Note: Root classes are subject to the same rules for deduping as non-root classes.
          </p>
          <br/>
          <p>
-             <b>@InlineValue("Remove Semi-Duplicate Classes"):</b> The second option lets you choose whether or not to remove "semi-duplciates", see definition above. Enabling this setting lets you dedupe these semi-duplicate classes. This is useful for json that
+             <b>@InlineValue("RemoveSemiDuplicateClasses"):</b> The second option lets you choose whether or not to remove "semi-duplciates", see definition above. Enabling this setting lets you dedupe these semi-duplicate classes. This is useful for json that
              has multiple examples of the same class but examples differ in name. For example, if you have Response that both have a Person object, but the json property names
              are different, this setting would let you dedupe the second example and put all unique properties in the first example. You are also able to adjust the sensitivity of this
-             settings. The sensitivity is how many more properties the original can have than the duplicate. For example, if the original has 3 properties and the duplicate has 2 (all matching the original).
-             The Same Original Name Sensitivity or Different Name Sensitivity would have to be at least 6, depending on whether the names are the same or different.
+             settings. The sensitivity is how many more properties the original can have than the duplicate. For example, if the original has 8 properties and the duplicate has 2 (all matching the original).
+            Then @InlineValue("SameOriginalNameSensitivity") or @InlineValue("DifferentOriginalNameSensitivity") would have to be at least 6, depending on whether the names are the same or different.
          </p>
          <br/>
          <p>
-             <b>@InlineValue("One Type Per Json Member Name"):</b> At the moment, this setting is only available for the <a class="link-normal" href="/other-tools/json-to-csharp-plus">Json2CSharpPlus</a> tool found in other tools.
-             Enabling this setting will enforce an additional rule during the dedupe process. Class deduping will work the same but 2 classes have the same name (in the json),
-             the first one will be kept and all examples after will add their properties to the first class. This is useful for json that has multiple examples of the same object
-             but examples have different amounts of properties. It is not useful when two classes have the same name but represent different models. Then you will have one model
-             to represent 2 objects. The default depends is create a second class with a number appended to the end if all the properties don't match.
+             <b>@InlineValue("OneTypePerJsonMemberName"):</b> At the moment, this setting is only available for the <a class="link-normal" href="/other-tools/json-to-csharp-plus">Json2CSharpPlus</a> tool found in other tools.
+             Enabling this setting will enforce an additional rule during the dedupe process. Class deduping will work mostly the same but if 2 classes have the same name (in the json),
+             the first one will be kept and all subsequent examples with just add their properties to the first. This is useful for json that has multiple examples of the same object
+             under the same name but json examples have different amounts of properties. It is not useful when two json examples have the same name but represent different models. Then you would have one model
+            to represent 2 objects. The <u>default behaviour</u> is create a second class with a number appended to the end if all the properties don't match. @InlineCode("Person2")
          </p>
      </div>
 
@@ -312,8 +322,7 @@ catch (HttpRequestException ex)
 }";
 
     public const string ErrorHandlingStrategy_ThrowException =
-@"// Thrown Exception
-try
+@"try
 {
     // Request body
 }
