@@ -25,7 +25,7 @@ how all the configurations work."
 
 <BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
 
- <div class="apiclient-configurations-explanations-container">
+<div class="apiclient-configurations-explanations-container">
      <MudText Typo="Typo.h1" Class="mt-4">ApiClient Configurations Explained</MudText>
      <br />
      <OnThisPage Links="@Links" ></OnThisPage>
@@ -123,6 +123,7 @@ how all the configurations work."
          @InlineValue("Thrown Exception"):
          <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingStrategy_ThrowException" UseLineNumbers="false"/>
          <hr/>
+         @InlineValue("Return Default"):
          <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingStrategy_ReturnDefault" UseLineNumbers="false"/>
      </div>
 
@@ -134,8 +135,9 @@ how all the configurations work."
          </OnThisPageLink>
 
          <br/>
-        <p>Each @InlineEmphasis("CatchExceptionType") chosen will be caught. This setting only takes affect if @InlineEmphasis("ErrorHandlingStrategy") is not @InlineValue("None")</p>
+         <p>Each @InlineEmphasis("CatchExceptionType") chosen will be caught. This setting only takes affect if @InlineEmphasis("ErrorHandlingStrategy") is not @InlineValue("None")</p>
          <br/>
+         @InlineValue("HttpRequestException") and @InlineValue("Exception")
          <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@CatchExceptionTypes_Example" UseLineNumbers="false"/>
      </div>
 
@@ -248,15 +250,11 @@ how all the configurations work."
 
     #region EnsureResponseStatusCode
 private const string EnsureResponseStatusCode_False =
-@"// EnsureResponseStatusCode = false
-
-var response = await _httpClient.GetAsync(queryString);
+@"var response = await _httpClient.GetAsync(queryString);
 return await response.Content.ReadAsStreamAsync();";
 
     private const string EnsureResponseStatusCode_True =
-@"// EnsureResponseStatusCode = true
-
-var response = await _httpClient.GetAsync(queryString);
+@"var response = await _httpClient.GetAsync(queryString);
 response.EnsureSuccessStatusCode();
 return await response.Content.ReadAsStreamAsync();";
     #endregion
@@ -268,18 +266,14 @@ return await response.Content.ReadAsStreamAsync();";
 This changes that and makes collection variables function parameters.";
 
     public const string MakePathCollectionVariablesFunctionParameters_False =
-@"// MakePathCollectionVariablesFunctionParameters = false
-
-private readonly string _someVariable; // Priate variable
+@"private readonly string _someVariable; // Priate variable
 public async Task<List<Ticket>> GetTickets()
 {
     return await _httpClient.GetFromJsonAsync<List<Ticket>>(""{_someVariable}/ticket.php"");
 }";
     
     public const string MakePathCollectionVariablesFunctionParameters_True = 
-@"// MakePathCollectionVariablesFunctionParameters = true
-
-// No priate Variable
+@"// No priate Variable
 public async Task<Stream> GetTickets(string someVariable) // Now a function parameter
 {
     return await _httpClient.GetFromJsonAsync<List<Ticket>>(""{_someVariable}/ticket.php"");
@@ -289,18 +283,14 @@ public async Task<Stream> GetTickets(string someVariable) // Now a function para
     #region CancellationTokens
 
         public const string UseCancellationTokens_False =
-@"// UseCancellationTokens = false
-
-public async Task<Stream> GetTickets()
+@"public async Task<Stream> GetTickets()
 {
     var response = await _httpClient.GetAsync(""{_someVariable}/ticket.php"");
     return await response.Content.ReadAsStreamAsync();
 }";
     
         public const string UseCancellationTokens_True =
-@"// UseCancellationTokens = true
-
-public async Task<Stream> GetTickets(CancellationToken cancellationToken) // Now a function parameter
+@"public async Task<Stream> GetTickets(CancellationToken cancellationToken) // Now a function parameter
 {
     var response = await _httpClient.GetAsync(""{someVariable}/ticket.php"", cancellationToken);
     return await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -310,8 +300,7 @@ public async Task<Stream> GetTickets(CancellationToken cancellationToken) // Now
     #region ErrorHandlingStrategy
 
     public const string ErrorHandlingStrategy_ReturnDefault =
-@"// Return Default
-try
+@"try
 {
     // Request body
 }
@@ -336,8 +325,7 @@ catch (HttpRequestException ex)
     #region CatchExceptionTypes
 
     public const string CatchExceptionTypes_Example =
-@"// HttpRequestException and Exception
-try
+@"try
 {
     // Request body
 }
@@ -367,6 +355,7 @@ catch (Exception ex)
 
     public static RenderFragment Explanation(string title, string falsee, string truee, string id, string? description = null)
     {
+        var noSpaces = title.Replace(" ", "");
         return @<div>
                    <OnThisPageLink Id="@id" >
                        <MudText Typo="Typo.h2">@title</MudText>
@@ -379,8 +368,11 @@ catch (Exception ex)
                        </p>
                    }
                    <br/>
+                   @InlineValue("False"):
                    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@falsee" UseLineNumbers="false"/>
+                   <Break Size="P2CsSize.Small" />
                    <hr/>
+                   @InlineValue("True"):
                    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@truee" UseLineNumbers="false"/>
                </div>;
     }

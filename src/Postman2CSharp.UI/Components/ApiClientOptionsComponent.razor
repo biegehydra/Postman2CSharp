@@ -253,15 +253,17 @@ hood of an error in generated code (minor issues usually) and increase the likel
     }
 
     private ApiClientOptions? _cachedApiClientsOptions;
+    private ApiClientOptions? _cachedDirtyApiClientsOptions;
     private P2CsSize _cachedP2CsSize;
     protected override bool ShouldRender()
     {
-        if (_cachedApiClientsOptions != null && Equals(_cachedApiClientsOptions, _apiClientOptions)
+        if (_cachedApiClientsOptions != null && Equals(_cachedApiClientsOptions, _cachedDirtyApiClientsOptions)
             && Equals(_apiClientOptions, _dirtyApiClientOptions) && _cachedP2CsSize == P2CsSize)
         {
             return false;
         }
-        _cachedApiClientsOptions = _apiClientOptions;
+        _cachedApiClientsOptions = _apiClientOptions.Clone();
+        _cachedDirtyApiClientsOptions = _dirtyApiClientOptions.Clone();
         _cachedP2CsSize = P2CsSize;
         return true;
     }
