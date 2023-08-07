@@ -115,7 +115,7 @@ hood of an error in generated code (minor issues usually) and increase the likel
     </AdvancedSettingItem>
 
     <AdvancedSettingItem Size="P2CsSize" ToolTip="WARNING: Authorizations will be lost is this setting is enabled. This will reorganize requests by authority. See options explained page for full explanation.">
-        <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
+        <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" Exclude="AutoSave ? new List<RootDefinition>() {RootDefinition.Manual } : null" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
     </AdvancedSettingItem>
     
     <AdvancedSettingItem Size="P2CsSize" ToolTip="Emabling this will cause each HttpClient request made in your ApiClient to be called within a retry function.">
@@ -249,7 +249,7 @@ hood of an error in generated code (minor issues usually) and increase the likel
     private void SaveOptions()
     {
         SetApiClientOptions(_dirtyApiClientOptions);
-        Snackbar?.Add($"Saved {nameof(_dirtyApiClientOptions)}", Severity.Success);
+        Snackbar?.Add($"Saved {nameof(ApiClientOptions)}", Severity.Success);
     }
 
     private ApiClientOptions? _cachedApiClientsOptions;

@@ -1,12 +1,4 @@
 ﻿@using Postman2CSharp.Core.Models.PostmanCollection.Authorization
-<style>
-    .can-drop-class {
-        outline: 1px dotted green;
-    }
-    .cant-drop-class {
-        outline: 1px dotted red;
-    }
-</style>
 
 <div class="f-row" style="align-items: center;" >
     <MudText Typo="Typo.h5">Group your Roots</MudText>
@@ -22,6 +14,12 @@
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RootsConfirmed"  >Confirm</MudButton>
     }
 </div>
+<ul class="normal">
+    <li>@InlineEmphasis("Drag Items"): Represents folders in the collection that have requests</li>
+    <li>@InlineEmphasis("Drop Zone"): What the folders and their requests will be grouped into.</li>
+</ul>
+<Break Size="P2CsSize.ExtraSmall" />
+<p><b>Note:</b> Authorization may be lost. Grouping requests with different authorities will result in less clean code.</p>
 
 @if (PostmanCollection?.Item is { Count: > 0 } && DropCollectionItems is { Count: > 0 } && DropZones is {Count: > 0})
 {

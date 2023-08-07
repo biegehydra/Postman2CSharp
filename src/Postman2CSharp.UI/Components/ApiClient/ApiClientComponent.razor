@@ -62,12 +62,14 @@
             }
         </MudGrid>
     </div>
+    <Break Size="P2CsSize.Medium"></Break>
     <MudText Typo="Typo.h2" Class="mt-4">Configure This ApiClient</MudText>
     <br />
     <p>
         At this point it is to late to change class generation options and a few others but most can still be configured.
     </p>
     <SlideDown AnimationDuration=".5" MaxHeight="700px" ShowMoreText="Expand Configurations" ShowLessText="Hide Configurations">
+        <Break Size="P2CsSize.Small" />
         <MudGrid Spacing="3">
             <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
                 <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="SelectedApiClient.Options.XmlCommentTypes" SelectedValuesChanged="SelectedCommentTypesChanged" Label="Comment Types"></MultiEnumSelectComponent>

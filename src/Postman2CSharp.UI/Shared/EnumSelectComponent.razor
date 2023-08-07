@@ -1,7 +1,8 @@
-﻿@typeparam TEnum where TEnum : struct, Enum
+﻿@using Humanizer
+@typeparam TEnum where TEnum : struct, Enum
 <div class="enum-select-container" >
     <MudSelect T="TEnum" Disabled="Disabled" Label="@Label" Variant="Variant.Outlined" @bind-Value="Value">
-        @foreach (var enumValue in Enum.GetValues<TEnum>())
+        @foreach (var enumValue in Enum.GetValues<TEnum>().Where(x => !Exclude?.Contains(x) ?? true))
         {
             <MudSelectItem T="TEnum" Value="@enumValue">@enumValue.ToString()</MudSelectItem>
         }
@@ -12,6 +13,8 @@
     [Parameter, EditorRequired] public required string Label { get; set; }
 
     [Parameter] public EventCallback<TEnum> ValueChanged { get; set; }
+
+    [Parameter] public IEnumerable<TEnum>? Exclude { get; set; }
 
     [Parameter] public bool AlwaysShowAllEnumValues { get; set; } = true;
 

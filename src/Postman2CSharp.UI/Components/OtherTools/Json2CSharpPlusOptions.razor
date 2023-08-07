@@ -5,7 +5,7 @@
 <MudText Style="font-weight: 500;" Typo="Typo.h2">Class Generation Options</MudText>
 <br />
 <div class="f-row-column">
-    <MudText Typo="Typo.caption"><b>* One you process your first json, options cannot be changed.</b></MudText>
+    <MudText Typo="Typo.caption"><b>* Once you process your first json, options cannot be changed.</b></MudText>
     @if (FirstProcessComplete)
     {
         <div style="flex-grow: 1;"></div>
@@ -92,13 +92,13 @@
             <MudCheckBox Color="Color.Primary" Disabled="FirstProcessComplete" @bind-Checked="_duplicateOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudCheckBox>
         </AdvancedSettingItem>
 
-        <AdvancedSettingItem ToolTip="This will determine whether or not you want any leniency in the deduping process. If you set this to false, the type matching will be strict and only dedupe when all properties match exactly by name and type.">
-            <MudCheckBox Color="Color.Primary" Disabled="FirstProcessComplete" @bind-Checked="_duplicateOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
-        </AdvancedSettingItem>
-        
         <MudItem xs="12" sm="6" md="4" lg="3">
             <MudCheckBox Color="Color.Primary" @bind-Checked="OneTypePerJsonMemberName" Disabled="FirstProcessComplete" Label="One Type Per Json Member Name"></MudCheckBox>
         </MudItem>
+        
+        <AdvancedSettingItem ToolTip="This will determine whether or not you want any leniency in the deduping process. If you set this to false, the type matching will be strict and only dedupe when all properties match exactly by name and type.">
+            <MudCheckBox Color="Color.Primary" Disabled="FirstProcessComplete" @bind-Checked="_duplicateOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
+        </AdvancedSettingItem>
 
         <AdvancedSettingItem ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
                          be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
