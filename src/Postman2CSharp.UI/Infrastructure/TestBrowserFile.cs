@@ -13,7 +13,11 @@ namespace Postman2CSharp.UI.Infrastructure
         }
         public Stream OpenReadStream(long maxAllowedSize = 512000, CancellationToken cancellationToken = new CancellationToken())
         {
-            return Stream;
+            var memoryStream = new MemoryStream();
+            Stream.Position = 0;
+            Stream.CopyTo(memoryStream);
+            memoryStream.Position = 0;
+            return memoryStream;
         }
         public DateTimeOffset LastModified => throw new NotImplementedException();
         public long Size => throw new NotImplementedException();

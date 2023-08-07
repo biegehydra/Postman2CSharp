@@ -62,7 +62,7 @@ public class ApiClient
     public string ControllerClassName => $"{NameSpace}Controller";
     public required string TestClassSourceCode { get; set; }
     private string? _controllerSourceCode;
-    public required string ControllerSourceCode
+    public required string? ControllerSourceCode
     {
         get => _controllerSourceCode ??= ControllerSerializer.SerializeController(this);
         set => _controllerSourceCode = value;

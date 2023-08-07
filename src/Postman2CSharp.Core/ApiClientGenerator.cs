@@ -96,7 +96,7 @@ public class ApiClientGenerator
         {
             var variableUsages = allVariableUsages[i++];
             if (!rootItem.HasRequests()) continue;
-            if (!rootItem.HasCommonAuthority())
+            if (Options.ApiClientOptions.RootDefinition != RootDefinition.Manual && !rootItem.HasCommonAuthority())
             {
                 var splitItems = RootItemHelpers.GroupRequestsByAuthority(rootItem);
                 foreach (var splitItem in splitItems)

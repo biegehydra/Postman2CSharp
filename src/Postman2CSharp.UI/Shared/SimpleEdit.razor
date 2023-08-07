@@ -1,0 +1,72 @@
+﻿<div class="f-row gap-3" style="align-items: center;">
+    @if (_editing)
+    {
+        <MudTextField @bind-Value="_editingValue" OnKeyUp="OnKeyUp" Variant="Variant.Outlined" ></MudTextField>
+        <MudIconButton Icon="@CancelIcon" OnClick="CancelEdit"></MudIconButton>
+        <MudIconButton Icon="@ConfirmIcon" OnClick="ConfirmEdit"></MudIconButton>
+    }
+    else
+    {
+        @ChildContent
+        <MudIconButton Icon="@NotEditingIcon" Disabled="Disabled" OnClick="StartEdit"></MudIconButton>
+    }
+</div>
+
+@code {
+    private bool _editing;
+    private string _editingValue;
+
+    [Parameter] public string CancelIcon { get; set; } = Icons.Cancel;
+    [Parameter] public string ConfirmIcon { get; set; } = Icons.Check;
+    [Parameter] public string NotEditingIcon { get; set; } = Icons.Edit;
+    private bool _disabled;
+    [Parameter] public bool Disabled
+    {
+        get => _disabled;
+        set
+        {
+            if (_disabled == value) return;
+            if (value == true)
+            {
+                Reset();
+            }
+            _disabled = value;
+        }
+    }
+
+    [Parameter, EditorRequired] public string InitialValue { get; set; } = null!;
+    [Parameter, EditorRequired] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private void StartEdit()
+    {
+        _editingValue = InitialValue;
+        _editing = true;
+    }
+
+    private void CancelEdit()
+    {
+        Reset();
+    }
+
+    private void ConfirmEdit()
+    {
+        InitialValue = _editingValue;
+        ValueChanged.InvokeAsync(_editingValue);
+        _editing = false;
+    }
+
+    private void Reset()
+    {
+        _editingValue = InitialValue;
+        _editing = false;
+    }
+
+    private void OnKeyUp(KeyboardEventArgs args)
+    {
+        if (args.Code == "Enter")
+        {
+            ConfirmEdit();
+        }
+    }
+}

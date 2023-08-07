@@ -14,8 +14,9 @@ namespace Postman2CSharp.Core.Serialization
 {
     public static class ControllerSerializer
     {
-        public static string SerializeController(ApiClient apiClient)
+        public static string? SerializeController(ApiClient apiClient)
         {
+            if (apiClient.BaseUrl == null) return null;
             var uri = new Uri(apiClient.BaseUrl?.ReplaceBrackets() ?? "");
             var uriSegments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -43,7 +44,7 @@ namespace Postman2CSharp.Core.Serialization
         {
             var indent = Consts.Indent(intIndent);
             var attribute = Attribute(httpCall);
-            var relativePath = Utils.ExtractRelativePath(baseUrl ?? "", httpCall.Request.Url.Raw);
+            var relativePath = Utils.ExtractRelativePath(baseUrl, httpCall.Request.Url.Raw);
             relativePath = string.IsNullOrWhiteSpace(relativePath) ? string.Empty : $"(\"{relativePath}\")";
 
             XmlComment(sb, apiClient.Options.XmlCommentTypes, httpCall.RequestClassName, httpCall.Request.Description,

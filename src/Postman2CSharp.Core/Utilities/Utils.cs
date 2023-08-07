@@ -130,6 +130,16 @@ public static class Utils
 
     public static string ExtractRelativePath(string? baseUrl, string? fullUrl, bool safe = true)
     {
+        if (string.IsNullOrWhiteSpace(baseUrl) && !string.IsNullOrWhiteSpace(fullUrl))
+        {
+            fullUrl = fullUrl.ReplaceBrackets();
+            if (fullUrl.StartsWith("http://"))
+            {
+                fullUrl = "https://" + fullUrl[7..];
+            }
+            var _fullUri = new UriBuilder(fullUrl) { Scheme = Uri.UriSchemeHttps }.Uri;
+            return $"https://{_fullUri.Authority}{_fullUri.AbsolutePath}";
+        }
         if (baseUrl is null || fullUrl is null)
         {
             return string.Empty;
@@ -144,11 +154,9 @@ public static class Utils
         {
             fullUrl = "https://" + fullUrl[7..];
         }
-        var fullUriBuilder = new UriBuilder(fullUrl) { Scheme = Uri.UriSchemeHttps };
-        var baseUriBuilder = new UriBuilder(baseUrl) { Scheme = Uri.UriSchemeHttps };
 
-        var fullUri = fullUriBuilder.Uri;
-        var baseUri = baseUriBuilder.Uri;
+        var fullUri = new UriBuilder(fullUrl) { Scheme = Uri.UriSchemeHttps }.Uri;
+        var baseUri = new UriBuilder(baseUrl) { Scheme = Uri.UriSchemeHttps }.Uri;
         if (!fullUri.AbsoluteUri.StartsWith(baseUri.AbsoluteUri))
         {
             if (safe)

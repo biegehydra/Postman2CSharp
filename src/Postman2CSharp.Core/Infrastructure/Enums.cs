@@ -35,6 +35,7 @@
     {
         PerAuthorityPerFolder,
         PerAuthority,
+        Manual
     }
 
     public enum ErrorHandlingSinks

@@ -25,10 +25,13 @@
                 <p>Download Test Class</p>
                 <MudIconButton Color="@Color.Tertiary" Size="Size.Medium" Icon="@Icons.Download" Variant="Variant.Filled" OnClick="() => Interop.Value.DownloadFile(SelectedApiClient.TestClassName, SelectedApiClient.TestClassSourceCode)"></MudIconButton>
             </MudItem>
-            <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
-                <p>Download Empty Controller</p>
-                <MudIconButton Color="@Color.Tertiary" Size="Size.Medium" Icon="@Icons.Download" Variant="Variant.Filled" OnClick="() => Interop.Value.DownloadFile(SelectedApiClient.ControllerClassName, SelectedApiClient.ControllerSourceCode)"></MudIconButton>
-            </MudItem>
+            @if (SelectedApiClient.ControllerSourceCode != null)
+            {
+                <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
+                    <p>Download Empty Controller</p>
+                    <MudIconButton Color="@Color.Tertiary" Size="Size.Medium" Icon="@Icons.Download" Variant="Variant.Filled" OnClick="() => Interop.Value.DownloadFile(SelectedApiClient.ControllerClassName, SelectedApiClient.ControllerSourceCode)"></MudIconButton>
+                </MudItem>
+            }
             <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
                 <p>View Test Class</p>
                 <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientTests(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
@@ -41,10 +44,13 @@
                 <p>View Interface</p>
                 <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientInterface(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
             </MudItem>
-            <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
-                <p>View Empty Controller</p>
-                <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientController(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
-            </MudItem>
+            @if (SelectedApiClient.ControllerSourceCode != null)
+            {
+                <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
+                    <p>View Empty Controller</p>
+                    <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientController(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
+                </MudItem>
+            }
             @if (SelectedApiClient.DuplicateRoots.Count > 0)
             {
                 <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">

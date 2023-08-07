@@ -1,0 +1,177 @@
+﻿@using Postman2CSharp.Core.Models.PostmanCollection.Authorization
+<style>
+    .can-drop-class {
+        outline: 1px dotted green;
+    }
+    .cant-drop-class {
+        outline: 1px dotted red;
+    }
+</style>
+
+<div class="f-row" style="align-items: center;" >
+    <MudText Typo="Typo.h5">Group your Roots</MudText>
+    <MudSpacer></MudSpacer>
+    <MudButton Variant="Variant.Filled" Color="Color.Secondary" EndIcon="@Icons.Add" Disabled="Confirmed" OnClick="CreateNewDropZone" >New Root</MudButton>
+    <MudSpacer></MudSpacer>
+    @if (Confirmed)
+    {
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RootsUnconfirmed" >Edit</MudButton>
+    }
+    else
+    {
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RootsConfirmed"  >Confirm</MudButton>
+    }
+</div>
+
+@if (PostmanCollection?.Item is { Count: > 0 } && DropCollectionItems is { Count: > 0 } && DropZones is {Count: > 0})
+{
+    <MudDropContainer T="CollectionDropItem" Items="DropCollectionItems" ItemsSelector="ItemSelector" ItemDropped="ItemUpdated"
+                      CanDropClass="mud-border-success" NoDropClass="mud-border-error" ApplyDropClassesOnDragStarted="true">
+        <ChildContent>
+            <MudGrid>
+                @foreach (var item in DropZones)
+                {  
+                    <MudItem xxl="2" xl="3" lg="4" md="6" sm="9" xs="12" >
+                        <MudDropZone T="CollectionDropItem" Identifier="@item.Id" CanDrop="CanDrop" Class="rounded-lg border-2 border-solid mud-background-gray mud-border-lines-default pa-6 ma-8">
+                            <SimpleEdit Disabled="Confirmed" InitialValue="@item.Name" ValueChanged="x => item.Name = x">
+                                <MudText Typo="Typo.h6" >@item.Name</MudText>
+                            </SimpleEdit>
+                        </MudDropZone>
+                    </MudItem>
+                }
+            </MudGrid>
+            <MudDropZone T="CollectionDropItem" Identifier="Discard" CanDrop="CanDrop" Class="rounded-lg border-2 border-solid mud-border-lines-default pa-6 ma-8">
+                <div class="f-row gap-3 mb-8" style="align-items: center;">
+                    <MudText Typo="Typo.h6" >Discard</MudText>
+                    <MudIcon Icon="@Icons.DeleteForever"></MudIcon>
+                </div>
+            </MudDropZone>
+        </ChildContent>
+        <ItemRenderer>
+            <MudPaper Elevation="25" Class="pa-4 my-4">@context.CollectionItem.Name</MudPaper>
+        </ItemRenderer>
+    </MudDropContainer>
+}
+
+@code {
+    [Parameter] public PostmanCollection? PostmanCollection { get; set; }
+    [Parameter] public EventCallback ConfirmedChanged { get; set; }
+    private List<CollectionDropItem>? DropCollectionItems { get; set; }
+    private List<CollectionDropZone>? DropZones { get; set; }
+    public bool Confirmed = false;
+
+
+
+    private PostmanCollection? _cachedCollection;
+    protected override void OnParametersSet()
+    {
+        if (PostmanCollection != null && _cachedCollection != PostmanCollection)
+        {
+            _cachedCollection = PostmanCollection;
+            Confirmed = false;
+            DropCollectionItems = PostmanCollection.GetRootCollections().Select(x => new CollectionDropItem(x)).ToList();
+            DropZones = new()
+            {
+                new(PostmanCollection.Info.Name)
+            };
+        }
+    }
+
+    private void ItemUpdated(MudItemDropInfo<CollectionDropItem> dropItem)
+    {
+        if (dropItem.Item != null)
+        {
+            dropItem.Item.DropZoneId = dropItem.DropzoneIdentifier;
+        }
+    }
+
+    private bool ItemSelector(CollectionDropItem dropItem, string dropZoneId)
+    {
+        return dropItem.DropZoneId == dropZoneId;
+    }
+
+    private void CreateNewDropZone()
+    {
+        if (DropZones != null)
+        {
+            var newName = Utils.GenerateUniqueName("New Root", DropZones.Select(x => x.Name).ToList());
+            DropZones.Add(new CollectionDropZone(newName));
+        }
+    }
+
+    private async Task RootsConfirmed()
+    {
+        if (PostmanCollection != null && DropCollectionItems != null)
+        {
+            var newCollectionItems = GroupByDropZone();
+
+            PostmanCollection.Item = newCollectionItems;
+
+            Confirmed = true;
+            await ConfirmedChanged.InvokeAsync();
+        }
+
+        List<CollectionItem> GroupByDropZone()
+        {
+            var newCollectionItems = new List<CollectionItem>();
+            var groups = DropCollectionItems.GroupBy(x => x.DropZoneId);
+            foreach (var group in groups.Where(x => !x.Key.Equals("Discard", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                var newCollectionItem = new CollectionItem()
+                {
+                    Name = group.Key,
+                    Item = group.SelectMany(x => x.CollectionItem.Item ?? new ()).ToList(),
+                    Auth = GetAuth(group),
+                    Description = null
+                };
+                newCollectionItems.Add(newCollectionItem);
+            }
+
+            return newCollectionItems;
+
+            AuthSettings? GetAuth(IGrouping<string, CollectionDropItem> group)
+            {
+                var firstAuth = group.Select(x => x.CollectionItem.Auth).First();
+                if (group.All(x => x.CollectionItem.Auth?.Type == firstAuth?.Type))
+                {
+                    return firstAuth;
+                }
+                return null;
+            }
+        }
+    }
+
+    private async Task RootsUnconfirmed()
+    {
+        Confirmed = false;
+        await ConfirmedChanged.InvokeAsync();
+    }
+
+    private bool CanDrop(CollectionDropItem item)
+    {
+        return !Confirmed;
+    }
+
+    public class CollectionDropItem
+    {
+        public string DropZoneId { get; set; }
+        public CollectionItem CollectionItem { get; set; }
+
+        public CollectionDropItem(CollectionItem collectionItem)
+        {
+            CollectionItem = collectionItem;
+            DropZoneId = "Discard";
+        }
+    }
+
+    public class CollectionDropZone
+    {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Name { get; set; }
+
+        public CollectionDropZone(string name)
+        {
+            Name = name;
+        }
+    }
+}

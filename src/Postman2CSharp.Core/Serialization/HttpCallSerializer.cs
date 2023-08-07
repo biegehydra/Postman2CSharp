@@ -21,7 +21,7 @@ public static class HttpCallSerializer
         string relativePath;
         try
         {
-            relativePath = Utils.ExtractRelativePath(baseUrl ?? "", call.Request.Url.Raw);
+            relativePath = Utils.ExtractRelativePath(baseUrl, call.Request.Url.Raw);
         }
         catch (ArgumentException)
         {

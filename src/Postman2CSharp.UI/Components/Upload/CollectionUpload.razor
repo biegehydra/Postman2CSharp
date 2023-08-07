@@ -1,4 +1,9 @@
-﻿<div class="f-row" style="gap: 15px; align-items: end; flex-wrap: wrap;">
+﻿@if (_collection != null && Convert.LastSavedApiClientOptions.RootDefinition == RootDefinition.Manual)
+{
+    <ManualRootDefinitionComponent @ref="_manualRootDefinitionComponent" PostmanCollection="_collection" ConfirmedChanged="StateHasChanged"  />
+}
+<br/>
+<div class="f-row" style="gap: 15px; align-items: end; flex-wrap: wrap;">
     <MudTooltip Text="Looads in a Google Maps collection to let you see how the website works with dumby data.">
         <MudButton Color="Color.Secondary" OnClick="GetTestData" Variant="Variant.Filled">Test Data</MudButton>
     </MudTooltip>
@@ -16,15 +21,29 @@
             </ButtonTemplate>
         </MudFileUpload>
     </MudTooltip>
-
-    <MudTooltip Text="Begin creating your ApiClients." Delay="300">
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Tertiary"
-                   EndIcon="@Icons.Build"
-                   OnClick="Process" Disabled="_uploadedFile == null">
-            Process
-        </MudButton>
-    </MudTooltip>
+    
+    @if (Convert.LastSavedApiClientOptions.RootDefinition == RootDefinition.Manual)
+    {
+        if (_collection == null)
+        {
+            <MudTooltip Text="Deserialize ApiClient to begin manually grouping collection." Delay="300">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Tertiary"
+                           EndIcon="@Icons.Build"
+                           OnClick="TryDeserializerApiClient" Disabled="_uploadedFile == null">
+                    Deserialize
+                </MudButton>
+            </MudTooltip>
+        }
+        else if (_manualRootDefinitionComponent != null)
+        {
+            @ProcessButton(!_manualRootDefinitionComponent.Confirmed)
+        }
+    }
+    else
+    {
+        @ProcessButton(_uploadedFile == null)
+    }
 </div>
 <br />
 @_uploadedFile?.Name
@@ -36,6 +55,8 @@
     [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
     [Parameter] public EventCallback<ApiCollection> SuccessfulUpload { get; set; }
 
+    private ManualRootDefinitionComponent? _manualRootDefinitionComponent;
+    private PostmanCollection? _collection;
     private IBrowserFile? _uploadedFile;
     private const string TestDataName = "GoogleMapsPlatform.json";
 
@@ -50,6 +71,7 @@
                 return;
             default:
                 _uploadedFile = files.FirstOrDefault();
+                _collection = null;
                 break;
         }
     }
@@ -60,37 +82,21 @@
         var httpClient = new HttpClient();
         var response = await httpClient.GetAsync("https://files.postman2csharp.com/GoogleMapsPlatform.json");
         _uploadedFile = new TestBrowserFile(await response.Content.ReadAsStreamAsync(), TestDataName);
+        _collection = null;
     }
 
-
-
-    private async Task Process()
+    private async Task<bool> TryDeserializerApiClient()
     {
         var fileStream = _uploadedFile!.OpenReadStream(300 * 1024 * 1024);
         try
         {
-            var collection = await JsonSerializer.DeserializeAsync<PostmanCollection>(fileStream, SerializerSettings.Web);
-            if (collection == null)
+            _collection = await JsonSerializer.DeserializeAsync<PostmanCollection>(fileStream, SerializerSettings.Web);
+            if (_collection == null)
             {
                 SnackBar.Value?.Add("Json could not be deserialized", Severity.Warning);
-                return;
+                return false;
             }
-
-            var apiClientGenerator = new ApiClientGenerator(collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, Convert.LastSavedApiClientOptions));
-            StartTrackingGenerator(apiClientGenerator);
-            await Task.Delay(1);
-            var apiClients = await apiClientGenerator.GenerateApiClients();
-            var apiCollection = new ApiCollection()
-            {
-                ApiClients = apiClients,
-                CollectionInfo = collection.Info
-            };
-
-            var isTestData = _uploadedFile.Name == TestDataName;
-            var dataType = isTestData ? "Test Data" : "Real Data";
-            var message = $"Generate ApiClient - {dataType}";
-            await AnalyticsInterop.TrackAction(message);
-            await SuccessfulUpload.InvokeAsync(apiCollection);
+            return true;
         }
         catch (JsonException exception)
         {
@@ -101,18 +107,66 @@
             SnackBar.Value?.Add($"Json could not be deserialized. {exception.Message}", Severity.Error);
         }
         catch (Exception exception)
-		{
-		    if (ProgressSnackbar != null)
-		    {
-		        SnackBar.Value?.Remove(ProgressSnackbar);
-		    }
-			SnackBar.Value?.Add($"Something went wrong. {exception.Message}", Severity.Error);
-		}
+        {
+            if (ProgressSnackbar != null)
+            {
+                SnackBar.Value?.Remove(ProgressSnackbar);
+            }
+            SnackBar.Value?.Add($"Something went wrong. {exception.Message}", Severity.Error);
+        }
+        return false;
+    }
+
+    private async Task OnProcessClicked()
+    {
+        if (Convert.LastSavedApiClientOptions.RootDefinition != RootDefinition.Manual)
+        {
+            if (await TryDeserializerApiClient())
+            {
+                await Process();
+            }
+        }
+        else
+        {
+            await Process();
+        }
+    }
+
+    private async Task Process()
+    {
+        if (_collection == null) return;
+        try
+        {
+            var apiClientGenerator = new ApiClientGenerator(_collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, Convert.LastSavedApiClientOptions));
+            StartTrackingGenerator(apiClientGenerator);
+            await Task.Delay(1);
+            var apiClients = await apiClientGenerator.GenerateApiClients();
+            var apiCollection = new ApiCollection()
+            {
+                ApiClients = apiClients,
+                CollectionInfo = _collection.Info
+            };
+
+            var isTestData = _uploadedFile.Name == TestDataName;
+            var dataType = isTestData ? "Test Data" : "Real Data";
+            var message = $"Generate ApiClient - {dataType}";
+            await AnalyticsInterop.TrackAction(message);
+            await SuccessfulUpload.InvokeAsync(apiCollection);
+        }
+        catch (Exception exception)
+        {
+            if (ProgressSnackbar != null)
+            {
+                SnackBar.Value?.Remove(ProgressSnackbar);
+            }
+            SnackBar.Value?.Add($"Something went wrong. {exception.Message}", Severity.Error);
+        }
         finally
         {
             _uploadedFile = null;
         }
     }
+
     private Snackbar? ProgressSnackbar { get; set; }
     private void StartTrackingGenerator(ApiClientGenerator apiClientGenerator)
     {
@@ -134,5 +188,17 @@
         });
         if (ProgressSnackbar == null) return;
         options.Snackbar = ProgressSnackbar;
+    }
+
+    private RenderFragment ProcessButton(bool disabled)
+    {
+        return @<MudTooltip Text="Begin generating ApiClients." Delay="300">
+                   <MudButton Variant="Variant.Filled"
+                              Color="Color.Tertiary"
+                              EndIcon="@Icons.Build"
+                              OnClick="OnProcessClicked" Disabled="disabled">
+                       Process
+                   </MudButton>
+               </MudTooltip>;
     }
 }
