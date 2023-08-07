@@ -6,12 +6,14 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<langversion>latest</langversion>
 
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
 		<BlazorEnableTimeZoneSupport>false</BlazorEnableTimeZoneSupport>
 		<BlazorWebAssemblyPreserveCollationData>false</BlazorWebAssemblyPreserveCollationData>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<BlazorWasmPrerenderingEnvironment>Prerendering</BlazorWasmPrerenderingEnvironment>
 		<BlazorWasmPrerenderingMode>WebAssemblyPrerendered</BlazorWasmPrerenderingMode>
-		<BlazorWasmPrerenderingKeepServer>true</BlazorWasmPrerenderingKeepServer>
+		<!--<BlazorWasmPrerenderingKeepServer>true</BlazorWasmPrerenderingKeepServer>-->
 		<BlazorWasmPrerenderingUrlPathToExplicitFetch>/Collection;</BlazorWasmPrerenderingUrlPathToExplicitFetch>
 	</PropertyGroup>
 

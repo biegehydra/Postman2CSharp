@@ -3,6 +3,8 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<RootNamespace>Xamasoft.JsonClassGenerator</RootNamespace>
 		<AssemblyName>Xamasoft.JsonClassGenerator</AssemblyName>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
 	</PropertyGroup>
 
 	<ItemGroup>
