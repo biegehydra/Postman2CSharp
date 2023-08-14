@@ -143,8 +143,8 @@ public static class HttpClientJsonExtensions
     /// <param name=""httpClient"">The <see cref=""HttpClient""/>.</param>
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static Task<T> GetJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendJsonAsync<T>(HttpMethod.Get, requestUri, content, headers, cancellationToken);
+    public static Task<T> GetJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendJsonAsync<T>(HttpMethod.Get, requestUri, content, headers, cancellationToken, jsonSerializerOptions);
 
 
     /// <summary>
@@ -156,8 +156,8 @@ public static class HttpClientJsonExtensions
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <param name=""content"">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static Task<T> PatchJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendJsonAsync<T>(HttpMethod.Patch, requestUri, content, headers, cancellationToken);
+    public static Task<T> PatchJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendJsonAsync<T>(HttpMethod.Patch, requestUri, content, headers, cancellationToken, jsonSerializerOptions);
 
     /// <summary>
     /// Sends a POST request to the specified URI, including the specified <paramref name=""content""/>
@@ -168,8 +168,8 @@ public static class HttpClientJsonExtensions
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <param name=""content"">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static Task<T> DeleteJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendJsonAsync<T>(HttpMethod.Delete, requestUri, content, headers, cancellationToken);
+    public static Task<T> DeleteJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendJsonAsync<T>(HttpMethod.Delete, requestUri, content, headers, cancellationToken, jsonSerializerOptions);
 
     /// <summary>
     /// Sends a POST request to the specified URI, including the specified <paramref name=""content""/>
@@ -180,8 +180,8 @@ public static class HttpClientJsonExtensions
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <param name=""content"">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static Task<T> PostJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendJsonAsync<T>(HttpMethod.Post, requestUri, content, headers, cancellationToken);
+    public static Task<T> PostJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendJsonAsync<T>(HttpMethod.Post, requestUri, content, headers, cancellationToken, jsonSerializerOptions);
 
     /// <summary>
     /// Sends a PUT request to the specified URI, including the specified <paramref name=""content""/>
@@ -192,8 +192,8 @@ public static class HttpClientJsonExtensions
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <param name=""content"">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static Task<T> PutJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendJsonAsync<T>(HttpMethod.Put, requestUri, content, headers, cancellationToken);
+    public static Task<T> PutJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendJsonAsync<T>(HttpMethod.Put, requestUri, content, headers, cancellationToken, jsonSerializerOptions);
 
     /// <summary>
     /// Sends an HTTP request to the specified URI, including the specified <paramref name=""content""/>
@@ -205,108 +205,104 @@ public static class HttpClientJsonExtensions
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <param name=""content"">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static async Task<T> SendJsonAsync<T>(this HttpClient httpClient, HttpMethod method, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    private static async Task<T> SendJsonAsync<T>(this HttpClient httpClient, HttpMethod method, string requestUri, object content, Dictionary<string, string>? headers, CancellationToken cancellationToken, JsonSerializerOptions? jsonSerializerOptions)
     {
-        var requestJson = JsonSerializer.Serialize(content, JsonSerializerOptions)!;
+        var requestJson = JsonSerializer.Serialize(content, jsonSerializerOptions ?? JsonSerializerOptions)!;
         var request = new HttpRequestMessage(method, requestUri)
         {
             Content = new StringContent(requestJson, Encoding.UTF8, ""application/json"")
         };
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
         if (typeof(T) == typeof(IgnoreResponse))
         {
             return default!;
         }
         else
         {
-            return await response.ReadJsonAsync<T>();
+            return await response.ReadJsonAsync<T>(jsonSerializerOptions);
         }
     }
 
 
     public static Task<HttpResponseMessage> GetAsJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendAsJsonAsync(HttpMethod.Get, requestUri, content, headers, cancellationToken);
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendAsJsonAsync(HttpMethod.Get, requestUri, content, headers, cancellationToken, jsonSerializerOptions);
 
     public static Task<HttpResponseMessage> DeleteAsJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendAsJsonAsync(HttpMethod.Delete, requestUri, content, headers, cancellationToken);
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendAsJsonAsync(HttpMethod.Delete, requestUri, content, headers, cancellationToken, jsonSerializerOptions);
 
     public static Task<HttpResponseMessage> PostAsJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendAsJsonAsync(HttpMethod.Post, requestUri, content, headers, cancellationToken);
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendAsJsonAsync(HttpMethod.Post, requestUri, content, headers, cancellationToken, jsonSerializerOptions);
 
     public static Task<HttpResponseMessage> PutAsJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendAsJsonAsync(HttpMethod.Put, requestUri, content, headers, cancellationToken);
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendAsJsonAsync(HttpMethod.Put, requestUri, content, headers, cancellationToken, jsonSerializerOptions);
 
     public static Task<HttpResponseMessage> PatchAsJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendAsJsonAsync(HttpMethod.Patch, requestUri, content, headers, cancellationToken);
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendAsJsonAsync(HttpMethod.Patch, requestUri, content, headers, cancellationToken, jsonSerializerOptions);
 
-    private static async Task<HttpResponseMessage> SendAsJsonAsync(this HttpClient httpClient, HttpMethod method, string requestUri, object content, Dictionary<string, string>? headers, CancellationToken cancellationToken)
+    private static async Task<HttpResponseMessage> SendAsJsonAsync(this HttpClient httpClient, HttpMethod method, string requestUri, object content, Dictionary<string, string>? headers, CancellationToken cancellationToken, JsonSerializerOptions? jsonSerializerOptions)
     {
-        var requestJson = JsonSerializer.Serialize(content, JsonSerializerOptions)!;
+        var requestJson = JsonSerializer.Serialize(content, jsonSerializerOptions ?? JsonSerializerOptions)!;
         var request = new HttpRequestMessage(method, requestUri)
         {
             Content = new StringContent(requestJson, Encoding.UTF8, ""application/json"")
         };
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
         return response;
     }
 
 
-    public static Task<T> GetFromJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-    => httpClient.SendFromJsonAsync<T>(HttpMethod.Get, requestUri, httpContent, headers, cancellationToken);
+    public static Task<T> GetFromJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+    => httpClient.SendFromJsonAsync<T>(HttpMethod.Get, requestUri, httpContent, headers, cancellationToken, jsonSerializerOptions);
 
-    public static Task<T> DeleteFromJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromJsonAsync<T>(HttpMethod.Delete, requestUri, httpContent, headers, cancellationToken);
+    public static Task<T> DeleteFromJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendFromJsonAsync<T>(HttpMethod.Delete, requestUri, httpContent, headers, cancellationToken, jsonSerializerOptions);
 
-    public static Task<T> PostFromJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromJsonAsync<T>(HttpMethod.Post, requestUri, httpContent, headers, cancellationToken);
+    public static Task<T> PostFromJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendFromJsonAsync<T>(HttpMethod.Post, requestUri, httpContent, headers, cancellationToken, jsonSerializerOptions);
 
-    public static Task<T> PutFromJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromJsonAsync<T>(HttpMethod.Put, requestUri, httpContent, headers, cancellationToken);
+    public static Task<T> PutFromJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendFromJsonAsync<T>(HttpMethod.Put, requestUri, httpContent, headers, cancellationToken, jsonSerializerOptions);
 
-    public static Task<T> PatchFromJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromJsonAsync<T>(HttpMethod.Patch, requestUri, httpContent, headers, cancellationToken);
+    public static Task<T> PatchFromJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendFromJsonAsync<T>(HttpMethod.Patch, requestUri, httpContent, headers, cancellationToken, jsonSerializerOptions);
 
-    private static async Task<T> SendFromJsonAsync<T>(this HttpClient httpClient, HttpMethod method, string requestUri, HttpContent content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    private static async Task<T> SendFromJsonAsync<T>(this HttpClient httpClient, HttpMethod method, string requestUri, HttpContent content, Dictionary<string, string>? headers, CancellationToken cancellationToken, JsonSerializerOptions? jsonSerializerOptions)
     {
         var request = new HttpRequestMessage(method, requestUri) { Content = content };
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.ReadJsonAsync<T>();
+        return await response.ReadJsonAsync<T>(jsonSerializerOptions);
     }
 
 
-    public static Task<T> GetFromJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromJsonAsync<T>(HttpMethod.Get, requestUri, headers, cancellationToken);
+    public static Task<T> GetFromJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendFromJsonAsync<T>(HttpMethod.Get, requestUri, headers, cancellationToken, jsonSerializerOptions);
 
-    public static Task<T> DeleteFromJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromJsonAsync<T>(HttpMethod.Delete, requestUri, headers, cancellationToken);
+    public static Task<T> DeleteFromJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendFromJsonAsync<T>(HttpMethod.Delete, requestUri, headers, cancellationToken, jsonSerializerOptions);
 
-    public static Task<T> PostFromJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromJsonAsync<T>(HttpMethod.Post, requestUri, headers, cancellationToken);
+    public static Task<T> PostFromJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendFromJsonAsync<T>(HttpMethod.Post, requestUri, headers, cancellationToken, jsonSerializerOptions);
 
-    public static Task<T> PutFromJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromJsonAsync<T>(HttpMethod.Put, requestUri, headers, cancellationToken);
+    public static Task<T> PutFromJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendFromJsonAsync<T>(HttpMethod.Put, requestUri, headers, cancellationToken, jsonSerializerOptions);
 
-    public static Task<T> PatchFromJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromJsonAsync<T>(HttpMethod.Patch, requestUri, headers, cancellationToken);
+    public static Task<T> PatchFromJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default, JsonSerializerOptions? jsonSerializerOptions = null)
+        => httpClient.SendFromJsonAsync<T>(HttpMethod.Patch, requestUri, headers, cancellationToken, jsonSerializerOptions);
 
-    private static async Task<T> SendFromJsonAsync<T>(this HttpClient httpClient, HttpMethod method, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    private static async Task<T> SendFromJsonAsync<T>(this HttpClient httpClient, HttpMethod method, string requestUri, Dictionary<string, string>? headers, CancellationToken cancellationToken, JsonSerializerOptions? jsonSerializerOptions)
     {
         var request = new HttpRequestMessage(method, requestUri);
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.ReadJsonAsync<T>();
+        return await response.ReadJsonAsync<T>(jsonSerializerOptions);
     }
 
 
@@ -333,7 +329,6 @@ public static class HttpClientJsonExtensions
         };
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
         return response;
     }
 
@@ -358,15 +353,13 @@ public static class HttpClientJsonExtensions
         var request = new HttpRequestMessage(method, requestUri);
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
-
-        response.EnsureSuccessStatusCode();
         return response;
     }
 
-    public static async Task<T> ReadJsonAsync<T>(this HttpResponseMessage response)
+    public static async Task<T> ReadJsonAsync<T>(this HttpResponseMessage response, JsonSerializerOptions? jsonSerializerOptions = null)
     {
         var stringContent = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<T>(stringContent, JsonSerializerOptions)!;
+        return JsonSerializer.Deserialize<T>(stringContent, jsonSerializerOptions ?? JsonSerializerOptions)!;
     }
 
     private static void AddHeadersToRequest(HttpRequestMessage request, Dictionary<string, string>? headers)
@@ -390,7 +383,8 @@ public class EmptyResponse { }";
 /// </summary>
 public static class NewtonsoftHttpClientJsonExtensions
 {
-    private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings();
+    private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings();
+
     /// <summary>
     /// Sends a GET request to the specified URI, and parses the JSON response body
     /// to create an object of the generic type.
@@ -399,8 +393,11 @@ public static class NewtonsoftHttpClientJsonExtensions
     /// <param name=""httpClient"">The <see cref=""HttpClient""/>.</param>
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static Task<T> GetNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Get, requestUri, content, headers, cancellationToken);
+    public static Task<T> GetNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Get, requestUri, content, headers, cancellationToken,
+            serializerSettings);
 
 
     /// <summary>
@@ -412,8 +409,11 @@ public static class NewtonsoftHttpClientJsonExtensions
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <param name=""content"">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static Task<T> PatchNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Patch, requestUri, content, headers, cancellationToken);
+    public static Task<T> PatchNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Patch, requestUri, content, headers, cancellationToken,
+            serializerSettings);
 
     /// <summary>
     /// Sends a POST request to the specified URI, including the specified <paramref name=""content""/>
@@ -424,8 +424,11 @@ public static class NewtonsoftHttpClientJsonExtensions
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <param name=""content"">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static Task<T> DeleteNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Delete, requestUri, content, headers, cancellationToken);
+    public static Task<T> DeleteNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri,
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Delete, requestUri, content, headers, cancellationToken,
+            serializerSettings);
 
     /// <summary>
     /// Sends a POST request to the specified URI, including the specified <paramref name=""content""/>
@@ -436,8 +439,11 @@ public static class NewtonsoftHttpClientJsonExtensions
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <param name=""content"">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static Task<T> PostNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Post, requestUri, content, headers, cancellationToken);
+    public static Task<T> PostNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Post, requestUri, content, headers, cancellationToken,
+            serializerSettings);
 
     /// <summary>
     /// Sends a PUT request to the specified URI, including the specified <paramref name=""content""/>
@@ -448,8 +454,11 @@ public static class NewtonsoftHttpClientJsonExtensions
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <param name=""content"">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static Task<T> PutNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Put, requestUri, content, headers, cancellationToken);
+    public static Task<T> PutNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, object content,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendNewtonsoftJsonAsync<T>(HttpMethod.Put, requestUri, content, headers, cancellationToken,
+            serializerSettings);
 
     /// <summary>
     /// Sends an HTTP request to the specified URI, including the specified <paramref name=""content""/>
@@ -461,17 +470,17 @@ public static class NewtonsoftHttpClientJsonExtensions
     /// <param name=""requestUri"">The URI that the request will be sent to.</param>
     /// <param name=""content"">Content for the request body. This will be JSON-encoded and sent as a string.</param>
     /// <returns>The response parsed as an object of the generic type.</returns>
-    public static async Task<T> SendNewtonsoftJsonAsync<T>(this HttpClient httpClient, HttpMethod method, string requestUri, object content, Dictionary<string, string>? headers, CancellationToken cancellationToken)
+    public static async Task<T> SendNewtonsoftJsonAsync<T>(this HttpClient httpClient, HttpMethod method,
+        string requestUri, object content, Dictionary<string, string>? headers, CancellationToken cancellationToken,
+        JsonSerializerSettings serializerSettings)
     {
-        var requestJson = JsonConvert.SerializeObject(content, JsonSerializerSettings);
+        var requestJson = JsonConvert.SerializeObject(content, serializerSettings ?? _jsonSerializerSettings);
         var request = new HttpRequestMessage(method, requestUri)
         {
             Content = new StringContent(requestJson, Encoding.UTF8, ""application/json"")
         };
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
-
-        response.EnsureSuccessStatusCode();
 
         if (typeof(T) == typeof(IgnoreResponse))
         {
@@ -479,34 +488,48 @@ public static class NewtonsoftHttpClientJsonExtensions
         }
         else
         {
-            return await response.ReadNewtonsoftJsonAsync<T>();
+            return await response.ReadNewtonsoftJsonAsync<T>(serializerSettings);
         }
     }
 
 
-    public static Task<HttpResponseMessage> GetAsNewtonsoftJsonAsync(this HttpClient httpClient, string requestUri, 
-        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendAsNewtonsoftJsonAsync(HttpMethod.Get, requestUri, content, headers, cancellationToken);
+    public static Task<HttpResponseMessage> GetAsNewtonsoftJsonAsync(this HttpClient httpClient, string requestUri,
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendAsNewtonsoftJsonAsync(HttpMethod.Get, requestUri, content, headers, cancellationToken,
+            serializerSettings);
 
-    public static Task<HttpResponseMessage> DeleteAsNewtonsoftJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendAsNewtonsoftJsonAsync(HttpMethod.Delete, requestUri, content, headers, cancellationToken);
+    public static Task<HttpResponseMessage> DeleteAsNewtonsoftJsonAsync(this HttpClient httpClient,
+        string requestUri,
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendAsNewtonsoftJsonAsync(HttpMethod.Delete, requestUri, content, headers, cancellationToken,
+            serializerSettings);
 
     public static Task<HttpResponseMessage> PostAsNewtonsoftJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendAsNewtonsoftJsonAsync(HttpMethod.Post, requestUri, content, headers, cancellationToken);
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendAsNewtonsoftJsonAsync(HttpMethod.Post, requestUri, content, headers, cancellationToken,
+            serializerSettings);
 
     public static Task<HttpResponseMessage> PutAsNewtonsoftJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendAsNewtonsoftJsonAsync(HttpMethod.Put, requestUri, content, headers, cancellationToken);
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendAsNewtonsoftJsonAsync(HttpMethod.Put, requestUri, content, headers, cancellationToken,
+            serializerSettings);
 
-    public static Task<HttpResponseMessage> PatchAsNewtonsoftJsonAsync(this HttpClient httpClient, string requestUri,
-        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendAsNewtonsoftJsonAsync(HttpMethod.Patch, requestUri, content, headers, cancellationToken);
+    public static Task<HttpResponseMessage> PatchAsNewtonsoftJsonAsync(this HttpClient httpClient,
+        string requestUri,
+        object content, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendAsNewtonsoftJsonAsync(HttpMethod.Patch, requestUri, content, headers, cancellationToken,
+            serializerSettings);
 
-    private static async Task<HttpResponseMessage> SendAsNewtonsoftJsonAsync(this HttpClient httpClient, HttpMethod method, string requestUri, object content, Dictionary<string, string>? headers, CancellationToken cancellationToken)
+    private static async Task<HttpResponseMessage> SendAsNewtonsoftJsonAsync(this HttpClient httpClient,
+        HttpMethod method, string requestUri, object content, Dictionary<string, string>? headers,
+        CancellationToken cancellationToken, JsonSerializerSettings serializerSettings)
     {
-        var requestJson = JsonConvert.SerializeObject(content, JsonSerializerSettings);
+        var requestJson = JsonConvert.SerializeObject(content, serializerSettings ?? _jsonSerializerSettings);
         var request = new HttpRequestMessage(method, requestUri)
         {
             Content = new StringContent(requestJson, Encoding.UTF8, ""application/json"")
@@ -514,27 +537,43 @@ public static class NewtonsoftHttpClientJsonExtensions
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
         return response;
     }
 
 
-    public static Task<T> GetFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Get, requestUri, httpContent, headers, cancellationToken);
+    public static Task<T> GetFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri,
+        HttpContent httpContent, Dictionary<string, string>? headers = null,
+        CancellationToken cancellationToken = default, JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Get, requestUri, httpContent, headers,
+            cancellationToken, serializerSettings);
 
-    public static Task<T> DeleteFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Delete, requestUri, httpContent, headers, cancellationToken);
+    public static Task<T> DeleteFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri,
+        HttpContent httpContent, Dictionary<string, string>? headers = null,
+        CancellationToken cancellationToken = default, JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Delete, requestUri, httpContent, headers,
+            cancellationToken, serializerSettings);
 
-    public static Task<T> PostFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Post, requestUri, httpContent, headers, cancellationToken);
+    public static Task<T> PostFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri,
+        HttpContent httpContent, Dictionary<string, string>? headers = null,
+        CancellationToken cancellationToken = default, JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Post, requestUri, httpContent, headers,
+            cancellationToken, serializerSettings);
 
-    public static Task<T> PutFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Put, requestUri, httpContent, headers, cancellationToken);
+    public static Task<T> PutFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri,
+        HttpContent httpContent, Dictionary<string, string>? headers = null,
+        CancellationToken cancellationToken = default, JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Put, requestUri, httpContent, headers,
+            cancellationToken, serializerSettings);
 
-    public static Task<T> PatchFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Patch, requestUri, httpContent, headers, cancellationToken);
+    public static Task<T> PatchFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri,
+        HttpContent httpContent, Dictionary<string, string>? headers = null,
+        CancellationToken cancellationToken = default, JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Patch, requestUri, httpContent, headers,
+            cancellationToken, serializerSettings);
 
-    private static async Task<T> SendFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, HttpMethod method, string requestUri, HttpContent content, Dictionary<string, string>? headers, CancellationToken cancellationToken)
+    private static async Task<T> SendFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, HttpMethod method,
+        string requestUri, HttpContent content, Dictionary<string, string>? headers,
+        CancellationToken cancellationToken, JsonSerializerSettings serializerSettings)
     {
         var request = new HttpRequestMessage(method, requestUri)
         {
@@ -543,52 +582,80 @@ public static class NewtonsoftHttpClientJsonExtensions
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
-        return await response.ReadNewtonsoftJsonAsync<T>();
+        return await response.ReadNewtonsoftJsonAsync<T>(serializerSettings);
     }
 
 
-    public static Task<T> GetFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Get, requestUri, headers, cancellationToken);
+    public static Task<T> GetFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Get, requestUri, headers, cancellationToken,
+            serializerSettings);
 
-    public static Task<T> DeleteFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Delete, requestUri, headers, cancellationToken);
+    public static Task<T> DeleteFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Delete, requestUri, headers, cancellationToken,
+            serializerSettings);
 
-    public static Task<T> PostFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Post, requestUri, headers, cancellationToken);
+    public static Task<T> PostFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Post, requestUri, headers, cancellationToken,
+            serializerSettings);
 
-    public static Task<T> PutFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Put, requestUri, headers, cancellationToken);
+    public static Task<T> PutFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Put, requestUri, headers, cancellationToken,
+            serializerSettings);
 
-    public static Task<T> PatchFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Patch, requestUri, headers, cancellationToken);
+    public static Task<T> PatchFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, string requestUri,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default,
+        JsonSerializerSettings serializerSettings = null)
+        => httpClient.SendFromNewtonsoftJsonAsync<T>(HttpMethod.Patch, requestUri, headers, cancellationToken,
+            serializerSettings);
 
-    private static async Task<T> SendFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, HttpMethod method, string requestUri, Dictionary<string, string>? headers, CancellationToken cancellationToken)
+    private static async Task<T> SendFromNewtonsoftJsonAsync<T>(this HttpClient httpClient, HttpMethod method,
+        string requestUri, Dictionary<string, string>? headers, CancellationToken cancellationToken,
+        JsonSerializerSettings serializerSettings)
     {
         var request = new HttpRequestMessage(method, requestUri);
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.ReadNewtonsoftJsonAsync<T>();
+ 
+        return await response.ReadNewtonsoftJsonAsync<T>(serializerSettings);
     }
 
 
-    public static Task<HttpResponseMessage> GetAsync(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    public static Task<HttpResponseMessage> GetAsync(this HttpClient httpClient, string requestUri,
+        HttpContent httpContent, Dictionary<string, string>? headers = null,
+        CancellationToken cancellationToken = default)
         => httpClient.SendAsync(HttpMethod.Get, requestUri, httpContent, headers, cancellationToken);
 
-    public static Task<HttpResponseMessage> PostAsync(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    public static Task<HttpResponseMessage> PostAsync(this HttpClient httpClient, string requestUri,
+        HttpContent httpContent, Dictionary<string, string>? headers = null,
+        CancellationToken cancellationToken = default)
         => httpClient.SendAsync(HttpMethod.Post, requestUri, httpContent, headers, cancellationToken);
 
-    public static Task<HttpResponseMessage> PutAsync(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    public static Task<HttpResponseMessage> PutAsync(this HttpClient httpClient, string requestUri,
+        HttpContent httpContent, Dictionary<string, string>? headers = null,
+        CancellationToken cancellationToken = default)
         => httpClient.SendAsync(HttpMethod.Put, requestUri, httpContent, headers, cancellationToken);
 
-    public static Task<HttpResponseMessage> PatchAsync(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    public static Task<HttpResponseMessage> PatchAsync(this HttpClient httpClient, string requestUri,
+        HttpContent httpContent, Dictionary<string, string>? headers = null,
+        CancellationToken cancellationToken = default)
         => httpClient.SendAsync(HttpMethod.Patch, requestUri, httpContent, headers, cancellationToken);
 
-    public static Task<HttpResponseMessage> DeleteAsync(this HttpClient httpClient, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    public static Task<HttpResponseMessage> DeleteAsync(this HttpClient httpClient, string requestUri,
+        HttpContent httpContent, Dictionary<string, string>? headers = null,
+        CancellationToken cancellationToken = default)
         => httpClient.SendAsync(HttpMethod.Delete, requestUri, httpContent, headers, cancellationToken);
 
-    private static async Task<HttpResponseMessage> SendAsync(this HttpClient httpClient, HttpMethod method, string requestUri, HttpContent httpContent, Dictionary<string, string>? headers, CancellationToken cancellationToken)
+    private static async Task<HttpResponseMessage> SendAsync(this HttpClient httpClient, HttpMethod method,
+        string requestUri, HttpContent httpContent, Dictionary<string, string>? headers,
+        CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(method, requestUri)
         {
@@ -596,27 +663,33 @@ public static class NewtonsoftHttpClientJsonExtensions
         };
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
+  
         return response;
     }
 
 
-    public static Task<HttpResponseMessage> GetAsync(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    public static Task<HttpResponseMessage> GetAsync(this HttpClient httpClient, string requestUri,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
         => httpClient.SendAsync(HttpMethod.Get, requestUri, headers, cancellationToken);
 
-    public static Task<HttpResponseMessage> PostAsync(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    public static Task<HttpResponseMessage> PostAsync(this HttpClient httpClient, string requestUri,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
         => httpClient.SendAsync(HttpMethod.Post, requestUri, headers, cancellationToken);
 
-    public static Task<HttpResponseMessage> PutAsync(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    public static Task<HttpResponseMessage> PutAsync(this HttpClient httpClient, string requestUri,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
         => httpClient.SendAsync(HttpMethod.Put, requestUri, headers, cancellationToken);
 
-    public static Task<HttpResponseMessage> PatchAsync(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    public static Task<HttpResponseMessage> PatchAsync(this HttpClient httpClient, string requestUri,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
         => httpClient.SendAsync(HttpMethod.Patch, requestUri, headers, cancellationToken);
 
-    public static Task<HttpResponseMessage> DeleteAsync(this HttpClient httpClient, string requestUri, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    public static Task<HttpResponseMessage> DeleteAsync(this HttpClient httpClient, string requestUri,
+        Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
         => httpClient.SendAsync(HttpMethod.Delete, requestUri, headers, cancellationToken);
 
-    private static async Task<HttpResponseMessage> SendAsync(this HttpClient httpClient, HttpMethod method, string requestUri, Dictionary<string, string>? headers, CancellationToken cancellationToken)
+    private static async Task<HttpResponseMessage> SendAsync(this HttpClient httpClient, HttpMethod method,
+        string requestUri, Dictionary<string, string>? headers, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(method, requestUri);
         AddHeadersToRequest(request, headers);
@@ -626,10 +699,11 @@ public static class NewtonsoftHttpClientJsonExtensions
         return response;
     }
 
-    public static async Task<T> ReadNewtonsoftJsonAsync<T>(this HttpResponseMessage response)
+    public static async Task<T> ReadNewtonsoftJsonAsync<T>(this HttpResponseMessage response,
+        JsonSerializerSettings serializerSettings = null)
     {
         var stringContent = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<T>(stringContent, JsonSerializerSettings);
+        return JsonConvert.DeserializeObject<T>(stringContent, serializerSettings ?? _jsonSerializerSettings);
     }
 
     private static void AddHeadersToRequest(HttpRequestMessage request, Dictionary<string, string>? headers)
@@ -642,7 +716,6 @@ public static class NewtonsoftHttpClientJsonExtensions
             }
         }
     }
-
     class IgnoreResponse { }
 }
 public class EmptyRequest { }
