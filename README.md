@@ -48,7 +48,7 @@ Both the website and core library are open source so feel free to contribute or 
 
 ## Road Map
 
-As of 8=14=2023 the project is reaching a stable state. The ApiClient generator itself has reached a mature state and will likely not have many changes to its Api. I only have a few ideas left on improvement to this project.
+As of 8-14-2023 the project is reaching a stable state. The ApiClient generator itself has reached a mature state and will likely not have many changes to its Api. I only have a few ideas left on improvement to this project.
 
 * Add more documentation in code and on website
 * Improve user interface
