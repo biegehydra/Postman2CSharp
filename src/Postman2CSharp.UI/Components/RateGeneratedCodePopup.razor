@@ -1,0 +1,48 @@
+﻿<style>
+    .mud-snackbar {
+        max-width: 800px;
+    }
+</style>
+@if (ApiClient != null)
+{
+    <div class="f-column aic" style="gap: 20px;">
+        <MudText>How would you rate the code generated for @($"{ApiClient.Name}.cs")</MudText>
+            @RatingComponent(x => _ratings.ApiClientCodeRating = x)
+            @if (_ratings.ApiClientCodeRating.HasValue)
+        {
+            <MudText>How would you rate the classes generated for requests, responses, query parameters, and form data?</MudText>
+            @RatingComponent(x => _ratings.ClassCodeRating = x)
+        }
+        @if (_ratings.ClassCodeRating.HasValue)
+        {
+            <MudText>Any additional comments, suggestions, or feedback?</MudText>
+            <MudTextField @bind-Value="_ratings.Comment" Lines="3"></MudTextField>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit">Submit></MudButton>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public Core.Models.ApiClient? ApiClient { get; set; }
+    [Parameter] public AnalyticsInterop? AnalyticsInterop { get; set; }
+    [Parameter] public EventCallback<Postman2CSharpCodeGenerationRating> OnSubmit { get; set; }]
+    private Postman2CSharpCodeGenerationRating _ratings = new();
+
+    public class Postman2CSharpCodeGenerationRating
+    {
+        public int? ApiClientCodeRating { get; set; }
+        public int? ClassCodeRating { get; set; }
+        public string? Comment { get; set; }
+    }
+
+    private RenderFragment RatingComponent(Action<int> valueChanged)
+    {
+        return @<MudRating SelectedValueChanged="valueChanged"></MudRating>;
+    }
+
+    private async Task Submit()
+    {
+        await AnalyticsInterop?. // upload as gtag event
+    }
+}
