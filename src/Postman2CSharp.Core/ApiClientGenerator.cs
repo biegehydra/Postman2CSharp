@@ -159,7 +159,15 @@ public class ApiClientGenerator
         var allCallNames = rootItem.RequestItems()?.Select(x => x.Name).ToList() ?? new ();
         var commonBase = Utils.GetCommonBase(allCallNames);
         commonBase ??= Utils.GetLongestSubstring(allCallNames);
-        var normalizedNameSpace = Utils.NormalizeToCsharpPropertyName(commonBase ?? Options.CSharpCodeWriterConfig.Namespace);
+        string normalizedNameSpace;
+        if (Options.ApiClientOptions.RootDefinition == RootDefinition.Manual || commonBase == null)
+        {
+            normalizedNameSpace = Utils.NormalizeToCsharpPropertyName(rootItem.Name);
+        }
+        else
+        {
+            normalizedNameSpace = Utils.NormalizeToCsharpPropertyName(commonBase);
+        }
         var name = normalizedNameSpace + "ApiClient";
         var leastPossibleUri = rootItem.FindLeastPossibleUri();
 

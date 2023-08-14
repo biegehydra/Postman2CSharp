@@ -3,7 +3,7 @@
 <div class="f-row" style="align-items: center;" >
     <MudText Typo="Typo.h5">Group your Roots</MudText>
     <MudSpacer></MudSpacer>
-    <MudButton Variant="Variant.Filled" Color="Color.Secondary" EndIcon="@Icons.Add" Disabled="Confirmed" OnClick="CreateNewDropZone" >New Root</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Secondary" EndIcon="@Icons.Add" Disabled="Confirmed" OnClick="CreateNewDropZone" >New ApiClient</MudButton>
     <MudSpacer></MudSpacer>
     @if (Confirmed)
     {
@@ -16,7 +16,7 @@
 </div>
 <ul class="normal">
     <li>@InlineEmphasis("Drag Items"): Represents folders in the collection that have requests</li>
-    <li>@InlineEmphasis("Drop Zone"): What the folders and their requests will be grouped into.</li>
+    <li>@InlineEmphasis("Drop Zone"): The ApiClient that the drag items will be grouped into.</li>
 </ul>
 <Break Size="P2CsSize.ExtraSmall" />
 <p><b>Note:</b> Authorization may be lost. Grouping requests with different authorities will result in less clean code.</p>
@@ -92,7 +92,7 @@
     {
         if (DropZones != null)
         {
-            var newName = Utils.GenerateUniqueName("New Root", DropZones.Select(x => x.Name).ToList());
+            var newName = Utils.GenerateUniqueName("New ApiClient", DropZones.Select(x => x.Name).ToList());
             DropZones.Add(new CollectionDropZone(newName));
         }
     }
@@ -117,7 +117,7 @@
             {
                 var newCollectionItem = new CollectionItem()
                 {
-                    Name = group.Key,
+                    Name = DropZones!.First(x => x.Id == group.Key).Name,
                     Item = group.SelectMany(x => x.CollectionItem.Item ?? new ()).ToList(),
                     Auth = GetAuth(group),
                     Description = null
