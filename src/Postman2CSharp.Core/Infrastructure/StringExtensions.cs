@@ -1,9 +1,32 @@
 ﻿using System;
+using System.Text;
 
 namespace Postman2CSharp.Core.Infrastructure
 {
     public static class StringExtensions
     {
+        public static string SplitOnCapitalLetters(this string input)
+        {
+            var sb = new StringBuilder();
+            var i = 0;
+            foreach (var character in input)
+            {
+                if (i == 0)
+                {
+                    sb.Append(char.ToUpper(character));
+                    i++;
+                    continue;
+                }
+                if (char.IsUpper(character) && input[i - 1] != ' ')
+                {
+                    sb.Append(' ');
+                }
+                sb.Append(character);
+                i++;
+            }
+            return sb.ToString();
+        }
+
         public static LineSplitEnumerator SplitLines(this string str)
         {
             // LineSplitEnumerator is a struct so there is no allocation here
