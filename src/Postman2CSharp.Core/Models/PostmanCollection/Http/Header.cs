@@ -23,7 +23,8 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Http
                 return false;
             if (lowerKey == "content-type" && lowerValue == "application/x-www-form-urlencoded")
                 return false;
-            if (lowerKey == "content-length")
+            if (lowerKey is "content-length" or "user-agent" or  "accept-language" or "cache-control" or "sec-ch-ua"
+                or "sec-fetch-mode" or "upgrade-insecure-requests" || string.IsNullOrWhiteSpace(lowerKey))
                 return false;
             return true;
         }
