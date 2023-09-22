@@ -580,21 +580,17 @@ public class ApiClientGenerator
             DataType.SimpleFormData => "IFormData",
             _ => throw new ArgumentException("Invalid data type")
         };
-        var usings = $@"
-using System;
+        var rootStr = $@"using System;
 using System.Collections.Generic;
 using System.Net.Http;
-";
-
-        var namespaceDeclaration = $"namespace {nameSpace}";
-
-        SyntaxTree tree = CSharpSyntaxTree.ParseText(usings + $@"
-{namespaceDeclaration}
+namespace {nameSpace}
 {{
     public class {formClassName} : {formDataInterface}
     {{
     }}
-}}");
+}}";
+
+        SyntaxTree tree = CSharpSyntaxTree.ParseText(rootStr);
         List<string> uniqueKeys = new ();
         var root = (CompilationUnitSyntax)tree.GetRoot();
 

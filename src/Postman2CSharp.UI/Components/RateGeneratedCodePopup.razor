@@ -7,16 +7,16 @@
 {
     <div class="f-column aic" style="gap: 20px;">
         <MudText>How would you rate the code generated for @($"{ApiClient.Name}.cs")</MudText>
-            @RatingComponent(x => _ratings.ApiClientCodeRating = x)
-            @if (_ratings.ApiClientCodeRating.HasValue)
+            @RatingComponent(x => _rating.ApiClientCodeRating = x)
+            @if (_rating.ApiClientCodeRating.HasValue)
         {
             <MudText>How would you rate the classes generated for requests, responses, query parameters, and form data?</MudText>
-            @RatingComponent(x => _ratings.ClassCodeRating = x)
+            @RatingComponent(x => _rating.ClassCodeRating = x)
         }
-        @if (_ratings.ClassCodeRating.HasValue)
+        @if (_rating.ClassCodeRating.HasValue)
         {
             <MudText>Any additional comments, suggestions, or feedback?</MudText>
-            <MudTextField @bind-Value="_ratings.Comment" Lines="3"></MudTextField>
+            <MudTextField @bind-Value="_rating.Comment" Lines="3"></MudTextField>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit">Submit></MudButton>
         }
     </div>
@@ -26,8 +26,8 @@
     [Parameter] public string? Message { get; set; }
     [Parameter] public Core.Models.ApiClient? ApiClient { get; set; }
     [Parameter] public AnalyticsInterop? AnalyticsInterop { get; set; }
-    [Parameter] public EventCallback<Postman2CSharpCodeGenerationRating> OnSubmit { get; set; }]
-    private Postman2CSharpCodeGenerationRating _ratings = new();
+    [Parameter] public EventCallback<Postman2CSharpCodeGenerationRating> OnSubmit { get; set; }
+    private Postman2CSharpCodeGenerationRating _rating = new();
 
     public class Postman2CSharpCodeGenerationRating
     {
@@ -43,6 +43,9 @@
 
     private async Task Submit()
     {
-        await AnalyticsInterop?. // upload as gtag event
+        if (AnalyticsInterop != null)
+        {
+            await AnalyticsInterop.TrackEvent("rating"!, "Action"!, JsonSerializer.Serialize(_rating)); 
+        }
     }
 }
