@@ -14,30 +14,26 @@ namespace Xamasoft.JsonClassGenerator
     public class JsonFieldInfo
     {
         private string DebuggerDisplay => $"JMN: {JsonMemberName}, MN: {MemberName}, TOg: {Type?.OriginalName}, TNas: {Type?.NewAssignedName}";
-        public JsonFieldInfo(
-            JsonClassGenerator generator,
-            string                    jsonMemberName,
-            JsonType                  type,
-            IReadOnlyList<object>     examples
-        )
+        public JsonFieldInfo(string jsonMemberName, JsonType type, IReadOnlyList<object> examples)
         {
-            this.generator             = generator       ?? throw new ArgumentNullException(nameof(generator));
-            this.JsonMemberName        = jsonMemberName  ?? throw new ArgumentNullException(nameof(jsonMemberName));
-            this.MemberName            = jsonMemberName;
-            this.ContainsSpecialChars  = IsContainsSpecialChars(this.MemberName);        
-            this.Type     = type ?? throw new ArgumentNullException(nameof(type));
+            this.JsonMemberName = jsonMemberName ?? throw new ArgumentNullException(nameof(jsonMemberName));
+            this.MemberName = jsonMemberName;
+            this.ContainsSpecialChars = IsContainsSpecialChars(this.MemberName);        
+            this.Type = type ?? throw new ArgumentNullException(nameof(type));
             this.Examples = examples ?? Array.Empty<object>();
         }
-
-        private readonly JsonClassGenerator generator;
+        public XmlType XmlType => JsonMemberName.Contains("@") 
+            ? XmlType.Attribute 
+            : JsonMemberName.Contains("#text") 
+            ? XmlType.Text 
+            : XmlType.Element;
 
         /// <summary>Pascal-cased.</summary>
-        public string                MemberName     { get; }
+        public string MemberName { get; }
         /// <summary>Normally camelCased.</summary>
-        public string                JsonMemberName { get; }
-        public JsonType              Type           { get; }
-        public IReadOnlyList<object> Examples       { get; }
-
+        public string JsonMemberName { get; }
+        public JsonType Type { get; }
+        public IReadOnlyList<object> Examples { get; }
         public bool ContainsSpecialChars { get; set; }
 
         private static bool IsContainsSpecialChars(string text)
@@ -61,5 +57,11 @@ namespace Xamasoft.JsonClassGenerator
             return string.Join(separator: ", ", values: this.Examples.Take(5).Select(x => JsonConvert.SerializeObject(x)));
         }
 
+    }
+    public enum XmlType
+    {
+        Element,
+        Attribute,
+        Text
     }
 }

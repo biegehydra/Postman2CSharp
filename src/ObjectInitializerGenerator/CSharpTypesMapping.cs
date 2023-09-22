@@ -39,11 +39,19 @@ namespace ObjectInitializerGenerator
 
             { "char", "\'c\'"},
 
+            { "object", "new { }" },
+            { "object?", "new { }" }
+
         };
 
         static internal string Map(string type)
         {
             return Mappings[type];
+        }
+
+        static internal bool MappingsContainsKey(string type)
+        {
+            return Mappings.ContainsKey(type);
         }
 
         static internal string MapArray(ObjectModel type)

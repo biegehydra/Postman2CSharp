@@ -2,10 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -93,27 +95,47 @@ namespace Xamasoft.JsonClassGenerator
         {
             JObject[] examples = null;
             bool rootWasArray = false;
+            bool isXml = false;
             try
             {
-                using (StringReader sr = new StringReader(jsonInput))
-                using (JsonTextReader reader = new JsonTextReader(sr))
-                {
-                    JToken json = JToken.ReadFrom(reader);
-                    if (json is JArray jArray && (jArray.Count == 0 || jArray.All(el => el is JObject)))
-                    {
-                        rootWasArray = true;
-                        examples = jArray.Cast<JObject>().ToArray();
-                    }
-                    else if (json is JObject jObject)
-                    {
-                        examples = new[] { jObject };
-                    }
-                }
+                examples = GetExamples(jsonInput);
+            }
+            catch (JsonReaderException ex)
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(jsonInput);
+                jsonInput = JsonConvert.SerializeXmlNode(doc);
+                examples = GetExamples(jsonInput);
+                isXml = true;
             }
             catch (Exception ex)
             {
                 errorMessage = "Exception: " + ex.Message;
                 throw;
+            }
+
+            if (examples == null)
+            {
+                throw new UnreachableException("??");
+            }
+
+            JObject[] GetExamples(string str)
+            {
+                using (StringReader sr = new StringReader(jsonInput))
+                using (JsonTextReader reader = new JsonTextReader(sr))
+                {
+                    JToken json = JToken.ReadFrom(reader);
+                    if (json is JArray jArray && ( jArray.Count == 0 || jArray.All(el => el is JObject) ))
+                    {
+                        rootWasArray = true;
+                        return jArray.Cast<JObject>().ToArray();
+                    }
+                    else if (json is JObject jObject)
+                    {
+                        return new[] { jObject };
+                    }
+                }
+                return null;
             }
 
             try
@@ -146,7 +168,7 @@ namespace Xamasoft.JsonClassGenerator
                 }
                 else
                 {
-                    CodeWriter.WriteClassesToFile(builder, this.Types, rootWasArray);
+                    CodeWriter.WriteClassesToFile(builder, this.Types, rootWasArray, isXml);
                 }
 
                 errorMessage = String.Empty;
@@ -340,12 +362,7 @@ namespace Xamasoft.JsonClassGenerator
             }
 
             type.Fields = jsonFields
-                .Select(x => new JsonFieldInfo(
-                    generator          : this,
-                    jsonMemberName     : x.Key,
-                    type               : x.Value,
-                    examples           : fieldExamples[x.Key])
-                )
+                .Select(x => new JsonFieldInfo(x.Key, x.Value, fieldExamples[x.Key]))
                 .ToList();
 
             if (!string.IsNullOrEmpty(type.NewAssignedName))

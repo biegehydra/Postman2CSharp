@@ -91,11 +91,11 @@ namespace ObjectInitializerGenerator
                             break;
                         case SyntaxKind.IdentifierName: // Classes, Guid, Boolean, String
                             {
-                                try // Boolean, Guid, String classes
+                                if (CSharpTypesMapping.MappingsContainsKey(propertyModel.PropertyType))
                                 {
                                     BuilderWriteMember(propertyModel.SyntaxName, CSharpTypesMapping.Map(propertyModel.PropertyType), accessorList);
                                 }
-                                catch (Exception) // Custom Classes
+                                else
                                 {
                                     bool checkIfTypeExist = this.objectModels.Exists(p => p.SyntaxName == propertyModel.PropertyType);
                                     var propertyClass = this.objectModels.FirstOrDefault(p => p.SyntaxName == propertyModel.PropertyType);

@@ -45,8 +45,6 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
 
         public bool IsReservedKeyword(string word) => _reservedKeywords.Contains(word ?? string.Empty);
 
-        IReadOnlyCollection<string> ICodeWriter.ReservedKeywords => _reservedKeywords;
-
         public string GetFieldDescription(JsonType type, JsonFieldInfo fieldInfo)
         {
             return type.GetFieldDescription(fieldInfo.JsonMemberName);
@@ -108,7 +106,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             }
         }
 
-        public void WriteClassesToFile(StringBuilder sw, IEnumerable<JsonType> types, bool rootIsArray = false)
+        public void WriteClassesToFile(StringBuilder sw, IEnumerable<JsonType> types, bool rootIsArray = false, bool isXml = false)
         {
             Boolean inNamespace = false;
             Boolean rootNamespace = false;
@@ -130,7 +128,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
                     rootNamespace = type.IsRoot;
                 }
 
-                this.WriteClass(sw, type);
+                this.WriteClass(sw, type, isXml);
             }
 
             if (config.HasNamespace && inNamespace)
@@ -182,7 +180,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             sw.AppendLine("}");
         }
 
-        public void WriteClass(StringBuilder sw, JsonType type)
+        public void WriteClass(StringBuilder sw, JsonType type, bool isXml)
         {
             if (type.IsRoot)
             {
@@ -196,14 +194,18 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             const string visibility = "public";
 
             var className = type.NewAssignedName;
+            if (isXml)
+            {
+                sw.AppendFormat($"[XmlRoot(ElementName=\"{className}\")]{Environment.NewLine}");
+            }
             if (config.OutputType == OutputTypes.ImmutableRecord)
             {
-                sw.AppendFormat(indentTypes + "{0} record {1}({2}", visibility, className, Environment.NewLine);
+                sw.Append(indentTypes + $"{visibility} record {className}({Environment.NewLine}");
             }
             else
             {
-                sw.AppendFormat(indentTypes + "{0} class {1}{2}", visibility, className, Environment.NewLine);
-                sw.AppendLine  (indentTypes + "{");
+                sw.Append(indentTypes + $"{visibility} class {className}({Environment.NewLine}");
+                sw.AppendLine(indentTypes + "{");
             }
 
 #if CAN_SUPRESS
@@ -223,10 +225,10 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             {
                 if (config.OutputType == OutputTypes.ImmutableClass)
                 {
-                    this.WriteClassConstructor(sw, type, indentMembers: indentMembers, indentBodies: indentBodies);
+                    this.WriteClassConstructor(sw, type, indentMembers: indentMembers, indentBodies: indentBodies, isXml);
                 }
 
-                this.WriteClassMembers(sw, type, indentMembers);
+                this.WriteClassMembers(sw, type, indentMembers, isXml);
             }
 #if CAN_SUPPRESS
             if (shouldSuppressWarning)
@@ -249,7 +251,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             sw.AppendLine();
         }
 
-        public void WriteClassMembers(StringBuilder sw, JsonType type, string indentMembers)
+        public void WriteClassMembers(StringBuilder sw, JsonType type, string indentMembers, bool isXml)
         {
             bool first = true;
             foreach (JsonFieldInfo field in type.Fields)
@@ -261,7 +263,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
                 
                 classPropertyName = this.CheckSyntax(classPropertyName);
 
-                string propertyAttribute = this.GetCSharpJsonAttributeCode(field);
+                string propertyAttribute = this.GetCSharpJsonAttributeCode(field, isXml);
 
                 // If we are using record types and this is not the first iteration, add a comma and newline to the previous line
                 // this is required because every line except the last should end with a comma
@@ -406,7 +408,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             };
         }
 
-        private void WriteClassConstructor(StringBuilder sw, JsonType type, string indentMembers, string indentBodies)
+        private void WriteClassConstructor(StringBuilder sw, JsonType type, string indentMembers, string indentBodies, bool isXml)
         {
             // Write an empty constructor on a single-line:
             if (type.Fields.Count == 0)
@@ -448,7 +450,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
 
                     sw.Append(indentBodies);
 
-                    string attribute = this.GetCSharpJsonAttributeCode(field);
+                    string attribute = this.GetCSharpJsonAttributeCode(field, isXml);
                     if (!string.IsNullOrEmpty(attribute) && config.AttributeLibrary == JsonLibrary.NewtonsoftJson)
                     {
                         sw.Append(attribute);
@@ -563,18 +565,40 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
                 return "    "; // 4x
             }
         }
-        private string GetCSharpJsonAttributeCode(JsonFieldInfo field)
+        private string GetCSharpJsonAttributeCode(JsonFieldInfo field, bool isXml)
         {
             if (field is null) throw new ArgumentNullException(nameof(field));
 
             if (this.UsePropertyAttribute(field))
             {
-                bool usingRecordTypes =  this.config.OutputType == OutputTypes.ImmutableRecord;
-                string attributeTarget = usingRecordTypes ? "property: " : string.Empty;
-
-                switch (config.AttributeLibrary)
+                if (isXml)
                 {
-                    case JsonLibrary.NewtonsoftJson:
+                    bool usingRecordTypes =  this.config.OutputType == OutputTypes.ImmutableRecord;
+                    string attributeTarget = usingRecordTypes ? "property: " : string.Empty;
+
+                    switch (field.XmlType)
+                    {
+                        case XmlType.Element:
+                            return $"[{attributeTarget}XmlElement(ElementName=\"{field.JsonMemberName}\")]";
+                            break;
+                        case XmlType.Attribute:
+                            return $"[{attributeTarget}XmlAttribute(AttributeName=\"{field.JsonMemberName[1..]}\")]";
+                            break;
+                        case XmlType.Text:
+                            return $"[{attributeTarget}XmlText]";
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+                else
+                {
+                    bool usingRecordTypes =  this.config.OutputType == OutputTypes.ImmutableRecord;
+                    string attributeTarget = usingRecordTypes ? "property: " : string.Empty;
+
+                    switch (config.AttributeLibrary)
+                    {
+                        case JsonLibrary.NewtonsoftJson:
                         {
                             if (config.NullValueHandlingIgnore)
                                 return $"[{attributeTarget}JsonProperty(\"{field.JsonMemberName}\", NullValueHandling = NullValueHandling.Ignore)]";
@@ -582,20 +606,21 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
                                 return $"[{attributeTarget}JsonProperty(\"{field.JsonMemberName}\")]";
                         }
 
-                    case JsonLibrary.SystemTextJson:
-                        return $"[{attributeTarget}JsonPropertyName(\"{field.JsonMemberName}\")]";
+                        case JsonLibrary.SystemTextJson:
+                            return $"[{attributeTarget}JsonPropertyName(\"{field.JsonMemberName}\")]";
 
-                    //case JsonLibrary.NewtonsoftAndSystemTextJson:
-                    //    {
-                    //        string newtonsoftAttribute =  $"[{attributeTarget}JsonProperty(\"{field.JsonMemberName}\")]";
-                    //        if (config.NullValueHandlingIgnore) {
-                    //            newtonsoftAttribute = $"[{attributeTarget}JsonProperty(\"{field.JsonMemberName}\", NullValueHandling = NullValueHandling.Ignore)]";
-                    //        }
-                    //            return newtonsoftAttribute + Environment.NewLine + $"        [{attributeTarget}JsonPropertyName(\"{field.JsonMemberName}\")]";
-                    //    }
+                        //case JsonLibrary.NewtonsoftAndSystemTextJson:
+                        //    {
+                        //        string newtonsoftAttribute =  $"[{attributeTarget}JsonProperty(\"{field.JsonMemberName}\")]";
+                        //        if (config.NullValueHandlingIgnore) {
+                        //            newtonsoftAttribute = $"[{attributeTarget}JsonProperty(\"{field.JsonMemberName}\", NullValueHandling = NullValueHandling.Ignore)]";
+                        //        }
+                        //            return newtonsoftAttribute + Environment.NewLine + $"        [{attributeTarget}JsonPropertyName(\"{field.JsonMemberName}\")]";
+                        //    }
 
-                    default:
-                        throw new InvalidOperationException("Unrecognized " + nameof(config.AttributeLibrary) + " value: " + config.AttributeLibrary);
+                        default:
+                            throw new InvalidOperationException("Unrecognized " + nameof(config.AttributeLibrary) + " value: " + config.AttributeLibrary);
+                    }
                 }
             }
             else
