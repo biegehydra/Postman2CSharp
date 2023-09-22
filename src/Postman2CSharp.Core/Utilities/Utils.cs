@@ -51,6 +51,13 @@ public static class Utils
 
         var result = string.Join(string.Empty, words);
 
+        result = Regex.Replace(result, @"^\d+", "");
+
+        if (string.IsNullOrWhiteSpace(result))
+        {
+            return string.Empty;
+        }
+
         if (propertyType != CsharpPropertyType.Public && !string.IsNullOrEmpty(result))
         {
             result = char.ToLowerInvariant(result[0]) + result[1..];
