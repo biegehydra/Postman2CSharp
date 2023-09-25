@@ -1,0 +1,9 @@
+﻿@namespace CodeBeamMudExtensions
+@inherits MudComponentBase
+
+<div class="@Classname" style="@Style">
+    @if (!StepIsNotActive)
+    {
+        @ChildContent
+    }
+</div>
