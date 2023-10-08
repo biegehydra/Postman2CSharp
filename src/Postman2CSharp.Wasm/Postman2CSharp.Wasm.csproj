@@ -19,8 +19,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="BlazorWasmPreRendering.Build" Version="2.0.0-preview.9" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.10" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.10" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.11" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.11" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -64,7 +64,6 @@
 		<BlazorWebAssemblyLazyLoad Include="System.Threading.Thread.dll" />
 		<BlazorWebAssemblyLazyLoad Include="System.Threading.ThreadPool.dll" />
 		<BlazorWebAssemblyLazyLoad Include="System.Xml.Linq.dll" />
-		<BlazorWebAssemblyLazyLoad Include="System.Xml.ReaderWriter.dll" />
 		<BlazorWebAssemblyLazyLoad Include="System.Xml.XDocument.dll" />
 		<BlazorWebAssemblyLazyLoad Include="System.Xml.XPath.XDocument.dll" />
 	</ItemGroup>

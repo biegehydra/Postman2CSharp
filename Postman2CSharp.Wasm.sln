@@ -14,9 +14,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObjectInitializerGenerator"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postman2CSharp.UI", "src\Postman2CSharp.UI\Postman2CSharp.UI.csproj", "{3C80F993-A310-4261-A565-7989725CCAC0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postman2CSharp.Server", "src\Postman2CSharp.Server\Postman2CSharp.Server\Postman2CSharp.Server.csproj", "{4699523E-A8D5-4A37-8BA5-BDD5512ABCCB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postman2CSharp.Wasm", "src\Postman2CSharp.Wasm\Postman2CSharp.Wasm.csproj", "{FE8436C3-463A-4FFC-8074-10C7A3A71525}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postman2CSharp.Server", "src\Postman2CSharp.Server\Postman2CSharp.Server.csproj", "{8AB15533-326D-4253-9D45-CF7F8A296D2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,14 +44,14 @@ Global
 		{3C80F993-A310-4261-A565-7989725CCAC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C80F993-A310-4261-A565-7989725CCAC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C80F993-A310-4261-A565-7989725CCAC0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4699523E-A8D5-4A37-8BA5-BDD5512ABCCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4699523E-A8D5-4A37-8BA5-BDD5512ABCCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4699523E-A8D5-4A37-8BA5-BDD5512ABCCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4699523E-A8D5-4A37-8BA5-BDD5512ABCCB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FE8436C3-463A-4FFC-8074-10C7A3A71525}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FE8436C3-463A-4FFC-8074-10C7A3A71525}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE8436C3-463A-4FFC-8074-10C7A3A71525}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE8436C3-463A-4FFC-8074-10C7A3A71525}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AB15533-326D-4253-9D45-CF7F8A296D2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AB15533-326D-4253-9D45-CF7F8A296D2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AB15533-326D-4253-9D45-CF7F8A296D2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AB15533-326D-4253-9D45-CF7F8A296D2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
