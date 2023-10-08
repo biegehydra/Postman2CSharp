@@ -9,6 +9,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Postman2CSharp.UI\Postman2CSharp.UI.csproj" />
+		<ProjectReference Include="..\Postman2CSharp.UI\Postman2CSharp.UI.csproj" />
 	</ItemGroup>
 </Project>
