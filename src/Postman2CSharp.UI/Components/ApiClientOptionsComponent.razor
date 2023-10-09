@@ -70,10 +70,6 @@ has no effect since only the first success response is saved when the api client
 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
 <MudText Class="setting-section-header" Typo="Typo.h5">Function Configurations</MudText>
 <MudGrid Spacing="3">
-    <AdvancedSettingItem Size="P2CsSize" ToolTip="Each request in the generated ApiClient will call EnsureSuccessStatusCode() on the HttpResponseMessage before deserializing or returning the response stream.">
-         <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudCheckBox>
-    </AdvancedSettingItem>
-
     <AdvancedSettingItem Size="P2CsSize" ToolTip="@(@"All actual ""path variables"" (/:pathVariable/) are automatically treated as function parameters, but collection variables in paths (/{{variable}}/) will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
          <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudCheckBox>
     </AdvancedSettingItem>
@@ -128,16 +124,16 @@ hood of an error in generated code (minor issues usually) and increase the likel
     var toolTipColor = Color.Warning;
     var toolTipVisible = false;
     string toolTipMessage = "";
-    if (!Equals(_dirtyApiClientOptions, ApiClientOptions))
+    if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions))
     {
         toolTipColor = Color.Warning;
         toolTipVisible = true;
         toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
     }
     <div class="f-row" style="margin-top: 25px; gap: 20px;" >
-        <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="Equals(_dirtyApiClientOptions, ApiClientOptions)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
+        <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
         <MudTooltip Text="Resets settings to default values">
-            <MudButton Disabled="Equals(ApiClientOptions, new ApiClientOptions())" Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { _dirtyApiClientOptions = new ApiClientOptions();  }">Reset to default</MudButton>
+            <MudButton Disabled="ApiClientOptions.ConfigsEqual(ApiClientOptions, new ApiClientOptions())" Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { _dirtyApiClientOptions = new ApiClientOptions();  }">Reset to default</MudButton>
         </MudTooltip>
         @if (toolTipVisible)
         {
@@ -170,7 +166,7 @@ hood of an error in generated code (minor issues usually) and increase the likel
         get => _apiClientOptions;
         set
         {
-            if (Equals(_apiClientOptions, value))
+            if (ApiClientOptions.ConfigsEqual(_apiClientOptions, value))
             {
                 return;
             }
@@ -183,7 +179,7 @@ hood of an error in generated code (minor issues usually) and increase the likel
 
     protected override void OnParametersSet()
     {
-        if (!Equals(_dirtyApiClientOptions, ApiClientOptions))
+        if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions))
         {
             SetApiClientOptions(ApiClientOptions);
         }
@@ -191,7 +187,7 @@ hood of an error in generated code (minor issues usually) and increase the likel
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (AutoSave && !Equals(_dirtyApiClientOptions, ApiClientOptions))
+        if (AutoSave && !ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions))
         {
             SetApiClientOptions(_dirtyApiClientOptions);
         }
@@ -222,29 +218,6 @@ hood of an error in generated code (minor issues usually) and increase the likel
     }
 
     private static ApiClientOptions DefaultOptions() => new();
-    public static bool Equals(ApiClientOptions options1, ApiClientOptions options2)
-    {
-        var allRemovedDisabledMatch = options1.RemoveDisabled.Count == options2.RemoveDisabled.Count && options1.RemoveDisabled.All(type => options2.RemoveDisabled.Contains(type));
-        var allCommentTypesMatch = options1.XmlCommentTypes.Count == options2.XmlCommentTypes.Count && options1.XmlCommentTypes.All(type => options2.XmlCommentTypes.Contains(type));
-        var allSinksMatch = options1.ErrorHandlingSinks.Count == options2.ErrorHandlingSinks.Count && options1.ErrorHandlingSinks.All(sink => options2.ErrorHandlingSinks.Contains(sink));
-        var allCatchTypesMatch = options1.CatchExceptionTypes.Count == options2.CatchExceptionTypes.Count && options1.CatchExceptionTypes.All(type => options2.CatchExceptionTypes.Contains(type));
-        return options1.EnsureResponseIsSuccessStatusCode == options2.EnsureResponseIsSuccessStatusCode
-               && options1.MakePathCollectionVariablesFunctionParameters == options2.MakePathCollectionVariablesFunctionParameters
-               && options1.ErrorHandlingStrategy == options2.ErrorHandlingStrategy
-               && options1.LogLevel == options2.LogLevel
-               && options1.RootDefinition == options2.RootDefinition
-               && options1.UseCancellationTokens == options2.UseCancellationTokens
-               && options1.JsonLibrary == options2.JsonLibrary
-               && options1.AttributeUsage == options2.AttributeUsage
-               && options1.ExecuteWithRetry == options2.ExecuteWithRetry
-               && options1.MultipleResponseHandling == options2.MultipleResponseHandling
-               && options1.HandleMultipleResponses == options2.HandleMultipleResponses
-               && options1.DuplicateOptions.RemoveDuplicateRoots == options2.DuplicateOptions.RemoveDuplicateRoots
-               && options1.DuplicateOptions.RemoveSemiDuplicates == options2.DuplicateOptions.RemoveSemiDuplicates
-               && options1.DuplicateOptions.SameOriginalNameSensitivity == options2.DuplicateOptions.SameOriginalNameSensitivity
-               && options1.DuplicateOptions.DifferentOriginalNameSensitivity == options2.DuplicateOptions.DifferentOriginalNameSensitivity
-               && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch && allRemovedDisabledMatch;
-    }
 
     private void SaveOptions()
     {
@@ -257,8 +230,8 @@ hood of an error in generated code (minor issues usually) and increase the likel
     private P2CsSize _cachedP2CsSize;
     protected override bool ShouldRender()
     {
-        if (_cachedApiClientsOptions != null && Equals(_cachedApiClientsOptions, _cachedDirtyApiClientsOptions)
-            && Equals(_apiClientOptions, _dirtyApiClientOptions) && _cachedP2CsSize == P2CsSize)
+        if (_cachedApiClientsOptions != null && ApiClientOptions.ConfigsEqual(_cachedApiClientsOptions, _cachedDirtyApiClientsOptions)
+            && ApiClientOptions.ConfigsEqual(_apiClientOptions, _dirtyApiClientOptions) && _cachedP2CsSize == P2CsSize)
         {
             return false;
         }

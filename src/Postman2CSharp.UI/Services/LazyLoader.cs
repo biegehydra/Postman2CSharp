@@ -35,7 +35,8 @@ namespace Postman2CSharp.UI.Services
             "System.ComponentModel.Primitives.dll",
             "System.ComponentModel.Annotations.dll",
             "System.Runtime.Numerics.dll",
-
+            "System.Private.Xml.dll",
+            "System.Xml.ReaderWriter.dll"
         };
 
         private static List<string> AdvancedSettingsAssemblies { get; set; } = new()

@@ -3,62 +3,75 @@
     <ManualRootDefinitionComponent @ref="_manualRootDefinitionComponent" PostmanCollection="_collection" ConfirmedChanged="StateHasChanged"  />
 }
 <br/>
-<div class="f-row" style="gap: 15px; align-items: end; flex-wrap: wrap;">
-    <MudTooltip Text="Looads in a Google Maps collection to let you see how the website works with dumby data.">
-        <MudButton Color="Color.Secondary" OnClick="GetTestData" Variant="Variant.Filled">Test Data</MudButton>
-    </MudTooltip>
-
-    <MudTooltip Text="Select a collection off of your file system. Your collection never leaves your device.">
-        <MudFileUpload T="IReadOnlyList<IBrowserFile>" Accept=".json" FilesChanged="UploadFiles">
-            <ButtonTemplate>
-                <MudButton HtmlTag="label"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           StartIcon="@Icons.FileCopy"
-                           for="@context">
-                    Select Postman Collection
-                </MudButton>
-            </ButtonTemplate>
-        </MudFileUpload>
-    </MudTooltip>
+@if (Small)
+{
+    <div class="f-row" style="gap: 15px; align-items: end; flex-wrap: wrap;">
+        <MudTooltip Text="Select a collection off of your file system. Your collection never leaves your device.">
+            <MudFileUpload T="IReadOnlyList<IBrowserFile>" Accept=".json" FilesChanged="UploadFiles">
+                <ButtonTemplate>
+                    <MudButton HtmlTag="label"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.FileCopy"
+                               for="@context">
+                        Select Postman Collection
+                    </MudButton>
+                </ButtonTemplate>
+            </MudFileUpload>
+        </MudTooltip>
     
-    @if (Convert.LastSavedApiClientOptions.RootDefinition == RootDefinition.Manual)
-    {
-        if (_collection == null)
+        @if (Convert.LastSavedApiClientOptions.RootDefinition == RootDefinition.Manual)
         {
-            <MudTooltip Text="Deserialize ApiClient to begin manually grouping collection." Delay="300">
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Tertiary"
-                           EndIcon="@Icons.Build"
-                           OnClick="TryDeserializerApiClient" Disabled="_uploadedFile == null">
-                    Deserialize
-                </MudButton>
-            </MudTooltip>
+            if (_collection == null)
+            {
+                <MudTooltip Text="Deserialize ApiClient to begin manually grouping collection." Delay="300">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Tertiary"
+                               EndIcon="@Icons.Build"
+                               OnClick="TryDeserializerApiClient" Disabled="_uploadedFile == null">
+                        Deserialize
+                    </MudButton>
+                </MudTooltip>
+            }
+            else if (_manualRootDefinitionComponent != null)
+            {
+                @ProcessButton(!_manualRootDefinitionComponent.Confirmed)
+            }
         }
-        else if (_manualRootDefinitionComponent != null)
+        else
         {
-            @ProcessButton(!_manualRootDefinitionComponent.Confirmed)
+            @ProcessButton(_uploadedFile == null)
         }
-    }
-    else
-    {
-        @ProcessButton(_uploadedFile == null)
-    }
-</div>
-<br />
-@_uploadedFile?.Name
+    </div>
+    <br />
+    @_uploadedFile?.Name
+}
+else
+{
+    <JsonInputFile OnUpload="OnUpload" FileValid="HasDeserializedCollection" ></JsonInputFile>
+}
+
 
 @code
 {
+    [Parameter] public bool Small { get; set; } = true;
     [Inject] private ILazyLoader LazyLoad { get; set; } = null!;
     [Inject] private Lazy<ISnackbar?> SnackBar { get; set; } = null!;
     [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
     [Parameter] public EventCallback<ApiCollection> SuccessfulUpload { get; set; }
 
+    public bool HasDeserializedCollection => _collection != null; 
+
     private ManualRootDefinitionComponent? _manualRootDefinitionComponent;
     private PostmanCollection? _collection;
     private IBrowserFile? _uploadedFile;
     private const string TestDataName = "GoogleMapsPlatform.json";
+
+    private async Task OnUpload(IBrowserFile browserFile)
+    {
+        _uploadedFile = browserFile;
+        await TryDeserializerApiClient();
+    }
 
     private void UploadFiles(IReadOnlyList<IBrowserFile> files)
     {
@@ -100,6 +113,7 @@
         }
         catch (JsonException exception)
         {
+            _collection = null;
             if (ProgressSnackbar != null)
             {
                 SnackBar.Value?.Remove(ProgressSnackbar);
@@ -108,6 +122,7 @@
         }
         catch (Exception exception)
         {
+            _collection = null;
             if (ProgressSnackbar != null)
             {
                 SnackBar.Value?.Remove(ProgressSnackbar);

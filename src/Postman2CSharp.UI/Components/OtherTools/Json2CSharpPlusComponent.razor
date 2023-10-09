@@ -140,7 +140,7 @@
                            @foreach (var (key, value) in _result)
                            {
                                <MudTabPanel Text="@key" Icon="@Icons.Code">
-                                   <PrismCodeBlock DisplayContents FileName="@key" Style="margin-top: 0; height: 60vh;" Value="@value" Language="PrismLanguage.CSharp"/>
+                                   <PrismCodeBlock DisplayType="CodeBlockDisplayType.Contents" FileName="@key" Style="margin-top: 0; height: 60vh;" Value="@value" Language="PrismLanguage.CSharp"/>
                                </MudTabPanel>
                            }
                        </MudTabs>

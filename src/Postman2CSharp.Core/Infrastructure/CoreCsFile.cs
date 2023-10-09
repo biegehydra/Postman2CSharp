@@ -220,7 +220,7 @@ public static class HttpClientJsonExtensions
         }
         else
         {
-            return await response.ReadJsonAsync<T>(jsonSerializerOptions);
+            return await response.ReadJsonAsync<T>(jsonSerializerOptions, cancellationToken: cancellationToken);
         }
     }
 
@@ -278,7 +278,7 @@ public static class HttpClientJsonExtensions
         var request = new HttpRequestMessage(method, requestUri) { Content = content };
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
-        return await response.ReadJsonAsync<T>(jsonSerializerOptions);
+        return await response.ReadJsonAsync<T>(jsonSerializerOptions, cancellationToken: cancellationToken);
     }
 
 
@@ -302,7 +302,7 @@ public static class HttpClientJsonExtensions
         var request = new HttpRequestMessage(method, requestUri);
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
-        return await response.ReadJsonAsync<T>(jsonSerializerOptions);
+        return await response.ReadJsonAsync<T>(jsonSerializerOptions, cancellationToken: cancellationToken);
     }
 
 
@@ -356,9 +356,9 @@ public static class HttpClientJsonExtensions
         return response;
     }
 
-    public static async Task<T> ReadJsonAsync<T>(this HttpResponseMessage response, JsonSerializerOptions? jsonSerializerOptions = null)
+    public static async Task<T> ReadJsonAsync<T>(this HttpResponseMessage response, JsonSerializerOptions? jsonSerializerOptions = null, CancellationToken cancellationToken = default)
     {
-        var stringContent = await response.Content.ReadAsStringAsync();
+        var stringContent = await response.Content.ReadAsStringAsync(cancellationToken);
         return JsonSerializer.Deserialize<T>(stringContent, jsonSerializerOptions ?? JsonSerializerOptions)!;
     }
 
@@ -488,7 +488,7 @@ public static class NewtonsoftHttpClientJsonExtensions
         }
         else
         {
-            return await response.ReadNewtonsoftJsonAsync<T>(serializerSettings);
+            return await response.ReadNewtonsoftJsonAsync<T>(serializerSettings, cancellationToken: cancellationToken);
         }
     }
 
@@ -582,7 +582,7 @@ public static class NewtonsoftHttpClientJsonExtensions
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
 
-        return await response.ReadNewtonsoftJsonAsync<T>(serializerSettings);
+        return await response.ReadNewtonsoftJsonAsync<T>(serializerSettings, cancellationToken: cancellationToken);
     }
 
 
@@ -624,7 +624,7 @@ public static class NewtonsoftHttpClientJsonExtensions
         AddHeadersToRequest(request, headers);
         var response = await httpClient.SendAsync(request, cancellationToken);
  
-        return await response.ReadNewtonsoftJsonAsync<T>(serializerSettings);
+        return await response.ReadNewtonsoftJsonAsync<T>(serializerSettings, cancellationToken: cancellationToken);
     }
 
 
@@ -700,9 +700,9 @@ public static class NewtonsoftHttpClientJsonExtensions
     }
 
     public static async Task<T> ReadNewtonsoftJsonAsync<T>(this HttpResponseMessage response,
-        JsonSerializerSettings serializerSettings = null)
+        JsonSerializerSettings serializerSettings = null, CancellationToken cancellationToken = default)
     {
-        var stringContent = await response.Content.ReadAsStringAsync();
+        var stringContent = await response.Content.ReadAsStringAsync(cancellationToken);
         return JsonConvert.DeserializeObject<T>(stringContent, serializerSettings ?? _jsonSerializerSettings);
     }
 

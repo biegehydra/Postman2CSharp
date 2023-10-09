@@ -16,7 +16,7 @@ namespace Postman2CSharp.Core.Serialization;
 public static class HttpCallSerializer
 {
     public static void SerializeHttpCall(StringBuilder sb, AuthSettings? auth, string? baseUrl, HttpCall call, bool constructorHasAuthHeader,
-        ApiClientOptions options, OutputCollectionType outputCollectionType)
+        ApiClientOptions options)
     {
         string relativePath;
         try
@@ -27,7 +27,7 @@ public static class HttpCallSerializer
         {
             throw new ArgumentException(nameof(call.Request.Url.Raw), $"Invalid URL: {call.Request.Url.Raw}");
         }
-        var methodParameters = call.MethodParameters(outputCollectionType);
+        var methodParameters = call.MethodParameters(options.OutputCollectionType);
         if (options.UseCancellationTokens)
         {
             methodParameters.Add(HttpCallMethodParameter.CancellationToken);
@@ -35,15 +35,14 @@ public static class HttpCallSerializer
 
         var indent = Consts.Indent(1);
         XmlComment(sb, options.XmlCommentTypes, call.Request.Description, call.Request.Url.Path, call.Request.Url.Variable, indent);
-        sb.FunctionSignature(call, indent, outputCollectionType, methodParameters, options.HandleMultipleResponses, options.MultipleResponseHandling);
+        sb.FunctionSignature(call, indent, methodParameters, options);
         sb.AppendLine(indent + "{");
 
         indent = Consts.Indent(2);
 
         if (options.ErrorHandlingStrategy == ErrorHandlingStrategy.None)
         {
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary,
-                options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType, options.HandleMultipleResponses, options.ExecuteWithRetry);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, options);
         }
         else
         {
@@ -54,8 +53,7 @@ public static class HttpCallSerializer
             sb.AppendLine(indent + "try");
             sb.AppendLine(indent + "{");
 
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, options.EnsureResponseIsSuccessStatusCode, options.JsonLibrary,
-                options.UseCancellationTokens, options.ErrorHandlingStrategy, outputCollectionType, options.HandleMultipleResponses, options.ExecuteWithRetry);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, options);
 
             indent = Consts.Indent(2);
             sb.AppendLine(indent + "}");
@@ -130,23 +128,21 @@ public static class HttpCallSerializer
     }
 
     private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool authHasHeader,
-        int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary, bool useCancellationTokens,
-        ErrorHandlingStrategy errorHandlingStrategy, OutputCollectionType outputCollectionType, bool handleMultipleResponse, bool executeWithRetry)
+        int intIndent, string relativePath, ApiClientOptions options)
     {
         if (call.AllResponses.Count == 0) throw new UnreachableException("No success responses found. Should never happen.");
-        if (call.AllResponses.Count > 1 && handleMultipleResponse)
+        if (call.AllResponses.Count > 1 && options.HandleMultipleResponses)
         {
-            HttpCallMultipleResponseTypesBody(sb, auth, call, authHasHeader, intIndent, relativePath, ensureSuccessStatusCode, jsonLibrary, errorHandlingStrategy, useCancellationTokens, outputCollectionType, executeWithRetry);
+            HttpCallMultipleResponseTypesBody(sb, auth, call, authHasHeader, intIndent, relativePath, options);
         }
         else
         {
-            HttpCallSingleResponseTypeBody(sb, auth, call, authHasHeader, intIndent, relativePath, ensureSuccessStatusCode, jsonLibrary, useCancellationTokens, outputCollectionType, executeWithRetry);
+            HttpCallSingleResponseTypeBody(sb, auth, call, authHasHeader, intIndent, relativePath, options);
         }
     }
 
     private static void HttpCallSingleResponseTypeBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
-        bool authHasHeader, int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary,
-        bool useCancellationTokens, OutputCollectionType outputCollectionType, bool executeWithRetry)
+        bool authHasHeader, int intIndent, string relativePath, ApiClientOptions options)
     {
         var indent = Consts.Indent(intIndent);
         if (authHasHeader)
@@ -198,23 +194,16 @@ public static class HttpCallSerializer
 
         ReturnOrVarResponse(sb, httpClientCallReturnsResponse, indent);
 
-        HttpClientRequest(sb, call, httpClientCallReturnsResponse, requestHasQueryString, relativePath, hasUniqueHeaders,
-            useCancellationTokens, outputCollectionType, executeWithRetry);
-
-        if (!httpClientCallReturnsResponse && ensureSuccessStatusCode)
-        {
-            sb.AppendLine(indent + "response.EnsureSuccessStatusCode();");
-        }
+        HttpClientRequest(sb, call, httpClientCallReturnsResponse, requestHasQueryString, relativePath, hasUniqueHeaders, options);
 
         if (!httpClientCallReturnsResponse)
         {
-            ReturnIfRequestDidNotReturnEarlier(sb, call.SuccessResponse, jsonLibrary, indent, useCancellationTokens);
+            ReturnIfRequestDidNotReturnEarlier(sb, call.SuccessResponse, indent, options);
         }
     }
 
     private static void HttpCallMultipleResponseTypesBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
-        bool authHasHeader, int intIndent, string relativePath, bool ensureSuccessStatusCode, JsonLibrary jsonLibrary, ErrorHandlingStrategy
-         errorHandlingStrategy, bool useCancellationTokens, OutputCollectionType outputCollectionType, bool executeWithRetry)
+        bool authHasHeader, int intIndent, string relativePath, ApiClientOptions options)
     {
         var indent = Consts.Indent(intIndent);
         if (authHasHeader)
@@ -262,13 +251,7 @@ public static class HttpCallSerializer
 
         ReturnOrVarResponse(sb, false, indent);
 
-        HttpClientRequest(sb, call, false, requestHasQueryString, relativePath, hasUniqueHeaders,
-            useCancellationTokens, outputCollectionType, executeWithRetry);
-
-        if (ensureSuccessStatusCode)
-        {
-            sb.AppendLine(indent + "response.EnsureSuccessStatusCode();");
-        }
+        HttpClientRequest(sb, call, false, requestHasQueryString, relativePath, hasUniqueHeaders, options);
 
         int i = 0;
         foreach (var response in call.AllResponses)
@@ -278,7 +261,7 @@ public static class HttpCallSerializer
             sb.AppendLine(indent + "{");
             indent = Consts.Indent(intIndent + 1);
 
-            ReturnIfRequestDidNotReturnEarlier(sb, response, jsonLibrary, indent, useCancellationTokens);
+            ReturnIfRequestDidNotReturnEarlier(sb, response, indent, options);
 
             indent = Consts.Indent(intIndent);
             sb.AppendLine(indent + "}");
@@ -289,18 +272,18 @@ public static class HttpCallSerializer
         indent = Consts.Indent(intIndent + 1);
         
         var errorMessage = $"throw new Exception($\"{call.Name}: Unexpected response. Status Code: {{response.StatusCode}}. Content: {{await response.Content.ReadAsStringAsync()}}\");";
-        sb.ErrorHandlingStrategy(errorMessage, errorHandlingStrategy, indent);
+        sb.ErrorHandlingStrategy(errorMessage, options.ErrorHandlingStrategy, indent);
 
         indent = Consts.Indent(intIndent);
         sb.AppendLine(indent + "}");
     }
 
-    private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, ApiResponse? apiResponse, JsonLibrary jsonLibrary, string indent, bool useCancellationTokens)
+    private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, ApiResponse? apiResponse, string indent, ApiClientOptions options)
     {
         sb.Append(indent + "return ");
         if (apiResponse?.ClassName != null)
         {
-            if (jsonLibrary == JsonLibrary.SystemTextJson)
+            if (options.JsonLibrary == JsonLibrary.SystemTextJson)
             {
                 sb.AppendLine($"await response.ReadJsonAsync<{apiResponse.ClassName}>();");
             }
@@ -311,7 +294,7 @@ public static class HttpCallSerializer
         }
         else
         {
-            if (useCancellationTokens)
+            if (options.UseCancellationTokens)
             {
                 sb.AppendLine("await response.Content.ReadAsStreamAsync(cancellationToken);");
             }
@@ -323,9 +306,9 @@ public static class HttpCallSerializer
     }
 
     private static void HttpClientRequest(StringBuilder sb, HttpCall call, bool httpClientCallReturnsResponse,
-        bool requestHasQueryString, string relativePath, bool hasHeaders, bool useCancellationToken, OutputCollectionType outputCollectionType, bool executeWithRetry)
+        bool requestHasQueryString, string relativePath, bool hasHeaders, ApiClientOptions options)
     {
-        if (executeWithRetry)
+        if (options.ExecuteWithRetry)
         {
             sb.Append($"await ExecuteWithRetry(() => _httpClient.{call.HttpClientFunction}");
         }
@@ -335,7 +318,7 @@ public static class HttpCallSerializer
         }
         if (httpClientCallReturnsResponse)
         {
-            sb.Append($"<{Common.SignatureClassName(call.SuccessResponse!.ClassName, call.SuccessResponse.RootWasArray, outputCollectionType)}>");
+            sb.Append($"<{Common.SignatureClassName(call.SuccessResponse!.ClassName, call.SuccessResponse.RootWasArray, options.OutputCollectionType)}>");
         }
 
         sb.Append('(');
@@ -343,7 +326,7 @@ public static class HttpCallSerializer
         var relativePathParameter = requestHasQueryString ? "queryString" : $@"$""{relativePath}""";
         var httpClientParameters = HttpClientParameters();
         sb.Append(string.Join(", ", httpClientParameters));
-        if (executeWithRetry)
+        if (options.ExecuteWithRetry)
         {
             sb.AppendLine("));");
         }
@@ -370,7 +353,7 @@ public static class HttpCallSerializer
             {
                 list.Add("headers");
             }
-            if (useCancellationToken)
+            if (options.UseCancellationTokens)
             {
                 if (hasHeaders)
                 {

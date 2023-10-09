@@ -32,11 +32,6 @@ how all the configurations work."
 
      <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
-
-     @Explanation("Ensure Response Status Code", EnsureResponseStatusCode_False, EnsureResponseStatusCode_True, "EnsureResponseStatusCode")
-
-     <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
-
      @Explanation("Make Path Collection Variables Function Parameters", MakePathCollectionVariablesFunctionParameters_False, MakePathCollectionVariablesFunctionParameters_True, "MakePathCollectionVariablesFunctionParameters", MakePathCollectionVariablesFunctionParameters_Description)
 
      <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
@@ -74,7 +69,7 @@ how all the configurations work."
          <br/>
          <p>
              @InlineValue("Handle"): The first option you have is whether or not you handle multiple responses at all. If you choose not to handle multiple response,
-             then only the first success response (status code &gt;= 200 and &lt; 300, preference to 200 if present) will be uses in the generation process.
+             then only the first success response (status code &gt;= 200 and &lt; 300, preference to 200 if present) will be used in the generation process.
              <u>All others will be discarded</u>. This means that classes won't be generated for all other responses. This setting <u>can't be enabled</u> after generation.
          </p>
          <br/>
@@ -248,17 +243,6 @@ how all the configurations work."
     };
 
 
-    #region EnsureResponseStatusCode
-private const string EnsureResponseStatusCode_False =
-@"var response = await _httpClient.GetAsync(queryString);
-return await response.Content.ReadAsStreamAsync();";
-
-    private const string EnsureResponseStatusCode_True =
-@"var response = await _httpClient.GetAsync(queryString);
-response.EnsureSuccessStatusCode();
-return await response.Content.ReadAsStreamAsync();";
-    #endregion
-
     #region MakePathCollectionVariablesFunctionParameters
 
     public const string MakePathCollectionVariablesFunctionParameters_Description =
@@ -266,17 +250,17 @@ return await response.Content.ReadAsStreamAsync();";
 This changes that and makes collection variables function parameters.";
 
     public const string MakePathCollectionVariablesFunctionParameters_False =
-@"private readonly string _someVariable; // Priate variable
+@"private readonly string _someVariable; // Private variable
 public async Task<List<Ticket>> GetTickets()
 {
-    return await _httpClient.GetFromJsonAsync<List<Ticket>>(""{_someVariable}/ticket.php"");
+    return await _httpClient.GetFromJsonAsync<List<Ticket>>($""{_someVariable}/ticket.php"");
 }";
     
     public const string MakePathCollectionVariablesFunctionParameters_True = 
-@"// No priate Variable
+@"// No private Variable
 public async Task<Stream> GetTickets(string someVariable) // Now a function parameter
 {
-    return await _httpClient.GetFromJsonAsync<List<Ticket>>(""{_someVariable}/ticket.php"");
+    return await _httpClient.GetFromJsonAsync<List<Ticket>>($""{_someVariable}/ticket.php"");
 }";
     #endregion
 

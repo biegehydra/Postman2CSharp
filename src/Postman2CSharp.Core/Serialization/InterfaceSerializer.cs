@@ -9,10 +9,10 @@ namespace Postman2CSharp.Core.Serialization;
 
 public static class InterfaceSerializer
 {
-    public static string CreateInterface(List<HttpCall> httpsCalls, string nameSpace, string apiClientName, bool handleMultipleResponses, MultipleResponseHandling multipleResponseHandling, bool useCancellationTokens, OutputCollectionType outputCollectionType)
+    public static string CreateInterface(List<HttpCall> httpsCalls, string nameSpace, string apiClientName, ApiClientOptions options)
     {
         var sb = new StringBuilder();
-        if (handleMultipleResponses && multipleResponseHandling == MultipleResponseHandling.OneOf && httpsCalls.Any(x => x.AllResponses.GroupBy(x => x.ClassName ?? "Stream").Count() > 1))
+        if (options is {HandleMultipleResponses: true, MultipleResponseHandling: MultipleResponseHandling.OneOf} && httpsCalls.Any(x => x.AllResponses.GroupBy(x => x.ClassName ?? "Stream").Count() > 1))
         {
             sb.AppendLine("using OneOf;");
         }
@@ -27,12 +27,12 @@ public static class InterfaceSerializer
         indent = Consts.Indent(2);
         foreach (var httpCall in httpsCalls)
         {
-            var methodParameters = httpCall.MethodParameters(outputCollectionType);
-            if (useCancellationTokens)
+            var methodParameters = httpCall.MethodParameters(options.OutputCollectionType);
+            if (options.UseCancellationTokens)
             {
                 methodParameters.Add(HttpCallMethodParameter.CancellationToken);
             }
-            sb.FunctionSignature(httpCall, indent, outputCollectionType, methodParameters, handleMultipleResponses, multipleResponseHandling, true);
+            sb.FunctionSignature(httpCall, indent, methodParameters, options, true);
         }
         indent = Consts.Indent(1);
         sb.AppendLine(indent + "}");

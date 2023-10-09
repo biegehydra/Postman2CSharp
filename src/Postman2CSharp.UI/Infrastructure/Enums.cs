@@ -22,4 +22,11 @@
         ExtraLarge,
         ExtraExtraLarge,
     }
+
+    public enum CodeBlockDisplayType
+    {
+        Normal,
+        Contents,
+        Scroll
+    }
 }

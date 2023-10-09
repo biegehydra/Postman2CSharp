@@ -38,16 +38,23 @@
 @if (LazyLoading.ConvertLoaded)
 {
     <div class="code-writing-options-contianer">
-        <ApiClientOptionsComponent @ref="ApiClientOptionsComponent" @bind-ApiClientOptions="LastSavedApiClientOptions" ></ApiClientOptionsComponent>
+        @if (UseStepper)
+        {
+            <ApiClientOptionsStepper @bind-ApiClientOptions="LastSavedApiClientOptions" ></ApiClientOptionsStepper>
+        }
+        else
+        {
+            <ApiClientOptionsComponent @ref="ApiClientOptionsComponent" @bind-ApiClientOptions="LastSavedApiClientOptions" ></ApiClientOptionsComponent>
+        }
     </div>
     <br />
-    <CollectionUpload SuccessfulUpload="OnSuccessfulUpload"></CollectionUpload>
 }
 
 
 @code {
     public static ApiClientOptions LastSavedApiClientOptions { get; private set; } = new();
     private static ApiClientOptionsComponent? ApiClientOptionsComponent { get; set; }
+    private bool UseStepper = true;
 
     [Inject] private ILazyLoader LazyLoader { get; set; } = null!;
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()

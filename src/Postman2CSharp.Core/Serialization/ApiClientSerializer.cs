@@ -54,7 +54,7 @@ public static class ApiClientSerializer
             AddOAuth2Methods(sb, uniqueAuthOAuth2, 1);
         }
 
-        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: client.AddAuthHeaderToConstructor, client.Options, client.CollectionType);
+        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: client.AddAuthHeaderToConstructor, client.Options);
         sb.AppendLine();
         if (client.Options.ExecuteWithRetry)
         {
@@ -132,13 +132,13 @@ public static class ApiClientSerializer
     }
 
     private static void ApiClientCalls(StringBuilder sb, AuthSettings? auth, string? baseUrl, List<HttpCall> calls, bool constructorHasAuthHeader, 
-        ApiClientOptions options, OutputCollectionType outputCollectionType)
+        ApiClientOptions options)
     {
         var last = calls.Last();
         foreach (var call in calls)
         {
             sb.AppendLine();
-            HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, constructorHasAuthHeader, options, outputCollectionType);
+            HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, constructorHasAuthHeader, options);
             if (!Equals(call, last))
             {
                 sb.AppendLine();

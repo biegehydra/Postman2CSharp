@@ -28,7 +28,7 @@ namespace Postman2CSharp.Core.Infrastructure
             sb.AppendLine(indent + $"private readonly string {variableName};");
         }
 
-        public static void FunctionSignature(this StringBuilder sb, HttpCall call, string indent, OutputCollectionType outputCollectionType, List<HttpCallMethodParameter> methodParameters, bool handleMultipleResponse, MultipleResponseHandling multipleResponseHandling, bool isInterface = false)
+        public static void FunctionSignature(this StringBuilder sb, HttpCall call, string indent, List<HttpCallMethodParameter> methodParameters, ApiClientOptions options, bool isInterface = false)
         {
             if (isInterface)
             {
@@ -38,7 +38,7 @@ namespace Postman2CSharp.Core.Infrastructure
             {
                 sb.Append(indent + "public async Task");
             }
-            if (!handleMultipleResponse || call.AllResponses.GroupBy(x => SignatureClassName(x.ClassName, x.RootWasArray, outputCollectionType)).Count() == 1)
+            if (!options.HandleMultipleResponses || call.AllResponses.GroupBy(x => SignatureClassName(x.ClassName, x.RootWasArray, options.OutputCollectionType)).Count() == 1)
             {
                 if (call.SuccessResponse == null)
                 {
@@ -46,18 +46,18 @@ namespace Postman2CSharp.Core.Infrastructure
                     throw new Exception("SuccessResponse null. Not supposed to happen.");
 #endif
                 }
-                sb.Append($"<{SignatureClassName(call.SuccessResponse?.ClassName, call.SuccessResponse?.RootWasArray ?? false, outputCollectionType)}>");
+                sb.Append($"<{SignatureClassName(call.SuccessResponse?.ClassName, call.SuccessResponse?.RootWasArray ?? false, options.OutputCollectionType)}>");
             }
             else
             {
-                if (multipleResponseHandling == MultipleResponseHandling.OneOf)
+                if (options.MultipleResponseHandling == MultipleResponseHandling.OneOf)
                 {
                     sb.Append("<OneOf<");
-                    var groups = call.AllResponses.GroupBy(x => SignatureClassName(x.ClassName, x.RootWasArray, outputCollectionType));
+                    var groups = call.AllResponses.GroupBy(x => SignatureClassName(x.ClassName, x.RootWasArray, options.OutputCollectionType));
                     sb.Append(string.Join(", ", groups.Select(x => x.Key)));
                     sb.Append(">>");
                 }
-                else if (multipleResponseHandling == MultipleResponseHandling.Object)
+                else if (options.MultipleResponseHandling == MultipleResponseHandling.Object)
                 {
                     sb.Append("<object>");
                 }

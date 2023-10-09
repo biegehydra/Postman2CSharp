@@ -1,0 +1,100 @@
+﻿<style>
+    .drag-drop-zone {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        align-items: center;
+        justify-content: center;
+        transition: all .4s;
+        min-height: 75px;
+        padding: 8px;
+    }
+    .drag-drop-input {
+        position: absolute;
+        width: 100%;
+        height: 90%;
+        cursor: pointer;
+        z-index: 2;
+    }
+    .drag-enter {
+        box-shadow: var(--mud-elevation-10);
+    }
+</style>
+
+@{
+    var successStyle = FileValid ? "border: 2px solid var(--mud-palette-success); min-height: 150px;" : "min-height: 150px;";
+}
+<div @onmouseover="@(() => _dragEnterStyle = "drag-enter")"
+     @onmouseleave="@(() => _dragEnterStyle = null)">
+    <MudPaper Style="@successStyle"
+              Class=@("drag-drop-zone " + _dragEnterStyle)>
+        @if (_loading)
+        {
+            <MudProgressLinear Indeterminate="true" Size="Size.Large" />
+        }
+        else
+        {
+            <div class="f-column align-center justify-center mud-width-full">
+                <InputFile OnChange="OnFileChange" class="drag-drop-input" style="opacity: 0;" accept=".json" />
+                Drop a single csv file here or click to browse 
+            </div>
+            <MudIcon Icon="@Icons.AttachFile"></MudIcon>
+            if (!string.IsNullOrWhiteSpace(_fileName) && FileValid)
+            {
+                <MudChip Color="Color.Dark" Text="@_fileName" />
+            }
+        }
+    </MudPaper>
+</div>
+
+@code {
+    [Inject] private ISnackbar SnackBar { get; set; }
+    private string? _fileName;
+    private string? _dragEnterStyle;
+    private bool _loading;
+
+    [Parameter]
+    public bool FileValid { get; set; }
+
+    [Parameter]
+    public EventCallback<IBrowserFile> OnUpload { get; set; }
+
+    private async Task OnFileChange(InputFileChangeEventArgs args)
+    {
+        _loading = true;
+        try
+        {
+            _dragEnterStyle = null;
+            var files = args.GetMultipleFiles();
+            if (files.Count == 0)
+            {
+                return;
+            }
+            if (files.Count > 1)
+            {
+                SnackBar.Add($"Only one file can be uploaded at a time", Severity.Error, x => x.VisibleStateDuration = 300);
+                return;
+            }
+            var file = files.FirstOrDefault();
+            if (file == null)
+            {
+                return;
+            }
+
+            if (files.Count > 0)
+            {
+                if (Path.GetExtension(file.Name) != ".json")
+                {
+                    SnackBar.Add($"Only json files can be uploaded", Severity.Error, x => x.VisibleStateDuration = 300);
+                    return;
+                }
+                _fileName = file.Name;
+                await OnUpload.InvokeAsync(file);
+            }
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

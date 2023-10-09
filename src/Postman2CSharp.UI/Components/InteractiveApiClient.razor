@@ -115,9 +115,9 @@
     private static RenderFragment? CodeBlock(ApiClientOptions options, bool apiClientView)
     {
         if (_testData == null) return null;
-         if (_lastApiClientOptions != null && _lastApiClient != null)
+        if (_lastApiClientOptions != null && _lastApiClient != null)
         {
-            if (ApiClientOptionsComponent.Equals(_lastApiClientOptions, options))
+            if (ApiClientOptions.ConfigsEqual(_lastApiClientOptions, options))
             {
                 return ApiClientOrClasses(_lastApiClient, apiClientView);
             }
@@ -189,7 +189,7 @@
                             </div>
                         </TabContent>
                         <ChildContent>
-                            <PrismCodeBlock @key="@sourceCode" DisplayContents FileName="@className" Style="margin-top: 0;" Value="@sourceCode" Language="PrismLanguage.CSharp"/>
+                            <PrismCodeBlock @key="@sourceCode" DisplayType="CodeBlockDisplayType.Contents" FileName="@className" Style="margin-top: 0;" Value="@sourceCode" Language="PrismLanguage.CSharp"/>
                         </ChildContent>
                     </MudTabPanel>;
          }

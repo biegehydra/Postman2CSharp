@@ -63,6 +63,7 @@
 		<BlazorWebAssemblyLazyLoad Include="System.Security.Cryptography.Primitives.dll" />
 		<BlazorWebAssemblyLazyLoad Include="System.Threading.Thread.dll" />
 		<BlazorWebAssemblyLazyLoad Include="System.Threading.ThreadPool.dll" />
+		<BlazorWebAssemblyLazyLoad Include="System.Xml.ReaderWriter.dll" />
 		<BlazorWebAssemblyLazyLoad Include="System.Xml.Linq.dll" />
 		<BlazorWebAssemblyLazyLoad Include="System.Xml.XDocument.dll" />
 		<BlazorWebAssemblyLazyLoad Include="System.Xml.XPath.XDocument.dll" />

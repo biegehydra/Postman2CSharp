@@ -1,0 +1,40 @@
+﻿@using CodeBeamMudExtensions
+<style>
+    .step-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 55vh;
+    }
+
+    .step-question-container,
+    .step-example-container {
+        padding: 1rem;
+    }
+
+    .step-question-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .step-example-container {
+
+    }
+</style>
+<div class="step-container">
+    <div class="step-question-container">
+        @Input
+        <div class="step-additional-info">
+            @AdditionalInfo
+        </div>
+    </div>
+    <div @key="@Guid.NewGuid()" class="step-example-container">
+        @Example
+    </div>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? Input { get; set; }
+    [Parameter] public RenderFragment? Example { get; set; }
+    [Parameter] public RenderFragment? AdditionalInfo { get; set; }
+}

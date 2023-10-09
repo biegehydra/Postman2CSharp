@@ -1,0 +1,488 @@
+﻿@using CodeBeamMudExtensions
+<style>
+    .setting-section-header {
+        margin-bottom: 10px;
+        font-weight: 100;
+    }
+</style>
+<div class="f-row-column" style="gap: 10px;">
+    <div class="f-column small-w-100" style="width: 90%;">
+        <MudText Style="font-weight: 500;" Typo="Typo.h2">ApiClient Generation Configurations</MudText>
+        <br />
+        <MudText>
+            @if (ShowInteractiveDemoMessage)
+            {
+                <text>
+                    The best way to learn how these configurations work is to mess around with the <a class="link-normal" href="/Interactive-Demo">Interactive Demo</a>. It is highly
+                    recommend to fiddle around in there before generating an ApiClient to be used seriously.
+                </text>
+            }
+            For an in depth explanation on how these settings work, see
+            <a class="link-normal" href="/ApiClient-Configurations-Explained">ApiClient Configurations Explanation</a>.
+        </MudText>
+    </div>
+</div>
+<br />
+
+<MudStepper @ref="_stepper" Linear="true" Color="Color.Primary" Variant="Variant.Filled" UseStepBorder="true"
+            DisableAnimation="false" ValidateStep="ValidateStep">
+    <MudStep Title="Upload">
+        <div style="min-height: 50vh;">
+            <CollectionUpload @ref="_collectionUpload" Small="false"></CollectionUpload>
+        </div>
+    </MudStep>
+    <MudStep Title="Json">
+        <StepperItem >
+            <Input>
+                <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="_dirtyApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
+                <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="_dirtyApiClientOptions.AttributeUsage" Label="JsonProperty Attribute Usage"></EnumSelectComponent>
+            </Input>
+            <Example>
+                <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw">
+@if (_dirtyApiClientOptions.JsonLibrary == JsonLibrary.SystemTextJson)
+{
+    <text>
+public class Example
+{
+    [JsonPropertyName("property_name")]
+    public string PropertyName { get; set; }
+}
+
+public static async Task&lt;T&gt; ReadJsonAsync&lt;T&gt;(this HttpResponseMessage response, JsonSerializerOptions? jsonSerializerOptions = null)
+{
+    var stringContent = await response.Content.ReadAsStringAsync();
+    return JsonSerializer.Deserialize&lt;T&gt;(stringContent, jsonSerializerOptions ?? JsonSerializerOptions)!;
+}
+    </text>
+}
+else
+{
+    <text>
+public class Example
+{      
+    [JsonProperty("property_name")]
+    public string PropertyName { get; set; }
+}
+
+public static async Task&lt;T&gt; ReadNewtonsoftJsonAsync&lt;T&gt;(this HttpResponseMessage response,
+    JsonSerializerSettings serializerSettings = null)
+{
+    var stringContent = await response.Content.ReadAsStringAsync();
+    return JsonConvert.DeserializeObject&lt;T&gt;(stringContent, serializerSettings ?? _jsonSerializerSettings);
+}
+    </text>
+}
+
+                </PrismCodeBlock>
+            </Example>
+            <AdditionalInfo>
+                <MudText Typo="Typo.h6" >Attribute Usage</MudText>
+                <ul>
+                    <li>
+                        @InlineValue("Always") - Always add attribute to properties
+                    </li>
+                    <li>
+                        @InlineValue("OnlyWhenNecessary") - Attribute will only be applied to properties with names that cannot be expressed as C# identifiers
+                    </li>
+                    <li>
+                        @InlineValue("Never") - Attribute will never be applied to properties.
+                    </li>
+                </ul>
+            </AdditionalInfo>
+        </StepperItem>
+    </MudStep>
+    <MudStep Title="Multiple Response Handling">
+        <StepperItem >
+            <Input>
+                <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.HandleMultipleResponses">Handle Multiple Responses</MudCheckBox>
+                <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="_dirtyApiClientOptions.MultipleResponseHandling" Disabled="_dirtyApiClientOptions.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
+            </Input>
+            <Example>
+                <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" >
+                    @if (_dirtyApiClientOptions.HandleMultipleResponses)
+                    {
+                        var typeParam = _dirtyApiClientOptions.MultipleResponseHandling switch
+                        {
+                            MultipleResponseHandling.OneOf => "OneOf<SearchUsersOKResponse, SearchUsersUnauthorizedResponse, SearchUsersForbiddenResponse, SearchUsersInternalServerErrorResponse>",
+                            MultipleResponseHandling.Object => "object",
+                            _ => throw new Exception("Invalid MultipleResponseHandling")
+                        };
+                        <text>
+public async Task&lt;@typeParam&gt; SearchUsers(SearchUsersParameters queryParameters)
+{
+    var parametersDict = queryParameters.ToDictionary();
+    var queryString = QueryHelpers.AddQueryString($"{_version}/users", parametersDict);
+    var response = await _httpClient.GetAsync(queryString);
+    if (response.StatusCode == HttpStatusCode.OK)
+    {
+        return await response.ReadJsonAsync&lt;SearchUsersOKResponse&gt;();
+    }
+    else if (response.StatusCode == HttpStatusCode.Unauthorized)
+    {
+        return await response.ReadJsonAsync&lt;SearchUsersUnauthorizedResponse&gt;();
+    }
+    else if (response.StatusCode == HttpStatusCode.Forbidden)
+    {
+        return await response.ReadJsonAsync&lt;SearchUsersForbiddenResponse&gt;();
+    }
+        else if (response.StatusCode == HttpStatusCode.InternalServerError)
+    {
+        return await response.ReadJsonAsync&lt;SearchUsersInternalServerErrorResponse&gt;();
+    }
+    else
+    {
+        throw new Exception($"SearchUsers: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
+    }
+}
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+public async Task&lt;Users&gt; GetUserById(string id)
+{
+    return await _httpClient.GetFromJsonAsync&lt;Users&gt;($"{_version}/users/{id}");
+}
+                        </text>
+                    }
+                </PrismCodeBlock>
+            </Example>
+        </StepperItem>
+    </MudStep>
+    <MudStep Title="Error Handling">
+        <StepperItem>
+            <Input>
+                <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.ErrorHandlingStrategy" AlwaysShowAllEnumValues Label="Error Handling Strategy"></EnumSelectComponent>
+                <MultiEnumSelectComponent Disabled="_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="ErrorHandlingSinks" Value="_dirtyApiClientOptions.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
+                <MultiEnumSelectComponent Disabled="_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="_dirtyApiClientOptions.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
+                <EnumSelectComponent Disabled="_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None || !_dirtyApiClientOptions.ErrorHandlingSinks.Contains(ErrorHandlingSinks.LogException)" @bind-Value="_dirtyApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
+            </Input>
+            <Example>
+                <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw">
+                    @if (_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None)
+                    {
+                        <text>
+public async Task&lt;Users&gt; GetUserById(string id)
+{
+    return await _httpClient.GetFromJsonAsync&lt;Users&gt;($"{_version}/users/{id}");
+}
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+public async Task&lt;Users&gt; GetUserById(string id)
+{
+    try
+    {
+        return await _httpClient.GetFromJsonAsync&lt;Users&gt;($"{_version}/users/{id}");
+    }
+    @foreach(var catchExceptionType in _dirtyApiClientOptions.CatchExceptionTypes)
+    {
+    <text>
+    catch (@catchExceptionType ex)
+    {
+    @foreach (var errorHandlingSink in _dirtyApiClientOptions.ErrorHandlingSinks)
+    {
+        var logFunction = _dirtyApiClientOptions.LogLevel switch
+        {
+            LogLevel.Trace => "LogTrace",
+            LogLevel.Debug => "LogDebug",
+            LogLevel.Information => "LogInformation",
+            LogLevel.Warning => "LogWarning",
+            LogLevel.Error => "LogError",
+            LogLevel.Critical => "LogCritical",
+            _ => throw new ArgumentOutOfRangeException(nameof(_dirtyApiClientOptions.LogLevel), _dirtyApiClientOptions.LogLevel, null)
+        };
+        switch (errorHandlingSink)
+        {
+            case ErrorHandlingSinks.ConsoleWriteLine:
+            @($"{Consts.Indent(2)}Console.WriteLine(ex);\n")
+            break;
+        case ErrorHandlingSinks.LogException:
+            @($"{Consts.Indent(2)}_logger.{logFunction}(ex);\n");
+            break;
+        case ErrorHandlingSinks.DebugWriteLine:
+            @($"{Consts.Indent(2)}Debug.WriteLine(ex);\n")
+            break;
+        default:
+            throw new ArgumentOutOfRangeException(nameof(_dirtyApiClientOptions.ErrorHandlingSinks), errorHandlingSink, null);
+        }
+    }
+    @if (_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.ReturnDefault)
+    {
+        @($"{Consts.Indent(2)}return default;\n")
+    }
+    else 
+    {
+        @($"{Consts.Indent(2)}throw;\n")
+    }
+</text>
+}
+}
+                        </text>
+                    }
+                </PrismCodeBlock>
+            </Example>
+        </StepperItem>
+    </MudStep>
+    <MudStep Title="Function Configurations">
+        <StepperItem>
+            <Input>
+                <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudCheckBox>
+                <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.UseCancellationTokens">Use Cancellation Tokens</MudCheckBox>
+                <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.ExecuteWithRetry">Execute With Retry</MudCheckBox>
+            </Input>
+            <Example>
+                <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw">
+                    @{
+                        var comment = _apiClientOptions.MakePathCollectionVariablesFunctionParameters
+                            ? "// No private Variable"
+                            : "private readonly string _someVariable; // Private variable";
+                        var secondComment = _apiClientOptions.MakePathCollectionVariablesFunctionParameters
+                            ? "// Now a function parameter"
+                            : "";
+                        var variableName = _apiClientOptions.MakePathCollectionVariablesFunctionParameters ? "_somePathCollectionVariable" : "somePathCollectionVariable";
+                        string parameters = "";
+                        if (_apiClientOptions.MakePathCollectionVariablesFunctionParameters)
+                        {
+                            parameters = "string somePathCollectionVariable";
+                            if (_apiClientOptions.UseCancellationTokens)
+                            {
+                                parameters += ", CancellationToken cancellationToken";
+                            }
+                        }
+                        else
+                        {
+                            if (_apiClientOptions.UseCancellationTokens)
+                            {
+                                parameters = "CancellationToken cancellationToken";
+                            }
+                        }
+                    
+                        var cancellationTokenValue = _dirtyApiClientOptions.UseCancellationTokens ? ", cancellationToken: cancellationToken" : "";
+                    }
+                    @if (_apiClientOptions.MakePathCollectionVariablesFunctionParameters)
+                    {
+                        <text>
+@comment
+public async Task&lt;Stream&gt; GetTickets(@parameters) @secondComment
+{
+@if (_dirtyApiClientOptions.ExecuteWithRetry)
+{
+    @($"{Consts.Indent(1)}return await _httpClient.ExecuteWithRetry(() => _httpClient.GetStreamAsync($\"{{{variableName}}}/ticket.php\"{cancellationTokenValue}));\n")
+}
+else
+{
+    @($"{Consts.Indent(1)}return await _httpClient.GetStreamAsync($\"{{{variableName}}}/ticket.php\"{cancellationTokenValue});\n")
+}
+                        </text>
+                    }
+                </PrismCodeBlock>
+            </Example>
+        </StepperItem>
+    </MudStep>
+    <MudStep Title="Class Deduping">
+        <MudGrid Spacing="3">
+            <AdvancedSettingItem Size="P2CsSize" ToolTip="This will determine whether root classes are considered for deduping. A root class being one that is not is not used in any other classes. Generally these are used directly in the generated ApiClient class.">
+                <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.DuplicateOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudCheckBox>
+            </AdvancedSettingItem>
+
+            <AdvancedSettingItem Size="P2CsSize" ToolTip="This will determine whether or not you want any leniency in the deduping process. If you set this to false, the type matching will be strict and only dedupe when all properties match exactly by name and type.">
+                <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
+            </AdvancedSettingItem>
+
+            <AdvancedSettingItem Size="P2CsSize" ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
+                         be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
+potential duplicate as a duplicate. WHEN the json names DO match. The lower this number is, the more often you will have numbered classes. Amount, Amount2, Amount3">
+                <MudNumericField @bind-Value="_dirtyApiClientOptions.DuplicateOptions.SameOriginalNameSensitivity" Disabled="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Same Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="50"/>
+            </AdvancedSettingItem>
+            <AdvancedSettingItem Size="P2CsSize" ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
+                         be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
+potential duplicate as a duplicate. WHEN the json names DONT match. The higher this number is, the fewer classes that will be generated. Raising this number will also increase the likely
+hood of an error in generated code (minor issues usually) and increase the likelyhood of confusing class names.">
+                <MudNumericField @bind-Value="_dirtyApiClientOptions.DuplicateOptions.DifferentOriginalNameSensitivity" Disabled="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Different Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="6"/>
+            </AdvancedSettingItem>
+        </MudGrid>
+    </MudStep>
+    <MudStep Title="Miscalleanous">
+        <MudGrid Spacing="3">
+            <AdvancedSettingItem Size="P2CsSize" ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
+                <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="_dirtyApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
+            </AdvancedSettingItem>
+            <AdvancedSettingItem Size="P2CsSize" ToolTip="Any types choosen in here will cause disabled parameters of that type to be removed in pre-processing..">
+                <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="_dirtyApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
+            </AdvancedSettingItem>
+            <AdvancedSettingItem Size="P2CsSize" ToolTip="WARNING: Authorizations will be lost is this setting is enabled. This will reorganize requests by authority. See options explained page for full explanation.">
+                <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" Exclude="new List<RootDefinition>() { RootDefinition.Manual }" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
+            </AdvancedSettingItem>
+        </MudGrid>
+    </MudStep>
+</MudStepper>
+
+@code {
+    private CollectionUpload _collectionUpload;
+    private MudStepper _stepper;
+    private enum Steps
+    {
+        Upload,
+        Json,
+        Advanced,
+        Misc
+    }
+
+    private Task<bool> ValidateStep(StepChangeDirection stepDirection, int activeIndex)
+    {
+        if (stepDirection is StepChangeDirection.None or StepChangeDirection.Backward)
+        {
+            return Task.FromResult(true);
+        }
+        var step = (Steps)activeIndex;
+        switch (step)
+        {
+            case Steps.Upload:
+                if (_collectionUpload is {HasDeserializedCollection: true})
+                {
+                    return Task.FromResult(true);
+                }
+                return Task.FromResult(false);
+            case Steps.Json:
+                break;
+            case Steps.Advanced:
+                break;
+            case Steps.Misc:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        return Task.FromResult(true);
+    }
+
+    private void ResetAllStepsBefore(int index)
+    {
+        var step = (Steps)index;
+        switch (step)
+        {
+            case Steps.Json:
+                break;
+            case Steps.Advanced:
+                break;
+            case Steps.Misc:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void SetFutureStepsIncomplete(int index)
+    {
+        switch (index)
+        {
+            case (int)Steps.Json:
+                goto case (int)Steps.Advanced;
+            case (int)Steps.Advanced:
+                goto case (int)Steps.Misc;
+            case (int)Steps.Misc:
+                break;
+        }
+        var futureSteps = _stepper.Steps.Skip(index + 1).ToList();
+        foreach (var step in futureSteps)
+        {
+            step.Status = StepStatus.Continued;
+        }
+    }
+
+
+    [Parameter]
+    public bool ShowInteractiveDemoMessage { get; set; }
+
+
+    [Parameter]
+    public P2CsSize P2CsSize { get; set; } = P2CsSize.Large;
+
+    [Inject] private ISnackbar? Snackbar { get; set; }
+
+    private ApiClientOptions _dirtyApiClientOptions = new();
+
+    private ApiClientOptions _apiClientOptions = new();
+    [Parameter]
+    public ApiClientOptions ApiClientOptions
+    {
+        get => _apiClientOptions;
+        set
+        {
+            if (ApiClientOptions.ConfigsEqual(_apiClientOptions, value))
+            {
+                return;
+            }
+            SetApiClientOptions(value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<ApiClientOptions> ApiClientOptionsChanged { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions))
+        {
+            SetApiClientOptions(ApiClientOptions);
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions))
+        {
+            SetApiClientOptions(_dirtyApiClientOptions);
+        }
+    }
+
+    public void SetApiClientOptions(ApiClientOptions options)
+    {
+        _apiClientOptions = options.Clone();
+        _dirtyApiClientOptions = options.Clone();
+        ApiClientOptionsChanged.InvokeAsync(options);
+    }
+
+    private void SelectedErrorHandlingSinksChanged(IEnumerable<string> errorHandlingSinks)
+    {
+        _dirtyApiClientOptions.ErrorHandlingSinks = errorHandlingSinks.Select(Enum.Parse<ErrorHandlingSinks>).ToList();
+    }
+    private void SelectedCatchExceptionTypesChanged(IEnumerable<string> catchTypes)
+    {
+        _dirtyApiClientOptions.CatchExceptionTypes = catchTypes.Select(Enum.Parse<CatchExceptionTypes>).ToList();
+    }
+    private void SelectedCommentTypesChanged(IEnumerable<string> commentTypes)
+    {
+        _dirtyApiClientOptions.XmlCommentTypes = commentTypes.Select(Enum.Parse<XmlCommentTypes>).ToList();
+    }
+    private void SelectedRemovedDisabledChanged(IEnumerable<string> commentTypes)
+    {
+        _dirtyApiClientOptions.RemoveDisabled = commentTypes.Select(Enum.Parse<RemoveDisabled>).ToList();
+    }
+
+    private void SaveOptions()
+    {
+        SetApiClientOptions(_dirtyApiClientOptions);
+        Snackbar?.Add($"Saved {nameof(ApiClientOptions)}", Severity.Success);
+    }
+
+    private ApiClientOptions? _cachedApiClientsOptions;
+    private ApiClientOptions? _cachedDirtyApiClientsOptions;
+    private P2CsSize _cachedP2CsSize;
+    protected override bool ShouldRender()
+    {
+        if (_cachedApiClientsOptions != null && ApiClientOptions.ConfigsEqual(_cachedApiClientsOptions, _cachedDirtyApiClientsOptions)
+            && ApiClientOptions.ConfigsEqual(_apiClientOptions, _dirtyApiClientOptions) && _cachedP2CsSize == P2CsSize)
+        {
+            return false;
+        }
+        _cachedApiClientsOptions = _apiClientOptions.Clone();
+        _cachedDirtyApiClientsOptions = _dirtyApiClientOptions.Clone();
+        _cachedP2CsSize = P2CsSize;
+        return true;
+    }
+
+}

@@ -1,29 +1,77 @@
 ﻿<style>
     .container-@Id {
-        @if (DisplayContents)
+        @if (DisplayType == CodeBlockDisplayType.Contents)
         {
             @:display: contents;
         }
     }
+    @if (DisplayType == CodeBlockDisplayType.Scroll)
+    {
+        @:.container-@Id .code-toolbar { 
+            @:display: inline-grid;
+            @:width: @MaxWidth;
+            @:height: @MaxHeight;
+        }
+    }
 </style>
-@if (DisplayContents)
+@if(DisplayType == CodeBlockDisplayType.Normal)
+{
+    <div class="container-@Id">
+        <pre @key="Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+                <code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">
+                    @if (!string.IsNullOrWhiteSpace(Value))
+                    {
+                        @Value
+                    }
+                    else if (ChildContent != null)
+                    {
+                        @ChildContent
+                    }
+                </code>
+            </pre>
+    </div>
+}
+else if (DisplayType == CodeBlockDisplayType.Contents)
 {
     <div style="position: relative; display: grid; width: 100%;">
         <div class="container-@Id">
-            <pre @key="Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">@Value</code></pre>
+            <pre @key="Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+                <code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">
+                    @if (!string.IsNullOrWhiteSpace(Value))
+                    {
+                        @Value
+                    }
+                    else if (ChildContent != null)
+                    {
+                        @ChildContent
+                    }
+                </code>
+            </pre>
         </div>
     </div>
 }
-else
+else if(DisplayType == CodeBlockDisplayType.Scroll)
 {
     <div class="container-@Id">
-        <pre @key="Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download"><code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">@Value</code></pre>
+        <pre @key="Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+                <code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">
+                    @if (!string.IsNullOrWhiteSpace(Value))
+                    {
+                        @Value
+                    }
+                    else if (ChildContent != null)
+                    {
+                        @ChildContent
+                    }
+                </code>
+            </pre>
     </div>
 }
 
 @code {
+
     [Parameter]
-    public bool DisplayContents { get; set; }
+    public CodeBlockDisplayType DisplayType { get; set; } = CodeBlockDisplayType.Normal;
 
     [Parameter]
     public string? Style { get; set; }
@@ -38,7 +86,7 @@ else
     public PrismLanguage Language { get; set; }
 
     private string? _value = null;
-    [Parameter, EditorRequired]
+    [Parameter]
     public string? Value
     {
         get => _value;
@@ -51,6 +99,9 @@ else
             
         }
     }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
     [Inject] private Interop Interop { get; set; } = default!;
 
     private string Id = Guid.NewGuid().ToString();
@@ -113,13 +164,19 @@ else
 
     [Parameter]
     public string? MaxHeight { get; set; }
+
+    [Parameter]
+    public string? MaxWidth { get; set; }
     private string? PreStyle()
     {
         if (MaxHeight == null)
         {
             return Style;
         }
-        return $"max-height: {MaxHeight};" + Style;
+        if (DisplayType != CodeBlockDisplayType.Scroll)
+        {
+            return $"max-height: {MaxHeight};" + Style;
+        }
+        return Style;
     }
-
 }
