@@ -1,9 +1,9 @@
 ﻿@typeparam TEnum where TEnum : struct, Enum
 <div class="enum-select-container">
-    <MudSelect @ref="_select" T="string" Label="@Label" Variant="Variant.Outlined" Disabled="Disabled" MultiSelection="true" @bind-SelectedValues="SelectedValues">
+    <MudSelect @ref="_select" T="string" Label="@Label" Variant="Variant.Outlined" Disabled="Disabled" MultiSelection="true" @bind-SelectedValues="SelectedValues" AutoFocus="false" >
         @foreach (var enumType in Enum.GetValues<TEnum>())
         {
-            <MudSelectItem T="string" Value="@enumType.ToString()">@enumType.ToString()</MudSelectItem>
+            <MudSelectItem @key="@enumType" T="string" Value="@enumType.ToString()">@enumType.ToString()</MudSelectItem>
         }
     </MudSelect>
 </div>

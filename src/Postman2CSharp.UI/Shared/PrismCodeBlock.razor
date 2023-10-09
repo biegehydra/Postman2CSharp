@@ -17,7 +17,7 @@
 @if(DisplayType == CodeBlockDisplayType.Normal)
 {
     <div class="container-@Id">
-        <pre @key="Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+        <pre @key="@Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
                 <code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {
@@ -35,7 +35,7 @@ else if (DisplayType == CodeBlockDisplayType.Contents)
 {
     <div style="position: relative; display: grid; width: 100%;">
         <div class="container-@Id">
-            <pre @key="Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+            <pre @key="@Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
                 <code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {
@@ -53,7 +53,7 @@ else if (DisplayType == CodeBlockDisplayType.Contents)
 else if(DisplayType == CodeBlockDisplayType.Scroll)
 {
     <div class="container-@Id">
-        <pre @key="Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+        <pre @key="@Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
                 <code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {

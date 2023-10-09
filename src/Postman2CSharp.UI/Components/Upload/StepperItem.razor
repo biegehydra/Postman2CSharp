@@ -22,13 +22,13 @@
     }
 </style>
 <div class="step-container">
-    <div class="step-question-container">
+    <div @key="Input" class="step-question-container">
         @Input
-        <div class="step-additional-info">
+        <div @key="AdditionalInfo" class="step-additional-info">
             @AdditionalInfo
         </div>
     </div>
-    <div @key="@Guid.NewGuid()" class="step-example-container">
+    <div @key="@Example" class="step-example-container">
         @Example
     </div>
 </div>

@@ -1,10 +1,10 @@
 ﻿@using Humanizer
 @typeparam TEnum where TEnum : struct, Enum
 <div class="enum-select-container" >
-    <MudSelect T="TEnum" Disabled="Disabled" Label="@Label" Variant="Variant.Outlined" @bind-Value="Value">
+    <MudSelect T="TEnum" Disabled="Disabled" Label="@Label" Variant="Variant.Outlined" @bind-Value="Value" AutoFocus="false" >
         @foreach (var enumValue in Enum.GetValues<TEnum>().Where(x => !Exclude?.Contains(x) ?? true))
         {
-            <MudSelectItem T="TEnum" Value="@enumValue">@enumValue.ToString()</MudSelectItem>
+            <MudSelectItem @key="enumValue" T="TEnum" Value="@enumValue">@enumValue.ToString()</MudSelectItem>
         }
     </MudSelect>
 </div>
