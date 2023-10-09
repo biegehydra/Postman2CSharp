@@ -106,10 +106,6 @@
          <MudDivider Class="my-divider" Light="true" FlexItem="true" />
          <MudText Class="setting-section-header mb-3" Typo="Typo.h5">Function Configurations</MudText>
          <MudGrid Spacing="3">
-             <AdvancedSettingItem ToolTip="Each request in the generated ApiClient will call EnsureSuccessStatusCode() on the HttpResponseMessage before deserializing or returning the response stream.">
-                 <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.EnsureResponseIsSuccessStatusCode">Ensure Success Status Code</MudCheckBox>
-             </AdvancedSettingItem>
-
              <AdvancedSettingItem ToolTip="@(@"All actual ""path variables"" (/:pathVariable/) are automatically treated as function parameters, but collection variables in paths (/{{variable}}/) will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
                  <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudCheckBox>
              </AdvancedSettingItem>

@@ -31,7 +31,7 @@ namespace Postman2CSharp.Core.Serialization
             var last = apiClient.HttpCalls.Last();
             foreach (var httpCall in apiClient.HttpCalls)   
             {
-                SerializeEndpoint(sb, apiClient, httpCall, uriSegments, apiClient.BaseUrl, 1, apiClient.CollectionType);
+                SerializeEndpoint(sb, apiClient, httpCall, uriSegments, apiClient.BaseUrl, 1, apiClient.Options.OutputCollectionType);
                 if (httpCall != last)
                 {
                     sb.AppendLine();
