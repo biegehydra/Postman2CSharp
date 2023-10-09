@@ -139,9 +139,9 @@ public async Task&lt;@typeParam&gt; SearchUsers(SearchUsersParameters queryParam
                     else
                     {
                         <text>
-public async Task&lt;Users&gt; GetUserById(string id)
+public async Task&lt;SearchUsersResponse&gt; GetUserById(string id)
 {
-    return await _httpClient.GetFromJsonAsync&lt;Users&gt;($"{_version}/users/{id}");
+    return await _httpClient.GetFromJsonAsync&lt;SearchUsersResponse&gt;($"{_version}/users/{id}");
 }
                         </text>
                     }
