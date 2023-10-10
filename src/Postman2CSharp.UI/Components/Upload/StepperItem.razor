@@ -3,7 +3,8 @@
     .step-container {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        min-height: 55vh;
+        min-height: 40vh;
+        max-height: 60vh;
     }
 
     .step-question-container,
@@ -22,13 +23,13 @@
     }
 </style>
 <div class="step-container">
-    <div @key="Input" class="step-question-container">
+    <div class="step-question-container">
         @Input
-        <div @key="AdditionalInfo" class="step-additional-info">
+        <div class="step-additional-info">
             @AdditionalInfo
         </div>
     </div>
-    <div @key="@Example" class="step-example-container">
+    <div class="step-example-container">
         @Example
     </div>
 </div>

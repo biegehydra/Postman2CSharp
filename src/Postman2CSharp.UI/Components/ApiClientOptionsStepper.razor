@@ -218,6 +218,7 @@ public async Task&lt;Users&gt; GetUserById(string id)
     {
         @($"{Consts.Indent(2)}throw;\n")
     }
+    }
 </text>
 }
 }
@@ -239,11 +240,11 @@ public async Task&lt;Users&gt; GetUserById(string id)
                     @{
                         var comment = _apiClientOptions.MakePathCollectionVariablesFunctionParameters
                             ? "// No private Variable"
-                            : "private readonly string _someVariable; // Private variable";
+                            : "private readonly string _somePathCollectionVariable; // Private variable";
                         var secondComment = _apiClientOptions.MakePathCollectionVariablesFunctionParameters
                             ? "// Now a function parameter"
                             : "";
-                        var variableName = _apiClientOptions.MakePathCollectionVariablesFunctionParameters ? "_somePathCollectionVariable" : "somePathCollectionVariable";
+                        var variableName = _apiClientOptions.MakePathCollectionVariablesFunctionParameters ? "somePathCollectionVariable" : "_somePathCollectionVariable";
                         string parameters = "";
                         if (_apiClientOptions.MakePathCollectionVariablesFunctionParameters)
                         {
@@ -263,50 +264,102 @@ public async Task&lt;Users&gt; GetUserById(string id)
                     
                         var cancellationTokenValue = _dirtyApiClientOptions.UseCancellationTokens ? ", cancellationToken: cancellationToken" : "";
                     }
-                    @if (_apiClientOptions.MakePathCollectionVariablesFunctionParameters)
-                    {
-                        <text>
 @comment
 public async Task&lt;Stream&gt; GetTickets(@parameters) @secondComment
 {
 @if (_dirtyApiClientOptions.ExecuteWithRetry)
 {
-    @($"{Consts.Indent(1)}return await _httpClient.ExecuteWithRetry(() => _httpClient.GetStreamAsync($\"{{{variableName}}}/ticket.php\"{cancellationTokenValue}));\n")
+    @($"{Consts.Indent(1)}return await ExecuteWithRetry(() => _httpClient.GetStreamAsync($\"{{{variableName}}}/ticket.php\"{cancellationTokenValue}));\n")
 }
 else
 {
     @($"{Consts.Indent(1)}return await _httpClient.GetStreamAsync($\"{{{variableName}}}/ticket.php\"{cancellationTokenValue});\n")
 }
-                        </text>
-                    }
+}
                 </PrismCodeBlock>
             </Example>
         </StepperItem>
     </MudStep>
     <MudStep Title="Class Deduping">
-        <MudGrid Spacing="3">
-            <AdvancedSettingItem Size="P2CsSize" ToolTip="This will determine whether root classes are considered for deduping. A root class being one that is not is not used in any other classes. Generally these are used directly in the generated ApiClient class.">
-                <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.DuplicateOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudCheckBox>
-            </AdvancedSettingItem>
+        <StepperItem>
+            <Input>
+            <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.DuplicateOptions.RemoveDuplicateRoots">Dedupe Duplicate Roots</MudCheckBox>
+            <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates">Dedupe Semi-Duplicate Classes</MudCheckBox>
+            <MudNumericField @bind-Value="_dirtyApiClientOptions.DuplicateOptions.SameOriginalNameSensitivity" Disabled="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Same Json Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="50" />
+            <MudNumericField @bind-Value="_dirtyApiClientOptions.DuplicateOptions.DifferentOriginalNameSensitivity" Disabled="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Different Json Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="6" />
+            </Input>
+            <Example>
+                <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw">
+                    @{
+                        var getUserReturnType = "GetUserResponse";
+                        var postUserReturnType = "PostUserResponse";
+                        var patchUserReturnType = "PatchUserResponse";
+                        if (_dirtyApiClientOptions.DuplicateOptions.RemoveDuplicateRoots)
+                        {
+                            postUserReturnType = getUserReturnType;
+                            if (_dirtyApiClientOptions.DuplicateOptions is { RemoveSemiDuplicates: true, SameOriginalNameSensitivity: > 1 })
+                            {
+                                patchUserReturnType = getUserReturnType;
+                            }
+                        }
+                    }
+                    // GetUserById and PostUser both return the exact same json.
+                    // PatchUser returns the extremely similar json but with 2 fewer properties.
+                    // Different Json Name Sensitivity has no effect in this scenario. Json roots are
+                    // considered to have the same json name during deduping.
+                    public async Task&lt;@getUserReturnType&gt; GetUserById(string id)
+                    {
+                    return await _httpClient.GetFromJsonAsync&lt;Users&gt;($"{_version}/users/{id}");
+                    }
 
-            <AdvancedSettingItem Size="P2CsSize" ToolTip="This will determine whether or not you want any leniency in the deduping process. If you set this to false, the type matching will be strict and only dedupe when all properties match exactly by name and type.">
-                <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
-            </AdvancedSettingItem>
+                    public async Task&lt;@postUserReturnType&gt; PostUser(User user)
+                    {
+                    return await _httpClient.GetJsonAsync&lt;Users&gt;($"{_version}/users", user);
+                    }
 
-            <AdvancedSettingItem Size="P2CsSize" ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
-                         be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
-potential duplicate as a duplicate. WHEN the json names DO match. The lower this number is, the more often you will have numbered classes. Amount, Amount2, Amount3">
-                <MudNumericField @bind-Value="_dirtyApiClientOptions.DuplicateOptions.SameOriginalNameSensitivity" Disabled="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Same Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="50"/>
-            </AdvancedSettingItem>
-            <AdvancedSettingItem Size="P2CsSize" ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
-                         be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
-potential duplicate as a duplicate. WHEN the json names DONT match. The higher this number is, the fewer classes that will be generated. Raising this number will also increase the likely
-hood of an error in generated code (minor issues usually) and increase the likelyhood of confusing class names.">
-                <MudNumericField @bind-Value="_dirtyApiClientOptions.DuplicateOptions.DifferentOriginalNameSensitivity" Disabled="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Different Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="6"/>
-            </AdvancedSettingItem>
-        </MudGrid>
+                    public async Task&lt;@patchUserReturnType&gt; PatchUser(User user)
+                    {
+                    return await _httpClient.PatchJsonAsync&lt;Users&gt;($"{_version}/users", user);
+                    }
+                </PrismCodeBlock>
+            </Example>
+            <AdditionalInfo>
+                <div style="overflow: scroll;">
+                    <ul>
+                        <li>
+                            @InlineEmphasis("Duplicate Roots") - The root class ares your responses and requests; all other classes generated descend from them. Deduping them
+                            will cause some endpoints to return the same model, rather than all returning a unique model.
+                        </li>
+                        <li>
+                            @InlineValue("Semi-Duplicate Classes") - A semi-duplicate class is a class that has that has all matching members to another class, except fewer.
+                            It's not uncommon to see JSON responses representing the same model with different amounts of properties. This is usually because the API is returning
+                            a subset of the properties in the model. Enabling this will dedupe these "semi-duplicate".
+                        </li>
+                        <li>
+                            @InlineValue("Same vs Different Json Name Sensitivity") - If you enable removing semi-duplicates, you probably want to set limits on the difference in the amount
+                            of properties on 2 classes can be to be considered a semi-duplicate - you don't want an error response with only a message property being deduped into the chat message class.
+                            The same sensitivity is the the difference in the amount of properties on 2 classes can be to be considered semi-duplicate if they have the same json name.
+                            The different sensitivity functions the same but when the json names (keys) are different. Higher sensitivity = more likely to be considered a semi-duplicate = higher change
+                            of deduping classes that don't represent the same model. Semi duplicate options apply to duplicate roots.
+                        </li>
+                    </ul>
+                </div>
+            </AdditionalInfo>
+        </StepperItem>
     </MudStep>
-    <MudStep Title="Miscalleanous">
+    <MudStep Title="Miscellaneous">
+        <StepperItem>
+            <Input>
+                <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="_dirtyApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
+                <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="_dirtyApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
+                <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" Exclude="new List<RootDefinition>() { RootDefinition.Manual }" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
+            </Input>
+            <Example>
+                <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" >
+
+                </PrismCodeBlock>
+            </Example>
+        </StepperItem>
         <MudGrid Spacing="3">
             <AdvancedSettingItem Size="P2CsSize" ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
                 <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="_dirtyApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
@@ -328,8 +381,10 @@ hood of an error in generated code (minor issues usually) and increase the likel
     {
         Upload,
         Json,
-        Advanced,
-        Misc
+        MultipleResponseHandling,
+        ErrorHandling,
+        FunctionConfigurations,
+        Miscellaneous
     }
 
     private Task<bool> ValidateStep(StepChangeDirection stepDirection, int activeIndex)
@@ -349,9 +404,13 @@ hood of an error in generated code (minor issues usually) and increase the likel
                 return Task.FromResult(false);
             case Steps.Json:
                 break;
-            case Steps.Advanced:
+            case Steps.MultipleResponseHandling:
                 break;
-            case Steps.Misc:
+            case Steps.ErrorHandling:
+                break;
+            case Steps.FunctionConfigurations:
+                break;
+            case Steps.Miscellaneous:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -367,30 +426,40 @@ hood of an error in generated code (minor issues usually) and increase the likel
         {
             case Steps.Json:
                 break;
-            case Steps.Advanced:
+            case Steps.MultipleResponseHandling:
                 break;
-            case Steps.Misc:
+            case Steps.ErrorHandling:
+                break;
+            case Steps.FunctionConfigurations:
+                break;
+            case Steps.Miscellaneous:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
 
-    private void SetFutureStepsIncomplete(int index)
+    private void SetFutureStepsIncomplete(Steps step)
     {
-        switch (index)
+        switch (step)
         {
-            case (int)Steps.Json:
-                goto case (int)Steps.Advanced;
-            case (int)Steps.Advanced:
-                goto case (int)Steps.Misc;
-            case (int)Steps.Misc:
+            case Steps.Upload:
+                goto case Steps.Json;
+            case Steps.Json:
+                goto case Steps.MultipleResponseHandling;
+            case Steps.MultipleResponseHandling:
+                goto case Steps.ErrorHandling;
+            case Steps.ErrorHandling:
+                goto case Steps.FunctionConfigurations;
+            case Steps.FunctionConfigurations:
+                goto case Steps.Miscellaneous;
+            case Steps.Miscellaneous:
                 break;
         }
-        var futureSteps = _stepper.Steps.Skip(index + 1).ToList();
-        foreach (var step in futureSteps)
+        var futureSteps = _stepper.Steps.Skip((int) step + 1).ToList();
+        foreach (var futureStep in futureSteps)
         {
-            step.Status = StepStatus.Continued;
+            futureStep.Status = StepStatus.Continued;
         }
     }
 

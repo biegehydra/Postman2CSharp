@@ -450,7 +450,7 @@ public class ApiClientGenerator
                 }
             }
 
-            var uniqueHeaders = requestItem.Request.Header.Except(commonHeaders).ToList() ?? new ();
+            var uniqueHeaders = requestItem.Request.Header.Except(commonHeaders).ToList();
 
             var successResponseDataType = allApiResponse.FirstOrDefault()?.DataType ?? DataType.Null;
             // Multiple api responses or the only api response is not a success response
