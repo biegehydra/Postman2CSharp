@@ -4,6 +4,13 @@
         margin-bottom: 10px;
         font-weight: 100;
     }
+
+    .my-step-container {
+        background: rgb(23 26 34);
+        padding: 15px;
+        border: 1px solid white;
+        border-top: 0px;
+    }
 </style>
 <div class="f-row-column" style="gap: 10px;">
     <div class="f-column small-w-100" style="width: 90%;">
@@ -19,7 +26,7 @@
 <MudStepper @ref="_stepper" Linear="true" Color="Color.Primary" Variant="Variant.Filled" UseStepBorder="true"
             DisableAnimation="false" ValidateStep="ValidateStep" ActiveStepChanged="OnActiveIndexChanged" >
     <MudStep Title="Upload">
-        <div style="min-height: 50vh;">
+        <div class="my-step-container" style="min-height: 50vh;"  >
             <CollectionUpload Small="false" SuccessfulUpload="args => { _uploadedFile = args.BrowserFile; _collection = args.Collection; }"></CollectionUpload>
         </div>
     </MudStep>
@@ -298,7 +305,7 @@ else
     if (_dirtyApiClientOptions.DuplicateOptions.RemoveDuplicateRoots)
     {
         postUserReturnType = getUserReturnType;
-        if (_dirtyApiClientOptions.DuplicateOptions is { RemoveSemiDuplicates: true, SameOriginalNameSensitivity: > 1 })
+        if (_dirtyApiClientOptions.DuplicateOptions is { RemoveSemiDuplicates: true, DifferentOriginalNameSensitivity: > 1 })
         {
             patchUserReturnType = getUserReturnType;
         }
@@ -306,8 +313,9 @@ else
 }
 // GetUserById and PostUser both return the exact same json.
 // PatchUser returns the extremely similar json but with 2 fewer properties.
-// Different Json Name Sensitivity has no effect in this scenario. Json roots are
-// considered to have the same json name during deduping.
+// Same Json Name Sensitivity has no effect in this scenario. Json roots are
+// all have different json names during deduping (even though they are roots
+// and technically have no name).
 public async Task&lt;@getUserReturnType&gt; GetUserById(string id)
 {
     return await _httpClient.GetFromJsonAsync&lt;Users&gt;($"{_version}/users/{id}");
@@ -467,10 +475,8 @@ public class SomeQueryParameters(
         </AdditionalInfo>
     </StepperItem>
 </MudStep>
-    <MudStep Title="Result" IsResultStep="true" >    
-        <div class="f-column">
-            <ProgressPopup Options="_progressOptions" />
-        </div>
+    <MudStep Title="Result" IsResultStep="true">
+        <ProgressPopup Options="_progressOptions" IsPopup="false" />
     </MudStep>
 </MudStepper>
 
@@ -500,6 +506,8 @@ public class SomeQueryParameters(
     {
         if (newIndex == (int) Steps.Result)
         {
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(10);
             await GenerateApiClientsWithTracking();
         }
     }
@@ -657,6 +665,8 @@ public class SomeQueryParameters(
         {
             var apiClientGenerator = new ApiClientGenerator(_collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, Convert.LastSavedApiClientOptions));
             await StartTrackingGenerator(apiClientGenerator);
+            _forceRender = true;
+            StateHasChanged();
             await Task.Delay(1);
             var apiClients = await apiClientGenerator.GenerateApiClients();
             var apiCollection = new ApiCollection()
@@ -691,18 +701,19 @@ public class SomeQueryParameters(
         apiClientGenerator.OnStageChanged += options.InvokeStageChangedCallback;
 
         _progressOptions = options;
-        await InvokeAsync(StateHasChanged);
     }
 
+    private bool _forceRender = false;
     private ApiClientOptions? _cachedApiClientsOptions;
     private ApiClientOptions? _cachedDirtyApiClientsOptions;
     protected override bool ShouldRender()
     {
-        if (_cachedApiClientsOptions != null && ApiClientOptions.ConfigsEqual(_cachedApiClientsOptions, _cachedDirtyApiClientsOptions)
+        if (!_forceRender && _cachedApiClientsOptions != null && ApiClientOptions.ConfigsEqual(_cachedApiClientsOptions, _cachedDirtyApiClientsOptions)
             && ApiClientOptions.ConfigsEqual(_apiClientOptions, _dirtyApiClientOptions))
         {
             return false;
         }
+        _forceRender = false;
         _cachedApiClientsOptions = _apiClientOptions.Clone();
         _cachedDirtyApiClientsOptions = _dirtyApiClientOptions.Clone();
         return true;

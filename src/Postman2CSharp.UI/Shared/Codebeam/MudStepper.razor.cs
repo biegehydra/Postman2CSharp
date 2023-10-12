@@ -180,7 +180,7 @@ namespace CodeBeamMudExtensions
 
         [Parameter] public bool UseStepBorder { get; set; }
 
-        public string StepBorderStyle => UseStepBorder ? "border-color: rgb(208 213 221 / 1); border-width: 1px; padding: 0 10px;" : null;
+        public string StepBorderStyle => UseStepBorder ? "border-color: rgb(208 213 221 / 1); border-width: 1px; padding: 0 10px; background: black;" : null;
 
         List<MudStep> _steps = new();
         List<MudStep> _allSteps = new();
@@ -258,7 +258,9 @@ namespace CodeBeamMudExtensions
             }
             ActiveIndex = index;
            
-            await ActiveStepChanged.InvokeAsync(ActiveIndex);
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            ActiveStepChanged.InvokeAsync(ActiveIndex);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         public async Task Step(int stepAmount, bool validate = true)
@@ -307,7 +309,9 @@ namespace CodeBeamMudExtensions
 
             if (oldIndex != ActiveIndex)
             {
-                await ActiveStepChanged.InvokeAsync(ActiveIndex);
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                ActiveStepChanged.InvokeAsync(ActiveIndex);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
         }
 

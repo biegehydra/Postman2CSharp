@@ -1,11 +1,31 @@
-﻿@if (Options != null)
+﻿@if (Options != null && IsPopup)
 {
     <div class="f-row aic" style="gap: 20px;">
         @if (_progress != 1)
         {
-            <MudText UserAttributes="_textUserAttributes" Typo="Typo.h6">@Options.Text</MudText>
-            <MudProgressCircular @ref="_mudProgressCircular" Value="@_progress" UserAttributes="_userAttributes"  Indeterminate="false" Size="Size.Medium" StrokeWidth="4" Color="Color.Success" Min="0" Max="1" />
+            <MudText Typo="Typo.h6">@Options.Text</MudText>
+            <MudProgressCircular @ref="_mudProgressCircular" Value="@_progress" Indeterminate="false" Size="Size.Medium" StrokeWidth="4" Color="Color.Success" Min="0" Max="1" />
             <MudText Typo="Typo.h6"><b>@($"{_progress:P2}")</b></MudText>
+        }
+        else
+        {
+            <MudText Typo="Typo.h6">@Options.CompletedText</MudText>
+            <MudIcon Color="@Color.Success" Icon="@Icons.Check" Size="Size.Large"></MudIcon>
+            if (_timer != null)
+            {
+                <MudText Typo="Typo.body1">@_message</MudText>
+            }
+        }
+    </div>
+}
+else if (Options != null)
+{
+    <div class="f-column aic" style="gap: 20px;">
+        @if (_progress != 1)
+        {
+            <MudText Typo="Typo.h4">@Options.Text</MudText>
+            <MudProgressCircular @ref="_mudProgressCircular" Value="@_progress" Indeterminate="false" Size="Size.Large" StrokeWidth="4" Color="Color.Success" Min="0" Max="1" />
+            <MudText Typo="Typo.h5"><b>@($"{_progress:P2}")</b></MudText>
         }
         else
         {
@@ -20,10 +40,7 @@
 }
 
 @code {
-    private readonly string _textGuid = Guid.NewGuid().ToString();
-    private readonly string _guid = Guid.NewGuid().ToString();
-    private Dictionary<string, object> _userAttributes = new();
-    private Dictionary<string, object> _textUserAttributes = new();
+    [Parameter] public bool IsPopup { get; set; } = true;
 
     private float _progress = 0;
 
@@ -33,12 +50,6 @@
     [Parameter] public ProgressPopupOptions? Options { get; set; }
 
     private bool _first = true;
-
-    protected override void OnInitialized()
-    {
-        _userAttributes.Add("id", _guid);
-        _textUserAttributes.Add("id", _textGuid);
-    }
 
     private void Reset()
     {

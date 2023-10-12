@@ -3,7 +3,7 @@
 @using MudExtensions
 
 <CascadingValue Value="this" IsFixed="true">
-    <MudStack Class="@Class" Style="@Style"> @*Row="Vertical"*@
+    <div class="@Class" style="@Style"> @*Row="Vertical"*@
         <MudStack Style="@StepBorderStyle" Row="true" AlignItems="@(HeaderTextView == HeaderTextView.NewLine ? AlignItems.Start : AlignItems.Center)">
             @*Row="!Vertical"*@
             @foreach (MudStep step in _steps)
@@ -161,7 +161,7 @@
                 }
             </div>
         </MudStack>
-    </MudStack>
+    </div>
 </CascadingValue>
 
 @if (DisableAnimation == false)
