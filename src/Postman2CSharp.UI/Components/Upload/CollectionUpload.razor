@@ -58,14 +58,23 @@ else
     [Inject] private ILazyLoader LazyLoad { get; set; } = null!;
     [Inject] private Lazy<ISnackbar?> SnackBar { get; set; } = null!;
     [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
-    [Parameter] public EventCallback<ApiCollection> SuccessfulUpload { get; set; }
+    [Parameter] public EventCallback<ApiCollection> SuccessfulGeneration { get; set; }
+    [Parameter] public EventCallback<(IBrowserFile BrowserFile, PostmanCollection Collection)> SuccessfulUpload { get; set; }
+
 
     public bool HasDeserializedCollection => _collection != null; 
+    public PostmanCollection? GetCollection() => _collection;
+    public IBrowserFile? GetUploadedFile() => _uploadedFile;
 
     private ManualRootDefinitionComponent? _manualRootDefinitionComponent;
     private PostmanCollection? _collection;
     private IBrowserFile? _uploadedFile;
-    private const string TestDataName = "GoogleMapsPlatform.json";
+
+    public void Reset()
+    {
+        _uploadedFile = null;
+        _collection = null;
+    }
 
     private async Task OnUpload(IBrowserFile browserFile)
     {
@@ -94,7 +103,7 @@ else
         await LazyLoad.LoadHttpSecurityAssemblies();
         var httpClient = new HttpClient();
         var response = await httpClient.GetAsync("https://files.postman2csharp.com/GoogleMapsPlatform.json");
-        _uploadedFile = new TestBrowserFile(await response.Content.ReadAsStreamAsync(), TestDataName);
+        _uploadedFile = new TestBrowserFile(await response.Content.ReadAsStreamAsync(), Consts.TestDataName);
         _collection = null;
     }
 
@@ -109,6 +118,7 @@ else
                 SnackBar.Value?.Add("Json could not be deserialized", Severity.Warning);
                 return false;
             }
+            await SuccessfulUpload.InvokeAsync((_uploadedFile, _collection));
             return true;
         }
         catch (JsonException exception)
@@ -138,16 +148,16 @@ else
         {
             if (await TryDeserializerApiClient())
             {
-                await Process();
+                await GenerateApiClientsWithTracking();
             }
         }
         else
         {
-            await Process();
+            await GenerateApiClientsWithTracking();
         }
     }
 
-    private async Task Process()
+    private async Task GenerateApiClientsWithTracking()
     {
         if (_collection == null) return;
         try
@@ -162,11 +172,11 @@ else
                 CollectionInfo = _collection.Info
             };
 
-            var isTestData = _uploadedFile.Name == TestDataName;
+            var isTestData = _uploadedFile.Name == Consts.TestDataName;
             var dataType = isTestData ? "Test Data" : "Real Data";
             var message = $"Generate ApiClient - {dataType}";
             await AnalyticsInterop.TrackAction(message);
-            await SuccessfulUpload.InvokeAsync(apiCollection);
+            await SuccessfulGeneration.InvokeAsync(apiCollection);
         }
         catch (Exception exception)
         {

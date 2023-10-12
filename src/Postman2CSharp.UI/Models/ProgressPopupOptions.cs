@@ -8,7 +8,7 @@ namespace Postman2CSharp.UI.Models
         public string CompletedText { get; set; }
         public event Func<string, Task>? StageChanged;
         public event Func<float, Task>? OnProgress;
-        public Snackbar Snackbar { get; set; } = default!;
+        public Snackbar? Snackbar { get; set; }
 
         public ProgressPopupOptions(string text, string completedText)
         {

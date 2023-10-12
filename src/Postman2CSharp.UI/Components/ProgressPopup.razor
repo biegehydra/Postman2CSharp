@@ -3,28 +3,31 @@
     <div class="f-row aic" style="gap: 20px;">
         @if (_progress != 1)
         {
-            <MudText UserAttributes="TextUserAttributes" Typo="Typo.h6">@Options.Text</MudText>
-            <MudProgressCircular @ref="_mudprogressCircular" Value="@_progress" UserAttributes="UserAttributes"  Indeterminate="false" Size="Size.Medium" StrokeWidth="4" Color="Color.Success" Min="0" Max="1" />
+            <MudText UserAttributes="_textUserAttributes" Typo="Typo.h6">@Options.Text</MudText>
+            <MudProgressCircular @ref="_mudProgressCircular" Value="@_progress" UserAttributes="_userAttributes"  Indeterminate="false" Size="Size.Medium" StrokeWidth="4" Color="Color.Success" Min="0" Max="1" />
             <MudText Typo="Typo.h6"><b>@($"{_progress:P2}")</b></MudText>
         }
         else
         {
             <MudText Typo="Typo.h6">@Options.CompletedText</MudText>
             <MudIcon Color="@Color.Success" Icon="@Icons.Check" Size="Size.Large"></MudIcon>
+            if (_timer != null)
+            {
+                <MudText Typo="Typo.body1">@_message</MudText>
+            }
         }
     </div>
 }
 
 @code {
-    private string TextGuid = Guid.NewGuid().ToString();
+    private readonly string _textGuid = Guid.NewGuid().ToString();
     private readonly string _guid = Guid.NewGuid().ToString();
-    private Dictionary<string, object> UserAttributes { get; set; } = new();
-    private Dictionary<string, object> TextUserAttributes { get; set; } = new();
-
+    private Dictionary<string, object> _userAttributes = new();
+    private Dictionary<string, object> _textUserAttributes = new();
 
     private float _progress = 0;
 
-    private MudProgressCircular? _mudprogressCircular;
+    private MudProgressCircular? _mudProgressCircular;
 
     [Inject] private Lazy<ISnackbar?> Snackbar { get; set; } = null!;
     [Parameter] public ProgressPopupOptions? Options { get; set; }
@@ -33,8 +36,18 @@
 
     protected override void OnInitialized()
     {
-        UserAttributes.Add("id", _guid);
-        TextUserAttributes.Add("id", TextGuid);
+        _userAttributes.Add("id", _guid);
+        _textUserAttributes.Add("id", _textGuid);
+    }
+
+    private void Reset()
+    {
+        _first = true;
+        _progress = 0;
+        Options = null;
+        _timer = null;
+        _countDown = 5;
+        _message = "Navigating in 5...";
     }
 
 
@@ -80,16 +93,32 @@
         await InvokeAsync(StateHasChanged);
         Options!.OnProgress -= OnProgressChanged;
 
-        await Task.Delay(5000);
-        Snackbar.Value?.Remove(Options!.Snackbar);
+        if (Options.Snackbar != null)
+        {
+            await Task.Delay(5000);
+            Snackbar.Value?.Remove(Options!.Snackbar);
+        }
+        else
+        {
+            _timer = new System.Timers.Timer(1000);
+            _timer.Elapsed += OnTimerElapsed;
+            _timer.Start();
+        }
     }
-
-    private int ToSvgValue(double value)
+    private System.Timers.Timer? _timer;
+    private int _countDown = 5;
+    private string _message = "Navigating in 5...";
+    private void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        var minValue = Math.Min(Math.Max(0, value), 1);
-    // calculate fraction, which is a value between 0 and 1
-        var fraction = (minValue - 0) / (1 - 0);
-    // now project into the range of the SVG value (126 .. 0)
-        return (int)Math.Round(126 - 126 * fraction);
+        if (_countDown > 0)
+        {
+            _countDown--;
+            _message = $"Navigating in {_countDown}...";
+            InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            _timer?.Stop(); 
+        }
     }
 }

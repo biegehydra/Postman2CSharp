@@ -5,6 +5,8 @@ namespace Postman2CSharp.Core.Infrastructure;
 
 public static class Consts
 {
+    public const string TestDataName = "GoogleMapsPlatform.json";
+
     public const string MultipartFormData = nameof(MultipartFormData);
     public const string Postman2CSharp = nameof(Postman2CSharp);
     public const string Request = nameof(Request);

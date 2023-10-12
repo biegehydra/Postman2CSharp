@@ -40,7 +40,7 @@
     <div class="code-writing-options-contianer">
         @if (UseStepper)
         {
-            <ApiClientOptionsStepper @bind-ApiClientOptions="LastSavedApiClientOptions" ></ApiClientOptionsStepper>
+            <ApiClientOptionsStepper @bind-ApiClientOptions="LastSavedApiClientOptions" SuccessfulUpload="OnSuccessfulUpload"></ApiClientOptionsStepper>
         }
         else
         {
