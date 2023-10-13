@@ -2,121 +2,123 @@
 @using Postman2CSharp.UI.Models
 @implements IDisposable
 
-<MudText Style="font-weight: 500;" Typo="Typo.h2">Class Generation Options</MudText>
-<br />
-<div class="f-row-column">
-    <MudText Typo="Typo.caption"><b>* Once you process your first json, options cannot be changed.</b></MudText>
-    @if (FirstProcessComplete)
-    {
-        <div style="flex-grow: 1;"></div>
-        <MudButton Style="white-space: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="Reset">Start New Session</MudButton>
-    }
-</div>
-<SlideDown StartOpen MaxHeight="1000px" AnimationDuration="0.7" ShowLessText="Hide Options" ShowMoreText="Show Options" >
-    <div class="f-row-column" style="gap: 10px;">
-        <div style="width: 90%;">
-        </div>
-        <div class="f-column end-start" style="gap: 25px;">
-            @if (!FirstProcessComplete)
-            {
-                <MudTooltip Delay="1000" Text="Resets settings to default values">
-                    <MudButton Style="white-space: nowrap;" Color="Color.Error" Disabled="_lastSavedInputModel.Equals(InputModelWithDefaults())" Variant="Variant.Filled" OnClick="SetInputModelToDefault">Reset To Default</MudButton>
-                </MudTooltip>
-            }
-        </div>
-    </div>
+<div class="info-container" >
+    <MudText Style="font-weight: 500;" Typo="Typo.h2">Class Generation Options</MudText>
     <br />
-    <MudGrid>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent @bind-Value="InputModel.AttributeLibrary" Disabled="FirstProcessComplete" Label="Json Library"></EnumSelectComponent>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent @bind-Value="InputModel.AttributeUsage" Disabled="FirstProcessComplete" Label="Json Attribute Usage"></EnumSelectComponent>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent @bind-Value="InputModel.CollectionType" Disabled="FirstProcessComplete" Label="Collection Type"></EnumSelectComponent>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent @bind-Value="InputModel.OutputType" Disabled="FirstProcessComplete" Label="Output Type"></EnumSelectComponent>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <EnumSelectComponent @bind-Value="InputModel.OutputMembers" Disabled="FirstProcessComplete" Label="Output Members"></EnumSelectComponent>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudCheckBox Color="Color.Primary" Disabled="InputModel.AttributeLibrary == JsonLibrary.SystemTextJson || FirstProcessComplete" @bind-Checked="InputModel.NullValueHandlingIgnore" Label="Null Value Handling Ignore"></MudCheckBox>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.ReadOnlyCollectionProperties" Disabled="FirstProcessComplete" Label="Read Only Collection Properties"></MudCheckBox>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.AlwaysUseNullables" Disabled="FirstProcessComplete" Label="Always Use Nullables"></MudCheckBox>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.UsePascalCase" Disabled="FirstProcessComplete" Label="Use Pascal Case"></MudCheckBox>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            @{
-                var toolTipColor = Color.Warning;
-                var toolTipVisible = false;
-                string toolTipMessage = "";
-                if (!InputModel.Equals(_lastSavedInputModel))
+    <div class="f-row-column">
+        <MudText Typo="Typo.caption"><b>* Once you process your first json, options cannot be changed.</b></MudText>
+        @if (FirstProcessComplete)
+        {
+            <div style="flex-grow: 1;"></div>
+            <MudButton Style="white-space: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="Reset">Start New Session</MudButton>
+        }
+    </div>
+    <SlideDown StartOpen MaxHeight="1000px" AnimationDuration="0.7" ShowLessText="Hide Options" ShowMoreText="Show Options">
+         <div class="f-row-column" style="gap: 10px;">
+             <div style="width: 90%;">
+             </div>
+             <div class="f-column end-start" style="gap: 25px;">
+                 @if (!FirstProcessComplete)
                 {
-                    toolTipColor = Color.Warning;
-                    toolTipVisible = true;
-                    toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
-                }
-            }
-            <div class="f-row aic" style="gap: 15px; width: 100%; justify-content: space-around;">
-                <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="InputModel.Equals(_lastSavedInputModel) || FirstProcessComplete" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
-                @if (toolTipVisible && !FirstProcessComplete)
-                {
-                    <MudTooltip Text="@toolTipMessage">
-                        <MudIcon Icon="@Icons.Warning" Color="@toolTipColor" Title="Warning" Size="Size.Large"></MudIcon>
+                    <MudTooltip Delay="1000" Text="Resets settings to default values">
+                        <MudButton Style="white-space: nowrap;" Color="Color.Error" Disabled="_lastSavedInputModel.Equals(InputModelWithDefaults())" Variant="Variant.Filled" OnClick="SetInputModelToDefault">Reset To Default</MudButton>
                     </MudTooltip>
                 }
-                else
-                {
-                    <div style="width: 20px;">
-                    </div>
-                }
             </div>
-        </MudItem>
-    </MudGrid>
-    <br />
-    <br />
-    <MudText Class="setting-section-header" Typo="Typo.h5">Duplicate Options</MudText>
-    <p style="margin-bottom: 20px;">
-    </p>
-    <MudGrid Spacing="3">
-        <AdvancedSettingItem ToolTip="This will determine whether root classes are considered for deduping. A root class being one that is not is not used in any other classes. Generally these are used directly in the generated ApiClient class.">
-            <MudCheckBox Color="Color.Primary" Disabled="FirstProcessComplete" @bind-Checked="_duplicateOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudCheckBox>
-        </AdvancedSettingItem>
+        </div>
+        <br />
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <EnumSelectComponent @bind-Value="InputModel.AttributeLibrary" Disabled="FirstProcessComplete" Label="Json Library"></EnumSelectComponent>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <EnumSelectComponent @bind-Value="InputModel.AttributeUsage" Disabled="FirstProcessComplete" Label="Json Attribute Usage"></EnumSelectComponent>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <EnumSelectComponent @bind-Value="InputModel.CollectionType" Disabled="FirstProcessComplete" Label="Collection Type"></EnumSelectComponent>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <EnumSelectComponent @bind-Value="InputModel.OutputType" Disabled="FirstProcessComplete" Label="Output Type"></EnumSelectComponent>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <EnumSelectComponent @bind-Value="InputModel.OutputMembers" Disabled="FirstProcessComplete" Label="Output Members"></EnumSelectComponent>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudCheckBox Color="Color.Primary" Disabled="InputModel.AttributeLibrary == JsonLibrary.SystemTextJson || FirstProcessComplete" @bind-Checked="InputModel.NullValueHandlingIgnore" Label="Null Value Handling Ignore"></MudCheckBox>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.ReadOnlyCollectionProperties" Disabled="FirstProcessComplete" Label="Read Only Collection Properties"></MudCheckBox>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.AlwaysUseNullables" Disabled="FirstProcessComplete" Label="Always Use Nullables"></MudCheckBox>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.UsePascalCase" Disabled="FirstProcessComplete" Label="Use Pascal Case"></MudCheckBox>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                @{
+                    var toolTipColor = Color.Warning;
+                    var toolTipVisible = false;
+                    string toolTipMessage = "";
+                    if (!InputModel.Equals(_lastSavedInputModel))
+                    {
+                        toolTipColor = Color.Warning;
+                        toolTipVisible = true;
+                        toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
+                    }
+                }
+                <div class="f-row aic" style="gap: 15px; width: 100%; justify-content: space-around;">
+                    <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="InputModel.Equals(_lastSavedInputModel) || FirstProcessComplete" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
+                    @if (toolTipVisible && !FirstProcessComplete)
+                    {
+                        <MudTooltip Text="@toolTipMessage">
+                            <MudIcon Icon="@Icons.Warning" Color="@toolTipColor" Title="Warning" Size="Size.Large"></MudIcon>
+                        </MudTooltip>
+                    }
+                    else
+                    {
+                        <div style="width: 20px;">
+                        </div>
+                    }
+                </div>
+            </MudItem>
+        </MudGrid>
+        <br />
+        <br />
+        <MudText Class="setting-section-header" Typo="Typo.h5">Duplicate Options</MudText>
+        <p style="margin-bottom: 20px;">
+        </p>
+        <MudGrid Spacing="3">
+            <AdvancedSettingItem ToolTip="This will determine whether root classes are considered for deduping. A root class being one that is not is not used in any other classes. Generally these are used directly in the generated ApiClient class.">
+                <MudCheckBox Color="Color.Primary" Disabled="FirstProcessComplete" @bind-Checked="_duplicateOptions.RemoveDuplicateRoots">Remove Duplicate Roots</MudCheckBox>
+            </AdvancedSettingItem>
 
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudCheckBox Color="Color.Primary" @bind-Checked="OneTypePerJsonMemberName" Disabled="FirstProcessComplete" Label="One Type Per Json Member Name"></MudCheckBox>
-        </MudItem>
-        
-        <AdvancedSettingItem ToolTip="This will determine whether or not you want any leniency in the deduping process. If you set this to false, the type matching will be strict and only dedupe when all properties match exactly by name and type.">
-            <MudCheckBox Color="Color.Primary" Disabled="FirstProcessComplete" @bind-Checked="_duplicateOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
-        </AdvancedSettingItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudCheckBox Color="Color.Primary" @bind-Checked="OneTypePerJsonMemberName" Disabled="FirstProcessComplete" Label="One Type Per Json Member Name"></MudCheckBox>
+            </MudItem>
 
-        <AdvancedSettingItem ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
+            <AdvancedSettingItem ToolTip="This will determine whether or not you want any leniency in the deduping process. If you set this to false, the type matching will be strict and only dedupe when all properties match exactly by name and type.">
+                <MudCheckBox Color="Color.Primary" Disabled="FirstProcessComplete" @bind-Checked="_duplicateOptions.RemoveSemiDuplicates">Remove Semi-Duplicate Classes</MudCheckBox>
+            </AdvancedSettingItem>
+
+            <AdvancedSettingItem ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
                          be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
 potential duplicate as a duplicate. WHEN the json names DO match. The lower this number is, the more often you will have numbered classes. Amount, Amount2, Amount3">
-            <MudNumericField @bind-Value="_duplicateOptions.SameOriginalNameSensitivity" Disabled="_duplicateOptions.RemoveSemiDuplicates == false || FirstProcessComplete" Label="Same Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="50" />
-        </AdvancedSettingItem>
-        <AdvancedSettingItem ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
+                <MudNumericField @bind-Value="_duplicateOptions.SameOriginalNameSensitivity" Disabled="_duplicateOptions.RemoveSemiDuplicates == false || FirstProcessComplete" Label="Same Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="50" />
+            </AdvancedSettingItem>
+            <AdvancedSettingItem ToolTip="All types are considered for duplicates. All property types and names on the potential duplicate must match the original type to
                          be considered for deduplication. This lets you configure how large the the difference in the amount of properties between the potential duplicate and original can be before considering the
 potential duplicate as a duplicate. WHEN the json names DONT match. The higher this number is, the fewer classes that will be generated. Raising this number will also increase the likely
 hood of an error in generated code (minor issues usually) and increase the likelyhood of confusing class names.">
-            <MudNumericField @bind-Value="_duplicateOptions.DifferentOriginalNameSensitivity" Disabled="_duplicateOptions.RemoveSemiDuplicates == false || FirstProcessComplete" Label="Different Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="6" />
-        </AdvancedSettingItem>
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudButton Color="Color.Primary" OnClick="SaveDuplicateOptions" Disabled="Equals(_duplicateOptions, _lastSavedDuplicateOptions) || FirstProcessComplete" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
-        </MudItem>
-    </MudGrid>
-    <br />
-</SlideDown>
+                <MudNumericField @bind-Value="_duplicateOptions.DifferentOriginalNameSensitivity" Disabled="_duplicateOptions.RemoveSemiDuplicates == false || FirstProcessComplete" Label="Different Original Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="6" />
+            </AdvancedSettingItem>
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudButton Color="Color.Primary" OnClick="SaveDuplicateOptions" Disabled="Equals(_duplicateOptions, _lastSavedDuplicateOptions) || FirstProcessComplete" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
+            </MudItem>
+        </MudGrid>
+        <br />
+    </SlideDown>
+</div>
 
 <br />
 

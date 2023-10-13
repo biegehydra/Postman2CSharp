@@ -2,6 +2,12 @@
     color: #a576ea;
 }
 
+.info-container {
+    background: rgb(23 26 34);
+    padding: 15px;
+    border-radius: 5px;
+}
+
 div.code-toolbar > .toolbar > .toolbar-item {
     margin-right: 5px;
 }
