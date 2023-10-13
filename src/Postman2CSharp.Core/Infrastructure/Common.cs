@@ -114,9 +114,6 @@ namespace Postman2CSharp.Core.Infrastructure
             {
                 switch (errorHandlingSink)
                 {
-                    case Infrastructure.ErrorHandlingSinks.ConsoleWriteLine:
-                        sb.AppendLine(indent + $"Console.WriteLine({nonLoggerMessage});");
-                        break;
                     case Infrastructure.ErrorHandlingSinks.LogException:
                         var logFunction = logLevel switch
                         {
@@ -129,6 +126,9 @@ namespace Postman2CSharp.Core.Infrastructure
                             _ => throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null)
                         };
                         sb.AppendLine(indent + $"_logger.{logFunction}({loggerMessage});");
+                        break;
+                    case Infrastructure.ErrorHandlingSinks.ConsoleWriteLine:
+                        sb.AppendLine(indent + $"Console.WriteLine({nonLoggerMessage});");
                         break;
                     case Infrastructure.ErrorHandlingSinks.DebugWriteLine:
                         sb.AppendLine(indent + $"Debug.WriteLine({nonLoggerMessage});");

@@ -34,10 +34,10 @@ namespace Postman2CSharp.Core
         public List<XmlCommentTypes> XmlCommentTypes { get; set; } = new()
         {
             Infrastructure.XmlCommentTypes.ApiClient,
+            Infrastructure.XmlCommentTypes.Request,
+            Infrastructure.XmlCommentTypes.PathVariables,
             Infrastructure.XmlCommentTypes.QueryParameters,
             Infrastructure.XmlCommentTypes.FormData,
-            Infrastructure.XmlCommentTypes.PathVariables,
-            Infrastructure.XmlCommentTypes.Request,
             Infrastructure.XmlCommentTypes.Header
         };
         public List<RemoveDisabled> RemoveDisabled { get; set; } = new();

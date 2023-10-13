@@ -37,42 +37,7 @@
                 <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="_dirtyApiClientOptions.AttributeUsage" Label="JsonProperty Attribute Usage"></EnumSelectComponent>
             </Input>
             <Example>
-                <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw">
-@if (_dirtyApiClientOptions.JsonLibrary == JsonLibrary.SystemTextJson)
-{
-    <text>
-public class Example
-{
-    [JsonPropertyName("property_name")]
-    public string PropertyName { get; set; }
-}
-
-public static async Task&lt;T&gt; ReadJsonAsync&lt;T&gt;(this HttpResponseMessage response, JsonSerializerOptions? jsonSerializerOptions = null)
-{
-    var stringContent = await response.Content.ReadAsStringAsync();
-    return JsonSerializer.Deserialize&lt;T&gt;(stringContent, jsonSerializerOptions ?? JsonSerializerOptions)!;
-}
-    </text>
-}
-else
-{
-    <text>
-public class Example
-{      
-    [JsonProperty("property_name")]
-    public string PropertyName { get; set; }
-}
-
-public static async Task&lt;T&gt; ReadNewtonsoftJsonAsync&lt;T&gt;(this HttpResponseMessage response,
-    JsonSerializerSettings serializerSettings = null)
-{
-    var stringContent = await response.Content.ReadAsStringAsync();
-    return JsonConvert.DeserializeObject&lt;T&gt;(stringContent, serializerSettings ?? _jsonSerializerSettings);
-}
-    </text>
-}
-
-                </PrismCodeBlock>
+                <PrismCodeBlock Value="@StepperExamples.Json(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
             </Example>
             <AdditionalInfo>
                 <MudText Typo="Typo.h6" >Attribute Usage</MudText>
@@ -97,55 +62,7 @@ public static async Task&lt;T&gt; ReadNewtonsoftJsonAsync&lt;T&gt;(this HttpResp
                 <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="_dirtyApiClientOptions.MultipleResponseHandling" Disabled="_dirtyApiClientOptions.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
             </Input>
             <Example>
-                <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" >
-                    @if (_dirtyApiClientOptions.HandleMultipleResponses)
-                    {
-                        var typeParam = _dirtyApiClientOptions.MultipleResponseHandling switch
-                        {
-                            MultipleResponseHandling.OneOf => "OneOf<SearchUsersOKResponse, SearchUsersUnauthorizedResponse, SearchUsersForbiddenResponse, SearchUsersInternalServerErrorResponse>",
-                            MultipleResponseHandling.Object => "object",
-                            _ => throw new Exception("Invalid MultipleResponseHandling")
-                        };
-                        <text>
-public async Task&lt;@typeParam&gt; SearchUsers(SearchUsersParameters queryParameters)
-{
-    var parametersDict = queryParameters.ToDictionary();
-    var queryString = QueryHelpers.AddQueryString($"{_version}/users", parametersDict);
-    var response = await _httpClient.GetAsync(queryString);
-    if (response.StatusCode == HttpStatusCode.OK)
-    {
-        return await response.ReadJsonAsync&lt;SearchUsersOKResponse&gt;();
-    }
-    else if (response.StatusCode == HttpStatusCode.Unauthorized)
-    {
-        return await response.ReadJsonAsync&lt;SearchUsersUnauthorizedResponse&gt;();
-    }
-    else if (response.StatusCode == HttpStatusCode.Forbidden)
-    {
-        return await response.ReadJsonAsync&lt;SearchUsersForbiddenResponse&gt;();
-    }
-        else if (response.StatusCode == HttpStatusCode.InternalServerError)
-    {
-        return await response.ReadJsonAsync&lt;SearchUsersInternalServerErrorResponse&gt;();
-    }
-    else
-    {
-        throw new Exception($"SearchUsers: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
-    }
-}
-                        </text>
-                    }
-                    else
-                    {
-                        <text>
-public async Task&lt;SearchUsersResponse&gt; SearchUsers(SearchUsersParameters queryParameters)
-{
-    var parametersDict = queryParameters.ToDictionary();
-    return await _httpClient.GetFromJsonAsync&lt;SearchUsersResponse&gt;($"{_version}/users", parametersDict);
-}
-                        </text>
-                    }
-                </PrismCodeBlock>
+                <PrismCodeBlock Value="@StepperExamples.MultipleResponses(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
             </Example>
         </StepperItem>
     </MudStep>
@@ -158,72 +75,7 @@ public async Task&lt;SearchUsersResponse&gt; SearchUsers(SearchUsersParameters q
                 <EnumSelectComponent Disabled="_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None || !_dirtyApiClientOptions.ErrorHandlingSinks.Contains(ErrorHandlingSinks.LogException)" @bind-Value="_dirtyApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
             </Input>
             <Example>
-                <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw">
-                    @if (_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None)
-                    {
-                        <text>
-public async Task&lt;Users&gt; GetUserById(string id)
-{
-    return await _httpClient.GetFromJsonAsync&lt;Users&gt;($"{_version}/users/{id}");
-}
-                        </text>
-                    }
-                    else
-                    {
-                        <text>
-public async Task&lt;Users&gt; GetUserById(string id)
-{
-    try
-    {
-        return await _httpClient.GetFromJsonAsync&lt;Users&gt;($"{_version}/users/{id}");
-    }
-    @foreach(var catchExceptionType in _dirtyApiClientOptions.CatchExceptionTypes)
-    {
-    <text>
-    catch (@catchExceptionType ex)
-    {
-    @foreach (var errorHandlingSink in _dirtyApiClientOptions.ErrorHandlingSinks)
-    {
-        var logFunction = _dirtyApiClientOptions.LogLevel switch
-        {
-            LogLevel.Trace => "LogTrace",
-            LogLevel.Debug => "LogDebug",
-            LogLevel.Information => "LogInformation",
-            LogLevel.Warning => "LogWarning",
-            LogLevel.Error => "LogError",
-            LogLevel.Critical => "LogCritical",
-            _ => throw new ArgumentOutOfRangeException(nameof(_dirtyApiClientOptions.LogLevel), _dirtyApiClientOptions.LogLevel, null)
-        };
-        switch (errorHandlingSink)
-        {
-            case ErrorHandlingSinks.ConsoleWriteLine:
-            @($"{Consts.Indent(2)}Console.WriteLine(ex);\n")
-            break;
-        case ErrorHandlingSinks.LogException:
-            @($"{Consts.Indent(2)}_logger.{logFunction}(ex);\n");
-            break;
-        case ErrorHandlingSinks.DebugWriteLine:
-            @($"{Consts.Indent(2)}Debug.WriteLine(ex);\n")
-            break;
-        default:
-            throw new ArgumentOutOfRangeException(nameof(_dirtyApiClientOptions.ErrorHandlingSinks), errorHandlingSink, null);
-        }
-    }
-    @if (_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.ReturnDefault)
-    {
-        @($"{Consts.Indent(2)}return default;\n")
-    }
-    else 
-    {
-        @($"{Consts.Indent(2)}throw;\n")
-    }
-    }
-</text>
-}
-}
-                        </text>
-                    }
-                </PrismCodeBlock>
+                <PrismCodeBlock Value="@StepperExamples.ErrorHandling(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
             </Example>
         </StepperItem>
     </MudStep>
@@ -235,56 +87,7 @@ public async Task&lt;Users&gt; GetUserById(string id)
                 <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.ExecuteWithRetry">Execute With Retry</MudCheckBox>
             </Input>
             <Example>
-                <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw">
-                    @{
-                        var comment = _apiClientOptions.MakePathCollectionVariablesFunctionParameters
-                            ? "// No private Variable"
-                            : "private readonly string _somePathCollectionVariable; // Private variable";
-                        var secondComment = _apiClientOptions.MakePathCollectionVariablesFunctionParameters
-                            ? "// Now a function parameter"
-                            : "";
-                        var variableName = _apiClientOptions.MakePathCollectionVariablesFunctionParameters ? "somePathCollectionVariable" : "_somePathCollectionVariable";
-                        string parameters = "";
-                        if (_apiClientOptions.MakePathCollectionVariablesFunctionParameters)
-                        {
-                            parameters = "string somePathCollectionVariable";
-                            if (_apiClientOptions.UseCancellationTokens)
-                            {
-                                parameters += ", CancellationToken cancellationToken";
-                            }
-                        }
-                        else
-                        {
-                            if (_apiClientOptions.UseCancellationTokens)
-                            {
-                                parameters = "CancellationToken cancellationToken";
-                            }
-                        }
-                    
-                        var cancellationTokenValue = _dirtyApiClientOptions.UseCancellationTokens ? ", cancellationToken: cancellationToken" : "";
-                    }
-@comment
-public async Task&lt;Stream&gt; GetTickets(@parameters) @secondComment
-{
-@if (_dirtyApiClientOptions.ExecuteWithRetry)
-{
-    @($"{Consts.Indent(1)}return await ExecuteWithRetry(() => _httpClient.GetStreamAsync($\"{{{variableName}}}/ticket.php\"{cancellationTokenValue}));\n")
-}
-else
-{
-    @($"{Consts.Indent(1)}return await _httpClient.GetStreamAsync($\"{{{variableName}}}/ticket.php\"{cancellationTokenValue});\n")
-}
-}
-@if (_dirtyApiClientOptions.ExecuteWithRetry)
-{
-@:private async Task&lt;T&gt; ExecuteWithRetry&lt;T&gt;(Func&lt;Task&lt;T&gt;&gt; operation, int retryCount = 2,
-@Consts.Indent(1)@:[CallerMemberName] string callerMemberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
-@Consts.Indent(1)@:{
-@Consts.Indent(2)@:// Logic for retrying on error
-@Consts.Indent(2)@:// Tip: Replace with your own retry logic using a Poly pipeline/policy
-@Consts.Indent(1)@:}
-}
-                </PrismCodeBlock>
+                <PrismCodeBlock Value="@StepperExamples.FunctionConfigurations(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
             </Example>
         </StepperItem>
     </MudStep>
@@ -297,40 +100,7 @@ else
             <MudNumericField @bind-Value="_dirtyApiClientOptions.DuplicateOptions.DifferentOriginalNameSensitivity" Disabled="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Different Json Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="6" />
             </Input>
             <Example>
-                <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw">
-@{
-    var getUserReturnType = "GetUserResponse";
-    var postUserReturnType = "PostUserResponse";
-    var patchUserReturnType = "PatchUserResponse";
-    if (_dirtyApiClientOptions.DuplicateOptions.RemoveDuplicateRoots)
-    {
-        postUserReturnType = getUserReturnType;
-        if (_dirtyApiClientOptions.DuplicateOptions is { RemoveSemiDuplicates: true, DifferentOriginalNameSensitivity: > 1 })
-        {
-            patchUserReturnType = getUserReturnType;
-        }
-    }
-}
-// GetUserById and PostUser both return the exact same json.
-// PatchUser returns the extremely similar json but with 2 fewer properties.
-// Same Json Name Sensitivity has no effect in this scenario. Json roots are
-// all have different json names during deduping (even though they are roots
-// and technically have no name).
-public async Task&lt;@getUserReturnType&gt; GetUserById(string id)
-{
-    return await _httpClient.GetFromJsonAsync&lt;Users&gt;($"{_version}/users/{id}");
-}
-
-public async Task&lt;@postUserReturnType&gt; PostUser(User user)
-{
-    return await _httpClient.GetJsonAsync&lt;Users&gt;($"{_version}/users", user);
-}
-
-public async Task&lt;@patchUserReturnType&gt; PatchUser(User user)
-{
-    return await _httpClient.PatchJsonAsync&lt;Users&gt;($"{_version}/users", user);
-}
-                </PrismCodeBlock>
+                <PrismCodeBlock Value="@StepperExamples.ClassDeduping(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
             </Example>
             <AdditionalInfo>
                 <div style="overflow: scroll;">
@@ -357,126 +127,36 @@ public async Task&lt;@patchUserReturnType&gt; PatchUser(User user)
         </StepperItem>
     </MudStep>
     <MudStep Title="Miscellaneous">
-    <StepperItem>
-        <Input>
-            <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="_dirtyApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
-            <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="_dirtyApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
-            <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" Exclude="new List<RootDefinition>() { RootDefinition.Manual }" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
-        </Input>
-        <Example>
-            <PrismCodeBlock Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" >
-
-@if (_dirtyApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.ApiClient))
-{
-@($@"/// <summary>
-/// Comment from root item in postman.
-/// </summary>
-")
-}
-public class ExampleApiClient : IExampleApiClient
-{
-    private readonly HttpClient _httpClient;
-    public ExampleApiClient(HttpClient httpClient, IConfiguration config)
-    {
-        _httpClient = httpClient;
-        _httpClient.BaseAddress = new Uri($"https://someurl.com/api/");
-    }
-
-@if (_dirtyApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.Request))
-{
-@($@"{Consts.Indent(1)}/// <summary>
-{Consts.Indent(1)}/// Comment from postman request.
-{Consts.Indent(1)}/// </summary>
-")
-}
-@if (_dirtyApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.PathVariables))
-{
-@($"{Consts.Indent(1)}/// <param name=\"id\">The id of the user</param>\n")
-}
-@{
-    var parameters = "$\"{id}\"";
-    if (!_dirtyApiClientOptions.RemoveDisabled.Contains(RemoveDisabled.Headers))
-    {
-        parameters += ", headers";
-    }
-}
-    public async Task&lt;SearchUsersResponse&gt; GetUsers(string id)
-    {
-@if (!_dirtyApiClientOptions.RemoveDisabled.Contains(RemoveDisabled.Headers))
-{
-    @($@"{Consts.Indent(2)}var headers = new Dictionary<string, string>();
-{Consts.Indent(2)}{{
-{Consts.Indent(3)}{{ $""DisabledHeader"", $""value"" }}
-{Consts.Indent(2)}}};
-")
-}
-        return await _httpClient.GetFromJsonAsync&lt;SearchUsersResponse&gt;(@parameters);
-    }
-}
-
-public class SomeFormData : IFormData
-{
-@if (_dirtyApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.FormData))
-{
-@($@"{Consts.Indent(1)}/// <summary>
-{Consts.Indent(1)}/// Some comment
-{Consts.Indent(1)}/// </summary>
-")
-}
-    public string EnabledFormData { get; set; }
-@if (!_dirtyApiClientOptions.RemoveDisabled.Contains(RemoveDisabled.FormData))
-{
-@($"{Consts.Indent(1)}public string DisabledFormData {{get; set; }}\n")
-}
-@{
-    var kvpInitializer = "new(\"EnabledFormData\", EnabledFormData)";
-    if (_dirtyApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.FormData) == false)
-    {
-        kvpInitializer += ", new(\"DisabledFormData\", DisabledFormData)";
-    }
-}
-    public FormUrlEncodedContent ToFormData()
-    {
-        return new FormUrlEncodedContent(new KeyValuePair&lt;string, string&gt;[] { @kvpInitializer });
-    }
-}
-
-public class SomeQueryParameters(
-{
-@if (_dirtyApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.QueryParameters))
-{
-@($@"{Consts.Indent(1)}/// <summary>
-{Consts.Indent(1)}/// Some comment
-{Consts.Indent(1)}/// </summary>
-")
-}
-    public string EnabledQueryParameter { get; set; }
-@if (!_dirtyApiClientOptions.RemoveDisabled.Contains(RemoveDisabled.QueryParameters))
-{
-    @($"{Consts.Indent(1)}public string DisabledQueryParameter {{get; set; }}\n")
-}
-}
-            </PrismCodeBlock>
-        </Example>
-        <AdditionalInfo>
-            <ul>
-                <li>@InlineEmphasis("Root"): A root is any folder in a collection that has a request (including the root itself).</li>
-                <li>@InlineEmphasis("Authority"): The authority component of a URL includes the authentication section, the host, and the port. In the URL http://username:password@example.com:8080/path/to/file - @InlineEmphasis("Authority"): @InlineCode("\"username:password@example.com:8080\"").</li>
-                <Break Size="P2CsSize.Small"></Break>
-                <li>@InlineValue("PerAuthorityPerFolder"): An ApiClient will be created for each root, with a caveat being that if a root uses different authorities in it's requests, the requests will be regrouped into new roots based on authority.</li>
+        <StepperItem>
+            <Input>
+                <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="_dirtyApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
+                <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="_dirtyApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
+                <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" Exclude="new List<RootDefinition>() { RootDefinition.Manual }" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
+            </Input>
+            <Example>
+                <PrismCodeBlock Value="@StepperExamples.Miscellaneous(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
+            </Example>
+            <AdditionalInfo>
                 <ul>
-                    <li>Useful when the postman collection is well organized and you want your ApiClients to have seperation of concerns</li>
+                    <li>@InlineEmphasis("Root"): A root is any folder in a collection that has a request (including the root itself).</li>
+                    <li>@InlineEmphasis("Authority"): The authority component of a URL includes the authentication section, the host, and the port. In the URL http://username:password@example.com:8080/path/to/file - @InlineEmphasis("Authority"): @InlineCode("\"username:password@example.com:8080\"").</li>
+                    <Break Size="P2CsSize.Small"></Break>
+                    <li>@InlineValue("PerAuthorityPerFolder"): An ApiClient will be created for each root, with a caveat being that if a root uses different authorities in it's requests, the requests will be regrouped into new roots based on authority.</li>
+                    <ul>
+                        <li>Useful when the postman collection is well organized and you want your ApiClients to have seperation of concerns</li>
+                    </ul>
+                    <li>@InlineValue("PerAuthority"): An ApiClient will be created for each authority disregarding the folders requests are in.</li>
+                    <ul>
+                        <li>Useful when the you want a monolithic ApiClient.</li>
+                    </ul>
                 </ul>
-                <li>@InlineValue("PerAuthority"): An ApiClient will be created for each authority disregarding the folders requests are in.</li>
-                <ul>
-                    <li>Useful when the you want a monolithic ApiClient.</li>
-                </ul>
-            </ul>
-        </AdditionalInfo>
-    </StepperItem>
+            </AdditionalInfo>
+        </StepperItem>
 </MudStep>
     <MudStep Title="Result" IsResultStep="true">
-        <ProgressPopup Options="_progressOptions" IsPopup="false" />
+        <div class="my-step-container" style="min-height: 50vh;">
+            <ProgressPopup Options="_progressOptions" IsPopup="false"/>
+        </div>
     </MudStep>
 </MudStepper>
 
@@ -664,7 +344,7 @@ public class SomeQueryParameters(
         try
         {
             var apiClientGenerator = new ApiClientGenerator(_collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, Convert.LastSavedApiClientOptions));
-            await StartTrackingGenerator(apiClientGenerator);
+            StartTrackingGenerator(apiClientGenerator);
             _forceRender = true;
             StateHasChanged();
             await Task.Delay(1);
@@ -694,7 +374,7 @@ public class SomeQueryParameters(
 
     private ProgressPopupOptions? _progressOptions;
     private Snackbar? _progressSnackbar;
-    private async Task StartTrackingGenerator(ApiClientGenerator apiClientGenerator)
+    private void StartTrackingGenerator(ApiClientGenerator apiClientGenerator)
     {
         var options = new ProgressPopupOptions("Deserializing collection...", "Finished Generating ApiClients!");
         apiClientGenerator.ProgressCallback += options.InvokeProgressCallback;

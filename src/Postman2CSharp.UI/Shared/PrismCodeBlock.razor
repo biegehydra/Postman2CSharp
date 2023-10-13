@@ -11,24 +11,20 @@
     @if (DisplayType == CodeBlockDisplayType.Scroll)
     {
         @:.container-@Id .code-toolbar { 
-            @:display: inline-grid;
-            @:width: @MaxWidth;
-            @:height: @MaxHeight;
-        }
+        @:display: inline-grid;
+        @:width: @MaxWidth;
+        @:height: @MaxHeight;
+    }
     }
 </style>
 @if(DisplayType == CodeBlockDisplayType.Normal)
 {
     <div class="container-@Id">
         <pre @key="@Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
-                <code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">
+                <code @key="@Value" id="@(Id + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {
                         @Value
-                    }
-                    else if (ChildContent != null)
-                    {
-                        @ChildContent
                     }
                 </code>
             </pre>
@@ -39,14 +35,10 @@ else if (DisplayType == CodeBlockDisplayType.Contents)
     <div style="position: relative; display: grid; width: 100%;">
         <div class="container-@Id">
             <pre @key="@Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
-                <code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">
+                <code @key="@Value" id="@(Id + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {
                         @Value
-                    }
-                    else if (ChildContent != null)
-                    {
-                        @ChildContent
                     }
                 </code>
             </pre>
@@ -57,14 +49,10 @@ else if(DisplayType == CodeBlockDisplayType.Scroll)
 {
     <div class="container-@Id">
         <pre @key="@Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
-                <code @key="@(Value + "code")" id="@(Id + "code")" class="@CodeClass()">
+                <code @key="@Value" id="@(Id + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {
                         @Value
-                    }
-                    else if (ChildContent != null)
-                    {
-                        @ChildContent
                     }
                 </code>
             </pre>
@@ -102,8 +90,6 @@ else if(DisplayType == CodeBlockDisplayType.Scroll)
             
         }
     }
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
 
     [Inject] private Interop Interop { get; set; } = default!;
 
