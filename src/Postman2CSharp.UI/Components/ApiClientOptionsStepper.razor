@@ -24,10 +24,10 @@
 <br />
 
 <MudStepper @ref="_stepper" Linear="true" Color="Color.Primary" Variant="Variant.Filled" UseStepBorder="true"
-            DisableAnimation="false" ValidateStep="ValidateStep" ActiveStepChanged="OnActiveIndexChanged" >
+            DisableAnimation="false" ValidateStep="ValidateStep" AllowNext="ValidateNext" ActiveStepChanged="OnActiveIndexChanged" >
     <MudStep Title="Upload">
         <div class="my-step-container" style="min-height: 50vh;"  >
-            <CollectionUpload Small="false" SuccessfulUpload="args => { _uploadedFile = args.BrowserFile; _collection = args.Collection; }"></CollectionUpload>
+            <CollectionUpload Small="false" Collection="_collection" UploadedFile="_uploadedFile" SuccessfulUpload="args => { _uploadedFile = args.BrowserFile; _collection = args.Collection; _stepper?.TriggerReRender(); }"></CollectionUpload>
         </div>
     </MudStep>
     <MudStep Title="Json">
@@ -163,7 +163,7 @@
 @code {
     [Inject] private ISnackbar? Snackbar { get; set; }
     [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
-    [Parameter] public EventCallback<ApiCollection> SuccessfulUpload { get; set; }
+    [Parameter] public EventCallback<ApiCollection> SuccessfulGeneration { get; set; }
 
     private MudStepper? _stepper;
     private enum Steps
@@ -191,6 +191,12 @@
             await GenerateApiClientsWithTracking();
         }
     }
+
+    private Task<bool> ValidateNext(int activeIndex)
+    {
+        return ValidateStep(StepChangeDirection.Forward, activeIndex);
+    }
+
     private Task<bool> ValidateStep(StepChangeDirection stepDirection, int activeIndex)
     {
         if (stepDirection is StepChangeDirection.None or StepChangeDirection.Backward)
@@ -308,7 +314,7 @@
         }
     }
 
-    public void SetApiClientOptions(ApiClientOptions options)
+    private void SetApiClientOptions(ApiClientOptions options)
     {
         _apiClientOptions = options.Clone();
         _dirtyApiClientOptions = options.Clone();
@@ -359,8 +365,8 @@
             var dataType = isTestData ? "Test Data" : "Real Data";
             var message = $"Generate ApiClient - {dataType}";
             await AnalyticsInterop.TrackAction(message);
-            await Task.Delay(5);
-            await SuccessfulUpload.InvokeAsync(apiCollection);
+            await Task.Delay(3000);
+            await SuccessfulGeneration.InvokeAsync(apiCollection);
         }
         catch (Exception exception)
         {

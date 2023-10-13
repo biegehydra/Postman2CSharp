@@ -39,9 +39,9 @@
                 Drop a single csv file here or click to browse 
             </div>
             <MudIcon Icon="@Icons.AttachFile"></MudIcon>
-            if (!string.IsNullOrWhiteSpace(_fileName) && FileValid)
+            if (!string.IsNullOrWhiteSpace(FileName) && FileValid)
             {
-                <MudChip Color="Color.Dark" Text="@_fileName" />
+                <MudChip Color="Color.Dark" Text="@FileName" />
             }
         }
     </MudPaper>
@@ -49,12 +49,14 @@
 
 @code {
     [Inject] private ISnackbar SnackBar { get; set; }
-    private string? _fileName;
     private string? _dragEnterStyle;
     private bool _loading;
 
     [Parameter]
     public bool FileValid { get; set; }
+
+    [Parameter]
+    public string? FileName { get; set; }
 
     [Parameter]
     public EventCallback<IBrowserFile> OnUpload { get; set; }
@@ -88,7 +90,7 @@
                     SnackBar.Add($"Only json files can be uploaded", Severity.Error, x => x.VisibleStateDuration = 300);
                     return;
                 }
-                _fileName = file.Name;
+                FileName = file.Name;
                 await OnUpload.InvokeAsync(file);
             }
         }

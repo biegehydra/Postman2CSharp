@@ -144,9 +144,20 @@ hood of an error in generated code (minor issues usually) and increase the likel
             }
         </div>
     }
+    @if (ShowUpload)
+    {
+        <br />
+        <CollectionUpload SuccessfulGeneration="SuccessfulGeneration"></CollectionUpload>
+    }
+
 </div>
 
 @code {
+    [Parameter] public EventCallback<ApiCollection> SuccessfulGeneration { get; set; }
+
+    [Parameter]
+    public bool ShowUpload { get; set; }
+
     [Parameter]
     public bool ShowInteractiveDemoMessage { get; set; }
     

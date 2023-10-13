@@ -115,30 +115,6 @@
                     <MudSpacer />
                 }
 
-                @if (!showResultStep)
-                {
-                    if ((ActiveIndex < Steps.Count && Steps[ActiveIndex].Status != StepStatus.Continued) || (ActiveIndex == Steps.Count - 1 && !HasResultStep() && IsAllStepsCompleted()))
-                    {
-                        if (!DisableStepResultIndicator && MobileView == false)
-                        {
-                            <MudButton Color="@Color" Variant="@Variant" Disabled="true">@(Steps[ActiveIndex].Status == StepStatus.Completed ? "Completed" : "Skipped")</MudButton>
-                        }
-                    }
-                    else if (ActiveIndex < Steps.Count && Steps[ActiveIndex].Optional == true)
-                    {
-                        if (IconActionButtons || MobileView)
-                        {
-                            <MudTooltip Text="Skip" Delay="300">
-                                <MudIconButton Color="@Color" Disabled="!nextValid" Variant="@Variant" Icon="@Icons.SkipNext" OnClick="@(() => SkipStep())" />
-                            </MudTooltip>
-                        }
-                        else
-                        {
-                            <MudButton Color="@Color" Disabled="!nextValid" Variant="@Variant" StartIcon="@Icons.ChevronRight" OnClick="@(() => SkipStep())">Skip</MudButton>
-                        }
-                    }
-                }
-
                 @if (!showResultStep && !(ActiveIndex == Steps.Count - 1 && !HasResultStep() && IsAllStepsCompleted()))
                 {
                     if (ActiveIndex < Steps.Count && Steps[ActiveIndex].Status != StepStatus.Continued)
@@ -150,12 +126,12 @@
                         if (IconActionButtons || MobileView)
                         {
                             <MudTooltip Text="Next" Delay="300">
-                                <MudIconButton Color="@Color" Disabled="!nextValid" Variant="@Variant" Icon="@Icons.ChevronRight" OnClick="@(() => CompleteStep())" />
+                                <MudIconButton Color="@Color" Disabled="!nextValid" Variant="@Variant" Icon="@Icons.ChevronRight" OnClick="@(CompleteStep)" />
                             </MudTooltip>
                         }
                         else
                         {
-                            <MudButton Color="@Color" Disabled="!nextValid" Variant="@Variant" StartIcon="@Icons.ChevronRight" OnClick="@(() => CompleteStep())">Next</MudButton>
+                            <MudButton Color="@Color" Disabled="!nextValid" Variant="@Variant" StartIcon="@Icons.ChevronRight" OnClick="@(CompleteStep)">Next</MudButton>
                         }                        
                     }
                 }

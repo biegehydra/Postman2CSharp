@@ -1,6 +1,6 @@
-﻿@if (_collection != null && Convert.LastSavedApiClientOptions.RootDefinition == RootDefinition.Manual)
+﻿@if (Collection != null && Convert.LastSavedApiClientOptions.RootDefinition == RootDefinition.Manual)
 {
-    <ManualRootDefinitionComponent @ref="_manualRootDefinitionComponent" PostmanCollection="_collection" ConfirmedChanged="StateHasChanged"  />
+    <ManualRootDefinitionComponent @ref="_manualRootDefinitionComponent" PostmanCollection="Collection" ConfirmedChanged="StateHasChanged"  />
 }
 <br/>
 @if (Small)
@@ -22,13 +22,13 @@
     
         @if (Convert.LastSavedApiClientOptions.RootDefinition == RootDefinition.Manual)
         {
-            if (_collection == null)
+            if (Collection == null)
             {
                 <MudTooltip Text="Deserialize ApiClient to begin manually grouping collection." Delay="300">
                     <MudButton Variant="Variant.Filled"
                                Color="Color.Tertiary"
                                EndIcon="@Icons.Build"
-                               OnClick="TryDeserializerApiClient" Disabled="_uploadedFile == null">
+                               OnClick="TryDeserializerApiClient" Disabled="UploadedFile == null">
                         Deserialize
                     </MudButton>
                 </MudTooltip>
@@ -40,15 +40,15 @@
         }
         else
         {
-            @ProcessButton(_uploadedFile == null)
+            @ProcessButton(UploadedFile == null)
         }
     </div>
     <br />
-    @_uploadedFile?.Name
+    @UploadedFile?.Name
 }
 else
 {
-    <JsonInputFile OnUpload="OnUpload" FileValid="HasDeserializedCollection" ></JsonInputFile>
+    <JsonInputFile OnUpload="OnUpload" FileValid="HasDeserializedCollection" FileName="@UploadedFile?.Name" ></JsonInputFile>
 }
 
 
@@ -61,24 +61,19 @@ else
     [Parameter] public EventCallback<ApiCollection> SuccessfulGeneration { get; set; }
     [Parameter] public EventCallback<(IBrowserFile BrowserFile, PostmanCollection Collection)> SuccessfulUpload { get; set; }
 
-
-    public bool HasDeserializedCollection => _collection != null; 
-    public PostmanCollection? GetCollection() => _collection;
-    public IBrowserFile? GetUploadedFile() => _uploadedFile;
+    public bool HasDeserializedCollection => Collection != null; 
+    public PostmanCollection? GetCollection() => Collection;
+    public IBrowserFile? GetUploadedFile() => UploadedFile;
 
     private ManualRootDefinitionComponent? _manualRootDefinitionComponent;
-    private PostmanCollection? _collection;
-    private IBrowserFile? _uploadedFile;
-
-    public void Reset()
-    {
-        _uploadedFile = null;
-        _collection = null;
-    }
+    [Parameter]
+    public PostmanCollection? Collection { get; set; }
+    [Parameter]
+    public IBrowserFile? UploadedFile { get; set; }
 
     private async Task OnUpload(IBrowserFile browserFile)
     {
-        _uploadedFile = browserFile;
+        UploadedFile = browserFile;
         await TryDeserializerApiClient();
     }
 
@@ -92,8 +87,8 @@ else
             case 0:
                 return;
             default:
-                _uploadedFile = files.FirstOrDefault();
-                _collection = null;
+                UploadedFile = files.FirstOrDefault();
+                Collection = null;
                 break;
         }
     }
@@ -103,27 +98,27 @@ else
         await LazyLoad.LoadHttpSecurityAssemblies();
         var httpClient = new HttpClient();
         var response = await httpClient.GetAsync("https://files.postman2csharp.com/GoogleMapsPlatform.json");
-        _uploadedFile = new TestBrowserFile(await response.Content.ReadAsStreamAsync(), Consts.TestDataName);
-        _collection = null;
+        UploadedFile = new TestBrowserFile(await response.Content.ReadAsStreamAsync(), Consts.TestDataName);
+        Collection = null;
     }
 
     private async Task<bool> TryDeserializerApiClient()
     {
-        var fileStream = _uploadedFile!.OpenReadStream(300 * 1024 * 1024);
+        var fileStream = UploadedFile!.OpenReadStream(300 * 1024 * 1024);
         try
         {
-            _collection = await JsonSerializer.DeserializeAsync<PostmanCollection>(fileStream, SerializerSettings.Web);
-            if (_collection == null)
+            Collection = await JsonSerializer.DeserializeAsync<PostmanCollection>(fileStream, SerializerSettings.Web);
+            if (Collection == null)
             {
                 SnackBar.Value?.Add("Json could not be deserialized", Severity.Warning);
                 return false;
             }
-            await SuccessfulUpload.InvokeAsync((_uploadedFile, _collection));
+            await SuccessfulUpload.InvokeAsync((UploadedFile, Collection));
             return true;
         }
         catch (JsonException exception)
         {
-            _collection = null;
+            Collection = null;
             if (ProgressSnackbar != null)
             {
                 SnackBar.Value?.Remove(ProgressSnackbar);
@@ -132,7 +127,7 @@ else
         }
         catch (Exception exception)
         {
-            _collection = null;
+            Collection = null;
             if (ProgressSnackbar != null)
             {
                 SnackBar.Value?.Remove(ProgressSnackbar);
@@ -159,20 +154,20 @@ else
 
     private async Task GenerateApiClientsWithTracking()
     {
-        if (_collection == null) return;
+        if (Collection == null) return;
         try
         {
-            var apiClientGenerator = new ApiClientGenerator(_collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, Convert.LastSavedApiClientOptions));
+            var apiClientGenerator = new ApiClientGenerator(Collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, Convert.LastSavedApiClientOptions));
             StartTrackingGenerator(apiClientGenerator);
             await Task.Delay(1);
             var apiClients = await apiClientGenerator.GenerateApiClients();
             var apiCollection = new ApiCollection()
             {
                 ApiClients = apiClients,
-                CollectionInfo = _collection.Info
+                CollectionInfo = Collection.Info
             };
 
-            var isTestData = _uploadedFile.Name == Consts.TestDataName;
+            var isTestData = UploadedFile?.Name == Consts.TestDataName;
             var dataType = isTestData ? "Test Data" : "Real Data";
             var message = $"Generate ApiClient - {dataType}";
             await AnalyticsInterop.TrackAction(message);
@@ -188,7 +183,7 @@ else
         }
         finally
         {
-            _uploadedFile = null;
+            UploadedFile = null;
         }
     }
 

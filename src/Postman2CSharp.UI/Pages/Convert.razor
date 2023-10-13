@@ -35,16 +35,29 @@
 <br/>
 <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
-@if (LazyLoading.ConvertLoaded)
-{
-    <div class="code-writing-options-contianer">
-        @if (UseStepper)
+<div class="f-row" style="justify-content: end;" >
+    <MudButton OnClick="() => _useStepper = !_useStepper" Color="Color.Tertiary" Size="Size.Small" Variant="Variant.Filled" EndIcon="@Icons.ImportExport" >
+        @if (_useStepper)
         {
-            <ApiClientOptionsStepper @bind-ApiClientOptions="LastSavedApiClientOptions" SuccessfulUpload="OnSuccessfulUpload"></ApiClientOptionsStepper>
+            @:Condensed View 
         }
         else
         {
-            <ApiClientOptionsComponent @ref="ApiClientOptionsComponent" @bind-ApiClientOptions="LastSavedApiClientOptions" ></ApiClientOptionsComponent>
+            @:Stepper 
+        }
+    </MudButton>
+</div>
+
+@if (LazyLoading.ConvertLoaded)
+{
+    <div class="code-writing-options-contianer">
+        @if (_useStepper)
+        {
+            <ApiClientOptionsStepper @bind-ApiClientOptions="LastSavedApiClientOptions" SuccessfulGeneration="OnSuccessfulGeneration"></ApiClientOptionsStepper>
+        }
+        else
+        {
+            <ApiClientOptionsComponent @ref="ApiClientOptionsComponent" @bind-ApiClientOptions="LastSavedApiClientOptions" SuccessfulGeneration="OnSuccessfulGeneration" ShowUpload="true"  ></ApiClientOptionsComponent>
         }
     </div>
     <br />
@@ -54,7 +67,9 @@
 @code {
     public static ApiClientOptions LastSavedApiClientOptions { get; private set; } = new();
     private static ApiClientOptionsComponent? ApiClientOptionsComponent { get; set; }
-    private bool UseStepper = true;
+    private static ApiClientOptionsStepper? ApiClientOptionsStepper { get; set; }
+
+    private bool _useStepper = true;
 
     [Inject] private ILazyLoader LazyLoader { get; set; } = null!;
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
@@ -86,7 +101,7 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task OnSuccessfulUpload(ApiCollection apiCollection)
+    private async Task OnSuccessfulGeneration(ApiCollection apiCollection)
     {
         await Layout.AddApiCollection(apiCollection);
         Navigate.Value.ToCollection(apiCollection.Id);

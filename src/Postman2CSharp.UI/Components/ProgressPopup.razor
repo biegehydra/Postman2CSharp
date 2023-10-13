@@ -13,7 +13,7 @@
             <MudIcon Color="@Color.Success" Icon="@Icons.Check" Size="Size.Large"></MudIcon>
             if (_timer != null)
             {
-                <MudText Typo="Typo.body1">@_message</MudText>
+                <MudText Typo="Typo.h6">@_message</MudText>
             }
         }
     </div>
@@ -23,18 +23,17 @@ else if (Options != null)
     <div class="f-column aic" style="gap: 20px;">
         @if (_progress != 1)
         {
+            <br />
             <MudText Typo="Typo.h4">@Options.Text</MudText>
             <MudProgressCircular @ref="_mudProgressCircular" Value="@_progress" Indeterminate="false" Size="Size.Large" StrokeWidth="4" Color="Color.Success" Min="0" Max="1" />
             <MudText Typo="Typo.h5"><b>@($"{_progress:P2}")</b></MudText>
         }
         else
         {
+            <br />
             <MudText Typo="Typo.h6">@Options.CompletedText</MudText>
             <MudIcon Color="@Color.Success" Icon="@Icons.Check" Size="Size.Large"></MudIcon>
-            if (_timer != null)
-            {
-                <MudText Typo="Typo.body1">@_message</MudText>
-            }
+            <MudText Typo="Typo.body1">@_message</MudText>
         }
     </div>
 }
@@ -57,8 +56,8 @@ else if (Options != null)
         _progress = 0;
         Options = null;
         _timer = null;
-        _countDown = 5;
-        _message = "Navigating in 5...";
+        _countDown = 3;
+        _message = "Navigating in 3...";
     }
 
 
@@ -117,8 +116,8 @@ else if (Options != null)
         }
     }
     private System.Timers.Timer? _timer;
-    private int _countDown = 5;
-    private string _message = "Navigating in 5...";
+    private int _countDown = 3;
+    private string _message = "Navigating in 3...";
     private void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         if (_countDown > 0)

@@ -9,7 +9,7 @@
 
     @@media(min-width: 600px) {
         .apiclient-configurations-explanations-container {
-            padding: 0 60px;
+            padding: 0 30px;
         }
     }
 </style>
@@ -31,191 +31,193 @@ how all the configurations work."
      <OnThisPage Links="@Links" ></OnThisPage>
 
      <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+     
+     <div class="info-container">
+         @Explanation("Make Path Collection Variables Function Parameters", MakePathCollectionVariablesFunctionParameters_False, MakePathCollectionVariablesFunctionParameters_True, "MakePathCollectionVariablesFunctionParameters", MakePathCollectionVariablesFunctionParameters_Description)
 
-     @Explanation("Make Path Collection Variables Function Parameters", MakePathCollectionVariablesFunctionParameters_False, MakePathCollectionVariablesFunctionParameters_True, "MakePathCollectionVariablesFunctionParameters", MakePathCollectionVariablesFunctionParameters_Description)
+        <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
-     <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
-
-     @Explanation("Use Cancellation Tokens", UseCancellationTokens_False, UseCancellationTokens_True, "UseCancellationTokens")
+        @Explanation("Use Cancellation Tokens", UseCancellationTokens_False, UseCancellationTokens_True, "UseCancellationTokens")
 
 
-     <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+        <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 
-     <div>
-         <OnThisPageLink Id="AttributeLibrary">
-             <MudText Typo="Typo.h2">Attribute Library</MudText>
-         </OnThisPageLink>
-         <br/>
-         <p>
-             You have two attribute libraries that you can choose from. @InlineCode("System.Text.Json") and @InlineCode("Newtonsoft.Json").
-             The attribute library you choose will have two affects. First, it will determine which @InlineCode("[JsonProperty]") Attribute
-             to use on properties/fields of generated request and response classes. Secondly, it will determine which set of
-             json extension methods your project is downloaded with. If you are unsure which to choose, choose @InlineCode("System.Text.Json").
-             Additionally, all @InlineCode("Newtonsoft.Json") extension methods have "Newtonsoft" in them. @InlineCode("GetAsJsonAsync") - @InlineCode("GetAsNewtonsoftJsonAsync").
-         </p>
+        <div>
+            <OnThisPageLink Id="AttributeLibrary">
+                <MudText Typo="Typo.h2">Attribute Library</MudText>
+            </OnThisPageLink>
+            <br />
+            <p>
+                You have two attribute libraries that you can choose from. @InlineCode("System.Text.Json") and @InlineCode("Newtonsoft.Json").
+                The attribute library you choose will have two affects. First, it will determine which @InlineCode("[JsonProperty]") Attribute
+                to use on properties/fields of generated request and response classes. Secondly, it will determine which set of
+                json extension methods your project is downloaded with. If you are unsure which to choose, choose @InlineCode("System.Text.Json").
+                Additionally, all @InlineCode("Newtonsoft.Json") extension methods have "Newtonsoft" in them. @InlineCode("GetAsJsonAsync") - @InlineCode("GetAsNewtonsoftJsonAsync").
+            </p>
+        </div>
+
+        <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+
+        <div>
+            <OnThisPageLink Id="MultipleResponseHandling">
+                <MudText Typo="Typo.h2">Multiple Response Handling</MudText>
+            </OnThisPageLink>
+            <br />
+            <p>
+                Enabling this setting is a great way to ensure that you are handling all possible responses from an api.
+                When you enable this setting, the @InlineCode("StatusCode") of the response will be used to determine how the response is deserialized.
+            </p>
+            <br />
+            <p>
+                @InlineValue("Handle"): The first option you have is whether or not you handle multiple responses at all. If you choose not to handle multiple response,
+                then only the first success response (status code &gt;= 200 and &lt; 300, preference to 200 if present) will be used in the generation process.
+                <u>All others will be discarded</u>. This means that classes won't be generated for all other responses. This setting <u>can't be enabled</u> after generation.
+            </p>
+            <br />
+            <p>
+                @InlineValue("MultipleResponseHandling"): If you do decide to handle multiple responses by setting @InlineValue("Handle") to true, then you will need to decide
+                what you want the return type to be when there are multiple responses. You can either return an @InlineCode("object") and allow the caller to determine the type... ew.
+                Or you can use a discriminated union via the popular @InlineCode("OneOf") library. A discriminated union is a type that can be one of many types, but only ever ONE OF.
+                In this case, the discriminated union will be one of the possible response types. This is the recommended option.
+            </p>
+            <br />
+        </div>
+
+        <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+
+        <div>
+            <OnThisPageLink Id="XmlCommentTypes">
+                <MudText Typo="Typo.h2">Xml Comments Types</MudText>
+            </OnThisPageLink>
+
+            <br />
+            <p>
+                You have full control over the type of @InlineEmphasis("XmlCommentTypes") that are generated. Xml comments are generated
+                from the description field of different parameters. Your options are ApiClient, QueryParameters, FormData,
+                PathVariables, and Request. These are the locations of the generated xml comments.
+
+                <ul class="normal">
+                    <li>@InlineValue("ApiClient"): Appear at the top of generated ApiClient, description comes from root item description.</li>
+                    <li>@InlineValue("QueryParameters"): Each variable in the generated Parameters class will have an xml summary based on the description of the query parameters.</li>
+                    <li>@InlineValue("FormData"): Same as before but for FormData.</li>
+                    <li>@InlineValue("PathVariables"): An xml param tag will be generated on the ApiClient function for each path variable.</li>
+                    <li>@InlineValue("Request"): An xml summary will be generated on the ApiClient function from the description of the postman request item.</li>
+                </ul>
+            </p>
+        </div>
+
+        <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+
+        <div>
+            <OnThisPageLink Id="ErrorHandlingStrategy">
+                <MudText Typo="Typo.h2">Error Handling Strategy</MudText>
+            </OnThisPageLink>
+
+            <br />
+            <p>@InlineValue("None"): Request will be with no catch clause.</p>
+            <br />
+            @InlineValue("Thrown Exception"):
+            <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingStrategy_ThrowException" UseLineNumbers="false" />
+            <hr />
+            @InlineValue("Return Default"):
+            <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingStrategy_ReturnDefault" UseLineNumbers="false" />
+        </div>
+
+        <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+
+        <div>
+            <OnThisPageLink Id="CatchExceptionTypes">
+                <MudText Typo="Typo.h2">Catch Exception Types</MudText>
+            </OnThisPageLink>
+
+            <br />
+            <p>Each @InlineEmphasis("CatchExceptionType") chosen will be caught. This setting only takes affect if @InlineEmphasis("ErrorHandlingStrategy") is not @InlineValue("None")</p>
+            <br />
+            @InlineValue("HttpRequestException") and @InlineValue("Exception")
+            <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@CatchExceptionTypes_Example" UseLineNumbers="false" />
+        </div>
+
+        <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+
+        <div>
+            <OnThisPageLink Id="ErrorHandlingSinks">
+                <MudText Typo="Typo.h2">Error Handling Sinks</MudText>
+            </OnThisPageLink>
+
+            <br />
+            <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingSinks_Example" UseLineNumbers="false" />
+        </div>
+
+        <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+
+        <div>
+            <OnThisPageLink Id="RootDefinition">
+                <MudText Typo="Typo.h2">Root Definition</MudText>
+            </OnThisPageLink>
+
+            <br />
+            <ul>
+                <li>@InlineEmphasis("Root"): A root is any folder in a collection that has a request (including the root itself).</li>
+                @* Technical definition of Host  *@
+                <li>@InlineEmphasis("Host"): The host part of a URL is the domain name or IP address that indicates where the resources are served from.</li>
+                <li>@InlineEmphasis("Authority"): The authority component of a URL includes the authentication section, the host, and the port. In the URL http://username:password@example.com:8080/path/to/file - @InlineEmphasis("Authority"): @InlineCode("\"username:password@example.com:8080\""), @InlineEmphasis("Host"): @InlineCode("\"example.com\"").</li>
+                <Break Size="P2CsSize.Small"></Break>
+                <li>@InlineValue("PerAuthorityPerFolder"): An ApiClient will be created for each root, with a caveat being that if a root uses different authorities in it's requests, the requests will be regrouped into new roots based on authority.</li>
+                <ul>
+                    <li>Useful when the postman collection is well organized and you want your ApiClients to have seperation of concerns</li>
+                </ul>
+                <li>@InlineValue("PerAuthority"): An ApiClient will be created for each authority disregarding the folders requests are in.</li>
+                <ul>
+                    <li>Useful when the you want a monolithic ApiClient.</li>
+                </ul>
+                <li>@InlineValue("Manual"): Lets you decide how to requests get group.</li>
+                <ul>
+                    <li>Best of both worlds but requires you to manually group roots.</li>
+                </ul>
+            </ul>
+        </div>
+
+        <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
+
+        <div>
+            <OnThisPageLink Id="ClassDeduping">
+                <MudText Typo="Typo.h2">Class Deduding</MudText>
+            </OnThisPageLink>
+            <br />
+            <ul>
+                <li>@InlineEmphasis("Root"): A class that's not a member of any other class</li>
+                <li>@InlineEmphasis("Non-Root"): A class generated to be a member of another class.</li>
+                <li>@InlineEmphasis("Json Example"): A key-value pair in json. In this section, it generally refers to a key-value pair where the value is an object. Denoted by "{}" in value. "person" : { }</li>
+                <li>@InlineEmphasis("Original Name"): The value of the key in the json example.</li>
+                <li>@InlineEmphasis("Duplicate"): A json example who's members match every single member by type and name on a previously processed json example. And the original and potential duplicate have the exact <u>same amount</u> of properties.</li>
+                <li>@InlineEmphasis("Semi-Duplicate"): A json example who's members match every single member by type and name on a previously processed json example. And the original (already processed) has <u>more properties</u> than the potential duplicate.</li>
+            </ul>
+            <Break Size="P2CsSize.Small"></Break>
+            <p>
+                <b>@InlineValue("RemoveDuplicateRoots"):</b> You are given a couple of options to help reduce the number of classes generated. The first option lets you choose
+                whether or not to remove duplicate ROOT classes. A root class is essentially one that is not a child of another class.
+                These are your Request, Response, and Parameter classes. * Note: Root classes are subject to the same rules for deduping as non-root classes.
+            </p>
+            <br />
+            <p>
+                <b>@InlineValue("RemoveSemiDuplicateClasses"):</b> The second option lets you choose whether or not to remove "semi-duplciates", see definition above. Enabling this setting lets you dedupe these semi-duplicate classes. This is useful for json that
+                has multiple examples of the same class but examples differ in name. For example, if you have Response that both have a Person object, but the json property names
+                are different, this setting would let you dedupe the second example and put all unique properties in the first example. You are also able to adjust the sensitivity of this
+                settings. The sensitivity is how many more properties the original can have than the duplicate. For example, if the original has 8 properties and the duplicate has 2 (all matching the original).
+                Then @InlineValue("SameOriginalNameSensitivity") or @InlineValue("DifferentOriginalNameSensitivity") would have to be at least 6, depending on whether the names are the same or different.
+            </p>
+            <br />
+            <p>
+                <b>@InlineValue("OneTypePerJsonMemberName"):</b> At the moment, this setting is only available for the <a class="link-normal" href="/other-tools/json-to-csharp-plus">Json2CSharpPlus</a> tool found in other tools.
+                Enabling this setting will enforce an additional rule during the dedupe process. Class deduping will work mostly the same but if 2 classes have the same name (in the json),
+                the first one will be kept and all subsequent examples with just add their properties to the first. This is useful for json that has multiple examples of the same object
+                under the same name but json examples have different amounts of properties. It is not useful when two json examples have the same name but represent different models. Then you would have one model
+                to represent 2 objects. The <u>default behaviour</u> is create a second class with a number appended to the end if all the properties don't match. @InlineCode("Person2")
+            </p>
+        </div>
+
+        <br />
      </div>
-
-     <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
-
-     <div>
-         <OnThisPageLink Id="MultipleResponseHandling">
-             <MudText Typo="Typo.h2">Multiple Response Handling</MudText>
-         </OnThisPageLink>
-         <br/>
-         <p>
-             Enabling this setting is a great way to ensure that you are handling all possible responses from an api.
-             When you enable this setting, the @InlineCode("StatusCode") of the response will be used to determine how the response is deserialized.
-         </p>
-         <br/>
-         <p>
-             @InlineValue("Handle"): The first option you have is whether or not you handle multiple responses at all. If you choose not to handle multiple response,
-             then only the first success response (status code &gt;= 200 and &lt; 300, preference to 200 if present) will be used in the generation process.
-             <u>All others will be discarded</u>. This means that classes won't be generated for all other responses. This setting <u>can't be enabled</u> after generation.
-         </p>
-         <br/>
-         <p>
-             @InlineValue("MultipleResponseHandling"): If you do decide to handle multiple responses by setting @InlineValue("Handle") to true, then you will need to decide
-             what you want the return type to be when there are multiple responses. You can either return an @InlineCode("object") and allow the caller to determine the type... ew.
-             Or you can use a discriminated union via the popular @InlineCode("OneOf") library. A discriminated union is a type that can be one of many types, but only ever ONE OF.
-             In this case, the discriminated union will be one of the possible response types. This is the recommended option.
-         </p>
-         <br/>
-     </div>
-
-     <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
-
-     <div>
-         <OnThisPageLink Id="XmlCommentTypes">
-             <MudText Typo="Typo.h2">Xml Comments Types</MudText>
-         </OnThisPageLink>
-
-         <br/>
-         <p>
-             You have full control over the type of @InlineEmphasis("XmlCommentTypes") that are generated. Xml comments are generated
-             from the description field of different parameters. Your options are ApiClient, QueryParameters, FormData,
-             PathVariables, and Request. These are the locations of the generated xml comments.
-             
-             <ul class="normal">
-                 <li>@InlineValue("ApiClient"): Appear at the top of generated ApiClient, description comes from root item description.</li>
-                 <li>@InlineValue("QueryParameters"): Each variable in the generated Parameters class will have an xml summary based on the description of the query parameters.</li>
-                 <li>@InlineValue("FormData"): Same as before but for FormData.</li>
-                 <li>@InlineValue("PathVariables"): An xml param tag will be generated on the ApiClient function for each path variable.</li>
-                 <li>@InlineValue("Request"): An xml summary will be generated on the ApiClient function from the description of the postman request item.</li>
-             </ul>
-         </p>
-     </div>
-
-     <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
-
-     <div>
-         <OnThisPageLink Id="ErrorHandlingStrategy">
-             <MudText Typo="Typo.h2">Error Handling Strategy</MudText>
-         </OnThisPageLink>
-
-         <br/>
-         <p>@InlineValue("None"): Request will be with no catch clause.</p>
-         <br/>
-         @InlineValue("Thrown Exception"):
-         <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingStrategy_ThrowException" UseLineNumbers="false"/>
-         <hr/>
-         @InlineValue("Return Default"):
-         <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingStrategy_ReturnDefault" UseLineNumbers="false"/>
-     </div>
-
-     <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
-
-     <div>
-         <OnThisPageLink Id="CatchExceptionTypes">
-             <MudText Typo="Typo.h2">Catch Exception Types</MudText>
-         </OnThisPageLink>
-
-         <br/>
-         <p>Each @InlineEmphasis("CatchExceptionType") chosen will be caught. This setting only takes affect if @InlineEmphasis("ErrorHandlingStrategy") is not @InlineValue("None")</p>
-         <br/>
-         @InlineValue("HttpRequestException") and @InlineValue("Exception")
-         <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@CatchExceptionTypes_Example" UseLineNumbers="false"/>
-     </div>
-
-     <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
-
-     <div>
-         <OnThisPageLink Id="ErrorHandlingSinks">
-             <MudText Typo="Typo.h2">Error Handling Sinks</MudText>
-         </OnThisPageLink>
-
-         <br/>
-         <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@ErrorHandlingSinks_Example" UseLineNumbers="false"/>
-     </div>
-
-     <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
-
-     <div>
-         <OnThisPageLink Id="RootDefinition" >
-             <MudText Typo="Typo.h2">Root Definition</MudText>
-         </OnThisPageLink>
-
-         <br/>
-         <ul>
-             <li>@InlineEmphasis("Root"): A root is any folder in a collection that has a request (including the root itself).</li>
-             @* Technical definition of Host  *@
-            <li>@InlineEmphasis("Host"): The host part of a URL is the domain name or IP address that indicates where the resources are served from.</li>
-             <li>@InlineEmphasis("Authority"): The authority component of a URL includes the authentication section, the host, and the port. In the URL http://username:password@example.com:8080/path/to/file - @InlineEmphasis("Authority"): @InlineCode("\"username:password@example.com:8080\""), @InlineEmphasis("Host"): @InlineCode("\"example.com\"").</li>
-             <Break Size="P2CsSize.Small"></Break>
-             <li>@InlineValue("PerAuthorityPerFolder"): An ApiClient will be created for each root, with a caveat being that if a root uses different authorities in it's requests, the requests will be regrouped into new roots based on authority.</li>
-             <ul>
-                 <li>Useful when the postman collection is well organized and you want your ApiClients to have seperation of concerns</li>
-             </ul>
-             <li>@InlineValue("PerAuthority"): An ApiClient will be created for each authority disregarding the folders requests are in.</li>
-             <ul>
-                 <li>Useful when the you want a monolithic ApiClient.</li>
-             </ul>
-             <li>@InlineValue("Manual"): Lets you decide how to requests get group.</li>
-             <ul>
-                 <li>Best of both worlds but requires you to manually group roots.</li>
-             </ul>
-         </ul>
-     </div>
-
-     <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
-
-     <div>
-         <OnThisPageLink Id="ClassDeduping" >
-             <MudText Typo="Typo.h2">Class Deduding</MudText>
-         </OnThisPageLink>
-         <br/>
-         <ul>
-             <li>@InlineEmphasis("Root"): A class that's not a member of any other class</li>
-             <li>@InlineEmphasis("Non-Root"): A class generated to be a member of another class.</li>
-             <li>@InlineEmphasis("Json Example"): A key-value pair in json. In this section, it generally refers to a key-value pair where the value is an object. Denoted by "{}" in value. "person" : { }</li>
-             <li>@InlineEmphasis("Original Name"): The value of the key in the json example.</li>
-             <li>@InlineEmphasis("Duplicate"): A json example who's members match every single member by type and name on a previously processed json example. And the original and potential duplicate have the exact <u>same amount</u> of properties.</li>
-             <li>@InlineEmphasis("Semi-Duplicate"): A json example who's members match every single member by type and name on a previously processed json example. And the original (already processed) has <u>more properties</u> than the potential duplicate.</li>
-         </ul>
-         <Break Size="P2CsSize.Small"></Break>
-         <p>
-             <b>@InlineValue("RemoveDuplicateRoots"):</b> You are given a couple of options to help reduce the number of classes generated. The first option lets you choose
-             whether or not to remove duplicate ROOT classes. A root class is essentially one that is not a child of another class.
-             These are your Request, Response, and Parameter classes. * Note: Root classes are subject to the same rules for deduping as non-root classes.
-         </p>
-         <br/>
-         <p>
-             <b>@InlineValue("RemoveSemiDuplicateClasses"):</b> The second option lets you choose whether or not to remove "semi-duplciates", see definition above. Enabling this setting lets you dedupe these semi-duplicate classes. This is useful for json that
-             has multiple examples of the same class but examples differ in name. For example, if you have Response that both have a Person object, but the json property names
-             are different, this setting would let you dedupe the second example and put all unique properties in the first example. You are also able to adjust the sensitivity of this
-             settings. The sensitivity is how many more properties the original can have than the duplicate. For example, if the original has 8 properties and the duplicate has 2 (all matching the original).
-            Then @InlineValue("SameOriginalNameSensitivity") or @InlineValue("DifferentOriginalNameSensitivity") would have to be at least 6, depending on whether the names are the same or different.
-         </p>
-         <br/>
-         <p>
-             <b>@InlineValue("OneTypePerJsonMemberName"):</b> At the moment, this setting is only available for the <a class="link-normal" href="/other-tools/json-to-csharp-plus">Json2CSharpPlus</a> tool found in other tools.
-             Enabling this setting will enforce an additional rule during the dedupe process. Class deduping will work mostly the same but if 2 classes have the same name (in the json),
-             the first one will be kept and all subsequent examples with just add their properties to the first. This is useful for json that has multiple examples of the same object
-             under the same name but json examples have different amounts of properties. It is not useful when two json examples have the same name but represent different models. Then you would have one model
-            to represent 2 objects. The <u>default behaviour</u> is create a second class with a number appended to the end if all the properties don't match. @InlineCode("Person2")
-         </p>
-     </div>
-
-     <br />
 </div>
 
 @code

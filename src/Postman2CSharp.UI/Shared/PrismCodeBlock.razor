@@ -13,7 +13,6 @@
         @:.container-@Id .code-toolbar { 
         @:display: inline-grid;
         @:width: @MaxWidth;
-        @:height: @MaxHeight;
     }
     }
 </style>
@@ -162,10 +161,6 @@ else if(DisplayType == CodeBlockDisplayType.Scroll)
         {
             return Style;
         }
-        if (DisplayType != CodeBlockDisplayType.Scroll)
-        {
-            return $"max-height: {MaxHeight};" + Style;
-        }
-        return Style;
+        return $"max-height: {MaxHeight};" + Style;
     }
 }
