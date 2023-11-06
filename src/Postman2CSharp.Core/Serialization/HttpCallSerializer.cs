@@ -84,7 +84,8 @@ public static class HttpCallSerializer
             {
                 if (!string.IsNullOrWhiteSpace(keyValueTypeDescription.Description))
                 {
-                    sb.AppendLine(indent + $"/// <param name=\"{path.CsPropertyName(CsharpPropertyType.Local)}\">{keyValueTypeDescription.Description}</param>");
+                    var xmlParam = XmlCommentHelpers.ToXmlParam(keyValueTypeDescription.Description, path.CsPropertyName(CsharpPropertyType.Local), indent);
+                    sb.Append(xmlParam);
                 }
             }
         }

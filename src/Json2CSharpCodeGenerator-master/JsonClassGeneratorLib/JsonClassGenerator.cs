@@ -100,9 +100,9 @@ namespace Xamasoft.JsonClassGenerator
             {
                 examples = GetExamples(jsonInput);
             }
-            catch (JsonReaderException ex)
+            catch (JsonReaderException)
             {
-                XmlDocument doc = new XmlDocument();
+                XmlDocument doc = new ();
                 doc.LoadXml(jsonInput);
                 jsonInput = JsonConvert.SerializeXmlNode(doc);
                 examples = GetExamples(jsonInput);

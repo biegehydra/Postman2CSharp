@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
+using System.Xml;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
@@ -277,12 +277,9 @@ public class ApiClientGenerator
                     catch (NoClassesGeneratedException)
                     {
 #if DEBUG
-                        Console.WriteLine($"Request no classes generated. {requestItem.Name}");
+                        Console.WriteLine($"Request no classes generated. {uniqueName}");
 #endif
-                        requestClassName = null;
-                        requestSourceCode = null;
-                        requestTypes = null;
-                        requestRootWasArray = false;
+                        Reset();
                     }
                     catch (DuplicateRootException ex)
                     {
@@ -292,16 +289,27 @@ public class ApiClientGenerator
                         requestSourceCode = null;
                         requestTypes = null;
                     }
+                    catch (XmlException ex)
+                    {
+#if DEBUG
+                        Console.WriteLine($@"{uniqueName} - Xml exception. Message: {ex.Message}, Json: {json}");
+#endif
+                        Reset();
+                    }
                     catch (Exception ex)
+                    {
+                        Reset();
+#if DEBUG
+                        Console.WriteLine(ex);
+                        throw;
+                        #endif
+                    }
+                    void Reset()
                     {
                         requestClassName = null;
                         requestSourceCode = null;
                         requestTypes = null;
                         requestRootWasArray = false;
-#if DEBUG
-                        Console.WriteLine(ex);
-                        throw;
-                        #endif
                     }
                 }
             }
@@ -379,15 +387,23 @@ public class ApiClientGenerator
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, ex.DuplicateIsArray));
                         continue;
                     }
+                    catch (XmlException ex)
+                    {
+#if DEBUG
+                        Console.WriteLine($@"{uniqueName} - Xml exception. Message: {ex.Message}, Json: {json}");
+#endif
+                        responseClassName = "EmptyResponse";
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
+                    }
                     catch (Exception ex)
                     {
                         responseClassName = "EmptyResponse";
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
 #if DEBUG
                         Console.WriteLine(ex);
-                        throw;
+                       throw;
 #endif
-                        continue;
+                        continue; // do not delete
                     }
                     allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, responseSourceCode, DataType.Json, rootWasArray));
                     continue;
@@ -438,6 +454,14 @@ public class ApiClientGenerator
                     AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, queryParametersClassName, uniqueName, GeneratedClassType.QueryParameters);
                     queryParametersClassName = ex.OriginalRootName;
                     queryParametersSourceCode = null;
+                }
+                catch (XmlException ex)
+                {
+                    queryParametersClassName = null;
+                    queryParametersSourceCode = null;
+#if DEBUG
+                    Console.WriteLine($@"{uniqueName} - Xml exception. Message: {ex.Message}, Json: {queryParametersAsJson}");
+#endif
                 }
                 catch (Exception ex)
                 {
@@ -492,7 +516,7 @@ public class ApiClientGenerator
             classGenerator.SetRootName(className);
             if (itemType == Consts.Parameters)
             {
-                classGenerator.CodeWriter = ParametersConfig(className, nameSpace, writeComments);
+                classGenerator.CodeWriter = ParametersConfig(nameSpace, writeComments);
                 classGenerator.SetCurrentRootIsQueryParameters(true);
             }
             else
@@ -518,7 +542,7 @@ public class ApiClientGenerator
                 }
             }
 
-            CSharpCodeWriter ParametersConfig(string name, string nameSpacee, bool writeDescriptions)
+            CSharpCodeWriter ParametersConfig(string nameSpacee, bool writeDescriptions)
             {
                 var config = new CSharpCodeWriterConfig();
                 config.AttributeUsage = JsonPropertyAttributeUsage.Never;
@@ -552,7 +576,7 @@ public class ApiClientGenerator
 
     private static (string SourceCode, int ClassCount, bool RootWasArray) GenerateClasses(JsonClassGenerator jsonClassGenerator, string json, ref List<ClassType>? types, string rootClassName, bool hasDescriptions)
     {
-        var (sb, rootWasArray) = jsonClassGenerator.GenerateClasses(json, false, false, out var errorMessage);
+        var (sb, rootWasArray) = jsonClassGenerator.GenerateClasses(json, false, false, out _);
         types = jsonClassGenerator.Types?.Select(x => new ClassType()
         {
             AssignedName = x.NewAssignedName,

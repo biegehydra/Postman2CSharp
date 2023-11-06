@@ -104,7 +104,8 @@ namespace Postman2CSharp.Core.Serialization
                 foreach (var headerGroup in headers.GroupBy(x => x.Key).Where(header => header.Any(x => !string.IsNullOrWhiteSpace(x.Description))))
                 {
                     var header = headerGroup.First();
-                    sb.AppendLine(indent + $"/// <param name=\"{header.Key}\">{header.Description}</param>");
+                    var xmlParam = XmlCommentHelpers.ToXmlParam(header.Description, header.CsPropertyName(CsharpPropertyType.Local), indent);
+                    sb.Append(xmlParam);
                 }
             }
         }

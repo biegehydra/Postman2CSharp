@@ -128,6 +128,31 @@ public class HttpCall
         return methodParameters;
     }
 
+    public bool AnyClassesGenerated()
+    {
+        if (!string.IsNullOrWhiteSpace(RequestSourceCode))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(QueryParameterSourceCode))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(FormDataSourceCode))
+        {
+            return true;
+        }
+
+        if (AllResponses?.Any(x => !string.IsNullOrWhiteSpace(x.SourceCode)) == true)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public void RenameRequest(string newName)
     {
         if (RequestClassName == null) throw new UnreachableException("RenameRequest");

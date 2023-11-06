@@ -6,7 +6,7 @@
 @if (SelectedApiClient != null)
 {
     <MudTabs @key="SelectedApiClient.Id" Rounded ApplyEffectsToContainer ActivePanelIndexChanged="OnPanelChanged" >
-        @foreach (var httpCall in SelectedApiClient.HttpCalls)
+        @foreach (var httpCall in SelectedApiClient.HttpCalls.Where(x => x.AnyClassesGenerated()))
         {
             <MudTabPanel Text="@httpCall.Name">
                 <br/>
@@ -93,7 +93,7 @@
     private void OnPanelChanged(int panelInex)
     {
         if(SelectedApiClient == null) return;
-        var httpCall = SelectedApiClient.HttpCalls[panelInex];
+        var httpCall = SelectedApiClient.HttpCalls.Where(x => x.AnyClassesGenerated()).Skip(panelInex).First();
         var allClassNames = new List<string?>();
         if (httpCall.RequestSourceCode != null)
         {

@@ -143,7 +143,7 @@ $@"public async Task<{typeParam}> SearchUsers(SearchUsersParameters queryParamet
         {
             if (options.UseCancellationTokens)
             {
-                parameters = "CancellationToken cancellationToken";
+                parameters = "CancellationToken cancellationToken = default";
             }
         }
 

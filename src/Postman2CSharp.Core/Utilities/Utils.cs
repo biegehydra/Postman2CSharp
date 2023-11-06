@@ -356,6 +356,11 @@ public static class Utils
                     i = 0;
                 }
             }
+            if (splitLine.Length > 0)
+            {
+                sb.AppendLine();
+                i = 0;
+            }
         }
 
         return sb.ToString();
