@@ -1,4 +1,5 @@
-﻿@if (Collection != null && Convert.LastSavedApiClientOptions.RootDefinition == RootDefinition.Manual)
+﻿@using System.Runtime.CompilerServices
+@if (Collection != null && Convert.LastSavedApiClientOptions.RootDefinition == RootDefinition.Manual)
 {
     <ManualRootDefinitionComponent @ref="_manualRootDefinitionComponent" PostmanCollection="Collection" ConfirmedChanged="StateHasChanged"  />
 }
@@ -13,7 +14,8 @@
                                Variant="Variant.Filled"
                                Color="Color.Primary"
                                StartIcon="@Icons.FileCopy"
-                               for="@context">
+                               for="@context"
+                               Disabled="_isBusy" >
                         Select Postman Collection
                     </MudButton>
                 </ButtonTemplate>
@@ -28,19 +30,19 @@
                     <MudButton Variant="Variant.Filled"
                                Color="Color.Tertiary"
                                EndIcon="@Icons.Build"
-                               OnClick="TryDeserializerApiClient" Disabled="UploadedFile == null">
+                               OnClick="TryDeserializerApiClient" Disabled="UploadedFile == null || _isBusy">
                         Deserialize
                     </MudButton>
                 </MudTooltip>
             }
             else if (_manualRootDefinitionComponent != null)
             {
-                @ProcessButton(!_manualRootDefinitionComponent.Confirmed)
+                @ProcessButton(!_manualRootDefinitionComponent.Confirmed || _isBusy)
             }
         }
         else
         {
-            @ProcessButton(UploadedFile == null)
+            @ProcessButton(UploadedFile == null || _isBusy)
         }
     </div>
     <br />
@@ -71,6 +73,8 @@ else
     [Parameter]
     public IBrowserFile? UploadedFile { get; set; }
 
+    private bool _isBusy;
+
     private async Task OnUpload(IBrowserFile browserFile)
     {
         UploadedFile = browserFile;
@@ -93,17 +97,9 @@ else
         }
     }
 
-    private async Task GetTestData()
-    {
-        await LazyLoad.LoadHttpSecurityAssemblies();
-        var httpClient = new HttpClient();
-        var response = await httpClient.GetAsync("https://files.postman2csharp.com/GoogleMapsPlatform.json");
-        UploadedFile = new TestBrowserFile(await response.Content.ReadAsStreamAsync(), Consts.TestDataName);
-        Collection = null;
-    }
-
     private async Task<bool> TryDeserializerApiClient()
     {
+        _isBusy = true;
         var fileStream = UploadedFile!.OpenReadStream(300 * 1024 * 1024);
         try
         {
@@ -134,6 +130,10 @@ else
             }
             SnackBar.Value?.Add($"Something went wrong. {exception.Message}", Severity.Error);
         }
+        finally
+        {
+            _isBusy = false;
+        }
         return false;
     }
 
@@ -155,6 +155,7 @@ else
     private async Task GenerateApiClientsWithTracking()
     {
         if (Collection == null) return;
+        _isBusy = true;
         try
         {
             var apiClientGenerator = new ApiClientGenerator(Collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, Convert.LastSavedApiClientOptions));
@@ -184,6 +185,7 @@ else
         finally
         {
             UploadedFile = null;
+            _isBusy = false;
         }
     }
 

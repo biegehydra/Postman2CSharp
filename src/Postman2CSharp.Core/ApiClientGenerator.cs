@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml;
 using System.Threading.Tasks;
@@ -277,13 +278,14 @@ public class ApiClientGenerator
                     catch (NoClassesGeneratedException)
                     {
 #if DEBUG
-                        Console.WriteLine($"Request no classes generated. {uniqueName}");
+                        Debug.WriteLine($"Request no classes generated. {uniqueName}");
 #endif
                         Reset();
                     }
                     catch (DuplicateRootException ex)
                     {
-                        AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, requestClassName, uniqueName, GeneratedClassType.Request);
+                        AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, requestClassName, uniqueName,
+                            GeneratedClassType.Request);
                         requestClassName = ex.OriginalRootName;
                         requestRootWasArray = ex.DuplicateIsArray;
                         requestSourceCode = null;
@@ -292,15 +294,23 @@ public class ApiClientGenerator
                     catch (XmlException ex)
                     {
 #if DEBUG
-                        Console.WriteLine($@"{uniqueName} - Xml exception. Message: {ex.Message}, Json: {json}");
+                        Debug.WriteLine($@"{uniqueName} - Xml exception. Message: {ex.Message}, Json: {json}");
 #endif
+                        Reset();
+                    }
+                    catch (TextWasNotJsonException ex)
+                    {
+#if DEBUG
+                        Debug.WriteLine($@"{uniqueName} - TextWasNotJsonException. Message: {ex.Message}, Text: {ex.Text}");
+#endif
+
                         Reset();
                     }
                     catch (Exception ex)
                     {
                         Reset();
 #if DEBUG
-                        Console.WriteLine(ex);
+                        Debug.WriteLine(ex);
                         throw;
                         #endif
                     }
@@ -322,13 +332,13 @@ public class ApiClientGenerator
                 formClassName = Utils.GenerateUniqueName(formClassName, uniqueNames);
                 if (requestItem.Request!.Body!.Formdata != null)
                 {
-                    var iFormData = requestItem.Request!.Body!.Formdata.Cast<IFormData>().ToList();
+                    var iFormData = requestItem.Request!.Body!.Formdata.Cast<IFormData>().Where(x => !string.IsNullOrWhiteSpace(x.Key)).ToList();
                     formClassSourceCode = GenerateFormDataClass(formClassName, iFormData, requestDataType, nameSpace, writeFormDataComments);
                     totalClassesGenerated++;
                 }
                 else if (requestItem.Request!.Body!.Urlencoded != null)
                 {
-                    var iFormData = requestItem.Request!.Body!.Urlencoded.Cast<IFormData>().ToList();
+                    var iFormData = requestItem.Request!.Body!.Urlencoded.Cast<IFormData>().Where(x => !string.IsNullOrWhiteSpace(x.Key)).ToList();
                     formClassSourceCode = GenerateFormDataClass(formClassName, iFormData, DataType.SimpleFormData, nameSpace, writeFormDataComments);
                     totalClassesGenerated++;
                 }
@@ -374,9 +384,8 @@ public class ApiClientGenerator
                         responseClassName = "EmptyResponse";
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
 #if DEBUG
-                        Console.WriteLine($@"Response no classes generated. {requestItem.Name}");
+                        Debug.WriteLine($@"Response no classes generated. {requestItem.Name}");
 #endif
-
                         continue;
                     }
                     catch (DuplicateRootException ex)
@@ -390,7 +399,15 @@ public class ApiClientGenerator
                     catch (XmlException ex)
                     {
 #if DEBUG
-                        Console.WriteLine($@"{uniqueName} - Xml exception. Message: {ex.Message}, Json: {json}");
+                        Debug.WriteLine($@"{uniqueName} - Xml exception. Message: {ex.Message}, Json: {json}");
+#endif
+                        responseClassName = "EmptyResponse";
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
+                    }
+                    catch (TextWasNotJsonException ex)
+                    {
+#if DEBUG
+                        Debug.WriteLine($@"{uniqueName} - TextWasNotJsonException. Message: {ex.Message}, Text: {ex.Text}");
 #endif
                         responseClassName = "EmptyResponse";
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
@@ -400,7 +417,7 @@ public class ApiClientGenerator
                         responseClassName = "EmptyResponse";
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
 #if DEBUG
-                        Console.WriteLine(ex);
+                        Debug.WriteLine(ex);
                        throw;
 #endif
                         continue; // do not delete
@@ -439,19 +456,22 @@ public class ApiClientGenerator
                 try
                 {
                     bool _ = false;
-                    ProcessItem(jsonClassGenerator, queryParametersAsJson, uniqueName, Consts.Parameters, ref queryParametersClassName, ref queryParametersSourceCode, ref queryParameterTypes, ref  _, descriptionDict);
+                    ProcessItem(jsonClassGenerator, queryParametersAsJson, uniqueName, Consts.Parameters,
+                        ref queryParametersClassName, ref queryParametersSourceCode, ref queryParameterTypes, ref _,
+                        descriptionDict);
                 }
                 catch (NoClassesGeneratedException)
                 {
 #if DEBUG
-                    Console.WriteLine($@"Query parameters no classes generated. {requestItem.Name}");
+                    Debug.WriteLine($@"Query parameters no classes generated. {requestItem.Name}");
 #endif
                     queryParametersClassName = null;
                     queryParametersSourceCode = null;
                 }
                 catch (DuplicateRootException ex)
                 {
-                    AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, queryParametersClassName, uniqueName, GeneratedClassType.QueryParameters);
+                    AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, queryParametersClassName, uniqueName,
+                        GeneratedClassType.QueryParameters);
                     queryParametersClassName = ex.OriginalRootName;
                     queryParametersSourceCode = null;
                 }
@@ -460,7 +480,15 @@ public class ApiClientGenerator
                     queryParametersClassName = null;
                     queryParametersSourceCode = null;
 #if DEBUG
-                    Console.WriteLine($@"{uniqueName} - Xml exception. Message: {ex.Message}, Json: {queryParametersAsJson}");
+                    Debug.WriteLine($@"{uniqueName} - Xml exception. Message: {ex.Message}, Json: {queryParametersAsJson}");
+#endif
+                }
+                catch (TextWasNotJsonException ex)
+                {
+                    queryParametersClassName = null;
+                    queryParametersSourceCode = null;
+#if DEBUG
+                    Debug.WriteLine($@"{uniqueName} - TextWasNotJsonException. Message: {ex.Message}, Text: {ex.Text}");
 #endif
                 }
                 catch (Exception ex)
@@ -468,7 +496,7 @@ public class ApiClientGenerator
                     queryParametersClassName = null;
                     queryParametersSourceCode = null;
 #if DEBUG
-                    Console.WriteLine(ex);
+                    Debug.WriteLine(ex);
                     throw;
 #endif
                 }

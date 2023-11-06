@@ -24,6 +24,11 @@ namespace Xamasoft.JsonClassGenerator
         public bool DuplicateIsArray { get; set; }
     }
 
+    public class TextWasNotJsonException : Exception
+    {
+        public required string Text { get; set; }
+    }
+
     public class DuplicateOptions
     {
         public bool RemoveSemiDuplicates { get; set; } = true;
@@ -116,7 +121,10 @@ namespace Xamasoft.JsonClassGenerator
 
             if (examples == null)
             {
-                throw new UnreachableException("??");
+                throw new TextWasNotJsonException()
+                {
+                    Text = jsonInput
+                };
             }
 
             JObject[] GetExamples(string str)

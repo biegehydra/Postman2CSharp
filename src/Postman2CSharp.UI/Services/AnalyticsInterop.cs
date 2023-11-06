@@ -18,7 +18,7 @@ namespace Postman2CSharp.UI.Services
 
         public async Task TrackAction(string label)
         {
-            await TrackEvent("submit", "Action", label);
+            await TrackEvent(label, "Action", label);
         }
 
         public async Task TrackEvent(string eventType, string eventAction, string eventLabel)

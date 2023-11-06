@@ -200,11 +200,11 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
             }
             if (config.OutputType == OutputTypes.ImmutableRecord)
             {
-                sw.Append(indentTypes + $"{visibility} record {className}({Environment.NewLine}");
+                sw.Append(indentTypes + $"{visibility} record {className}{Environment.NewLine}");
             }
             else
             {
-                sw.Append(indentTypes + $"{visibility} class {className}({Environment.NewLine}");
+                sw.Append(indentTypes + $"{visibility} class {className}{Environment.NewLine}");
                 sw.AppendLine(indentTypes + "{");
             }
 
