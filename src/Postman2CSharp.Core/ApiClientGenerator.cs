@@ -88,7 +88,7 @@ public class ApiClientGenerator
 
         if (Options.ApiClientOptions.RootDefinition == RootDefinition.PerAuthority)
         {
-            rootItems = RootItemHelpers.ResortByAuthority(rootItems);
+            rootItems = RootItemHelpers.ResortByAuthority(rootItems, PostmanCollection.Info.Name);
         }
 
         await RaiseStageChangedCallback("Generating ApiClients...");

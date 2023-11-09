@@ -224,7 +224,7 @@ namespace Postman2CSharp.Core.Utilities
             }
         }
 
-        public static List<CollectionItem> ResortByAuthority(List<CollectionItem> rootItems)
+        public static List<CollectionItem> ResortByAuthority(List<CollectionItem> rootItems, string collectionName)
         {
             var allRequests = rootItems.SelectMany(x => x.RequestItems() ?? new List<CollectionItem>()).ToList();
             var dictionary = new Dictionary<string, List<CollectionItem>>();
@@ -241,9 +241,10 @@ namespace Postman2CSharp.Core.Utilities
             var newRoots = new List<CollectionItem>();
             foreach (var (key, value) in dictionary)
             {
+                var name = dictionary.Count == 1 ? Utils.NormalizeToCsharpPropertyName(collectionName) : Utils.NormalizeToCsharpPropertyName(key);
                 var newRootItem = new CollectionItem()
                 {
-                    Name = Utils.NormalizeToCsharpPropertyName(key),
+                    Name = dictionary.Count == 1 ? collectionName : Utils.NormalizeToCsharpPropertyName(key),
                     Item = value
                 };
                 newRoots.Add(newRootItem);
