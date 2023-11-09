@@ -186,5 +186,19 @@ namespace Postman2CSharp.UI.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public static CSharpCodeWriterConfigInputModel InputModelWithDefaults() => new()
+        {
+            AttributeUsage = JsonPropertyAttributeUsage.OnlyWhenNecessary,
+            CollectionType = OutputCollectionType.MutableList,
+            AttributeLibrary = JsonLibrary.SystemTextJson,
+            OutputMembers = OutputMembers.AsProperties,
+            OutputType = OutputTypes.MutableClass,
+            ReadOnlyCollectionProperties = false,
+            NullValueHandlingIgnore = false,
+            AlwaysUseNullables = false,
+            UseNestedClasses = false,
+            UsePascalCase = true
+        };
     }
 }

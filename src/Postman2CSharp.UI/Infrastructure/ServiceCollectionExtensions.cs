@@ -26,6 +26,7 @@ namespace Postman2CSharp.UI.Infrastructure
         }
         public static void AddPostman2CSharpServices(this IServiceCollection services, bool isServer)
         {
+            services.AddScoped<AppState>();
             services.AddScoped<Navigate>();
             services.AddScoped<Interop>();
             services.AddScoped<AnalyticsInterop>();

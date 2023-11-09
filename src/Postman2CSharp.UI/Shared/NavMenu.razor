@@ -55,19 +55,18 @@
 </MudDialog>
 @code
 {
+    [Inject] private ISnackbar? Snackbar { get; set; }
+    [Inject] private ILazyLoader LazyLoad { get; set; } = default!;
+    [Inject] private Navigate? Navigate { get; set; }
+    [Inject] private Interop? Interop { get; set; }
+    [Inject] private AppState AppState { get; set; } = null!;
+
     private string? _newCollectionName;
     private ApiCollection? _selectedApiCollection;
     public static bool CollectionsExpanded { get; set; }
 
     private string GettingStartedHref => Navigate?.CurrentUrl == Navigate?.BaseUrl ? "/" : "/GettingStarted";
     
-    [Inject] private ISnackbar? Snackbar { get; set; }
-
-    [Inject] private ILazyLoader LazyLoad { get; set; } = default!;
-
-    [Inject] private Navigate? Navigate { get; set; }
-
-    [Inject] private Interop? Interop { get; set; }
 
     [CascadingParameter]
     public MainLayout? Layout { get; set; }
@@ -98,7 +97,7 @@
     private async Task BeginEditName(ApiCollection collection)
     {
         if (Layout == null) return;
-        if (!LazyLoading.AdvancedSettingsLoaded)
+        if (!AppState.IsAdvancedSettingsLoaded)
         {
             try
             {
@@ -106,7 +105,7 @@
             }
             catch { }
         }
-        if (!LazyLoading.AdvancedSettingsLoaded)
+        if (!AppState.IsAdvancedSettingsLoaded)
         {
             Snackbar?.Add("Something went wrong. Try again.", Severity.Warning);
             return;

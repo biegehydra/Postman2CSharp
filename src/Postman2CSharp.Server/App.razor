@@ -1,8 +1,9 @@
 ﻿@using Postman2CSharp.UI.Infrastructure.Interfaces
-@using Postman2CSharp.UI.Infrastructure
+@using Postman2CSharp.UI.Services
 @inject ILazyLoader LazyLoad
+@inject AppState AppState
 
-<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="LazyLoad.OnNavigating" AdditionalAssemblies="LazyLoading.AdditionalAssemblies">
+<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="LazyLoad.OnNavigating" AdditionalAssemblies="AppState.AdditionalAssemblies">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />

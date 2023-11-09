@@ -1,4 +1,6 @@
-﻿<style>
+﻿@implements IDisposable
+
+<style>
     .setting-section-header {
         margin-bottom: 10px; 
         font-weight: 100;
@@ -125,16 +127,16 @@ hood of an error in generated code (minor issues usually) and increase the likel
         var toolTipColor = Color.Warning;
         var toolTipVisible = false;
         string toolTipMessage = "";
-        if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions))
+        if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, AppState.ApiClientOptions))
         {
             toolTipColor = Color.Warning;
             toolTipVisible = true;
             toolTipMessage = "There are unsaved changes. Click save to ensure your changes take effect.";
         }
         <div class="f-row" style="margin-top: 25px; gap: 20px;">
-            <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
+            <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, AppState.ApiClientOptions)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
             <MudTooltip Text="Resets settings to default values">
-                <MudButton Disabled="ApiClientOptions.ConfigsEqual(ApiClientOptions, new ApiClientOptions())" Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { _dirtyApiClientOptions = new ApiClientOptions(); }">Reset to default</MudButton>
+                <MudButton Disabled="ApiClientOptions.ConfigsEqual(AppState.ApiClientOptions, new ApiClientOptions())" Style="text-wrap: nowrap;" Color="Color.Error" Variant="Variant.Filled" OnClick="() => { _dirtyApiClientOptions = new ApiClientOptions(); }">Reset to default</MudButton>
             </MudTooltip>
             @if (toolTipVisible)
             {
@@ -153,63 +155,53 @@ hood of an error in generated code (minor issues usually) and increase the likel
 </div>
 
 @code {
-    [Parameter] public EventCallback<ApiCollection> SuccessfulGeneration { get; set; }
-
-    [Parameter]
-    public bool ShowUpload { get; set; }
-
-    [Parameter]
-    public bool ShowInteractiveDemoMessage { get; set; }
-    
-
-    [Parameter]
-    public P2CsSize P2CsSize { get; set; } = P2CsSize.Large;
-
     [Inject] private ISnackbar? Snackbar { get; set; }
+    [Inject] private AppState AppState { get; set; } = null!;
 
+    [Parameter] public EventCallback<ApiCollection> SuccessfulGeneration { get; set; }
+    [Parameter] public EventCallback<ApiClientOptions> ApiClientOptionsChanged { get; set; }
+    [Parameter] public ApiClientOptions? InitialApiClientOptions { get; set; }
+    [Parameter] public P2CsSize P2CsSize { get; set; } = P2CsSize.Large;
+    [Parameter] public bool ShowInteractiveDemoMessage { get; set; }
+    [Parameter] public bool ShowUpload { get; set; }
+    [Parameter] public bool AutoSave { get; set; }
+    [Parameter] public bool UseSavedOptions { get; set; } = true;
+    private ApiClientOptions _oldOptions = null!;
     private ApiClientOptions _dirtyApiClientOptions = new();
 
-    [Parameter]
-    public bool AutoSave { get; set; }
-
-    private ApiClientOptions _apiClientOptions = new();
-    [Parameter]
-    public ApiClientOptions ApiClientOptions
+    protected override void OnInitialized()
     {
-        get => _apiClientOptions;
-        set
+        _oldOptions = AppState.ApiClientOptions.Clone();
+        if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, AppState.ApiClientOptions) && UseSavedOptions)
         {
-            if (ApiClientOptions.ConfigsEqual(_apiClientOptions, value))
-            {
-                return;
-            }
-            SetApiClientOptions(value);
+            _dirtyApiClientOptions = AppState.ApiClientOptions.Clone();
         }
+        if (!UseSavedOptions && InitialApiClientOptions != null)
+        {
+            _dirtyApiClientOptions = InitialApiClientOptions.Clone();
+        }
+        AppState.OptionsChanged += OnApiClientOptionsChanged;
     }
 
-    [Parameter]
-    public EventCallback<ApiClientOptions> ApiClientOptionsChanged { get; set; }
-
-    protected override void OnParametersSet()
+    private void OnApiClientOptionsChanged()
     {
-        if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions))
-        {
-            SetApiClientOptions(ApiClientOptions);
-        }
+        if (!UseSavedOptions) return;
+        _dirtyApiClientOptions = AppState.ApiClientOptions.Clone();
+        InvokeAsync(StateHasChanged);
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (AutoSave && !ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions))
+        if (AutoSave && !ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, AppState.ApiClientOptions))
         {
             SetApiClientOptions(_dirtyApiClientOptions);
         }
     }
 
-    public void SetApiClientOptions(ApiClientOptions options)
+    private void SetApiClientOptions(ApiClientOptions options)
     {
-        _apiClientOptions = options.Clone();
         _dirtyApiClientOptions = options.Clone();
+        AppState.UpdateApiClientOptions(options);
         ApiClientOptionsChanged.InvokeAsync(options);
     }
 
@@ -230,8 +222,6 @@ hood of an error in generated code (minor issues usually) and increase the likel
         _dirtyApiClientOptions.RemoveDisabled = commentTypes.Select(Enum.Parse<RemoveDisabled>).ToList();
     }
 
-    private static ApiClientOptions DefaultOptions() => new();
-
     private void SaveOptions()
     {
         SetApiClientOptions(_dirtyApiClientOptions);
@@ -244,14 +234,22 @@ hood of an error in generated code (minor issues usually) and increase the likel
     protected override bool ShouldRender()
     {
         if (_cachedApiClientsOptions != null && ApiClientOptions.ConfigsEqual(_cachedApiClientsOptions, _cachedDirtyApiClientsOptions)
-            && ApiClientOptions.ConfigsEqual(_apiClientOptions, _dirtyApiClientOptions) && _cachedP2CsSize == P2CsSize)
+            && ApiClientOptions.ConfigsEqual(AppState.ApiClientOptions, _dirtyApiClientOptions) && _cachedP2CsSize == P2CsSize)
         {
             return false;
         }
-        _cachedApiClientsOptions = _apiClientOptions.Clone();
+        _cachedApiClientsOptions = AppState.ApiClientOptions.Clone();
         _cachedDirtyApiClientsOptions = _dirtyApiClientOptions.Clone();
         _cachedP2CsSize = P2CsSize;
         return true;
     }
 
+    public void Dispose()
+    {
+        AppState.OptionsChanged -= OnApiClientOptionsChanged;
+        if (!UseSavedOptions)
+        {
+            AppState.UpdateApiClientOptions(_oldOptions);
+        }
+    }
 }

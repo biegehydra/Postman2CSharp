@@ -25,7 +25,7 @@
                     <MudIconButton Icon="@Icons.Edit" Class="ml-0 mr-2" OnClick="() => BeginEditingApiClientNamespace()" Color="@Color.Default"/>
                 </div>
             }
-            @if (SiteSettings.Instance.ShowDownloadInTreeView && !ShowEdit)
+            @if (AppState.SiteSettings.ShowDownloadInTreeView && !ShowEdit)
             {
                 <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadApiClient(ApiClient)"></MudIconButton>
             }
@@ -43,7 +43,7 @@
                 <Content>
                     <MudTreeViewItemToggleButton Visible="false"/>
                     <MudText Style="user-select: none;">@ApiClient.Name</MudText>
-                    @if (SiteSettings.Instance.ShowDownloadInTreeView)
+                        @if (AppState.SiteSettings.ShowDownloadInTreeView)
                     {
                         <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.Name, ApiClient.SourceCode)"></MudIconButton>
                     }
@@ -54,7 +54,7 @@
                 <Content>
                     <MudTreeViewItemToggleButton Visible="false"/>
                     <MudText Style="user-select: none;">@ApiClient.InterfaceName</MudText>
-                    @if (SiteSettings.Instance.ShowDownloadInTreeView)
+                    @if (AppState.SiteSettings.ShowDownloadInTreeView)
                     {
                         <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.InterfaceName, ApiClient.InterfaceSourceCode)"></MudIconButton>
                     }
@@ -78,6 +78,7 @@
     </MudTreeViewItem>
 }
 @code {
+    [Inject] private AppState AppState { get; set; } = null!;
     [CascadingParameter] public CollectionTreeItem CollectionTreeItem { get; set; } = null!;
     [Parameter, EditorRequired] public ApiCollection? ApiCollection { get; set; }
     [Parameter, EditorRequired] public ApiClient? ApiClient { get; set; }

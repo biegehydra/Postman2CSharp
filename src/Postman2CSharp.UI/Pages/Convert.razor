@@ -48,16 +48,16 @@
     </MudButton>
 </div>
 
-@if (LazyLoading.ConvertLoaded)
+@if (AppState.IsConvertLoaded)
 {
     <div class="code-writing-options-contianer">
         @if (_useStepper)
         {
-            <ApiClientOptionsStepper @bind-ApiClientOptions="LastSavedApiClientOptions" SuccessfulGeneration="OnSuccessfulGeneration"></ApiClientOptionsStepper>
+            <ApiClientOptionsStepper SuccessfulGeneration="OnSuccessfulGeneration"></ApiClientOptionsStepper>
         }
         else
         {
-            <ApiClientOptionsComponent @ref="ApiClientOptionsComponent" @bind-ApiClientOptions="LastSavedApiClientOptions" SuccessfulGeneration="OnSuccessfulGeneration" ShowUpload="true"  ></ApiClientOptionsComponent>
+            <ApiClientOptionsComponent SuccessfulGeneration="OnSuccessfulGeneration" ShowUpload="true"  ></ApiClientOptionsComponent>
         }
     </div>
     <br />
@@ -65,13 +65,11 @@
 
 
 @code {
-    public static ApiClientOptions LastSavedApiClientOptions { get; private set; } = new();
-    private static ApiClientOptionsComponent? ApiClientOptionsComponent { get; set; }
-    private static ApiClientOptionsStepper? ApiClientOptionsStepper { get; set; }
+    [Inject] private AppState AppState { get; set; } = null!;
+    [Inject] private ILazyLoader LazyLoader { get; set; } = null!;
 
     private bool _useStepper = true;
 
-    [Inject] private ILazyLoader LazyLoader { get; set; } = null!;
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
     {
         new("Home", "/", icon: Icons.Home),
@@ -81,24 +79,19 @@
     protected override void OnInitialized()
     {
         TabsService.Value.SetHome(null);
-        if (!LazyLoading.ConvertLoaded)
+        if (!AppState.IsConvertLoaded)
         {
             throw new Exception("Something went wrong. Reload the page.");
         }
-        LazyLoading.UploadLoadedChanged += OnUploadLoaded;
-        MainLayout.OnSettingsChanged += OnSettingsChanged;
-
+        AppState.ConvertLoaded += OnConvertLoaded;
+        AppState.SettingsChanged += InvokeStateHasChanged;
+        AppState.OptionsChanged += StateHasChanged;
     }
 
-    public static void SetApiClientOptions(ApiClientOptions apiClientOptions)
-    {
-        LastSavedApiClientOptions = apiClientOptions.Clone();
-        ApiClientOptionsComponent?.SetApiClientOptions(apiClientOptions);
-    }
 
-    private async void OnSettingsChanged()
+    private void InvokeStateHasChanged()
     {
-        await InvokeAsync(StateHasChanged);
+        InvokeAsync(StateHasChanged);
     }
 
     private async Task OnSuccessfulGeneration(ApiCollection apiCollection)
@@ -108,19 +101,17 @@
         NavMenu.CollectionsExpanded = true;
     }
 
-    private async Task OnUploadLoaded(bool loaded)
+    private async Task OnConvertLoaded()
     {
-        if (loaded)
-        {
-            await InvokeAsync(StateHasChanged);
-        }
+        await InvokeAsync(StateHasChanged);
     }
 
 
     public void Dispose()
     {
-        LazyLoading.UploadLoadedChanged -= OnUploadLoaded;
-        MainLayout.OnSettingsChanged -= OnSettingsChanged;
+        AppState.ConvertLoaded -= OnConvertLoaded;
+        AppState.SettingsChanged -= InvokeStateHasChanged;
+        AppState.OptionsChanged -= InvokeStateHasChanged;
     }
 
 }

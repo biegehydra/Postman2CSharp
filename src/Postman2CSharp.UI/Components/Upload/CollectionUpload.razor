@@ -1,5 +1,5 @@
 ﻿@using System.Runtime.CompilerServices
-@if (Collection != null && Convert.LastSavedApiClientOptions.RootDefinition == RootDefinition.Manual)
+@if (Collection != null && AppState.ApiClientOptions.RootDefinition == RootDefinition.Manual)
 {
     <ManualRootDefinitionComponent @ref="_manualRootDefinitionComponent" PostmanCollection="Collection" ConfirmedChanged="StateHasChanged"  />
 }
@@ -21,8 +21,8 @@
                 </ButtonTemplate>
             </MudFileUpload>
         </MudTooltip>
-    
-        @if (Convert.LastSavedApiClientOptions.RootDefinition == RootDefinition.Manual)
+
+        @if (AppState.ApiClientOptions.RootDefinition == RootDefinition.Manual)
         {
             if (Collection == null)
             {
@@ -56,10 +56,12 @@ else
 
 @code
 {
-    [Parameter] public bool Small { get; set; } = true;
     [Inject] private ILazyLoader LazyLoad { get; set; } = null!;
     [Inject] private Lazy<ISnackbar?> SnackBar { get; set; } = null!;
     [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
+    [Inject] private AppState AppState { get; set; } = null!;
+
+    [Parameter] public bool Small { get; set; } = true;
     [Parameter] public EventCallback<ApiCollection> SuccessfulGeneration { get; set; }
     [Parameter] public EventCallback<(IBrowserFile BrowserFile, PostmanCollection Collection)> SuccessfulUpload { get; set; }
 
@@ -139,7 +141,7 @@ else
 
     private async Task OnProcessClicked()
     {
-        if (Convert.LastSavedApiClientOptions.RootDefinition != RootDefinition.Manual)
+        if (AppState.ApiClientOptions.RootDefinition != RootDefinition.Manual)
         {
             if (await TryDeserializerApiClient())
             {
@@ -158,7 +160,7 @@ else
         _isBusy = true;
         try
         {
-            var apiClientGenerator = new ApiClientGenerator(Collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, Convert.LastSavedApiClientOptions));
+            var apiClientGenerator = new ApiClientGenerator(Collection, new ApiClientGeneratorOptions(AppState.CodeWriterConfigInputModel.ToCSharpCodeWriterConfig(), AppState.ApiClientOptions));
             StartTrackingGenerator(apiClientGenerator);
             await Task.Delay(1);
             var apiClients = await apiClientGenerator.GenerateApiClients();

@@ -17,7 +17,7 @@
 </MudText>
 <MudDivider Class="my-divider" DividerType="DividerType.FullWidth"></MudDivider>
 <div id="Advanced-Settings" class="info-container" >
-    @if (LazyLoading.AdvancedSettingsLoaded)
+    @if (AppState.IsAdvancedSettingsLoaded)
     {
         <CSharpCodeWriterOptionsComponent />
         <br />
@@ -27,10 +27,10 @@
                 <MudText Style="font-weight: 500;" Typo="Typo.h2">Site Settings</MudText>
             </div>
             <div>
-                @if (!Equals(SiteSettings.Instance, DefaultSiteSettings()))
+                @if (!Equals(AppState.SiteSettings, DefaultSiteSettings()))
                 {
                     <MudTooltip Text="Resets settings to default values">
-                        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="() => SiteSettings.Instance = DefaultSiteSettings()">Reset</MudButton>
+                        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="() => AppState.UpdateSiteSettings(DefaultSiteSettings())">Reset</MudButton>
                     </MudTooltip>
                 }
             </div>
@@ -38,20 +38,23 @@
         <br />
         <MudGrid Spacing="3">
             <MudItem xs="12" sm="6" md="4" lg="3">
-                <MudCheckBox Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowSnackbarPopups">Show SnackBar Popups</MudCheckBox>
+                <MudCheckBox T="bool" Color="Color.Primary" @bind-Checked:get="AppState.SiteSettings.ShowSnackbarPopups"
+                             @bind-Checked:set="x => { AppState.SiteSettings.ShowSnackbarPopups = x; AppState.UpdateSiteSettings(AppState.SiteSettings); }"  >Show SnackBar Popups</MudCheckBox>
             </MudItem>
             <MudItem>
-                <MudCheckBox Color="Color.Primary" @bind-Checked="SiteSettings.Instance.SaveCollectionsToLocalStorage">Save Collections to Local Storage</MudCheckBox>
+                <MudCheckBox Color="Color.Primary" @bind-Checked:get="AppState.SiteSettings.SaveCollectionsToLocalStorage"
+                             @bind-Checked:set="x => { AppState.SiteSettings.SaveCollectionsToLocalStorage = x; AppState.UpdateSiteSettings(AppState.SiteSettings); }">Save Collections to Local Storage</MudCheckBox>
             </MudItem>
             <MudItem>
-                <MudCheckBox Color="Color.Primary" @bind-Checked="SiteSettings.Instance.ShowDownloadInTreeView">Show Download Button In Tree View</MudCheckBox>
+                <MudCheckBox Color="Color.Primary" @bind-Checked:get="AppState.SiteSettings.ShowDownloadInTreeView"
+                             @bind-Checked:set="x => { AppState.SiteSettings.ShowDownloadInTreeView = x; AppState.UpdateSiteSettings(AppState.SiteSettings); }">Show Download Button In Tree View</MudCheckBox>
             </MudItem>
         </MudGrid>
     }
 </div>
 @code {
     [Inject] private ISnackbar? Snackbar { get; set; }
-
+    [Inject] private AppState AppState { get; set; } = null!;
     [Inject] private Interop Interop { get; set; } = null!;
     [Inject] private ILazyLoader LazyLoader { get; set; } = null!;
 
@@ -71,26 +74,23 @@
 
     protected override void OnInitialized()
     {
-        SiteSettings.OnSettingsChanged += OnSiteSettingsChanged;
-        LazyLoading.AdvancedSettingsLoadedChanged += AdvancedSettingsLoadedChanged;
+        AppState.SettingsChanged += InvokeStateHasChanged;
+        AppState.AdvancedSettingsLoaded += AdvancedSettingsLoadedChanged;
     }
 
-    private void OnSiteSettingsChanged(SiteSettings siteSettings)
+    private void InvokeStateHasChanged()
     {
         InvokeAsync(StateHasChanged);
     }
 
-    private async Task AdvancedSettingsLoadedChanged(bool loaded)
+    private async Task AdvancedSettingsLoadedChanged()
     {
-       if (loaded)
-       {
-           await InvokeAsync(StateHasChanged);
-       }
+        await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
-        SiteSettings.OnSettingsChanged -= OnSiteSettingsChanged;
-        LazyLoading.AdvancedSettingsLoadedChanged -= AdvancedSettingsLoadedChanged;
+        AppState.SettingsChanged -= InvokeStateHasChanged;
+        AppState.AdvancedSettingsLoaded -= AdvancedSettingsLoadedChanged;
     }
 }

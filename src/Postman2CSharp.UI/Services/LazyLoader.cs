@@ -69,17 +69,17 @@ namespace Postman2CSharp.UI.Services
             "_content/Postman2CSharp.UI/ace/ace.css",
         };
 
-        private NavigationManager NavigationManager { get; }
-
-        private Interop Interop { get; }
-
+        private readonly NavigationManager _navigationManager;
         private readonly LazyAssemblyLoader _lazyAssemblyLoader;
+        private readonly AppState _appState;
+        private readonly Interop _interop;
 
-        public LazyLoader(LazyAssemblyLoader lazyAssemblyLoader, Interop interop, NavigationManager navigationManager)
+        public LazyLoader(LazyAssemblyLoader lazyAssemblyLoader, Interop interop, NavigationManager navigationManager, AppState appState)
         {
             _lazyAssemblyLoader = lazyAssemblyLoader;
-            Interop = interop;
-            NavigationManager = navigationManager;
+            _interop = interop;
+            _navigationManager = navigationManager;
+            _appState = appState;
         }
 
         public async Task LoadHttpSecurityAssemblies()
@@ -89,33 +89,31 @@ namespace Postman2CSharp.UI.Services
 
         public async Task LoadConvertAssemblies()
         {
-            if (LazyLoading.ConvertLoaded) return;
+            if (_appState.IsConvertLoaded) return;
             await _lazyAssemblyLoader.LoadAssembliesAsync(UploadAssemblies);
-            LazyLoading.ConvertLoaded = true;
-            LazyLoading.InvokeConvertLoaded(true);
+            await _appState.InvokeConvertLoaded();
         }
 
 
         public async Task LoadAdvancedSettingsAssemblies()
         {
-            if (LazyLoading.AdvancedSettingsLoaded) return;
+            if (_appState.IsAdvancedSettingsLoaded) return;
             await _lazyAssemblyLoader.LoadAssembliesAsync(AdvancedSettingsAssemblies);
-            LazyLoading.AdvancedSettingsLoaded = true;
-            LazyLoading.InvokeAdvancedSettingsLoaded(true);
+            await _appState.InvokeAdvancedSettingsLoaded();
         }
 
         private void LoadCollectionJs()
         {
-            var tasks = JzipJsFileSources.Select(Interop.LoadFile).ToList();
-            var getCssTask = Interop.LoadStyle(MarkDownSource);
+            var tasks = JzipJsFileSources.Select(_interop.LoadFile).ToList();
+            var getCssTask = _interop.LoadStyle(MarkDownSource);
             tasks.Add(getCssTask);
             _ = Task.WhenAll(tasks);
         }
 
         private async Task LoadJson2CsharpPlusFiles()
         {
-            var tasks = Json2CsharpPlusJsFiles.Select(Interop.LoadFile).ToList();
-            var getCssTask = Json2CsharpPlusCssFiles.Select(Interop.LoadStyle).ToList();
+            var tasks = Json2CsharpPlusJsFiles.Select(_interop.LoadFile).ToList();
+            var getCssTask = Json2CsharpPlusCssFiles.Select(_interop.LoadStyle).ToList();
             tasks.AddRange(getCssTask);
             await Task.WhenAll(tasks);
         }
@@ -126,7 +124,7 @@ namespace Postman2CSharp.UI.Services
             _uploadAttempts = 0;
             retry:
             _uploadAttempts++;
-            var uri = NavigationManager.Uri.ToLower();
+            var uri = _navigationManager.Uri.ToLower();
             try
             {
                 if (string.IsNullOrEmpty(uri))

@@ -1,4 +1,6 @@
 ﻿@using CodeBeamMudExtensions
+@implements IDisposable
+
 <style>
     .setting-section-header {
         margin-bottom: 10px;
@@ -160,6 +162,7 @@
 </MudStepper>
 
 @code {
+    [Inject] private AppState AppState { get; set; } = null!;
     [Inject] private ISnackbar? Snackbar { get; set; }
     [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
     [Parameter] public EventCallback<ApiCollection> SuccessfulGeneration { get; set; }
@@ -271,7 +274,7 @@
             case Steps.Miscellaneous:
                 break;
         }
-        var futureSteps = _stepper.Steps.Skip((int) step + 1).ToList();
+        var futureSteps = _stepper!.Steps.Skip((int) step + 1).ToList();
         foreach (var futureStep in futureSteps)
         {
             futureStep.Status = StepStatus.Continued;
@@ -279,35 +282,25 @@
     }
 
     private ApiClientOptions _dirtyApiClientOptions = new();
-    private ApiClientOptions _apiClientOptions = new();
-    [Parameter]
-    public ApiClientOptions ApiClientOptions
+
+    protected override void OnInitialized()
     {
-        get => _apiClientOptions;
-        set
+        if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, AppState.ApiClientOptions))
         {
-            if (ApiClientOptions.ConfigsEqual(_apiClientOptions, value))
-            {
-                return;
-            }
-            SetApiClientOptions(value);
+            _dirtyApiClientOptions = AppState.ApiClientOptions.Clone();
         }
+        AppState.OptionsChanged += ApiOptionsChanged;
     }
 
-    [Parameter]
-    public EventCallback<ApiClientOptions> ApiClientOptionsChanged { get; set; }
-
-    protected override void OnParametersSet()
+    private void ApiOptionsChanged()
     {
-        if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions))
-        {
-            SetApiClientOptions(ApiClientOptions);
-        }
+        _dirtyApiClientOptions = AppState.ApiClientOptions.Clone();
+        InvokeAsync(StateHasChanged);
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, ApiClientOptions))
+        if (!ApiClientOptions.ConfigsEqual(_dirtyApiClientOptions, AppState.ApiClientOptions))
         {
             SetApiClientOptions(_dirtyApiClientOptions);
         }
@@ -315,9 +308,8 @@
 
     private void SetApiClientOptions(ApiClientOptions options)
     {
-        _apiClientOptions = options.Clone();
         _dirtyApiClientOptions = options.Clone();
-        ApiClientOptionsChanged.InvokeAsync(options);
+        AppState.UpdateApiClientOptions(options);
     }
 
     private void SelectedErrorHandlingSinksChanged(IEnumerable<string> errorHandlingSinks)
@@ -348,7 +340,7 @@
         if (_collection == null || _uploadedFile == null) return;
         try
         {
-            var apiClientGenerator = new ApiClientGenerator(_collection, new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, Convert.LastSavedApiClientOptions));
+            var apiClientGenerator = new ApiClientGenerator(_collection, new ApiClientGeneratorOptions(AppState.CodeWriterConfigInputModel.ToCSharpCodeWriterConfig(), AppState.ApiClientOptions));
             StartTrackingGenerator(apiClientGenerator);
             _forceRender = true;
             StateHasChanged();
@@ -394,14 +386,18 @@
     protected override bool ShouldRender()
     {
         if (!_forceRender && _cachedApiClientsOptions != null && ApiClientOptions.ConfigsEqual(_cachedApiClientsOptions, _cachedDirtyApiClientsOptions)
-            && ApiClientOptions.ConfigsEqual(_apiClientOptions, _dirtyApiClientOptions))
+            && ApiClientOptions.ConfigsEqual(AppState.ApiClientOptions, _dirtyApiClientOptions))
         {
             return false;
         }
         _forceRender = false;
-        _cachedApiClientsOptions = _apiClientOptions.Clone();
+        _cachedApiClientsOptions = AppState.ApiClientOptions.Clone();
         _cachedDirtyApiClientsOptions = _dirtyApiClientOptions.Clone();
         return true;
     }
 
+    public void Dispose()
+    {
+        AppState.OptionsChanged -= ApiOptionsChanged;
+    }
 }

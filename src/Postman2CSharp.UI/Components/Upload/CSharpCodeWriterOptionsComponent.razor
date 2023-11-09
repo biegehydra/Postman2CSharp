@@ -8,7 +8,9 @@
     </div>
     <div class="f-column end-start" style="gap: 25px;">
         <MudTooltip Text="Resets settings to default values">
-            <MudButton Style="white-space: nowrap;" Color="Color.Error" Disabled="LastSavedInputModel.Equals(InputModelWithDefaults())" Variant="Variant.Filled" OnClick="SetInputModelToDefault">Reset To Default</MudButton>
+            <MudButton Style="white-space: nowrap;" Color="Color.Error"
+                       Disabled="AppState.CodeWriterConfigInputModel.Equals(CSharpCodeWriterConfigInputModel.InputModelWithDefaults())" 
+                       Variant="Variant.Filled" OnClick="SetInputModelToDefault">Reset To Default</MudButton>
         </MudTooltip>
     </div>
 </div>
@@ -24,7 +26,7 @@
         <EnumSelectComponent @bind-Value="InputModel.OutputMembers" Label="Output Members"></EnumSelectComponent>
     </MudItem>
     <MudItem xs="12" sm="6" md="4" lg="3">
-        <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.NullValueHandlingIgnore" Disabled="Convert.LastSavedApiClientOptions.JsonLibrary == JsonLibrary.SystemTextJson" Label="Null Value Handling Ignore"></MudCheckBox>
+        <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.NullValueHandlingIgnore" Disabled="AppState.ApiClientOptions.JsonLibrary == JsonLibrary.SystemTextJson" Label="Null Value Handling Ignore"></MudCheckBox>
     </MudItem>
     <MudItem xs="12" sm="6" md="4" lg="3">
         <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.ReadOnlyCollectionProperties" Label="Read Only Collection Properties"></MudCheckBox>
@@ -40,7 +42,7 @@
             var toolTipColor = Color.Warning;
             var toolTipVisible = false;
             string toolTipMessage = "";
-            if (!InputModel.Equals(LastSavedInputModel))
+            if (!InputModel.Equals(AppState.CodeWriterConfigInputModel))
             {
                 toolTipColor = Color.Warning;
                 toolTipVisible = true;
@@ -48,7 +50,7 @@
             }
         }
         <div class="f-row aic" style="gap: 15px; width: 100%; justify-content: space-around;">
-            <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="InputModel.Equals(LastSavedInputModel)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
+            <MudButton Color="Color.Primary" OnClick="SaveOptions" Disabled="InputModel.Equals(AppState.CodeWriterConfigInputModel)" Variant="Variant.Outlined" EndIcon="@Icons.Save">Save</MudButton>
             @if (toolTipVisible)
             {
                 <MudTooltip Text="@toolTipMessage">
@@ -66,32 +68,29 @@
 
 
 @code {
-    public static CSharpCodeWriterConfig Options { get; set; } = InputModelWithDefaults().ToCSharpCodeWriterConfig();
-    public static CSharpCodeWriterConfigInputModel LastSavedInputModel = InputModelWithDefaults();
-
+    [Inject] private AppState AppState { get; set; } = null!;
     [Inject] private Lazy<ISnackbar?> SnackBar { get; set; } = default!;
-    private CSharpCodeWriterConfigInputModel InputModel { get; set; } = InputModelWithDefaults();
+    private CSharpCodeWriterConfigInputModel InputModel { get; set; } = CSharpCodeWriterConfigInputModel.InputModelWithDefaults();
 
     protected override void OnInitialized()
     {
-        if (!LastSavedInputModel.Equals(InputModelWithDefaults()))
-        {
-            InputModel = LastSavedInputModel.Clone();
-        }
+        InputModel = AppState.CodeWriterConfigInputModel.Clone();
         InputModel.PropertyChanged += OnInputModelPropertyChanged;
-        MainLayout.OnSettingsChanged += OnSettingsChanged;
+        AppState.SettingsChanged += OnSettingsChanged;
+        AppState.CSharpCodeWriterConfigInputModelChanged += SetInputModelToLastSaved;
     }
 
     private void SetInputModelToLastSaved()
     {
         InputModel.PropertyChanged -= OnInputModelPropertyChanged;
-        InputModel = LastSavedInputModel.Clone();
+        InputModel = AppState.CodeWriterConfigInputModel.Clone();
         InputModel.PropertyChanged += OnInputModelPropertyChanged;
+        InvokeAsync(StateHasChanged);
     }
     private void SetInputModelToDefault()
     {
         InputModel.PropertyChanged -= OnInputModelPropertyChanged;
-        InputModel = InputModelWithDefaults();
+        InputModel = CSharpCodeWriterConfigInputModel.InputModelWithDefaults();
         InputModel.PropertyChanged += OnInputModelPropertyChanged;
     }
 
@@ -106,31 +105,18 @@
         InvokeAsync(StateHasChanged);
     }
 
-    private static CSharpCodeWriterConfigInputModel InputModelWithDefaults() => new ()
-    {
-        AttributeUsage = JsonPropertyAttributeUsage.OnlyWhenNecessary,
-        CollectionType = OutputCollectionType.MutableList,
-        AttributeLibrary = JsonLibrary.SystemTextJson,
-        OutputMembers = OutputMembers.AsProperties,
-        OutputType = OutputTypes.MutableClass,
-        ReadOnlyCollectionProperties = false,
-        NullValueHandlingIgnore = false,
-        AlwaysUseNullables = false,
-        UseNestedClasses = false,
-        UsePascalCase = true
-    };
 
     private void SaveOptions()
     {
-        Options = InputModel.ToCSharpCodeWriterConfig();
-        LastSavedInputModel = InputModel.Clone();
+        AppState.UpdateCodeWriterConfigInputModel(InputModel.Clone());
         SnackBar.Value?.Add($"Class generation options saved", Severity.Success);
     }
 
     public void Dispose()
     {
         InputModel.PropertyChanged -= OnInputModelPropertyChanged;
-        MainLayout.OnSettingsChanged -= OnSettingsChanged;
+        AppState.SettingsChanged -= OnSettingsChanged;
+        AppState.CSharpCodeWriterConfigInputModelChanged -= SetInputModelToLastSaved;
     }
 
 }

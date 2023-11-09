@@ -5,7 +5,7 @@
         <Content>
             <MudTreeViewItemToggleButton Visible="false" />
             <MudText Style="user-select: none;">@ClassName.Replace(HttpCallName, string.Empty)</MudText>
-            @if (SiteSettings.Instance.ShowDownloadInTreeView)
+            @if (AppState.SiteSettings.ShowDownloadInTreeView)
             {
                 <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="DownloadFile" ></MudIconButton>
             }
@@ -15,6 +15,7 @@
 }
 
 @code {
+    [Inject] private AppState AppState { get; set; } = null!;
     [Inject] private Navigate Navigate { get; set; } = null!;
     [Inject] private Interop Interop { get; set; } = null!;
 

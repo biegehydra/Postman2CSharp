@@ -1,6 +1,6 @@
-@if (LazyLoading.ConvertLoaded)
+@if (AppState.IsConvertLoaded)
 {
-    <Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="OnNavigateAsync" AdditionalAssemblies="LazyLoading.AdditionalAssemblies">
+    <Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="OnNavigateAsync" AdditionalAssemblies="AppState.AdditionalAssemblies">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         </Found>
@@ -14,7 +14,7 @@
 }
 else
 {
-    <Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="OnNavigateAsync" AdditionalAssemblies="LazyLoading.AdditionalAssemblies">
+    <Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="OnNavigateAsync" AdditionalAssemblies="AppState.AdditionalAssemblies">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         </Found>
@@ -32,13 +32,14 @@ else
 
 @code
 {
-    [Inject] private ILazyLoader LazyLoad { get; set; } = null!;
+    [Inject] private AppState AppState { get; set; } = null!;
+    [Inject] private ILazyLoader LazyLoader { get; set; } = null!;
     [Inject] private NavigationManager Navigate { get; set; } = null!;
     [Inject] private Interop Interop { get; set; } = null!;
 
     private async Task OnNavigateAsync(NavigationContext args)
     {
-        await LazyLoad.OnNavigating();
+        await LazyLoader.OnNavigating();
     }
 
     public static RenderFragment SplashScreen()

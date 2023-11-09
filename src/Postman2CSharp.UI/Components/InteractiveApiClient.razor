@@ -32,25 +32,25 @@
     <MudHidden Breakpoint="Breakpoint.MdAndUp">
         <div class="f-column">
             <div>
-                <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" Test="false" ShowInteractiveDemoMessage="false" P2CsSize="ItemSize" AutoSave></ApiClientOptionsComponent>
+                <ApiClientOptionsComponent InitialApiClientOptions="_apiClientOptions" ApiClientOptionsChanged="x => _apiClientOptions = x" UseSavedOptions="false" ShowInteractiveDemoMessage="false" P2CsSize="ItemSize" AutoSave></ApiClientOptionsComponent>
             </div>
             <br/>
             <div >
                 <MudText Style="font-weight: 500;" Typo="Typo.h2">@(_apiClientView ? "Generated Api Client" : "Other Generated Classes")</MudText>
                 <br />
-                @CodeBlock(_apiClientOptions, _apiClientView)
+                @CodeBlock(_apiClientOptions, AppState.CodeWriterConfigInputModel.ToCSharpCodeWriterConfig(), _apiClientView)
             </div>
         </div>
     </MudHidden>
     <MudHidden Breakpoint="Breakpoint.SmAndDown">
         <VerticalSplit>
             <LeftPanel>
-                <ApiClientOptionsComponent @bind-ApiClientOptions="_apiClientOptions" P2CsSize="ItemSize" AutoSave></ApiClientOptionsComponent>
+                <ApiClientOptionsComponent InitialApiClientOptions="_apiClientOptions" ApiClientOptionsChanged="x => _apiClientOptions = x" UseSavedOptions="false" P2CsSize="ItemSize" AutoSave></ApiClientOptionsComponent>
             </LeftPanel>
             <RightPanel>
                 <MudText Style="font-weight: 500; text-align: end;" Typo="Typo.h2">@(_apiClientView ? "Generated Api Client" : "Other Generated Classes")</MudText>
                 <br/>
-                @CodeBlock(_apiClientOptions, _apiClientView)
+                @CodeBlock(_apiClientOptions, AppState.CodeWriterConfigInputModel.ToCSharpCodeWriterConfig(), _apiClientView)
             </RightPanel>
         </VerticalSplit>
     </MudHidden>
@@ -85,6 +85,7 @@
          StateHasChanged();
      }
      
+    [Inject] private AppState AppState { get; set; } = null!;
     [Inject] private Interop Interop { get; set; } = null!;
     [Inject] private ILazyLoader LazyLoad { get; set; } = null!;
     [Inject] private Navigate Navigate { get; set; } = null!;
@@ -112,7 +113,7 @@
 
     private static ApiClientOptions? _lastApiClientOptions;
     private static Core.Models.ApiClient? _lastApiClient;
-    private static RenderFragment? CodeBlock(ApiClientOptions options, bool apiClientView)
+    private static RenderFragment? CodeBlock(ApiClientOptions options, CSharpCodeWriterConfig codeWriterConfig, bool apiClientView)
     {
         if (_testData == null) return null;
         if (_lastApiClientOptions != null && _lastApiClient != null)
@@ -125,7 +126,7 @@
         _lastApiClientOptions = options;
         var postmanCollection = JsonSerializer.Deserialize<PostmanCollection>(_testData, SerializerSettings.Web);
         if (postmanCollection == null) return null;
-        var apiClientGenerationOptions = new ApiClientGeneratorOptions(CSharpCodeWriterOptionsComponent.Options, options);
+        var apiClientGenerationOptions = new ApiClientGeneratorOptions(codeWriterConfig, options);
         var apiClientGenerator = new ApiClientGenerator(postmanCollection, apiClientGenerationOptions);
         var generateTask = apiClientGenerator.GenerateApiClients();
         generateTask.Wait();

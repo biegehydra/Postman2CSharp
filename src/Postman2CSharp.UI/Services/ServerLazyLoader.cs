@@ -1,11 +1,15 @@
 ﻿using System.Reflection;
-using Postman2CSharp.UI.Infrastructure;
 using Postman2CSharp.UI.Infrastructure.Interfaces;
 
 namespace Postman2CSharp.UI.Services
 {
     public class ServerLazyLoader : ILazyLoader
     {
+        private readonly AppState _appState;
+        public ServerLazyLoader(AppState appState)
+        {
+            _appState = appState;
+        }
         public Task LoadHttpSecurityAssemblies()
         {
             return Task.CompletedTask;
@@ -13,26 +17,19 @@ namespace Postman2CSharp.UI.Services
 
         public Task LoadAdvancedSettingsAssemblies()
         {
-            LazyLoading.AdvancedSettingsLoaded = true;
-            LazyLoading.InvokeAdvancedSettingsLoaded(true);
-            return Task.CompletedTask;
+            return _appState.InvokeAdvancedSettingsLoaded();
         }
 
         public Task LoadConvertAssemblies()
         {
-            LazyLoading.ConvertLoaded = true;
-            LazyLoading.InvokeConvertLoaded(true); 
-            return Task.CompletedTask;
+            return _appState.InvokeConvertLoaded();
         }
 
-        public Task OnNavigating()
+        public async Task OnNavigating()
         {
-            LazyLoading.AdditionalAssemblies = new List<Assembly>() {typeof(App).Assembly};
-            LazyLoading.ConvertLoaded = true;
-            LazyLoading.InvokeConvertLoaded(true);
-            LazyLoading.AdvancedSettingsLoaded = true;
-            LazyLoading.InvokeAdvancedSettingsLoaded(true);
-            return Task.CompletedTask;
+            _appState.AdditionalAssemblies = new List<Assembly>() {typeof(App).Assembly};
+            await _appState.InvokeConvertLoaded();
+            await _appState.InvokeAdvancedSettingsLoaded();
         }
     }
 }
