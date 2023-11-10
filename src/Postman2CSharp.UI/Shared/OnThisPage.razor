@@ -12,7 +12,7 @@
                 @foreach (var link in links)
                 {
                     <li onclick="scrollToElement('@link.Id', 100)" @onclick:stopPropagation="true" @onclick:preventDefault="true">
-                        <a href="#@link.Display" class="link-normal">@link.Display</a>
+                        <a href="#@link.Display" class="link-normal" style="font-size: 15px;" >@link.Display</a>
                     </li>
                 }
             </ul>
