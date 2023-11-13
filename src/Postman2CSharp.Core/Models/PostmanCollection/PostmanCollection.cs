@@ -50,5 +50,19 @@ namespace Postman2CSharp.Core.Models.PostmanCollection
         {
             return GetRootCollections().SelectMany(x => x.RequestItems() ?? new List<CollectionItem>()).ToList();
         }
+
+        /// <summary>
+        /// Collection Items where the Auth is null means that item should inherit auth from it's parent. This function
+        /// traverse the collection tree and sets the Auth property to the parent's Auth property if it's null.
+        /// </summary>
+        public void CascadeAuth()
+        {
+            var rootCollections = GetRootCollections();
+            foreach (var rootCollection in rootCollections)
+            {
+                rootCollection.Auth ??= Auth;
+                rootCollection.CascadeAuth();
+            }
+        }
     }
 }

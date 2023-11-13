@@ -52,5 +52,19 @@ namespace Postman2CSharp.Core.Models.PostmanCollection
         {
             return Item?.Any(x => x.IsRequestItem) ?? false;
         }
+
+        public void CascadeAuth()
+        {
+            if (Item == null)
+            {
+                return;
+            }
+
+            foreach (var item in Item)
+            {
+                item.Auth ??= Auth;
+                item.CascadeAuth();
+            }
+        }
     }
 }
