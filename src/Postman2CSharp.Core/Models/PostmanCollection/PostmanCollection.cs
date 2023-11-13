@@ -19,10 +19,10 @@ namespace Postman2CSharp.Core.Models.PostmanCollection
         }
         public List<CollectionItem> GetRootCollections()
         {
-            var rootItems = new List<CollectionItem>();
+            var rootItems = new HashSet<CollectionItem>();
             if (Item == null)
             {
-                return rootItems;
+                return rootItems.ToList();
             }
 
             if (IsRoot())
@@ -37,9 +37,18 @@ namespace Postman2CSharp.Core.Models.PostmanCollection
 
             foreach (var item in Item)
             {
-                rootItems.AddRange(item.FindRoots(item));
+                foreach (var root in item.FindRoots())
+                {
+                    rootItems.Add(root);
+                }
             }
-            return rootItems;
+
+            return rootItems.ToList();
+        }
+
+        public IEnumerable<CollectionItem> GetAllCollectionItems()
+        {
+            return GetRootCollections().SelectMany(x => x.RequestItems() ?? new List<CollectionItem>()).ToList();
         }
     }
 }

@@ -25,34 +25,27 @@ namespace Postman2CSharp.Core.Models.PostmanCollection
         /// </summary>
         /// <param name="root">Root collection item in hierarchy</param>
         /// <returns></returns>
-        public List<CollectionItem> FindRoots(CollectionItem root)
+        public List<CollectionItem> FindRoots()
         {
-            var rootItems = new List<CollectionItem>();
+            var rootItems = new HashSet<CollectionItem>();
 
-            if (root.Item == null)
+            if (Item == null)
             {
-                return rootItems;
+                return rootItems.ToList();
             }
 
-            if (root.HasRequests())
+            if (HasRequests())
             {
                 rootItems.Add(this);
             }
 
 
-            foreach (var child in root.Item)
+            foreach (var child in Item)
             {
-                if (child.HasRequests())
-                {
-                    rootItems.Add(child);
-                }
-                else
-                {
-                    rootItems.AddRange(FindRoots(child));
-                }
+                rootItems.UnionWith(child.FindRoots());
             }
 
-            return rootItems;
+            return rootItems.ToList();
         }
 
         public bool HasRequests()
