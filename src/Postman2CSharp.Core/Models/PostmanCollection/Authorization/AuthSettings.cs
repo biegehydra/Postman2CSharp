@@ -65,9 +65,7 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Authorization
                 if (Enum.TryParse<OAuth2Config>(key, true, out var enumValue) && enumValue == config)
                 {
                     var newJsonValue = $"\"{value}\"";
-                    var test1 = keyValueTypeTrio.Value.GetString();
                     keyValueTypeTrio.Value = JsonDocument.Parse(newJsonValue).RootElement;
-                    var test = keyValueTypeTrio.Value.GetString();
                     break;
                 }
             }

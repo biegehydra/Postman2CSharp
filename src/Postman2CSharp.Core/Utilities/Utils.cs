@@ -28,7 +28,7 @@ public interface IDirtyName
 {
     public string Name { get; }
 }
-public static class Utils
+public static partial class Utils
 {
     public static string CsPropertyName(this ICsProperty property, CsharpPropertyType type)
     {
@@ -45,13 +45,13 @@ public static class Utils
             return string.Empty;
         }
         var words = input.Split('_', ' ', '-')
-            .Select(x => Regex.Replace(x, @"\W|_", ""))
+            .Select(x => NotWordCharacterRegex().Replace(x, ""))
             .Where(word => !string.IsNullOrEmpty(word))
             .Select(word => char.ToUpperInvariant(word[0]) + word[1..]);
 
         var result = string.Join(string.Empty, words);
 
-        result = Regex.Replace(result, @"^\d+", "");
+        result = StartingDigitsRegex().Replace(result, "");
 
         if (string.IsNullOrWhiteSpace(result))
         {
@@ -187,7 +187,7 @@ public static class Utils
         str = str.Replace("%7D", "}");
 
         // Replace any character with '-' in front of it with its uppercase version
-        str = Regex.Replace(str, @"(?<=\{[^}]*?)-([a-z])(?=[^}]*?\})", m =>
+        str = AddBackBracketsRegex().Replace(str, m =>
         {
             var letter = m.Value.TrimStart('-').ToUpperInvariant();
             return letter;
@@ -199,7 +199,7 @@ public static class Utils
     public static string ReplaceBrackets(this string str)
     {
         // Find uppercase letters between brackets and add '-' before them
-        str = Regex.Replace(str, @"(?<=\{[^}]*)[A-Z](?=[^}]*\})", m =>
+        str = ReplaceBracketsRegex().Replace(str, m =>
         {
             var letter = m.Value;
             return "-" + letter.ToLowerInvariant();
@@ -314,13 +314,10 @@ public static class Utils
     public static string? HtmlToPlainText(this string? html)
     {
         if (string.IsNullOrWhiteSpace(html)) return null;
-        const string tagWhiteSpace = @"(>|$)(\W|\n|\r)+<"; // Matches one or more (white space or line breaks) between '>' and '<'
-        const string stripFormatting = @"<[^>]*(>|$)"; // Matches any character between '<' and '>', even when end tag is missing
-        const string lineBreak = @"<(br|BR)\s{0,1}\/{0,1}>"; // Matches: <br>,<br/>,<br />,<BR>,<BR/>,<BR />
 
-        var lineBreakRegex = new Regex(lineBreak, RegexOptions.Multiline);
-        var stripFormattingRegex = new Regex(stripFormatting, RegexOptions.Multiline);
-        var tagWhiteSpaceRegex = new Regex(tagWhiteSpace, RegexOptions.Multiline);
+        var lineBreakRegex = LineBreakRegex();
+        var stripFormattingRegex = StripFormattingRegex();
+        var tagWhiteSpaceRegex = TagWhiteSpacesRegex();
 
         // Decode HTML specific characters
         var text = System.Net.WebUtility.HtmlDecode(html);
@@ -539,7 +536,7 @@ public static class Utils
 
     private static bool TryParseStringNumberEnding(string input, out string basePart, out int numberPart)
     {
-        var match = Regex.Match(input, @"(.*?)(\d+)$");
+        var match = NumberEndingRegex().Match(input);
 
         if (!match.Success)
         {
@@ -553,4 +550,23 @@ public static class Utils
 
         return true;
     }
+
+    [GeneratedRegex(@"(.*?)(\d+)$")]
+    private static partial Regex NumberEndingRegex();
+
+    [GeneratedRegex(@"(?<=\{[^}]*)[A-Z](?=[^}]*\})")]
+    private static partial Regex ReplaceBracketsRegex();
+    [GeneratedRegex(@"(?<=\{[^}]*?)-([a-z])(?=[^}]*?\})")]
+    private static partial Regex AddBackBracketsRegex();
+    [GeneratedRegex(@"\W")]
+    private static partial Regex NotWordCharacterRegex();
+    [GeneratedRegex(@"^\d+")]
+    private static partial Regex StartingDigitsRegex();
+
+    [GeneratedRegex(@"<(br|BR)\s{0,1}\/{0,1}>", RegexOptions.Multiline)]
+    private static partial Regex LineBreakRegex();
+    [GeneratedRegex(@"<[^>]*(>|$)", RegexOptions.Multiline)]
+    private static partial Regex StripFormattingRegex();
+    [GeneratedRegex(@"(>|$)(\W|\n|\r)+<", RegexOptions.Multiline)]
+    private static partial Regex TagWhiteSpacesRegex();
 }
