@@ -17,7 +17,6 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 using Xamasoft.JsonClassGenerator.CodeWriterConfiguration;
 using Xamasoft.JsonClassGenerator.Models;
 using Postman2CSharp.Core.Infrastructure;
-using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 using Postman2CSharp.Core.Utilities;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -80,6 +79,9 @@ public class ApiClientGenerator
     {
         var apiClients = new List<ApiClient>();
         await RaiseStageChangedCallback("Getting roots...");
+
+        PostmanCollection.CascadeAuth();
+
         var rootItems = PostmanCollection.GetRootCollections();
 
 
@@ -161,7 +163,7 @@ public class ApiClientGenerator
         var commonBase = Utils.GetCommonBase(allCallNames);
         commonBase ??= Utils.GetLongestSubstring(allCallNames);
         string normalizedNameSpace;
-        if (Options.ApiClientOptions.RootDefinition == RootDefinition.Manual || commonBase == null)
+        if (Options.ApiClientOptions.RootDefinition == RootDefinition.Manual || commonBase == null || allCallNames.Count == 1)
         {
             normalizedNameSpace = Utils.NormalizeToCsharpPropertyName(rootItem.Name);
         }
@@ -177,9 +179,8 @@ public class ApiClientGenerator
         var commonHeaders = rootItem.GetCommonHeaders();
         var uniqueNamesList = new List<string>() { normalizedNameSpace, name };
         var (httpCalls, totalClassesGeneratedFromHttpCalls, duplicateRoots) = await GetHttpCalls(rootItem, commonHeaders, normalizedNameSpace, uniqueNamesList);
-        var auth = rootItem.Auth ?? PostmanCollection.Auth;
 
-        var apiClient = new ApiClient(name, rootItem.Description, normalizedNameSpace, leastPossibleUri, httpCalls, commonHeaders, auth, variableUsages,
+        var apiClient = new ApiClient(name, rootItem.Description, normalizedNameSpace, leastPossibleUri, httpCalls, commonHeaders, rootItem.Auth, variableUsages,
             Options.ApiClientOptions, totalClassesGeneratedFromHttpCalls + 1, duplicateRoots);
         // This is generated here and not in the constructor because it allows my wasm app to lazy load a couple large dlls
         // that are used in the generation process. GenerateSourceCode was being called when I deserialized api clients from local storage
@@ -344,7 +345,7 @@ public class ApiClientGenerator
                 }
             }
 
-            var allResponses = requestItem.Response?.Where(x => x.Code.HasValue).GroupBy(x => x.Code!.Value).Select(x => x.First()).ToList() ?? new List<Response>();
+            var allResponses = requestItem.Response?.Where(x => x.Code.HasValue).GroupBy(x => x.Code!.Value).Select(x => x.First()).ToList() ?? new ();
             var allApiResponse = new List<ApiResponse>();
             foreach (var response in allResponses)
             {
@@ -572,9 +573,11 @@ public class ApiClientGenerator
 
             CSharpCodeWriter ParametersConfig(string nameSpacee, bool writeDescriptions)
             {
-                var config = new CSharpCodeWriterConfig();
-                config.AttributeUsage = JsonPropertyAttributeUsage.Never;
-                config.Namespace = nameSpacee;
+                var config = new CSharpCodeWriterConfig
+                {
+                    AttributeUsage = JsonPropertyAttributeUsage.Never,
+                    Namespace = nameSpacee
+                };
                 return new CSharpCodeWriter(config, writeDescriptions);
             }
         }

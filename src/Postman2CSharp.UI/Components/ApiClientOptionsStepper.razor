@@ -29,7 +29,7 @@
             DisableAnimation="false" ValidateStep="ValidateStep" AllowNext="ValidateNext" ActiveStepChanged="OnActiveIndexChanged" >
     <MudStep Title="Upload">
         <div class="my-step-container" style="min-height: 50vh;"  >
-            <CollectionUpload Small="false" Collection="_collection" UploadedFile="_uploadedFile" SuccessfulUpload="args => { _uploadedFile = args.BrowserFile; _collection = args.Collection; _stepper?.TriggerReRender(); }"></CollectionUpload>
+            <CollectionUpload Small="false" Collection="_collection" UploadedFile="_uploadedFile" SuccessfulUpload="OnSuccessfulUpload"></CollectionUpload>
         </div>
     </MudStep>
     <MudStep Title="Json">
@@ -400,4 +400,31 @@
     {
         AppState.OptionsChanged -= ApiOptionsChanged;
     }
+
+    private void OnSuccessfulUpload((IBrowserFile BrowserFile, PostmanCollection Collection) args)
+    {
+        _uploadedFile = args.BrowserFile;
+        _collection = args.Collection;
+        if (_collection?.Item?.Count > 0)
+        {
+            var requestsCount = _collection.GetAllCollectionItems().Count();
+            var requestsWithoutResponsesCount = _collection.GetAllCollectionItems().Count(x => x.Response == null || x.Response.Count == 0);
+            var percentOfRequestsWithoutResponses = (double) requestsWithoutResponsesCount / requestsCount;
+            if (percentOfRequestsWithoutResponses > 0.5)
+            {
+                if (requestsCount == requestsWithoutResponsesCount)
+                {
+                    Snackbar?.Add($"Warning: None of your requests have responses saved. This may result in sub par code generation. It is highly recommended to save responses for all your requests.", 
+                        Severity.Warning, x => x.VisibleStateDuration = 15000);
+                }
+                else
+                {
+                    Snackbar?.Add($"Warning: {percentOfRequestsWithoutResponses:P} of your requests do not have responses saved. This may result in sub par code generation. It is highly recommended to save responses for all your requests.",
+                        Severity.Warning, x => x.VisibleStateDuration = 15000);
+                }
+            }
+        }
+        _stepper?.TriggerReRender();
+    }
+
 }

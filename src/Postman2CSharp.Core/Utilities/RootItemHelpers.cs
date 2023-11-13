@@ -10,7 +10,7 @@ using Postman2CSharp.Core.Infrastructure;
 
 namespace Postman2CSharp.Core.Utilities
 {
-    public static class RootItemHelpers
+    public static partial class RootItemHelpers
     {
         /// <summary>
         /// Normalizes the all the request items names in the root
@@ -129,7 +129,7 @@ namespace Postman2CSharp.Core.Utilities
                 var currentSegment = uriSegments[0][i];
                 var withBrackets = currentSegment.AddBackBrackets();
                 if (uriSegments.All(us => us.Length > i && us[i] == currentSegment) && !currentSegment.StartsWith(":") &&
-                    !(withBrackets.Contains("{") && withBrackets.Contains("}"))) // Don't want the least possible uri to include path variables.
+                    !(withBrackets.Contains('{') && withBrackets.Contains('}'))) // Don't want the least possible uri to include path variables.
                 {
                     leastPossibleUriSegments.Add(withBrackets);
                 }
@@ -232,9 +232,9 @@ namespace Postman2CSharp.Core.Utilities
             {
                 var uri = new Uri(request.Request!.Url.Raw.ReplaceBrackets());
                 var authority = uri.Authority.AddBackBrackets();
-                if (!dictionary.ContainsKey(authority))
+                if (!dictionary.TryGetValue(authority, out _))
                 {
-                    dictionary.Add(authority, new List<CollectionItem>());
+                    dictionary[authority] = new ();
                 }
                 dictionary[authority].Add(request);
             }
@@ -244,7 +244,7 @@ namespace Postman2CSharp.Core.Utilities
                 var name = dictionary.Count == 1 ? Utils.NormalizeToCsharpPropertyName(collectionName) : Utils.NormalizeToCsharpPropertyName(key);
                 var newRootItem = new CollectionItem()
                 {
-                    Name = dictionary.Count == 1 ? collectionName : Utils.NormalizeToCsharpPropertyName(key),
+                    Name = name,
                     Item = value
                 };
                 newRoots.Add(newRootItem);
@@ -261,7 +261,7 @@ namespace Postman2CSharp.Core.Utilities
                 if (url.Path == null) continue;
                 foreach (var path in url.Path)
                 {
-                    foreach (Match match in Regex.Matches(path, InterpolatedVariableRegex))
+                    foreach (Match match in VariableUsageRegex().Matches(path))
                     {
                         var matched = match.Value;
                         if (variableUsages.FirstOrDefault(x => matched.Contains(x.CSPropertyUsage(CsharpPropertyType.Private))) is { } variableUsage)
@@ -275,5 +275,8 @@ namespace Postman2CSharp.Core.Utilities
                 }
             }
         }
+
+        [GeneratedRegex("(?<!\\{){_[a-zA-Z0-9]*}(?!\\})")]
+        private static partial Regex VariableUsageRegex();
     }
 }
