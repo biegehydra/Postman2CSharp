@@ -5,20 +5,23 @@ using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Utilities;
 using Postman2CSharp.UI.Components;
 using Postman2CSharp.UI.Models;
+using Postman2CSharp.UI.Shared;
 
 namespace Postman2CSharp.UI.Services
 {
     public class Interop
     {
+        private readonly AppState _appState;
         private readonly AnalyticsInterop _analytics;
         private readonly IJSRuntime _jsRuntime;
         private readonly Lazy<ISnackbar?> _snackBar;
 
-        public Interop(IJSRuntime jsRuntime, Lazy<ISnackbar?> snackBar, AnalyticsInterop analytics)
+        public Interop(IJSRuntime jsRuntime, Lazy<ISnackbar?> snackBar, AnalyticsInterop analytics, AppState appState)
         {
             _jsRuntime = jsRuntime;
             _snackBar = snackBar;
             _analytics = analytics;
+            _appState = appState;
         }
 
         public async Task DownloadFile(string fileName, string fileContent, string fileExtension = ".cs")
@@ -26,15 +29,6 @@ namespace Postman2CSharp.UI.Services
             await _analytics.TrackDownload("Download Singular File");
             await _jsRuntime.InvokeVoidAsync("downloadFile", fileName, fileContent, fileExtension);
         }
-
-        private static readonly List<string> SpecialFileEndings = new()
-        {
-            $"{Consts.Response}.cs",
-            $"{Consts.Request}.cs",
-            $"{Consts.MultipartFormData}.cs",
-            $"{Consts.FormData}.cs",
-            $"{Consts.Parameters}.cs"
-        };
 
         public event Func<float, Task>? FileProgressCallback; 
 
@@ -152,6 +146,36 @@ namespace Postman2CSharp.UI.Services
         public async Task SplitVertical(string id1, string id2)
         {
             await _jsRuntime.InvokeVoidAsync("splitVertical", id1, id2);
+        }
+
+        public async Task SetupPrismObserver()
+        {
+            await _jsRuntime.InvokeVoidAsync("setupPrismObserver");
+        }
+
+        public async Task RemovePrismObserver()
+        {
+            await _jsRuntime.InvokeVoidAsync("removePrismObserver");
+        }
+
+        public async Task ClearLocalStorage()
+        {
+            await _jsRuntime.InvokeVoidAsync("clearLocalStorage");
+        }
+
+        public async Task<T> GetFromStorage<T>(string name)
+        {
+            return await _jsRuntime.InvokeAsync<T>("getLocalStorage", name);
+        }
+
+        public async Task SetLocalStorage<T>(string name, T obj)
+        {
+            await _jsRuntime.InvokeVoidAsync("setLocalStorage", name, obj);
+        }
+
+        public async Task DeleteFromStorage(string name)
+        {
+            await _jsRuntime.InvokeVoidAsync("deleteLocalStorage", name);
         }
     }
 }

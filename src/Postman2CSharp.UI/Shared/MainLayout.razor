@@ -79,7 +79,7 @@
     [Inject] private ISnackbar? SnackBar { get; set; }
 
     [Inject] private Navigate Navigate { get; set; } = null!;
-    [Inject] private IJSRuntime JsRuntime { get; set; } = null!;
+    [Inject] private Interop Interop { get; set; } = null!;
 
     private static List<ApiCollection>? ApiCollections { get; set; }
     bool _drawerOpen = true;
@@ -158,31 +158,31 @@
         var fragment = uri.Fragment;
         if (fragment.StartsWith("#"))
         {
-            await JsRuntime.InvokeVoidAsync("scrollToElement", fragment.Replace("#", string.Empty), 100);
+            await Interop.ScrollToSection(fragment.Replace("#", string.Empty), 100);
         }
     }
 
     private async Task Initialize()
     {
         _initialized = true;
-        await JsRuntime.InvokeVoidAsync("setupPrismObserver");
+        await Interop.SetupPrismObserver();
 
         if (ApiCollections?.Count > 0) return;
         ApiCollections = new();
         var newVersionDetected = await GetSiteSettings();
         if (newVersionDetected)
         {
-            await JsRuntime.InvokeVoidAsync("clearLocalStorage");
+            await Interop.ClearLocalStorage();
             await SetSiteSettings();
             SnackBar?.Add($"New website version detected. Your workspace has been reset.", Severity.Info,
                 configure => configure.VisibleStateDuration = 15000);
         }
         else
         {
-            var apiCollectionIds = await JsRuntime.InvokeAsync<List<string>?>("getLocalStorage", "apiCollectionIds");
+            var apiCollectionIds = await Interop.GetFromStorage<List<string>?>("apiCollectionIds");
             foreach (var apiCollectionId in apiCollectionIds ?? new())
             {
-                var apiCollection = await JsRuntime.InvokeAsync<ApiCollection?>("getLocalStorage", apiCollectionId);
+                var apiCollection = await Interop.GetFromStorage<ApiCollection?>(apiCollectionId);
                 if (apiCollection != null)
                 {
                     ApiCollections.Add(apiCollection);
@@ -194,7 +194,7 @@
     /// <returns>Whether or not a new version was detected</returns>
     private async Task<bool> GetSiteSettings()
     {
-        var siteSettings = await JsRuntime.InvokeAsync<SiteSettings?>("getLocalStorage", "siteSettings");
+        var siteSettings = await Interop.GetFromStorage<SiteSettings?>("siteSettings");
         if (siteSettings != null)
         {
             if (siteSettings.Version is not AppState.CurrentVersion)
@@ -203,12 +203,12 @@
             }
             AppState.UpdateSiteSettings(siteSettings);
         }
-        var codeWritingConfig = await JsRuntime.InvokeAsync<CSharpCodeWriterConfigInputModel?>("getLocalStorage", "codeWriterConfig");
+        var codeWritingConfig = await Interop.GetFromStorage<CSharpCodeWriterConfigInputModel?>("codeWriterConfig");
         if (codeWritingConfig != null)
         {
             AppState.UpdateCodeWriterConfigInputModel(codeWritingConfig);
         }
-        var apiClientOptions = await JsRuntime.InvokeAsync<ApiClientOptions?>("getLocalStorage", "apiClientOptions");
+        var apiClientOptions = await Interop.GetFromStorage<ApiClientOptions?>("apiClientOptions");
         if (apiClientOptions != null)
         {
             AppState.UpdateApiClientOptions(apiClientOptions);
@@ -219,9 +219,9 @@
     private async Task SetSiteSettings()
     {
         AppState.SiteSettings.Version = AppState.CurrentVersion;
-        await JsRuntime.InvokeVoidAsync("setLocalStorage", "siteSettings", AppState.SiteSettings);
-        await JsRuntime.InvokeVoidAsync("setLocalStorage", "codeWriterConfig", AppState.CodeWriterConfigInputModel);
-        await JsRuntime.InvokeVoidAsync("setLocalStorage", "apiClientOptions", AppState.ApiClientOptions);
+        await Interop.SetLocalStorage("siteSettings", AppState.SiteSettings);
+        await Interop.SetLocalStorage("codeWriterConfig", AppState.CodeWriterConfigInputModel);
+        await Interop.SetLocalStorage("apiClientOptions", AppState.ApiClientOptions);
     }
 
     public void ToggleDrawer(bool? value = null)
@@ -243,7 +243,7 @@
         ApiCollections.Add(apiCollection);
 
         AppState.SiteSettings.TotalApiClientsGenerated += 1;
-        await JsRuntime.InvokeVoidAsync("setLocalStorage", "siteSettings", AppState.SiteSettings);
+        await Interop.SetLocalStorage("siteSettings", AppState.SiteSettings);
 
         StateHasChanged();
         await SaveApiCollectionToLocalStore(apiCollection.Id);
@@ -295,10 +295,10 @@
         try
         {
             var apiCollectionIds = ApiCollections.Select(x => x.Id).ToList();
-            await JsRuntime.InvokeVoidAsync("setLocalStorage", "apiCollectionIds", apiCollectionIds);
+            await Interop.SetLocalStorage("apiCollectionIds", apiCollectionIds);
             foreach (var apiCollection in ApiCollections.Where(x => apiCollectionId == null || x.Id == apiCollectionId))
             {
-                await JsRuntime.InvokeVoidAsync("setLocalStorage", apiCollection.Id, apiCollection);
+                await Interop.SetLocalStorage(apiCollection.Id, apiCollection);
             }
             SnackBar?.Add("Saved workspace successfully.", Severity.Success);
         }
@@ -324,9 +324,9 @@
             StateHasChanged();
         }
         ApiCollections?.Remove(apiCollection);
-        await JsRuntime.InvokeVoidAsync("deleteLocalStorage", apiCollection.Id);
+        await Interop.DeleteFromStorage(apiCollection.Id);
         var apiCollectionIds = ApiCollections?.Select(x => x.Id).ToList() ?? new ();
-        await JsRuntime.InvokeVoidAsync("setLocalStorage", "apiCollectionIds", apiCollectionIds);
+        await Interop.SetLocalStorage("apiCollectionIds", apiCollectionIds);
     }
 
     public async void Dispose()
@@ -335,7 +335,7 @@
         {
             try
             {
-                await JsRuntime.InvokeVoidAsync("removePrismObserver");
+                await Interop.RemovePrismObserver();
             }
             catch (JSDisconnectedException) { }
         }
