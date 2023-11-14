@@ -15,7 +15,6 @@
 <MudNavMenu>
     <MudNavLink Href="@GettingStartedHref" Match="NavLinkMatch.All" Icon="@Icons.Rocket" >Getting Started</MudNavLink>
     <MudNavLink Href="/Interactive-Demo" Match="NavLinkMatch.All" Icon="@Icons.PlayArrow" >Interactive Demo</MudNavLink>
-    <MudNavLink Href="/ApiClient-Configurations-Explained" Match="NavLinkMatch.All" Icon="@MudBlazor.Icons.Material.Outlined.Info">Configurations Explained</MudNavLink>
     <MudNavLink Href="/Convert" Match="NavLinkMatch.All" Icon="@Icons.ImportExport">Convert</MudNavLink>
     <MudNavGroup Class="favicon-container" Icon="@FavIcon" @bind-Expanded="@CollectionsExpanded" Title="Postman Collections" Disabled="ApiCollections is not {Count: > 0 }">
         @{
@@ -31,9 +30,10 @@
                     <MudMenuItem Icon="@Icons.Edit" IconSize="Size.Small" ontouchstart="event.preventDefault();" OnTouch="() => BeginEditName(apiCollection)" OnClick="() => BeginEditName(apiCollection)">Rename</MudMenuItem>
                     <MudMenuItem Icon="@Icons.DeleteForever" ontouchstart="event.preventDefault();" OnTouch="() => DeleteApiCollection(apiCollection)" OnClick="() => DeleteApiCollection(apiCollection)">Delete</MudMenuItem>
                 </MudMenu>
-        </div>
+            </div>
         }
     </MudNavGroup>
+    <MudNavLink Href="/ApiClient-Configurations-Explained" Match="NavLinkMatch.All" Icon="@MudBlazor.Icons.Material.Outlined.Info">Configurations Explained</MudNavLink>
     <MudNavLink Href="/CoreFiles" Match="NavLinkMatch.Prefix" Icon="@Icons.Code">Core Files</MudNavLink>
     <MudNavLink Href="/SupportedFeatures" Match="NavLinkMatch.Prefix" Icon="@Icons.ContactSupport">Supported Features</MudNavLink>
     <MudNavLink Href="/Advanced-Settings" Match="NavLinkMatch.Prefix" Icon="@Icons.Settings">Advanced Settings</MudNavLink>

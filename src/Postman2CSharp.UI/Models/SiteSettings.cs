@@ -9,10 +9,6 @@ public class SiteSettings
     public bool ShowDownloadInTreeView { get; set; }
 
     public int TotalApiClientsGenerated { get; set; }
+    public int TotalApiClientsDownloaded { get; set; }
     public string? Version { get; set; }
-
-    public SiteSettings Clone()
-    {
-        return (SiteSettings) MemberwiseClone();
-    }
 }

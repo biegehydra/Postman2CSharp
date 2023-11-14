@@ -1,11 +1,11 @@
 ﻿using Microsoft.JSInterop;
 using MudBlazor;
-using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Utilities;
 using Postman2CSharp.UI.Components;
 using Postman2CSharp.UI.Models;
 using Postman2CSharp.UI.Shared;
+using static MudBlazor.CategoryTypes;
 
 namespace Postman2CSharp.UI.Services
 {
@@ -34,6 +34,19 @@ namespace Postman2CSharp.UI.Services
 
         public async Task DownloadApiClient(ApiClient apiClient)
         {
+            _appState.SiteSettings.TotalApiClientsDownloaded++;
+            if (_appState.SiteSettings.TotalApiClientsDownloaded == 1 || _appState.SiteSettings.TotalApiClientsDownloaded % 13 == 0)
+            {
+                _snackBar.Value?.Add(Fragments.RequestToStarGithubFragment(), Severity.Info, x =>
+                {
+                    x.VisibleStateDuration = 25_000;
+                    x.SnackbarTypeClass = "mud-theme-tertiary";
+                });
+            }
+
+            await SetLocalStorage("siteSettings", _appState.SiteSettings);
+
+
             try
             {
                 var detailsDict = apiClient.ExportToDict();
@@ -113,9 +126,9 @@ namespace Postman2CSharp.UI.Services
             }
         }
 
-        public async Task ScrollToSection(string elementId, int length)
+        public async Task ScrollToSection(string elementId, int scrollDuration)
         {
-            await _jsRuntime.InvokeVoidAsync("scrollToSection", elementId, length);
+            await _jsRuntime.InvokeVoidAsync("scrollToSection", elementId, scrollDuration);
         }
 
         public async Task LoadFile(string filePathAndName)
@@ -176,6 +189,11 @@ namespace Postman2CSharp.UI.Services
         public async Task DeleteFromStorage(string name)
         {
             await _jsRuntime.InvokeVoidAsync("deleteLocalStorage", name);
+        }
+
+        public async Task ScrollToElement(string elementId, int extraScrollDistance)
+        {
+            await _jsRuntime.InvokeVoidAsync("scrollToElement", elementId, extraScrollDistance);
         }
     }
 }

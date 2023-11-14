@@ -158,7 +158,7 @@
         var fragment = uri.Fragment;
         if (fragment.StartsWith("#"))
         {
-            await Interop.ScrollToSection(fragment.Replace("#", string.Empty), 100);
+            await Interop.ScrollToElement(fragment.Replace("#", string.Empty), 100);
         }
     }
 
