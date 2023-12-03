@@ -19,9 +19,8 @@ namespace TESTS_JSON_TO_CSHARP
 			string input = File.ReadAllText(path);
 			string errorMessage = string.Empty;
 			CSharpCodeWriter csharpCodeWriter = new CSharpCodeWriter();
-			JsonClassGenerator jsonClassGenerator = new JsonClassGenerator();
-			jsonClassGenerator.CodeWriter = csharpCodeWriter;
-			string returnVal = jsonClassGenerator.GenerateClasses(input, out errorMessage).ToString();
+			JsonClassGenerator jsonClassGenerator = new JsonClassGenerator(csharpCodeWriter, new DuplicateOptions() { RemoveDuplicateRoots = false, RemoveSemiDuplicates = false });
+			string returnVal = jsonClassGenerator.GenerateClasses(input, true, false, out errorMessage).ToString();
 			string resultsCompare = File.ReadAllText(resultPath);
 			Assert.AreEqual(resultsCompare.Replace(Environment.NewLine, "").Replace(" ", "").Replace("\t", ""), returnVal.Replace(Environment.NewLine, "").Replace(" ", "").Replace("\t", ""));
 		}

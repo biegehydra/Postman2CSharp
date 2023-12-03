@@ -26,7 +26,9 @@
         <EnumSelectComponent @bind-Value="InputModel.OutputMembers" Label="Output Members"></EnumSelectComponent>
     </MudItem>
     <MudItem xs="12" sm="6" md="4" lg="3">
-        <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.NullValueHandlingIgnore" Disabled="AppState.ApiClientOptions.JsonLibrary == JsonLibrary.SystemTextJson" Label="Null Value Handling Ignore"></MudCheckBox>
+        <MudTooltip Text="Only applies to Newtonsoft.Json">
+            <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.NullValueHandlingIgnore" Label="Null Value Handling Ignore"></MudCheckBox>
+        </MudTooltip>
     </MudItem>
     <MudItem xs="12" sm="6" md="4" lg="3">
         <MudCheckBox Color="Color.Primary" @bind-Checked="InputModel.ReadOnlyCollectionProperties" Label="Read Only Collection Properties"></MudCheckBox>

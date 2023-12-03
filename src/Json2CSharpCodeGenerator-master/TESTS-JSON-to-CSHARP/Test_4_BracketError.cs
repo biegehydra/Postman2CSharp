@@ -19,10 +19,9 @@ namespace TESTS_JSON_TO_CSHARP
             string input      = File.ReadAllText(path);
 
             CSharpCodeWriter csharpCodeWriter = new CSharpCodeWriter();
-            JsonClassGenerator jsonClassGenerator = new JsonClassGenerator();
-            jsonClassGenerator.CodeWriter = csharpCodeWriter;
+            JsonClassGenerator jsonClassGenerator = new JsonClassGenerator(csharpCodeWriter, new DuplicateOptions() { RemoveDuplicateRoots = false, RemoveSemiDuplicates = false });
 
-            string returnVal = jsonClassGenerator.GenerateClasses(input, out string errorMessage).ToString();
+            string returnVal = jsonClassGenerator.GenerateClasses(input, true, false, out string errorMessage).ToString();
             string resultsCompare = File.ReadAllText(resultPath);
             Assert.AreEqual(resultsCompare.NormalizeOutput(), returnVal.NormalizeOutput());
         }
@@ -35,10 +34,9 @@ namespace TESTS_JSON_TO_CSHARP
             string input1      = File.ReadAllText(path1);
 
             CSharpCodeWriter csharpCodeWriter1 = new CSharpCodeWriter();
-            JsonClassGenerator jsonClassGenerator1 = new JsonClassGenerator();
-            jsonClassGenerator1.CodeWriter = csharpCodeWriter1;
+            JsonClassGenerator jsonClassGenerator1 = new JsonClassGenerator(csharpCodeWriter1, new DuplicateOptions() { RemoveDuplicateRoots = false, RemoveSemiDuplicates = false});
 
-            string returnVal1 = jsonClassGenerator1.GenerateClasses(input1, out string errorMessage1).ToString();
+            string returnVal1 = jsonClassGenerator1.GenerateClasses(input1, true, false, out string errorMessage1).ToString();
             string resultsCompare1 = File.ReadAllText(resultPath1);
             Assert.AreEqual(resultsCompare1.NormalizeOutput(), returnVal1.NormalizeOutput());
         }

@@ -26,12 +26,11 @@ namespace TESTS_JSON_TO_CSHARP
             CSharpCodeWriterConfig csharpCodeWriterConfig = new CSharpCodeWriterConfig();
             csharpCodeWriterConfig.UsePascalCase = true;
 
-            CSharpCodeWriter csharpCodeWriter = new CSharpCodeWriter(csharpCodeWriterConfig);
+            CSharpCodeWriter csharpCodeWriter = new CSharpCodeWriter(csharpCodeWriterConfig, false);
 
-            JsonClassGenerator jsonClassGenerator = new JsonClassGenerator();
-            jsonClassGenerator.CodeWriter = csharpCodeWriter;
+            JsonClassGenerator jsonClassGenerator = new JsonClassGenerator(csharpCodeWriter, new DuplicateOptions() { RemoveDuplicateRoots = false, RemoveSemiDuplicates = false });
 
-            string returnVal = jsonClassGenerator.GenerateClasses(input, errorMessage: out _).ToString();
+            string returnVal = jsonClassGenerator.GenerateClasses(input, true, false, errorMessage: out _).ToString();
             string resultsCompare = File.ReadAllText(resultPath);
 
             string expected = resultsCompare.NormalizeOutput();

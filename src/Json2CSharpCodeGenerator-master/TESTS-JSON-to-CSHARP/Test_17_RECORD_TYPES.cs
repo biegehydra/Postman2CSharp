@@ -40,8 +40,8 @@ namespace TESTS_JSON_TO_CSHARP
             CSharpCodeWriterConfig csharpCodeWriterConfig = new CSharpCodeWriterConfig();
             csharpCodeWriterConfig.OutputType = OutputTypes.ImmutableRecord;
             csharpCodeWriterConfig.UsePascalCase = true;
-
-            JsonClassGenerator jsonClassGenerator = new JsonClassGenerator();
+            CSharpCodeWriter csharpCodeWriter = new CSharpCodeWriter(csharpCodeWriterConfig, false);
+            JsonClassGenerator jsonClassGenerator = new JsonClassGenerator(csharpCodeWriter, new DuplicateOptions() { RemoveDuplicateRoots = false, RemoveSemiDuplicates = false });
 
             if (useSystemTextJson.HasValue)
             {
@@ -61,10 +61,7 @@ namespace TESTS_JSON_TO_CSHARP
                 csharpCodeWriterConfig.AttributeUsage = JsonPropertyAttributeUsage.OnlyWhenNecessary;
             }
 
-            CSharpCodeWriter csharpCodeWriter = new CSharpCodeWriter(csharpCodeWriterConfig);
-            jsonClassGenerator.CodeWriter = csharpCodeWriter;
-
-            string actual = jsonClassGenerator.GenerateClasses(input, out _).ToString();
+            string actual = jsonClassGenerator.GenerateClasses(input, true, false, out _).ToString();
             // Console.WriteLine("Actual:\n" + actual);
 
             var outputFixed = output.NormalizeOutput();

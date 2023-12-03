@@ -532,7 +532,7 @@ public class ApiClientGenerator
 
             _processedRequests += 1;
             if (_processedRequests > TotalRequest) 
-                throw new Exception("Something went wrong");
+                throw new Exception("Something went wrong. Processed requests greater than total requests.");
             await RaiseProgressCallback((float) _processedRequests / TotalRequest);
         }
         return (httpCalls, totalClassesGenerated, duplicateRoots);

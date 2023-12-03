@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postman2CSharp.Wasm", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postman2CSharp.Server", "src\Postman2CSharp.Server\Postman2CSharp.Server.csproj", "{8AB15533-326D-4253-9D45-CF7F8A296D2C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TESTS-JSON-to-CSHARP", "src\Json2CSharpCodeGenerator-master\TESTS-JSON-to-CSHARP\TESTS-JSON-to-CSHARP.csproj", "{4BA8E8FA-207F-4713-959C-1D8B0E4B3CAE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,12 +54,17 @@ Global
 		{8AB15533-326D-4253-9D45-CF7F8A296D2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AB15533-326D-4253-9D45-CF7F8A296D2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AB15533-326D-4253-9D45-CF7F8A296D2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BA8E8FA-207F-4713-959C-1D8B0E4B3CAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BA8E8FA-207F-4713-959C-1D8B0E4B3CAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BA8E8FA-207F-4713-959C-1D8B0E4B3CAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA8E8FA-207F-4713-959C-1D8B0E4B3CAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4BCDB0DD-CC04-4059-86EB-111F702D4776} = {5B0754FA-B6A8-4C59-BAA5-6B7594D9F51B}
+		{4BA8E8FA-207F-4713-959C-1D8B0E4B3CAE} = {5B0754FA-B6A8-4C59-BAA5-6B7594D9F51B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {310EC170-335B-42DB-9F0D-6E595B491D68}

@@ -22,11 +22,10 @@ namespace TESTS_JSON_TO_CSHARP
 
             CSharpCodeWriterConfig config = new CSharpCodeWriterConfig();
             config.AlwaysUseNullables = true;
-            CSharpCodeWriter csharpCodeWriter = new CSharpCodeWriter(config);
-            JsonClassGenerator jsonClassGenerator = new JsonClassGenerator();
-            jsonClassGenerator.CodeWriter = csharpCodeWriter;
+            CSharpCodeWriter csharpCodeWriter = new CSharpCodeWriter(config, false);
+            JsonClassGenerator jsonClassGenerator = new JsonClassGenerator(csharpCodeWriter, new DuplicateOptions() { RemoveDuplicateRoots = false, RemoveSemiDuplicates = false });
 
-			string returnVal = jsonClassGenerator.GenerateClasses(input, out errorMessage).ToString();
+			string returnVal = jsonClassGenerator.GenerateClasses(input, true, false, out errorMessage).ToString();
 			string resultsCompare = File.ReadAllText(resultPath);
 			Assert.AreEqual(resultsCompare.Replace(Environment.NewLine, "").Replace(" ", "").Replace("\t", ""), returnVal.Replace(Environment.NewLine, "").Replace(" ", "").Replace("\t", ""));
 		}

@@ -19,8 +19,8 @@ namespace TESTS_JSON_TO_CSHARP
         [TestMethod]
         public void Run()
         {
-            string path       = Directory.GetCurrentDirectory().Replace("bin\\Debug", "") + @"Test_1_5_SETTINGS_FIELDS_JSONPROPERTY_INPUT.txt";
-            string resultPath = Directory.GetCurrentDirectory().Replace("bin\\Debug", "") + @"Test_1_5_SETTINGS_FIELDS_JSONPROPERTY_OUTPUT.txt";
+            string path       = Directory.GetCurrentDirectory() + @"Test_1_5_SETTINGS_FIELDS_JSONPROPERTY_INPUT.txt";
+            string resultPath = Directory.GetCurrentDirectory() + @"Test_1_5_SETTINGS_FIELDS_JSONPROPERTY_OUTPUT.txt";
             string input      = File.ReadAllText(path);
 
             CSharpCodeWriterConfig csharpCodeWriterConfig = new CSharpCodeWriterConfig();
@@ -28,12 +28,11 @@ namespace TESTS_JSON_TO_CSHARP
             csharpCodeWriterConfig.OutputMembers = OutputMembers.AsPublicFields;
             csharpCodeWriterConfig.AttributeUsage = JsonPropertyAttributeUsage.Always;
             csharpCodeWriterConfig.AttributeLibrary = JsonLibrary.NewtonsoftJson;
-            CSharpCodeWriter csharpCodeWriter = new CSharpCodeWriter(csharpCodeWriterConfig);
+            CSharpCodeWriter csharpCodeWriter = new CSharpCodeWriter(csharpCodeWriterConfig, false);
 
-            JsonClassGenerator jsonClassGenerator = new JsonClassGenerator();
-            jsonClassGenerator.CodeWriter = csharpCodeWriter;
+            JsonClassGenerator jsonClassGenerator = new JsonClassGenerator(csharpCodeWriter, new DuplicateOptions() { RemoveDuplicateRoots = false, RemoveSemiDuplicates = false });
 
-            string returnVal = jsonClassGenerator.GenerateClasses(input, out string errorMessage).ToString();
+            string returnVal = jsonClassGenerator.GenerateClasses(input, true, false, out string errorMessage).ToString();
             string resultsCompare = File.ReadAllText(resultPath);
             Assert.AreEqual(resultsCompare.NormalizeOutput(), returnVal.NormalizeOutput());
         }

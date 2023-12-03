@@ -1,6 +1,0 @@
-﻿TestClass testclass = new TestClass() { 
-TestGuid = Guid.NewGuid(),
-TestBoolean = true,
-TestChildClass = new ChildClass(),
-};
-

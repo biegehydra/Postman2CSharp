@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using Postman2CSharp.Core.Infrastructure;
+using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 using Xamasoft.JsonClassGenerator.Models;
@@ -400,7 +401,7 @@ public static partial class Utils
         {
             return DataType.Json;
         }
-        else if (request.Body is { Mode: "raw", Options: null })
+        if (request.Body is { Mode: "raw", Options: null })
         {
             return DataType.Json;
         }
@@ -416,16 +417,20 @@ public static partial class Utils
         {
             return DataType.Text;
         }
-        if (request.Body is { Mode: "urlencoded", Urlencoded.Count: > 0 })
+        if (request.Body is { Mode: "urlencoded" })
         {
-            return DataType.SimpleFormData;
+            if (request.Body.Urlencoded?.Count > 0)
+            {
+                return DataType.SimpleFormData;
+            }
+            return DataType.QueryOnly;
         }
-        if (request.Body is { Mode: "formdata", Formdata.Count: > 0 })
+        if (request.Body is { Mode: "formdata" })
         {
-            return request.Body.Formdata.Any(x => x.FormDataType == FormDataType.File || x.Src != null) ? DataType.ComplexFormData : DataType.SimpleFormData;
-        }
-        else if (request.Body is { Mode: "formdata", Formdata.Count: 0 })
-        {
+            if (request.Body.Formdata?.Count > 0)
+            {
+                return request.Body.Formdata.Any(x => x.FormDataType == FormDataType.File || x.Src != null) ? DataType.ComplexFormData : DataType.SimpleFormData;
+            }
             return DataType.QueryOnly;
         }
         if (request.Body == null)
@@ -441,17 +446,19 @@ public static partial class Utils
         {
             return DataType.GraphQl;
         }
-        else
+        if (request.Body.Mode == null)
         {
-            if (request.Body.Mode == null)
-            {
-                throw new ArgumentException(nameof(request.Body.Mode), $"Request mode not supported for request {request.Url.Raw}: null");
-            }
-            else
-            {
-                throw new ArgumentException(nameof(request.Body.Mode), $"Request mode not supported for request {request.Url.Raw}: {request.Body.Mode}");
-            }
+#if DEBUG
+            throw new ArgumentException(nameof(request.Body.Mode), $"Request mode not supported for request {request.Url.Raw}: null");
+#else
+            return DataType.QueryOnly;
+#endif
         }
+#if DEBUG
+        throw new ArgumentException(nameof(request.Body.Mode), $"Request mode not supported for request {request.Url.Raw}: {request.Body.Mode}");
+#else
+        return DataType.QueryOnly;
+#endif
     }
 
     private static readonly List<string> PossibleJsonContentTypes = new() { "json", "text" };
