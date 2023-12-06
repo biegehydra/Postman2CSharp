@@ -80,6 +80,7 @@ public class HelpersTests
 
     [DataTestMethod]
     [DataRow(null, "https://maps.googleapis.com/maps/api/directions/json?destination=<string>&origin=<string>", "https://maps.googleapis.com/maps/api/directions/json")]
+    [DataRow(null, "https://test:test2@maps.googleapis.com/maps/api/directions/json?destination=<string>&origin=<string>", "https://test:test2@maps.googleapis.com/maps/api/directions/json")]
     [DataRow("http://fulluri.com", "https://fulluri.com/path", "path")]
     [DataRow("https://fulluri.com/", "https://fulluri.com/path/", "path")]
     [DataRow("https://fulluri.com/", "https://fulluri.com/path1/path2", "path1/path2")]

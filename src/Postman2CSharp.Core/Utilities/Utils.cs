@@ -153,7 +153,7 @@ public static partial class Utils
                 fullUrl = "https://" + fullUrl[7..];
             }
             var _fullUri = new UriBuilder(fullUrl) { Scheme = Uri.UriSchemeHttps }.Uri;
-            return $"https://{_fullUri.Authority}{_fullUri.AbsolutePath}";
+            return $"https://{_fullUri.FullAuthority()}{_fullUri.AbsolutePath}";
         }
         if (baseUrl is null || fullUrl is null)
         {
