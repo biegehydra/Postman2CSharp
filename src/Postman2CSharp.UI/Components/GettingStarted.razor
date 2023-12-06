@@ -6,6 +6,7 @@
 
     .getting-started-image {
         height: 400px;
+        max-width: 100%;
     }
 
     .getting-started-container h2 {
@@ -21,25 +22,8 @@
 
     @@media (max-width: 600px) {
         .getting-started-image {
-            max-height: 40vh;
-            object-fit: contain;
-            max-width: 600px;
-        }
-    }
-    @@media (max-width: 400px) {
-        .getting-started-image {
-            max-height: 40vh;
-            object-fit: contain;
-            max-width: 400px;
-        }
-    }
-
-    @@media (max-width: 300px) {
-        .getting-started-image
-        {
-            max-height: 40vh;
-            object-fit: contain;
-            max-width: 300px;
+            height: auto;
+            width: 100%;
         }
     }
 
@@ -162,7 +146,7 @@
                     <strong>Step 4:</strong> Now you can convert the exported Json file on <a class="link-normal" href="/Convert">this</a> page to generate your C# API client.
                 </MudText>
             </MudListItem>
-            <img class="getting-started-image" style="max-height: 60vh;" src="_content/Postman2CSharp.UI/images/TreeView.webp" alt="Export Collection" fetchpriority="low" loading="lazy">
+            <img class="getting-started-image" src="_content/Postman2CSharp.UI/images/TreeView.webp" alt="Export Collection" fetchpriority="low" loading="lazy">
         </MudList>
 
         <OnThisPageLink Id="BestPractices">
