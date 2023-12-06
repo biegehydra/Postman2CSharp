@@ -31,6 +31,13 @@ public interface IDirtyName
 }
 public static partial class Utils
 {
+    public static string FullAuthority(this Uri uri)
+    {
+        return !string.IsNullOrEmpty(uri.UserInfo)
+            ? $"{uri.UserInfo.AddBackBrackets()}@{uri.Authority.AddBackBrackets()}"
+            : uri.Authority.AddBackBrackets();
+    }
+
     public static string CsPropertyName(this ICsProperty property, CsharpPropertyType type)
     {
         return NormalizeToCsharpPropertyName(property.Key, type);

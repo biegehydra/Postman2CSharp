@@ -54,7 +54,7 @@ namespace Postman2CSharp.Core.Utilities
                     requestItem =>
                     {
                         var uri = new Uri(requestItem.Request!.Url.Raw.ReplaceBrackets());
-                        return uri.Authority.AddBackBrackets();
+                        return uri.FullAuthority();
                     },
                     requestItem => requestItem)
                 .ToDictionary(g => g.Key, g => g.ToList());
@@ -84,7 +84,7 @@ namespace Postman2CSharp.Core.Utilities
 
             var commonUserInfo = uriData[0].UserInfo;
             var commonAuthority = uriData[0].Authority;
-            return uriData.All(uri => commonUserInfo == uri.UserInfo &&  uri.Authority == commonAuthority);
+            return uriData.All(uri => commonUserInfo == uri.UserInfo && uri.Authority == commonAuthority);
         }
 
         public static string? FindLeastPossibleUri(this CollectionItem rootItem)
@@ -116,9 +116,9 @@ namespace Postman2CSharp.Core.Utilities
             }
 
             var uriData = uris.Where(x => x != null).Select(u => new Uri(u!.ReplaceBrackets())).ToList();
-            var userInfo = uriData[0].UserInfo;
+            var commonUserInfo = uriData[0].UserInfo;
             var commonAuthority = uriData[0].Authority;
-            if (uriData.Any(uri => userInfo != uri.UserInfo || uri.Authority != commonAuthority))
+            if (uriData.Any(uri => commonUserInfo != uri.UserInfo || uri.Authority != commonAuthority))
             {
                 return null;
             }
@@ -140,8 +140,7 @@ namespace Postman2CSharp.Core.Utilities
                     break;
                 }
             }
-            var authority = !string.IsNullOrEmpty(userInfo) ? $"{userInfo.AddBackBrackets()}@{commonAuthority.AddBackBrackets()}" : commonAuthority.AddBackBrackets();
-            return $"https://{authority}/{string.Join('/', leastPossibleUriSegments)}";
+            return $"https://{uriData[0].FullAuthority()}/{string.Join('/', leastPossibleUriSegments)}";
         }
 
         /// <summary>
@@ -234,7 +233,7 @@ namespace Postman2CSharp.Core.Utilities
             foreach (var request in allRequests)
             {
                 var uri = new Uri(request.Request!.Url.Raw.ReplaceBrackets());
-                var authority = uri.Authority.AddBackBrackets();
+                var authority = uri.FullAuthority();
                 if (!dictionary.TryGetValue(authority, out _))
                 {
                     dictionary[authority] = new ();
