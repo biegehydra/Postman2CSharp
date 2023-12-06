@@ -75,7 +75,7 @@ public static class ApiClientSerializer
             sb.Append($", ILogger<{apiClientName}> logger");
         }
         if (uniqueAuths.Any(x => x.EnumType() is PostmanAuthType.apikey or PostmanAuthType.oauth1 or PostmanAuthType.oauth2
-                or PostmanAuthType.awsv4 or PostmanAuthType.bearer or PostmanAuthType.jwt))
+                or PostmanAuthType.awsv4 or PostmanAuthType.bearer or PostmanAuthType.jwt or PostmanAuthType.basic))
         {
             sb.Append(", IConfiguration config");
         }
