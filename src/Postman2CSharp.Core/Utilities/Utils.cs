@@ -67,9 +67,9 @@ public static partial class Utils
                 result = "_" + result;
             }
         }
-        if (result.Length > 50)
+        if (result.Length > 55)
         {
-            result = result[^50..];
+            result = result[^55..];
         }
         return result;
     }
