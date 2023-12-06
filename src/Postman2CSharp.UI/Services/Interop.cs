@@ -5,6 +5,7 @@ using Postman2CSharp.Core.Utilities;
 using Postman2CSharp.UI.Components;
 using Postman2CSharp.UI.Models;
 using Postman2CSharp.UI.Shared;
+using static MudBlazor.CategoryTypes;
 
 namespace Postman2CSharp.UI.Services
 {
@@ -215,6 +216,16 @@ namespace Postman2CSharp.UI.Services
         public async Task ScrollToElement(string elementId, int extraScrollDistance)
         {
             await _jsRuntime.InvokeVoidAsync("scrollToElement", elementId, extraScrollDistance);
+        }
+
+        public async Task<double> GetCurrentScrollPosition()
+        {
+            return await _jsRuntime.InvokeAsync<double>("getCurrentScrollPosition");
+        }
+
+        public async Task ScrollToSavedPosition(double savedPosition)
+        {
+            await _jsRuntime.InvokeVoidAsync("scrollToSavedPosition", savedPosition);
         }
     }
 }

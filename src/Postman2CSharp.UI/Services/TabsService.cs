@@ -1,4 +1,5 @@
-﻿using MudBlazor;
+﻿using Microsoft.AspNetCore.Components.Routing;
+using MudBlazor;
 
 namespace Postman2CSharp.UI.Services
 {
@@ -10,6 +11,7 @@ namespace Postman2CSharp.UI.Services
         public string? ApiClientId { get; init; }
         public required string Label { get; init; }
         public bool ShowCloseIcon { get; set; } = true;
+        public double? SavedScrollPosition { get; set; }
         public required TabType Type { get; init; }
     }
 
@@ -25,13 +27,16 @@ namespace Postman2CSharp.UI.Services
         DuplicateRoots,
         Tests
     }
-    public class TabsService
+    public class TabsService : IDisposable
     {
-        private Lazy<Navigate> Navigate { get; set; }
+        private Lazy<Navigate> Navigate { get; }
+        private Lazy<Interop> Interop { get; }
         public static event Func<Task>? TabsChanged;
-        public TabsService (Lazy<Navigate> navigate)
+        public TabsService (Lazy<Navigate> navigate, Lazy<Interop> interop)
         {
             Navigate = navigate;
+            Interop = interop;
+            Navigate.Value.LocationChanged += OnLocationChanged;
         }
 
 
@@ -42,55 +47,70 @@ namespace Postman2CSharp.UI.Services
         public static List<CollectionTabView> Tabs = new();
 
         private int _apiClientIndex;
-        public int ApiClientIndex
+        public int ApiClientIndex => _apiClientIndex;
+        private string? _navigationLocation;
+
+        public async Task SetApiClientIndex(int newIndex, bool force = false)
         {
-            get => _apiClientIndex;
-            set
+            if (newIndex == _apiClientIndex && !force) return;
+            if (newIndex < 0) return;
+            if (Tabs.Count == 0) return;
+            if (newIndex > Tabs.Count - 1) return;
+            if (_apiClientIndex <= Tabs.Count - 1)
             {
-                if (value == _apiClientIndex) return;
-                if (value < 0) return;
-                if (Tabs.Count == 0) return;
-                if (value > Tabs.Count - 1) return;
-                _apiClientIndex = value;
-                var tab = Tabs[_apiClientIndex];
-                switch (tab.Type)
-                {
-                    case TabType.HttpCall:
-                        Navigate.Value.ToHttpCallClass(tab.CollectionId!, tab.ApiClientId!, tab.HttpCallName!, tab.Label!);
-                        break;
-                    case TabType.HttpCalls:
-                        Navigate.Value.ToHttpCalls(tab.CollectionId!, tab.ApiClientId!);
-                        break;
-                    case TabType.ApiClient:
-                        Navigate.Value.ToApiClient(tab.CollectionId!, tab.ApiClientId!);
-                        break;
-                    case TabType.Collection:
-                        Navigate.Value.ToCollection(tab.CollectionId!);
-                        break;
-                    case TabType.CoreCsFile:
-                        Navigate.Value.ToCoreCsFile(tab.Label);
-                        break;
-                    case TabType.Interface:
-                        Navigate.Value.ToApiClientInterface(tab.CollectionId!, tab.ApiClientId!);
-                        break;
-                    case TabType.Controller:
-                        Navigate.Value.ToApiClientController(tab.CollectionId!, tab.ApiClientId!);
-                        break;
-                    case TabType.Tests:
-                        Navigate.Value.ToApiClientTests(tab.CollectionId!, tab.ApiClientId!);
-                        break;
-                    case TabType.DuplicateRoots:
-                        Navigate.Value.ToApiClientDuplicateRoots(tab.CollectionId!, tab.ApiClientId!);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-                TabsChanged?.Invoke();
+                var oldTab = Tabs[_apiClientIndex];
+                oldTab.SavedScrollPosition = await Interop.Value.GetCurrentScrollPosition();
+            } 
+            _apiClientIndex = newIndex;
+            var tab = Tabs[_apiClientIndex];
+            switch (tab.Type)
+            {
+                case TabType.HttpCall:
+                    _navigationLocation = Navigate.Value.ToHttpCallClass(tab.CollectionId!, tab.ApiClientId!, tab.HttpCallName!, tab.Label!);
+                    break;
+                case TabType.HttpCalls:
+                    _navigationLocation = Navigate.Value.ToHttpCalls(tab.CollectionId!, tab.ApiClientId!);
+                    break;
+                case TabType.ApiClient:
+                    _navigationLocation = Navigate.Value.ToApiClient(tab.CollectionId!, tab.ApiClientId!);
+                    break;
+                case TabType.Collection:
+                    _navigationLocation = Navigate.Value.ToCollection(tab.CollectionId!);
+                    break;
+                case TabType.CoreCsFile:
+                    _navigationLocation = Navigate.Value.ToCoreCsFile(tab.Label);
+                    break;
+                case TabType.Interface:
+                    _navigationLocation = Navigate.Value.ToApiClientInterface(tab.CollectionId!, tab.ApiClientId!);
+                    break;
+                case TabType.Controller:
+                    _navigationLocation = Navigate.Value.ToApiClientController(tab.CollectionId!, tab.ApiClientId!);
+                    break;
+                case TabType.Tests:
+                    _navigationLocation = Navigate.Value.ToApiClientTests(tab.CollectionId!, tab.ApiClientId!);
+                    break;
+                case TabType.DuplicateRoots:
+                    _navigationLocation = Navigate.Value.ToApiClientDuplicateRoots(tab.CollectionId!, tab.ApiClientId!);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
+            if (TabsChanged != null)
+            {
+                await TabsChanged.Invoke();
+            }
         }
 
-        public void SetHome(string? collectionId, bool setIndex = false)
+        private async void OnLocationChanged(object? sender, LocationChangedEventArgs args)
+        {
+            if (!string.IsNullOrWhiteSpace(_navigationLocation) && args.Location.EndsWith(_navigationLocation) && Tabs[_apiClientIndex].SavedScrollPosition.HasValue)
+            {
+                await Interop.Value.ScrollToSavedPosition(Tabs[_apiClientIndex].SavedScrollPosition!.Value);
+            }
+        }
+
+        public async Task SetHome(string? collectionId, bool setIndex = false)
         {
             var currentHomeTab = Tabs.FirstOrDefault();
 
@@ -128,7 +148,7 @@ namespace Postman2CSharp.UI.Services
             }
             if (setIndex)
             {
-                ApiClientIndex = 0;
+                await SetApiClientIndex(0);
             }
 
             TabsChanged?.Invoke();
@@ -140,10 +160,10 @@ namespace Postman2CSharp.UI.Services
             {
                 var index = Tabs.IndexOf(tab);
                 if (ApiClientIndex != index)
-                    ApiClientIndex = index;
+                    await SetApiClientIndex(index);
                 return;
             }
-            SetHome(collectionId);
+            await SetHome(collectionId);
             Tabs.Insert(1, new CollectionTabView
             {
                 Id = Guid.NewGuid().ToString(),
@@ -161,10 +181,10 @@ namespace Postman2CSharp.UI.Services
             {
                 var index = Tabs.IndexOf(tab);
                 if (ApiClientIndex != index)
-                    ApiClientIndex = index;
+                    await SetApiClientIndex(index);
                 return;
             }
-            SetHome(collectionId);
+            await SetHome(collectionId);
             Tabs.Insert(1, new CollectionTabView
             {
                 Id = Guid.NewGuid().ToString(),
@@ -182,10 +202,10 @@ namespace Postman2CSharp.UI.Services
             {
                 var index = Tabs.IndexOf(tab);
                 if (ApiClientIndex != index)
-                    ApiClientIndex = index;
+                    await SetApiClientIndex(index);
                 return;
             }
-            SetHome(collectionId);
+            await SetHome(collectionId);
             Tabs.Insert(1, new CollectionTabView
             {
                 Id = Guid.NewGuid().ToString(),
@@ -203,10 +223,10 @@ namespace Postman2CSharp.UI.Services
             {
                 var index = Tabs.IndexOf(tab);
                 if (ApiClientIndex != index)
-                    ApiClientIndex = index;
+                    await SetApiClientIndex(index);
                 return;
             }
-            SetHome(collectionId);
+            await SetHome(collectionId);
             Tabs.Insert(1, new CollectionTabView
             {
                 Id = Guid.NewGuid().ToString(),
@@ -224,10 +244,10 @@ namespace Postman2CSharp.UI.Services
             {
                 var index = Tabs.IndexOf(tab);
                 if (ApiClientIndex != index)
-                    ApiClientIndex = index;
+                    await SetApiClientIndex(index);
                 return;
             }
-            SetHome(collectionId);
+            await SetHome(collectionId);
             Tabs.Insert(1, new CollectionTabView
             {
                 Id = Guid.NewGuid().ToString(),
@@ -245,11 +265,11 @@ namespace Postman2CSharp.UI.Services
             {
                 var index = Tabs.IndexOf(tab);
                 if (ApiClientIndex != index)
-                    ApiClientIndex = index;
+                    await SetApiClientIndex(index);
                 return;
             }
             var insertIndex = 0;
-            if (Tabs.Count > 1)
+            if (Tabs.Count >= 1)
             {
                 insertIndex = 1;
             }
@@ -269,10 +289,10 @@ namespace Postman2CSharp.UI.Services
             {
                 var index = Tabs.IndexOf(tab);
                 if (ApiClientIndex != index)
-                    ApiClientIndex = index;
+                    await SetApiClientIndex(index);
                 return;
             }
-            SetHome(collectionId);
+            await SetHome(collectionId);
             Tabs.Insert(1, new CollectionTabView
             {
                 Id = Guid.NewGuid().ToString(),
@@ -291,10 +311,10 @@ namespace Postman2CSharp.UI.Services
             {
                 var index = Tabs.IndexOf(tab);
                 if (ApiClientIndex != index)
-                    ApiClientIndex = index;
+                    await SetApiClientIndex(index);
                 return;
             }
-            SetHome(collectionId);
+            await SetHome(collectionId);
             Tabs.Insert(1, new CollectionTabView
             {
                 Id = Guid.NewGuid().ToString(),
@@ -306,12 +326,16 @@ namespace Postman2CSharp.UI.Services
             await MoveToNewTab();
         }
 
-        public void RemoveTab(string id)
+        public async Task RemoveTab(string id)
         {
             var tabView = Tabs.SingleOrDefault(t => Equals(t.Id, id));
             if (tabView is not null)
             {
                 Tabs.Remove(tabView);
+            }
+            if (_apiClientIndex > Tabs.Count - 1)
+            {
+                await SetApiClientIndex(Tabs.Count - 1);
             }
         }
 
@@ -321,8 +345,13 @@ namespace Postman2CSharp.UI.Services
             TabsChanged?.Invoke();
             await Task.Delay(10);
             if (Tabs.Count <= 0) return;
-            if (Tabs.Count == 1) ApiClientIndex = 0;
-            else ApiClientIndex = 1;
+            if (Tabs.Count == 1) await SetApiClientIndex(0);
+            else await SetApiClientIndex(1, true);
+        }
+
+        public void Dispose()
+        {
+            Navigate.Value.LocationChanged -= OnLocationChanged;
         }
     }
 }

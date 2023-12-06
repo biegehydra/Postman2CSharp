@@ -76,9 +76,9 @@
         new("Convert", "/Convert", true, Icons.ImportExport)
     };
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        TabsService.Value.SetHome(null);
+        await TabsService.Value.SetHome(null);
         if (!AppState.IsConvertLoaded)
         {
             throw new Exception("Something went wrong. Reload the page.");

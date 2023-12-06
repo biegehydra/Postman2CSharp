@@ -25,7 +25,7 @@ public static class HttpCallSerializer
         }
         catch (ArgumentException)
         {
-            throw new ArgumentException(nameof(call.Request.Url.Raw), $"Invalid URL: {call.Request.Url.Raw}");
+            throw new ArgumentException(nameof(call.Request.Url.Raw), $"Invalid URL for {call.Name}: {call.Request.Url.Raw}");
         }
         var methodParameters = call.MethodParameters(options.OutputCollectionType);
         if (options.UseCancellationTokens)

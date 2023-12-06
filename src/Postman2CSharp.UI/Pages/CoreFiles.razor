@@ -64,8 +64,8 @@
                                                            " if the selected JsonLibrary is Newtonsoft.Json" },
     };
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        TabsService.Value.SetHome(null);
+        await TabsService.Value.SetHome(null);
     }
 }

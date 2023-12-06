@@ -319,7 +319,7 @@
     {
         if (TabsService.ActiveCollectionId == apiCollection.Id)
         {
-            TabsService.SetHome(null);
+            await TabsService.SetHome(null);
             Navigate!.ToHome();
             StateHasChanged();
         }

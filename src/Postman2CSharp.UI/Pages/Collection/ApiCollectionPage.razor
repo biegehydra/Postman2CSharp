@@ -50,9 +50,10 @@
     [Parameter] public string? CollectionId { get; set; }
 
     private bool ShowCoreCsvFiles { get; set; } = false;
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        TabsService.Value.SetHome(CollectionId, true);
+        if (CollectionInfo == null) return;
+        await TabsService.Value.SetHome(CollectionId, true);
         _breadCrumbs = new()
         {
             new("Home", "/", icon: Icons.Home),

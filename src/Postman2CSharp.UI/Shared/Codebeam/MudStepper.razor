@@ -131,7 +131,10 @@
                         }
                         else
                         {
-                            <MudButton Color="@Color" Disabled="!nextValid" Variant="@Variant" StartIcon="@Icons.ChevronRight" OnClick="@(CompleteStep)">Next</MudButton>
+                            var text = ActiveIndex == Steps.Count - 1 ? "Generate" : "Next";
+                            var icon = ActiveIndex == Steps.Count - 1 ? Icons.Start : Icons.ChevronRight;
+                            var color = ActiveIndex == Steps.Count - 1 ? Color.Tertiary : Color;
+                            <MudButton Color="@color" Disabled="!nextValid" Variant="@Variant" StartIcon="@icon" OnClick="@(CompleteStep)">@text</MudButton>
                         }                        
                     }
                 }

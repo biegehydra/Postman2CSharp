@@ -31,7 +31,7 @@
             }
             @if (!ShowEdit)
             {
-                <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClient(ApiCollection.Id, ApiClient.Id)"/>
+                <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientTab(ApiCollection.Id, ApiClient.Id, ApiClient.Name)"/>
             }
         </Content>
         <ChildContent>
@@ -47,7 +47,7 @@
                     {
                         <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.Name, ApiClient.SourceCode)"></MudIconButton>
                     }
-                    <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClient(ApiCollection.Id, ApiClient.Id)"/>
+                    <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientTab(ApiCollection.Id, ApiClient.Id, ApiClient.Name)" />
                 </Content>
             </MudTreeViewItem>
             <MudTreeViewItem Value="@ApiClient.InterfaceName">
@@ -58,7 +58,7 @@
                     {
                         <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.InterfaceName, ApiClient.InterfaceSourceCode)"></MudIconButton>
                     }
-                    <OpenInNewTab NavigateAction="() => Navigate.Value.ToApiClientInterface(ApiCollection.Id, ApiClient.Id)"/>
+                    <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientInterfaceTab(ApiCollection.Id, ApiClient.Id, ApiClient.InterfaceName)" />
                 </Content>
             </MudTreeViewItem>
             @if (ShowCoreCsvFiles)
@@ -69,7 +69,7 @@
                         <Content>
                             <MudTreeViewItemToggleButton Visible="false"/>
                             <MudText Style="user-select: none;">@coreCsFile</MudText>
-                            <OpenInNewTab NavigateAction="() => Navigate.Value.ToCoreCsFile(coreCsFile)"/>
+                            <OpenInNewTab NavigateAction="() => TabsService.Value.AddCoreCsFileTab(coreCsFile)" />
                         </Content>
                     </MudTreeViewItem>
                 }

@@ -30,7 +30,8 @@
     }
 </style>
 
-<MudDynamicTabs Class="dynamic-tabs" Style="margin-left: 15px; max-width: 55vw;" @ref="@TabsService.DynamicTabs" @bind-ActivePanelIndex="@TabService!.ApiClientIndex"
+<MudDynamicTabs Class="dynamic-tabs" Style="margin-left: 15px; max-width: 55vw;" @ref="@TabsService.DynamicTabs" 
+                @bind-ActivePanelIndex:get="@TabService!.ApiClientIndex" @bind-ActivePanelIndex:set="x => TabService!.SetApiClientIndex(x)"
                 CloseTab="@CloseTabCallback" Color="Color.Dark" AddIconClass="display-none" SliderColor="Color.Primary"
                 CloseIconToolTip="Close tab."
                 Elevation="3" Rounded ApplyEffectsToContainer >

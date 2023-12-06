@@ -8,14 +8,14 @@
             {
                 <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="DownloadFile"></MudIconButton>
             }
-            <OpenInNewTab NavigateAction="() => Navigate.ToHttpCallClass(ApiCollectionId, ApiClientId, HttpCallName, ClassName)" />
+            <OpenInNewTab NavigateAction="() => TabsService.AddHttpCallClass(ApiCollectionId, ApiClientId, HttpCallName, ClassName)" />
         </Content>
     </MudTreeViewItem>
 }
 
 @code {
     [Inject] private AppState AppState { get; set; } = null!;
-    [Inject] private Navigate Navigate { get; set; } = null!;
+    [Inject] private TabsService TabsService { get; set; } = null!;
     [Inject] private Interop Interop { get; set; } = null!;
 
     [Parameter, EditorRequired] public string? ApiCollectionId { get; set; }

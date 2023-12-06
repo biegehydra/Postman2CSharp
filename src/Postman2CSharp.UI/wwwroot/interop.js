@@ -199,14 +199,22 @@ function splitVertical(id1, id2) {
     Split(['#' + id1, '#' + id2])
 }
 
-function scrollToElement(elementId, extraScrollDistance) {
-    const element = document.getElementById(elementId);
-    if (!element) return;
+function getCurrentScrollPosition() {
+    return window.scrollY || document.documentElement.scrollTop;
+}
 
-    const scrollToPosition = element.getBoundingClientRect().top - extraScrollDistance;
-
-    window.scrollBy({
-        top: scrollToPosition,
-        behavior: 'smooth'
+function scrollToSavedPosition(savedScrollPosition) {
+    const observer = new MutationObserver(() => {
+        if (document.readyState === 'complete') {
+            requestAnimationFrame(() => {
+                window.scrollTo({
+                    top: savedScrollPosition,
+                    behavior: 'auto'
+                });
+            });
+            observer.disconnect();
+        }
     });
+
+    observer.observe(document, { childList: true, subtree: true });
 }
