@@ -20,7 +20,7 @@
             <MudGrid Spacing="3" Class="api-client-grid">
                 <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
                     <p>Download ApiClient Project</p>
-                    <MudIconButton Size="Size.Medium" OnClick="() => Interop.Value.DownloadApiClient(SelectedApiClient)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+                    <MudIconButton Size="Size.Medium" OnClick="() => Interop.Value.DownloadApiClient(SelectedApiClient, () => InvokeAsync(StateHasChanged))" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
                 </MudItem>
                 <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
                     <p>Download Test Class</p>

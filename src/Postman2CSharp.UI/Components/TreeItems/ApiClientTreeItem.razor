@@ -27,7 +27,7 @@
             }
             @if (AppState.SiteSettings.ShowDownloadInTreeView && !ShowEdit)
             {
-                <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadApiClient(ApiClient)"></MudIconButton>
+                <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadApiClient(ApiClient, () => InvokeAsync(StateHasChanged))"></MudIconButton>
             }
             @if (!ShowEdit)
             {

@@ -5,7 +5,6 @@ using Postman2CSharp.Core.Utilities;
 using Postman2CSharp.UI.Components;
 using Postman2CSharp.UI.Models;
 using Postman2CSharp.UI.Shared;
-using static MudBlazor.CategoryTypes;
 
 namespace Postman2CSharp.UI.Services
 {
@@ -32,16 +31,26 @@ namespace Postman2CSharp.UI.Services
 
         public event Func<float, Task>? FileProgressCallback; 
 
-        public async Task DownloadApiClient(ApiClient apiClient)
+        public async Task DownloadApiClient(ApiClient apiClient, Func<Task>? invokeStateHasChanged)
         {
             _appState.SiteSettings.TotalApiClientsDownloaded++;
-            if (_appState.SiteSettings.TotalApiClientsDownloaded == 1 || _appState.SiteSettings.TotalApiClientsDownloaded % 13 == 0)
+            Snackbar? snackRef = null;
+            if (invokeStateHasChanged != null)
             {
-                _snackBar.Value?.Add(Fragments.RequestToStarGithubFragment(), Severity.Info, x =>
+                snackRef = _snackBar.Value?.Add($"Downloading {apiClient.Name} ApiClient...", Severity.Normal, x =>
                 {
-                    x.VisibleStateDuration = 25_000;
-                    x.SnackbarTypeClass = "mud-theme-tertiary";
+                    x.VisibleStateDuration = 10000;
                 });
+                if (_appState.SiteSettings.TotalApiClientsDownloaded == 1 || _appState.SiteSettings.TotalApiClientsDownloaded % 13 == 0)
+                {
+                    _snackBar.Value?.Add(Fragments.RequestToStarGithubFragment(), Severity.Info, x =>
+                    {
+                        x.VisibleStateDuration = 25_000;
+                        x.SnackbarTypeClass = "mud-theme-tertiary";
+                    });
+                }
+                await invokeStateHasChanged();
+                await Task.Delay(5);
             }
 
             await SetLocalStorage("siteSettings", _appState.SiteSettings);
@@ -66,6 +75,18 @@ namespace Postman2CSharp.UI.Services
 
                 await _jsRuntime.InvokeVoidAsync("createZipAndDownload", apiClient.Name, sourceCodeDict, fileNamePathDict);
 
+                if (invokeStateHasChanged != null && snackRef != null)
+                {
+                    _snackBar.Value?.Remove(snackRef);
+                    _snackBar.Value?.Add($"Downloaded {apiClient.Name} ApiClient!", Severity.Success, x =>
+                    {
+                        x.VisibleStateDuration = 5000;
+                    });
+
+                    await invokeStateHasChanged();
+                    await Task.Delay(5);
+                }
+
                 bool isTestData = apiClient.BaseUrl?.Contains("googleapis") ?? false;
                 var dataType = isTestData ? "Test Data" : "Real Data";
                 await _analytics.TrackAction($"Download ApiClient - {dataType}");
@@ -84,7 +105,7 @@ namespace Postman2CSharp.UI.Services
             foreach (var apiClient in apiClients)
             {
                 
-                await DownloadApiClient(apiClient);
+                await DownloadApiClient(apiClient, null);
                 await RaiseProgressCallback((float) processed / total);
                 await Task.Delay(5);
                 processed++;
