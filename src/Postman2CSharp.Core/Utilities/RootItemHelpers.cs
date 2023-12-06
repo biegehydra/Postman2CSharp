@@ -82,8 +82,9 @@ namespace Postman2CSharp.Core.Utilities
 
             var uriData = uris.Select(u => new Uri(u.ReplaceBrackets())).ToList();
 
-            var commonHost = uriData[0].Host;
-            return uriData.All(uri => uri.Host == commonHost);
+            var commonUserInfo = uriData[0].UserInfo;
+            var commonAuthority = uriData[0].Authority;
+            return uriData.All(uri => commonUserInfo == uri.UserInfo &&  uri.Authority == commonAuthority);
         }
 
         public static string? FindLeastPossibleUri(this CollectionItem rootItem)
