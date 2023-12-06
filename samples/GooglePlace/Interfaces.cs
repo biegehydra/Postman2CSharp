@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
-using OneOf;
 
-namespace PaypalSubscriptions
+namespace GooglePlace
 {
     public interface IQueryParameters
     {

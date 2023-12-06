@@ -8,12 +8,12 @@ namespace PaypalSubscriptions
     public class ListTransactionsForSubscriptionParameters : IQueryParameters
     {
         /// <summary>
-        /// (Required) The start time of the range of transactions to list. 
+        /// (Required) The start time of the range of transactions to list.
         /// </summary>
         public string StartTime { get; set; }
         
         /// <summary>
-        /// (Required) The end time of the range of transactions to list. 
+        /// (Required) The end time of the range of transactions to list.
         /// </summary>
         public string EndTime { get; set; }
 

@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
 
-namespace PaypalSubscriptions
+namespace GooglePlace
 {
     /// <summary>
     /// Extension methods for working with JSON APIs.

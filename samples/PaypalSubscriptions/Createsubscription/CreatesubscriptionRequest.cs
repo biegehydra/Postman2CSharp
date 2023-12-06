@@ -16,6 +16,8 @@ namespace PaypalSubscriptions
 
         [JsonPropertyName("shipping_amount")]
         public ShippingAmount ShippingAmount { get; set; }
+
+        [JsonPropertyName("subscriber")]
         public Subscriber Subscriber { get; set; }
 
         [JsonPropertyName("application_context")]
@@ -26,6 +28,8 @@ namespace PaypalSubscriptions
     {
         [JsonPropertyName("brand_name")]
         public string BrandName { get; set; }
+
+        [JsonPropertyName("locale")]
         public string Locale { get; set; }
 
         [JsonPropertyName("shipping_preference")]
@@ -65,18 +69,9 @@ namespace PaypalSubscriptions
         public string CountryCode { get; set; }
     }
 
-    public class Name
-    {
-        [JsonPropertyName("given_name")]
-        public string GivenName { get; set; }
-        public string Surname { get; set; }
-
-        [JsonPropertyName("full_name")]
-        public string FullName { get; set; }
-    }
-
     public class Subscriber
     {
+        [JsonPropertyName("name")]
         public Name Name { get; set; }
 
         [JsonPropertyName("email_address")]
@@ -84,6 +79,18 @@ namespace PaypalSubscriptions
 
         [JsonPropertyName("shipping_address")]
         public ShippingAddress ShippingAddress { get; set; }
+    }
+
+    public class Name
+    {
+        [JsonPropertyName("given_name")]
+        public string GivenName { get; set; }
+
+        [JsonPropertyName("surname")]
+        public string Surname { get; set; }
+
+        [JsonPropertyName("full_name")]
+        public string FullName { get; set; }
     }
 
     public class PaymentMethod
@@ -97,7 +104,10 @@ namespace PaypalSubscriptions
 
     public class ShippingAddress
     {
+        [JsonPropertyName("name")]
         public Name Name { get; set; }
+
+        [JsonPropertyName("address")]
         public Address Address { get; set; }
     }
 
@@ -105,6 +115,8 @@ namespace PaypalSubscriptions
     {
         [JsonPropertyName("currency_code")]
         public string CurrencyCode { get; set; }
+
+        [JsonPropertyName("value")]
         public string Value { get; set; }
     }
 }
