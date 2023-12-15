@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Postman2CSharp.Core.Utilities;
 
@@ -31,6 +32,9 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Http
 
         [JsonRequired] public required string Key { get; set; }
         [JsonRequired] public required string Value { get; set; }
+
+
+        [JsonConverter(typeof(DescriptionConverter))]
         public string? Description { get; set; }
         public bool? Disabled { get; set; }
         public override bool Equals(object? obj)
@@ -43,6 +47,36 @@ namespace Postman2CSharp.Core.Models.PostmanCollection.Http
         {
             // ReSharper disable once NonReadonlyMemberInGetHashCode
             return HashCode.Combine(Key);
+        }
+
+        private class DescriptionConverter : JsonConverter<string?>
+        {
+            public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.StartObject)
+                {
+                    // Read the object and look for the 'content' property
+                    using var jsonDoc = JsonDocument.ParseValue(ref reader);
+                    if (jsonDoc.RootElement.TryGetProperty("content", out var contentProp))
+                    {
+                        return contentProp.GetString();
+                    }
+
+                    return null; // Or a default value if appropriate
+                }
+                if (reader.TokenType == JsonTokenType.String)
+                {
+                    // Read the string value directly
+                    return reader.GetString();
+                }
+
+                throw new JsonException("Unexpected token type.");
+            }
+
+            public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value);
+            }
         }
     }
 }

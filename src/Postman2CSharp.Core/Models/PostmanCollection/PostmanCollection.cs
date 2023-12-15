@@ -64,5 +64,18 @@ namespace Postman2CSharp.Core.Models.PostmanCollection
                 rootCollection.CascadeAuth();
             }
         }
+
+        public void RemoveRequestsWithoutUrl()
+        {
+            if (Item == null)
+            {
+                return;
+            }
+
+            foreach (var item in Item)
+            {
+                item.RemoveItemsWithNullUrls();
+            }
+        }
     }
 }

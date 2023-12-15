@@ -80,12 +80,15 @@ public class ApiClientGenerator
         var apiClients = new List<ApiClient>();
         await RaiseStageChangedCallback("Getting roots...");
 
+        PostmanCollection.RemoveRequestsWithoutUrl();
+
         PostmanCollection.CascadeAuth();
 
         var rootItems = PostmanCollection.GetRootCollections();
 
 
-        rootItems.ForEach(x => RootItemHelpers.RemoveUnusedParameters(x, Options.ApiClientOptions));
+        RootItemHelpers.RemoveUnusedParameters(rootItems, Options.ApiClientOptions);
+
         var allVariableUsages = await DoPreProcessing(rootItems);
 
         if (Options.ApiClientOptions.RootDefinition == RootDefinition.PerAuthority)

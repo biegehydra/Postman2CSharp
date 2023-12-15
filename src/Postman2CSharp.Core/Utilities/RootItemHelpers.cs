@@ -165,26 +165,33 @@ namespace Postman2CSharp.Core.Utilities
         /// </summary>
         /// <param name="rootItem"></param>
         /// <param name="options"></param>
-        public static void RemoveUnusedParameters(CollectionItem rootItem, ApiClientOptions options)
+        public static void RemoveUnusedParameters(List<CollectionItem> rootItems, ApiClientOptions options)
         {
-            if (rootItem.RequestItems() == null) return;
-            foreach (var requestItem in rootItem.RequestItems()!)
+
+            foreach (var rootItem in rootItems)
             {
-                if (options.RemoveDisabled.Contains(RemoveDisabled.Headers))
+                if (rootItem.RequestItems() == null) return;
+                foreach (var requestItem in rootItem.RequestItems()!)
                 {
-                    requestItem.Request!.Header.RemoveAll(x => x.Disabled == true);
-                }
-                if (options.RemoveDisabled.Contains(RemoveDisabled.QueryParameters))
-                {
-                    requestItem.Request!.Url.Query?.RemoveAll(x => x.Disabled == true);
-                }
-                if (options.RemoveDisabled.Contains(RemoveDisabled.FormData))
-                {
-                    requestItem.Request!.Body?.Formdata?.RemoveAll(x => x.Disabled);
-                }
-                if (options.RemoveDisabled.Contains(RemoveDisabled.FormUrlEncoded))
-                {
-                    requestItem.Request!.Body?.Urlencoded?.RemoveAll(x => x.Disabled);
+                    if (options.RemoveDisabled.Contains(RemoveDisabled.Headers))
+                    {
+                        requestItem.Request!.Header.RemoveAll(x => x.Disabled == true);
+                    }
+
+                    if (options.RemoveDisabled.Contains(RemoveDisabled.QueryParameters))
+                    {
+                        requestItem.Request!.Url.Query?.RemoveAll(x => x.Disabled == true);
+                    }
+
+                    if (options.RemoveDisabled.Contains(RemoveDisabled.FormData))
+                    {
+                        requestItem.Request!.Body?.Formdata?.RemoveAll(x => x.Disabled);
+                    }
+
+                    if (options.RemoveDisabled.Contains(RemoveDisabled.FormUrlEncoded))
+                    {
+                        requestItem.Request!.Body?.Urlencoded?.RemoveAll(x => x.Disabled);
+                    }
                 }
             }
         }
