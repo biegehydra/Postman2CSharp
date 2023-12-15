@@ -188,6 +188,10 @@
                     ApiCollections.Add(apiCollection);
                 }
             }
+            if (apiCollectionIds is {Count: > 0})
+            {
+                await InvokeAsync(StateHasChanged);
+            }
         }
     }
 

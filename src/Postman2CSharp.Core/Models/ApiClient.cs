@@ -96,13 +96,19 @@ public class ApiClient
     private bool? _anyRequestInheritsAuth;
     private bool AnyRequestInheritsAuth => _anyRequestInheritsAuth ??= HttpCalls.Any(x => x.Request.Auth == null);
 
+#pragma warning disable CS8618
     [JsonConstructor]
     [SetsRequiredMembers]
-#pragma warning disable CS8618
+    public ApiClient()
+    {
+
+    }
+
+    [SetsRequiredMembers]
     public ApiClient(string name, string? description, string nameSpace, string? baseUrl, List<HttpCall> httpCalls,
-#pragma warning restore CS8618
         List<Header> commonHeaders, AuthSettings? collectionAuth, List<VariableUsage> variableUsages, ApiClientOptions options, 
         int totalClassesGenerated, List<DuplicateRoot> duplicateRoots)
+#pragma warning restore CS8618
     {
         Name = name;
         Description = description;
@@ -115,6 +121,8 @@ public class ApiClient
         Options = options;
         TotalClassesGenerated = totalClassesGenerated;
         DuplicateRoots = duplicateRoots;
+
+        GenerateSourceCode();
     }
 
     public void GenerateSourceCode()
