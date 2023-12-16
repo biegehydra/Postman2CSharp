@@ -12,7 +12,7 @@
              <div class="f-column">
                  @foreach (var apiClient in group)
                  {
-                     <ApiClientTreeItem @ref="ApiClientTreeViewGuidDict[apiClient.Id]" ApiClient="apiClient" ShowCoreCsvFiles="ShowCoreCsvFiles" ApiCollection="ApiCollection"/>
+                     <ApiClientTreeItem @ref="ApiClientTreeViewGuidDict[apiClient.Id]" ApiClient="apiClient" ApiCollection="ApiCollection"/>
                  }
              </div>
          }
@@ -21,8 +21,6 @@
 }
 
 @code {
-    [Parameter]
-    public bool ShowCoreCsvFiles { get; set; }
 
     [Parameter]
     public ApiCollection? ApiCollection { get; set; }
@@ -31,11 +29,10 @@
 
     private List<List<ApiClient>>? ApiClientGroups { get; set; }
 
-    private bool? _cachedShowCoreCsvFiles;
     private ApiCollection? _cachedApiCollection;
     protected override void OnParametersSet()
     {
-        if (ApiCollection == _cachedApiCollection && _cachedShowCoreCsvFiles == ShowCoreCsvFiles)
+        if (ApiCollection == _cachedApiCollection)
         {
             _shouldRender = false;
             return;
@@ -43,7 +40,6 @@
         ApiClientGroups = GroupEqually(ApiCollection?.ApiClients ?? new(), 3);
         _shouldRender = true;
         _cachedApiCollection = ApiCollection;
-        _cachedShowCoreCsvFiles = ShowCoreCsvFiles;
     }
 
     public string? NextApiClientWithDefaultNameSpaceId(ApiClient lastEditedApiClient)

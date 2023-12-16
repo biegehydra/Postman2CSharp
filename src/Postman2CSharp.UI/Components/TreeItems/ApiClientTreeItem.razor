@@ -61,19 +61,6 @@
                     <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientInterfaceTab(ApiCollection.Id, ApiClient.Id, ApiClient.InterfaceName)" />
                 </Content>
             </MudTreeViewItem>
-            @if (ShowCoreCsvFiles)
-            {
-                @foreach (var coreCsFile in CoreCsFile.Dict.Keys)
-                {
-                    <MudTreeViewItem Class="file-tree-item" Value="@coreCsFile">
-                        <Content>
-                            <MudTreeViewItemToggleButton Visible="false"/>
-                            <MudText Style="user-select: none;">@coreCsFile</MudText>
-                            <OpenInNewTab NavigateAction="() => TabsService.Value.AddCoreCsFileTab(coreCsFile)" />
-                        </Content>
-                    </MudTreeViewItem>
-                }
-            }
         </ChildContent>
     </MudTreeViewItem>
 }
@@ -82,7 +69,6 @@
     [CascadingParameter] public CollectionTreeItem CollectionTreeItem { get; set; } = null!;
     [Parameter, EditorRequired] public ApiCollection? ApiCollection { get; set; }
     [Parameter, EditorRequired] public ApiClient? ApiClient { get; set; }
-    [Parameter] public bool ShowCoreCsvFiles { get; set; }
 
     private readonly string _guid = Guid.NewGuid().ToString();
 
@@ -198,14 +184,12 @@
     private string? _cachedApiClientId;
     private bool _cachedExpanded;
     private bool _cachedShowEdit;
-    private bool _cachedShowCoreCsvFiles;
 
     private bool _shouldRender;
     protected override bool ShouldRender()
     {
         _shouldRender = Expanded != _cachedExpanded || 
                         ShowEdit != _cachedShowEdit ||
-                        (ShowCoreCsvFiles != _cachedShowCoreCsvFiles && Expanded) ||
                         ApiCollection?.Id != _cachedApiCollectionId || 
                         ApiClient?.Id != _cachedApiClientId;
         if (_shouldRender)
@@ -219,7 +203,6 @@
     {
         _cachedExpanded = Expanded;
         _cachedShowEdit = ShowEdit;
-        _cachedShowCoreCsvFiles = ShowCoreCsvFiles;
         _cachedApiCollectionId = ApiCollection!.Id;
         _cachedApiClientId = ApiClient!.Id!;
     }

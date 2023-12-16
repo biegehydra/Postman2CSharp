@@ -33,13 +33,10 @@
                 </ul>
             </li>
         </ul>
-        <div class="f-row-column" style="justify-content: end; gap: 15px;">
-            <MudSwitch Color="Color.Primary" Label="Show Core Files" @bind-Checked="ShowCoreCsvFiles" ></MudSwitch>
-        </div>
         <br/>
     </div>
     <br/>
-    <CollectionTreeItem ShowCoreCsvFiles="ShowCoreCsvFiles" ApiCollection="SelectedApiCollection"></CollectionTreeItem>
+    <CollectionTreeItem ApiCollection="SelectedApiCollection"></CollectionTreeItem>
     <br/>
     <br/>
 }
@@ -49,7 +46,6 @@
 
     [Parameter] public string? CollectionId { get; set; }
 
-    private bool ShowCoreCsvFiles { get; set; } = false;
     protected override async Task OnInitializedAsync()
     {
         if (CollectionInfo == null) return;
