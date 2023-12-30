@@ -225,7 +225,7 @@ public static partial class Utils
     /// </summary>
     /// <param name="strings"></param>
     /// <returns></returns>
-    public static string? GetCommonBase(List<string> strings)
+    public static string? GetCommonBase(List<string> strings, string? ignore = null)
     {
         if (!strings.Any() || strings.Any(string.IsNullOrWhiteSpace))
             return null;
@@ -237,10 +237,10 @@ public static partial class Utils
             commonBase = string.Concat(commonBase.TakeWhile((c, index) => index < strings[i].Length && c == strings[i][index]));
         }
 
-        return commonBase.Length > 4 ? commonBase : null;
+        return commonBase.Length > 4 && (ignore == null || (!ignore.StartsWith(commonBase, StringComparison.OrdinalIgnoreCase) && !commonBase.Contains(ignore, StringComparison.OrdinalIgnoreCase))) ? commonBase : null;
     }
 
-    public static string? GetLongestSubstring(List<string> strings)
+    public static string? GetLongestSubstring(List<string> strings, string? ignore = null)
     {
         if (!strings.Any() || strings.Any(string.IsNullOrWhiteSpace))
             return null;
@@ -256,7 +256,7 @@ public static partial class Utils
 
                 if (char.IsUpper(currentSubstring[0]) && strings.All(str => str.Contains(currentSubstring)))
                 {
-                    if (longestCommonSubstring == null || currentSubstring.Length > longestCommonSubstring.Length)
+                    if ((longestCommonSubstring == null || currentSubstring.Length > longestCommonSubstring.Length) && (ignore == null || (!ignore.StartsWith(currentSubstring, StringComparison.OrdinalIgnoreCase) && !currentSubstring.Contains(ignore, StringComparison.OrdinalIgnoreCase))))
                         longestCommonSubstring = currentSubstring;
                 }
             }

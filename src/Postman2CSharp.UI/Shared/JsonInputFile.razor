@@ -8,6 +8,7 @@
         transition: all .4s;
         min-height: 75px;
         padding: 8px;
+        text-align: center;
     }
     .drag-drop-input {
         position: absolute;
@@ -24,10 +25,10 @@
 @{
     var successStyle = FileValid ? "border: 2px solid var(--mud-palette-success); min-height: 150px;" : "min-height: 150px;";
 }
-<div @onmouseover="@(() => _dragEnterStyle = "drag-enter")"
-     @onmouseleave="@(() => _dragEnterStyle = null)">
+<div @onmouseover="@(() => _dragEnterClass = "drag-enter")"
+     @onmouseleave="@(() => _dragEnterClass = null)">
     <MudPaper Style="@successStyle"
-              Class=@("drag-drop-zone " + _dragEnterStyle)>
+              Class=@("drag-drop-zone " + _dragEnterClass)>
         @if (_loading)
         {
             <MudProgressLinear Indeterminate="true" Size="Size.Large" />
@@ -48,8 +49,8 @@
 </div>
 
 @code {
-    [Inject] private ISnackbar SnackBar { get; set; }
-    private string? _dragEnterStyle;
+    [Inject] private ISnackbar? SnackBar { get; set; }
+    private string? _dragEnterClass;
     private bool _loading;
 
     [Parameter]
@@ -66,7 +67,7 @@
         _loading = true;
         try
         {
-            _dragEnterStyle = null;
+            _dragEnterClass = null;
             var files = args.GetMultipleFiles();
             if (files.Count == 0)
             {
@@ -74,7 +75,7 @@
             }
             if (files.Count > 1)
             {
-                SnackBar.Add($"Only one file can be uploaded at a time", Severity.Error, x => x.VisibleStateDuration = 300);
+                SnackBar?.Add($"Only one file can be uploaded at a time", Severity.Error, x => x.VisibleStateDuration = 300);
                 return;
             }
             var file = files.FirstOrDefault();
@@ -87,7 +88,7 @@
             {
                 if (Path.GetExtension(file.Name) != ".json")
                 {
-                    SnackBar.Add($"Only json files can be uploaded", Severity.Error, x => x.VisibleStateDuration = 300);
+                    SnackBar?.Add($"Only json files can be uploaded", Severity.Error, x => x.VisibleStateDuration = 300);
                     return;
                 }
                 FileName = file.Name;

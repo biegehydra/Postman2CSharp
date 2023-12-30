@@ -162,9 +162,13 @@ public class ApiClientGenerator
     {
         RootItemHelpers.NormalizeRequestItemNames(rootItem);
 
+        string? ignore = PostmanCollection.GetRootCollections().Count > 1 && PostmanCollection.Info.Name.Length > 4
+            ? PostmanCollection.Info.Name
+            : null;
+
         var allCallNames = rootItem.RequestItems()?.Select(x => x.Name).ToList() ?? new ();
-        var commonBase = Utils.GetCommonBase(allCallNames);
-        commonBase ??= Utils.GetLongestSubstring(allCallNames);
+        var commonBase = Utils.GetCommonBase(allCallNames, ignore);
+        commonBase ??= Utils.GetLongestSubstring(allCallNames, ignore);
         string normalizedNameSpace;
         if (Options.ApiClientOptions.RootDefinition == RootDefinition.Manual || commonBase == null || allCallNames.Count == 1)
         {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis;
 using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
@@ -62,7 +64,12 @@ public static class ApiClientSerializer
             ExecuteWithRetryFunction(sb, 1, client.Name, client.BaseUrl ?? string.Empty, client.Options, client.CommonHeaders, client.UniqueAuths, client.AddAuthHeaderToConstructor);
         }
         sb.AppendLine("}");
-        return sb.ToString();
+        var str = sb.ToString();
+
+        SyntaxTree tree = CSharpSyntaxTree.ParseText(str);
+        var root = tree.GetRoot();
+        var newRoot = CodeAnalysisUtils.CarefullyRemoveAsyncAwait(root);
+        return newRoot.NormalizeWhitespace().ToFullString();
     }
 
     private static void ApiClientConstructor(StringBuilder sb, List<Header> commonHeaders, List<AuthSettings> uniqueAuths, string apiClientName, 

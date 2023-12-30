@@ -3,10 +3,10 @@
 @inject IWebAssemblyHostEnvironment HostEnv
 @inherits MainLayoutComponent
 <PageHeader 
-    Keywords="@Keywords" 
-    Description="Securely convert Postman collections to C# ApiClients. Free, online, all in the browser, in just a few clicks. Generate code is highly configurable."
+    Keywords="@Keywords"
+            Description="Generate C# ApiClient service that uses HttpClient from your Postman collection. Postman to C#."
     NotPrerenderingTitle="@NotPrerenderingTitle"
-    AddPostman2CSharpToTitle="false" Title="Convert Postman Collections To C# ApiClients For Free"></PageHeader>
+    AddPostman2CSharpToTitle="false" Title="Convert Postman Collection To C# ApiClient Free"></PageHeader>
 
 <BreadCrumbs Items="@BreadCrumbs"></BreadCrumbs>
 
@@ -19,13 +19,10 @@
     private string NotPrerenderingTitle => Navigate.Value.BaseUrl == Navigate.Value.CurrentUrl ? "Home" : "Getting Started";
     private string Keywords => "openapi, open api, swagger, convert, graphql, curl, raml, har";
 
-    private static readonly List<BreadcrumbItem> BreadCrumbs = new()
-    {
-        new("Home", "/", true, Icons.Rocket),
-    };
+    private static readonly List<BreadcrumbItem> BreadCrumbs = [ new("Home", "/", true, Icons.Rocket) ];
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
-        await TabsService.Value.SetHome(null);
+        return TabsService.Value.SetHome(null);
     }
 }

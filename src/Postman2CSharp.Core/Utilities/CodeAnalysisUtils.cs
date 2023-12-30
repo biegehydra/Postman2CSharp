@@ -154,56 +154,71 @@ namespace Postman2CSharp.Core.Utilities
             return newRoot.NormalizeWhitespace().ToFullString();
         }
 
-        public static string ReorderClasses(string sourceCode, string rootName, out int classCount)
+        public static SyntaxNode CarefullyRemoveAsyncAwait(SyntaxNode root)
         {
-            var tree = CSharpSyntaxTree.ParseText(sourceCode);
-            var root = tree.GetRoot();
+            var methodDeclarations = root.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
 
-            var namespaces = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>();
-            var namespaceDeclaration = namespaces.FirstOrDefault();
-            if (namespaceDeclaration == null)
+            for (int i = 0; i < methodDeclarations.Count(); i++)
             {
-#if DEBUG
-                Debug.WriteLine($"No classes generated for {rootName}");
-#endif
-                throw new NoClassesGeneratedException()
+                var method = methodDeclarations[i];
+                // Analyze the method to see if async/await can be safely removed
+                if (CanRemoveAsyncAwaitSafely(method))
                 {
-                    IntendedRootName = rootName
-                };
-            }
-            var classes = namespaceDeclaration.Members.OfType<ClassDeclarationSyntax>().ToList();
-            classCount = classes.Count;
-            if (classCount == 0)
-            {
-#if DEBUG
-                Debug.WriteLine($"No classes generated for {rootName}");
-#endif
-                throw new NoClassesGeneratedException()
-                {
-                    IntendedRootName = rootName
-                };
-            }
-            var orderedClasses = classes
-                .OrderBy(c => c.Identifier.Text != rootName) // RootName class first
-                .ThenByDescending(c =>
-                    c.Members.OfType<PropertyDeclarationSyntax>().Count() +
-                    c.Members.OfType<FieldDeclarationSyntax>().Count()); // Then order by property and field count
+                    // Create a new method declaration without 'async' and 'await'
+                    var newMethod = method.WithoutAsyncAndAwait();
 
-            var newNamespaceDeclaration =
-                namespaceDeclaration.RemoveNodes(classes, SyntaxRemoveOptions.KeepNoTrivia);
+                    // Replace old method with new one
+                    root = root.ReplaceNode(method, newMethod);
 
-            // Add the ordered classes to the namespace.
-            newNamespaceDeclaration = newNamespaceDeclaration?.AddMembers(orderedClasses.ToArray());
-
-            if (newNamespaceDeclaration == null)
-            {
-                return string.Empty;
+                    // idk why but if I don't do this it only removes the first async/await
+                    methodDeclarations = root.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
+                }
             }
 
-            root = root.ReplaceNode(namespaceDeclaration, newNamespaceDeclaration);
-
-            return root.NormalizeWhitespace().ToFullString();
+            return root;
         }
+
+        private static bool CanRemoveAsyncAwaitSafely(MethodDeclarationSyntax method)
+        {
+            // Check if the method is async
+            if (!method.Modifiers.Any(SyntaxKind.AsyncKeyword))
+            {
+                return false;
+            }
+
+            // Get all return statements in the method
+            var returnStatements = method.DescendantNodes().OfType<ReturnStatementSyntax>();
+
+            // Check if there is exactly one return statement
+            if (returnStatements.Count() != 1)
+            {
+                return false;
+            }
+
+            // Check if the return statement contains an await expression
+            var returnStatement = returnStatements.First();
+            return returnStatement.Expression is AwaitExpressionSyntax;
+        }
+
+        private static MethodDeclarationSyntax WithoutAsyncAndAwait(this MethodDeclarationSyntax method)
+        {
+            // Find the 'async' keyword token
+            var asyncKeyword = method.Modifiers.First(modifier => modifier.IsKind(SyntaxKind.AsyncKeyword));
+
+            // Remove the 'async' keyword
+            var newModifiers = method.Modifiers.Remove(asyncKeyword);
+
+            // Replace the await expression with its operand in the return statement
+            var returnStatement = method.DescendantNodes().OfType<ReturnStatementSyntax>().First();
+            var newReturnStatement = returnStatement.WithExpression(((AwaitExpressionSyntax)returnStatement.Expression!).Expression);
+
+            // Replace the old return statement with the new one
+            var newBody = method.Body?.ReplaceNode(returnStatement, newReturnStatement);
+
+            // Return the new method declaration
+            return method.WithModifiers(newModifiers).WithBody(newBody);
+        }
+
         public static string ReorderClassesNoNamespace(string sourceCode, string rootName, out int classCount)
         {
             var tree = CSharpSyntaxTree.ParseText(sourceCode);
