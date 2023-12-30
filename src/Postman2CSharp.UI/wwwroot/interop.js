@@ -218,3 +218,15 @@ function scrollToSavedPosition(savedScrollPosition) {
 
     observer.observe(document, { childList: true, subtree: true });
 }
+
+function scrollToElement(elementId, extraScrollDistance) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    const scrollToPosition = element.getBoundingClientRect().top - extraScrollDistance;
+
+    window.scrollBy({
+        top: scrollToPosition,
+        behavior: 'smooth'
+    });
+}
