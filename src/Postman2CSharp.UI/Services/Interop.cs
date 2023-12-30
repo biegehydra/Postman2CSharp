@@ -38,7 +38,7 @@ namespace Postman2CSharp.UI.Services
             Snackbar? snackRef = null;
             if (invokeStateHasChanged != null)
             {
-                snackRef = _snackBar.Value?.Add($"Downloading {apiClient.Name} ApiClient...", Severity.Normal, x =>
+                snackRef = _snackBar.Value?.Add($"Downloading {apiClient.Name}...", Severity.Normal, x =>
                 {
                     x.VisibleStateDuration = 10000;
                 });
@@ -79,7 +79,7 @@ namespace Postman2CSharp.UI.Services
                 if (invokeStateHasChanged != null && snackRef != null)
                 {
                     _snackBar.Value?.Remove(snackRef);
-                    _snackBar.Value?.Add($"Downloaded {apiClient.Name} ApiClient!", Severity.Success, x =>
+                    _snackBar.Value?.Add($"Downloaded {apiClient.Name}!", Severity.Success, x =>
                     {
                         x.VisibleStateDuration = 5000;
                     });

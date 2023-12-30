@@ -195,6 +195,13 @@ namespace Postman2CSharp.Core.Utilities
                 return false;
             }
 
+            // Check if there is exactly one 'await' expression in the method
+            var awaitExpressions = method.DescendantNodes().OfType<AwaitExpressionSyntax>();
+            if (awaitExpressions.Count() != 1)
+            {
+                return false;
+            }
+
             // Check if the return statement contains an await expression
             var returnStatement = returnStatements.First();
             return returnStatement.Expression is AwaitExpressionSyntax;
