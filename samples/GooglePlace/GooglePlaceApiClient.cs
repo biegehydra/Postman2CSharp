@@ -25,12 +25,12 @@ namespace GooglePlace
         /// The Places API is a service that returns information about places using HTTP requests. Places are defined 
         /// within this API as establishments, geographic locations, or prominent points of interest.
         /// </summary>
-        public async Task<PlaceDetailsResponse> PlaceDetails(PlaceDetailsParameters queryParameters)
+        public Task<PlaceDetailsResponse> PlaceDetails(PlaceDetailsParameters queryParameters)
         {
             var parametersDict = queryParameters.ToDictionary();
             parametersDict.Add($"key", _apiKey);
             var queryString = QueryHelpers.AddQueryString($"details/json", parametersDict);
-            return await _httpClient.GetFromJsonAsync<PlaceDetailsResponse>(queryString);
+            return _httpClient.GetFromJsonAsync<PlaceDetailsResponse>(queryString);
         }
     
         /// <summary>
@@ -39,24 +39,24 @@ namespace GooglePlace
         /// non-string data such as a lat/lng coordinate or plus code generates an error.>Note: If you omit the 
         /// fields parameter from a Find Place request, only the place_id for the result will be returned.
         /// </summary>
-        public async Task<FindPlaceFromTextResponse> FindPlaceFromText(FindPlaceFromTextParameters queryParameters)
+        public Task<FindPlaceFromTextResponse> FindPlaceFromText(FindPlaceFromTextParameters queryParameters)
         {
             var parametersDict = queryParameters.ToDictionary();
             parametersDict.Add($"key", _apiKey);
             var queryString = QueryHelpers.AddQueryString($"findplacefromtext/json", parametersDict);
-            return await _httpClient.GetFromJsonAsync<FindPlaceFromTextResponse>(queryString);
+            return _httpClient.GetFromJsonAsync<FindPlaceFromTextResponse>(queryString);
         }
     
         /// <summary>
         /// A Nearby Search lets you search for places within a specified area. You can refine your search request 
         /// by supplying keywords or specifying the type of place you are searching for.
         /// </summary>
-        public async Task<NearbySearchResponse> NearbySearch(NearbySearchParameters queryParameters)
+        public Task<NearbySearchResponse> NearbySearch(NearbySearchParameters queryParameters)
         {
             var parametersDict = queryParameters.ToDictionary();
             parametersDict.Add($"key", _apiKey);
             var queryString = QueryHelpers.AddQueryString($"nearbysearch/json", parametersDict);
-            return await _httpClient.GetFromJsonAsync<NearbySearchResponse>(queryString);
+            return _httpClient.GetFromJsonAsync<NearbySearchResponse>(queryString);
         }
     
         /// <summary>
@@ -71,12 +71,12 @@ namespace GooglePlace
         /// The search response will include a list of places. You can send a Place Details request for more information 
         /// about any of the places in the response.
         /// </summary>
-        public async Task<TextSearchResponse> TextSearch(TextSearchParameters queryParameters)
+        public Task<TextSearchResponse> TextSearch(TextSearchParameters queryParameters)
         {
             var parametersDict = queryParameters.ToDictionary();
             parametersDict.Add($"key", _apiKey);
             var queryString = QueryHelpers.AddQueryString($"textsearch/json", parametersDict);
-            return await _httpClient.GetFromJsonAsync<TextSearchResponse>(queryString);
+            return _httpClient.GetFromJsonAsync<TextSearchResponse>(queryString);
         }
     
         /// <summary>
@@ -116,12 +116,12 @@ namespace GooglePlace
         /// Query Autocomplete service can match on both full words and substrings, applications can send queries 
         /// as the user types to provide on-the-fly predictions.
         /// </summary>
-        public async Task<QueryAutocompleteResponse> QueryAutocomplete(QueryAutocompleteParameters queryParameters)
+        public Task<QueryAutocompleteResponse> QueryAutocomplete(QueryAutocompleteParameters queryParameters)
         {
             var parametersDict = queryParameters.ToDictionary();
             parametersDict.Add($"key", _apiKey);
             var queryString = QueryHelpers.AddQueryString($"queryautocomplete/json", parametersDict);
-            return await _httpClient.GetFromJsonAsync<QueryAutocompleteResponse>(queryString);
+            return _httpClient.GetFromJsonAsync<QueryAutocompleteResponse>(queryString);
         }
     
         /// <summary>
@@ -139,12 +139,12 @@ namespace GooglePlace
         /// place. You can send a [Place Details](https://developers.google.com/maps/documentation/places/web-service/details#PlaceDetailsRequests) 
         /// request for more information about any of the places which are returned.
         /// </summary>
-        public async Task<QueryAutocompleteResponse> Autocomplete(AutocompleteParameters queryParameters)
+        public Task<QueryAutocompleteResponse> Autocomplete(AutocompleteParameters queryParameters)
         {
             var parametersDict = queryParameters.ToDictionary();
             parametersDict.Add($"key", _apiKey);
             var queryString = QueryHelpers.AddQueryString($"autocomplete/json", parametersDict);
-            return await _httpClient.GetFromJsonAsync<QueryAutocompleteResponse>(queryString);
+            return _httpClient.GetFromJsonAsync<QueryAutocompleteResponse>(queryString);
         }
     }
 }
