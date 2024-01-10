@@ -2,6 +2,7 @@
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
+using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 using Postman2CSharp.Core.Utilities;
 using System;
 using System.Collections.Generic;
@@ -255,28 +256,29 @@ public static class HttpCallSerializer
         HttpClientRequest(sb, call, false, requestHasQueryString, relativePath, hasUniqueHeaders, options);
 
         int i = 0;
-        foreach (var response in call.AllResponses)
+        foreach (var group in call.AllResponses.GroupBy(x => x.ClassName))
         {
-            var ifStatement = i == 0 ? "if" : "else if";
-            sb.AppendLine(indent + $"{ifStatement} (response.StatusCode == HttpStatusCode.{(HttpStatusCode) response.Code})");
+            if (group.Count() == 1)
+            {
+                sb.AppendLine(indent + $"if (response.StatusCode == HttpStatusCode.{(HttpStatusCode)group.First().Code})");
+            }
+            else
+            {
+                var statusCodes = string.Join(" or ", group.Select(x => $"HttpStatusCode.{(HttpStatusCode)x.Code}"));
+                sb.AppendLine(indent + $"if (response.StatusCode is {statusCodes})");
+            }
             sb.AppendLine(indent + "{");
             indent = Consts.Indent(intIndent + 1);
 
-            ReturnIfRequestDidNotReturnEarlier(sb, response, indent, options);
+            ReturnIfRequestDidNotReturnEarlier(sb, group.First(), indent, options);
 
             indent = Consts.Indent(intIndent);
             sb.AppendLine(indent + "}");
             i++;
         }
-        sb.AppendLine(indent + "else");
-        sb.AppendLine(indent + "{");
-        indent = Consts.Indent(intIndent + 1);
-        
+
         var errorMessage = $"throw new Exception($\"{call.Name}: Unexpected response. Status Code: {{response.StatusCode}}. Content: {{await response.Content.ReadAsStringAsync()}}\");";
         sb.ErrorHandlingStrategy(errorMessage, options.ErrorHandlingStrategy, indent);
-
-        indent = Consts.Indent(intIndent);
-        sb.AppendLine(indent + "}");
     }
 
     private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, ApiResponse? apiResponse, string indent, ApiClientOptions options)

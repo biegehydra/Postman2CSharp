@@ -53,26 +53,15 @@ namespace PaypalSubscriptions
             {
                 return await response.ReadJsonAsync<SubscriptionResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.BadRequest)
+            if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
                 return await response.ReadJsonAsync<BadRequestResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return await response.ReadJsonAsync<ErrorResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                return await response.ReadJsonAsync<BadRequestResponse>();
-            }
-            else if (response.StatusCode == HttpStatusCode.UnprocessableEntity)
-            {
-                return await response.ReadJsonAsync<BadRequestResponse>();
-            }
-            else
-            {
-                throw new Exception($"CreateSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
-            }
+            throw new Exception($"CreateSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
     
         /// <summary>
@@ -96,22 +85,15 @@ namespace PaypalSubscriptions
             {
                 return await response.ReadJsonAsync<SubscriptionResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.BadRequest)
+            if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound)
             {
                 return await response.ReadJsonAsync<BadRequestResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return await response.ReadJsonAsync<ErrorResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                return await response.ReadJsonAsync<BadRequestResponse>();
-            }
-            else
-            {
-                throw new Exception($"ShowSubscriptionDetails: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
-            }
+            throw new Exception($"ShowSubscriptionDetails: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
     
         /// <summary>
@@ -145,22 +127,15 @@ namespace PaypalSubscriptions
             {
                 return await response.Content.ReadAsStreamAsync();
             }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return await response.ReadJsonAsync<ErrorResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
+            if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
                 return await response.ReadJsonAsync<BadRequestResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.UnprocessableEntity)
-            {
-                return await response.ReadJsonAsync<BadRequestResponse>();
-            }
-            else
-            {
-                throw new Exception($"UpdateSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
-            }
+            throw new Exception($"UpdateSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
     
         /// <summary>
@@ -175,22 +150,15 @@ namespace PaypalSubscriptions
             {
                 return await response.ReadJsonAsync<RevisePlanOrQuantityOfSubscriptionOKResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return await response.ReadJsonAsync<ErrorResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
+            if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
                 return await response.ReadJsonAsync<BadRequestResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.UnprocessableEntity)
-            {
-                return await response.ReadJsonAsync<BadRequestResponse>();
-            }
-            else
-            {
-                throw new Exception($"RevisePlanOrQuantityOfSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
-            }
+            throw new Exception($"RevisePlanOrQuantityOfSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
     
         /// <summary>
@@ -212,22 +180,15 @@ namespace PaypalSubscriptions
             {
                 return await response.Content.ReadAsStreamAsync();
             }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return await response.ReadJsonAsync<ErrorResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
+            if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
                 return await response.ReadJsonAsync<BadRequestResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.UnprocessableEntity)
-            {
-                return await response.ReadJsonAsync<BadRequestResponse>();
-            }
-            else
-            {
-                throw new Exception($"SuspendSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
-            }
+            throw new Exception($"SuspendSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
     
         /// <summary>
@@ -240,22 +201,15 @@ namespace PaypalSubscriptions
             {
                 return await response.Content.ReadAsStreamAsync();
             }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return await response.ReadJsonAsync<ErrorResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
+            if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
                 return await response.ReadJsonAsync<BadRequestResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.UnprocessableEntity)
-            {
-                return await response.ReadJsonAsync<BadRequestResponse>();
-            }
-            else
-            {
-                throw new Exception($"ActivateSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
-            }
+            throw new Exception($"ActivateSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
     
         /// <summary>
@@ -268,22 +222,15 @@ namespace PaypalSubscriptions
             {
                 return await response.Content.ReadAsStreamAsync();
             }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return await response.ReadJsonAsync<ErrorResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
+            if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
                 return await response.ReadJsonAsync<BadRequestResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.UnprocessableEntity)
-            {
-                return await response.ReadJsonAsync<BadRequestResponse>();
-            }
-            else
-            {
-                throw new Exception($"CancelSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
-            }
+            throw new Exception($"CancelSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
     
         /// <summary>
@@ -305,22 +252,15 @@ namespace PaypalSubscriptions
             {
                 return await response.ReadJsonAsync<ErrorResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
+            if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
                 return await response.ReadJsonAsync<BadRequestResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.UnprocessableEntity)
-            {
-                return await response.ReadJsonAsync<BadRequestResponse>();
-            }
-            else if (response.StatusCode == HttpStatusCode.OK)
+            if (response.StatusCode == HttpStatusCode.OK)
             {
                 return await response.Content.ReadAsStreamAsync();
             }
-            else
-            {
-                throw new Exception($"CaptureAuthorizedPaymentOnSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
-            }
+            throw new Exception($"CaptureAuthorizedPaymentOnSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
     
         /// <summary>
@@ -344,22 +284,15 @@ namespace PaypalSubscriptions
             {
                 return await response.ReadJsonAsync<ListTransactionsForSubscriptionOKResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.BadRequest)
+            if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound)
             {
                 return await response.ReadJsonAsync<BadRequestResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return await response.ReadJsonAsync<ErrorResponse>();
             }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                return await response.ReadJsonAsync<BadRequestResponse>();
-            }
-            else
-            {
-                throw new Exception($"ListTransactionsForSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
-            }
+            throw new Exception($"ListTransactionsForSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
     }
 }
