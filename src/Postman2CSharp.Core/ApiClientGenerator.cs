@@ -20,6 +20,7 @@ using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Utilities;
 using System.Net;
 using System.Text.RegularExpressions;
+#pragma warning disable CS0162 // Unreachable code detected
 
 namespace Postman2CSharp.Core;
 
@@ -179,7 +180,7 @@ public class ApiClientGenerator
             normalizedNameSpace = Utils.NormalizeToCsharpPropertyName(commonBase);
         }
         var name = normalizedNameSpace + "ApiClient";
-        var leastPossibleUri = rootItem.FindLeastPossibleUri();
+        var leastPossibleUri = rootItem.FindLeastPossibleUri(variableUsages);
 
         ReplaceHttpSchemaIfInUrlAndVariableInsideOfUrl(variableUsages, leastPossibleUri);
 

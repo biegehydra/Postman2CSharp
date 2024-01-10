@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Postman2CSharp.Core.Infrastructure;
 
 namespace Postman2CSharp.Core.Utilities
@@ -87,7 +88,7 @@ namespace Postman2CSharp.Core.Utilities
             return uriData.All(uri => commonUserInfo == uri.UserInfo && uri.Authority == commonAuthority);
         }
 
-        public static string? FindLeastPossibleUri(this CollectionItem rootItem)
+        public static string? FindLeastPossibleUri(this CollectionItem rootItem, List<VariableUsage> variableUsages)
         {
             List<string?> uris = new();
             var requestItems = rootItem.RequestItems()?.ToList() ?? throw new UnreachableException();
@@ -98,8 +99,11 @@ namespace Postman2CSharp.Core.Utilities
                     uris.Add(requestItem.Request.Url.Raw);
                 }
             }
-            return FindLeastPossibleUri(uris);
+            return FindLeastPossibleUri(uris, variableUsages);
         }
+
+        private const string BracketsPattern = @"\{([^}]*)\}";
+        private static readonly Regex BracketsRegex = new Regex(BracketsPattern, RegexOptions.Compiled);
 
         /// <summary>
         /// Finds the least possible url from a list of urls with a common authority
@@ -108,7 +112,7 @@ namespace Postman2CSharp.Core.Utilities
         /// </summary>
         /// <param name="uris"></param>
         /// <returns></returns>
-        private static string? FindLeastPossibleUri(List<string?> uris)
+        private static string? FindLeastPossibleUri(List<string?> uris, List<VariableUsage> variableUsages)
         {
             if (uris.Count == 0)
             {
@@ -130,10 +134,27 @@ namespace Postman2CSharp.Core.Utilities
             {
                 var currentSegment = uriSegments[0][i];
                 var withBrackets = currentSegment.AddBackBrackets();
-                if (uriSegments.All(us => us.Length > i && us[i] == currentSegment) && !currentSegment.StartsWith(":") &&
-                    !(withBrackets.Contains('{') && withBrackets.Contains('}'))) // Don't want the least possible uri to include path variables.
+                if (uriSegments.All(us => us.Length > i && us[i] == currentSegment) && !currentSegment.StartsWith(":")) // Don't want the least possible uri to include path variables.
                 {
-                    leastPossibleUriSegments.Add(withBrackets);
+                    if (withBrackets.Count(x => x == '{') == 1 && withBrackets.Count(x => x == '}') == 1)
+                    {
+                        var match = BracketsRegex.Match(withBrackets);
+                        if (match is { Success: true, Groups.Count: > 1 }) // Checking if there is a match and a capturing group
+                        {
+                            var capturedValue = match.Groups[1].Value;
+                            if (variableUsages.Any(x =>
+                                    x.ApiClientUsage == CsharpPropertyType.Private &&
+                                    Utils.NormalizeToCsharpPropertyName(x.Original, CsharpPropertyType.Private) ==
+                                    capturedValue))
+                            {
+                                leastPossibleUriSegments.Add(withBrackets);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        leastPossibleUriSegments.Add(withBrackets);
+                    }
                 }
                 else
                 {

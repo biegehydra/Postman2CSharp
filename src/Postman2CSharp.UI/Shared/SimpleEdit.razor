@@ -14,7 +14,7 @@
 
 @code {
     private bool _editing;
-    private string _editingValue;
+    private string? _editingValue;
 
     [Parameter] public string CancelIcon { get; set; } = Icons.Cancel;
     [Parameter] public string ConfirmIcon { get; set; } = Icons.Check;
@@ -34,8 +34,8 @@
         }
     }
 
-    [Parameter, EditorRequired] public string InitialValue { get; set; } = null!;
-    [Parameter, EditorRequired] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter, EditorRequired] public string? InitialValue { get; set; } = null!;
+    [Parameter, EditorRequired] public EventCallback<string?> ValueChanged { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     private void StartEdit()
