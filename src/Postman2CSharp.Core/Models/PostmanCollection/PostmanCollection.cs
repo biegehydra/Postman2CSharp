@@ -61,6 +61,10 @@ namespace Postman2CSharp.Core.Models.PostmanCollection
             foreach (var rootCollection in rootCollections)
             {
                 rootCollection.Auth ??= Auth;
+                if (rootCollection.Request != null)
+                {
+                    rootCollection.Request.Auth ??= rootCollection.Auth;
+                }
                 rootCollection.CascadeAuth();
             }
         }

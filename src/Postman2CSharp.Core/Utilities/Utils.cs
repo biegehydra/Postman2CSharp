@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using Postman2CSharp.Core.Infrastructure;
-using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Request;
 using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 using Xamasoft.JsonClassGenerator.Models;
@@ -563,6 +561,20 @@ public static partial class Utils
         numberPart = int.Parse(match.Groups[2].Value);
 
         return true;
+    }
+
+    public static void DoForEach<T>(this IEnumerable<T> sequence, Action<T> action)
+    {
+        if (sequence == null)
+            throw new ArgumentNullException(nameof(sequence));
+
+        if (action == null)
+            throw new ArgumentNullException(nameof(action));
+
+        foreach (var element in sequence)
+        {
+            action(element);
+        }
     }
 
     [GeneratedRegex(@"(.*?)(\d+)$")]

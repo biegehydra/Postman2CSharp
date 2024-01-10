@@ -128,25 +128,25 @@ public static class HttpCallSerializer
         sb.AppendLine(indent + "}");
     }
 
-    private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool authHasHeader,
+    private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool constructorHasHeader,
         int intIndent, string relativePath, ApiClientOptions options)
     {
         if (call.AllResponses.Count == 0) throw new UnreachableException("No success responses found. Should never happen.");
         if (call.AllResponses.Count > 1 && options.HandleMultipleResponses)
         {
-            HttpCallMultipleResponseTypesBody(sb, auth, call, authHasHeader, intIndent, relativePath, options);
+            HttpCallMultipleResponseTypesBody(sb, auth, call, constructorHasHeader, intIndent, relativePath, options);
         }
         else
         {
-            HttpCallSingleResponseTypeBody(sb, auth, call, authHasHeader, intIndent, relativePath, options);
+            HttpCallSingleResponseTypeBody(sb, auth, call, constructorHasHeader, intIndent, relativePath, options);
         }
     }
 
     private static void HttpCallSingleResponseTypeBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
-        bool authHasHeader, int intIndent, string relativePath, ApiClientOptions options)
+        bool constructorHasHeader, int intIndent, string relativePath, ApiClientOptions options)
     {
         var indent = Consts.Indent(intIndent);
-        if (authHasHeader)
+        if (!constructorHasHeader)
         {
             sb.SetAuthenticationHeader(call.Request.Auth, indent);
         }
@@ -204,10 +204,10 @@ public static class HttpCallSerializer
     }
 
     private static void HttpCallMultipleResponseTypesBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
-        bool authHasHeader, int intIndent, string relativePath, ApiClientOptions options)
+        bool constructorHasHeader, int intIndent, string relativePath, ApiClientOptions options)
     {
         var indent = Consts.Indent(intIndent);
-        if (authHasHeader)
+        if (!constructorHasHeader)
         {
             sb.SetAuthenticationHeader(call.Request.Auth, indent);
         }
@@ -414,11 +414,11 @@ public static class HttpCallSerializer
             requestHasQueryString = true;
         }
 
-        if (auth?.TryGetApiKeyConfig(ApiKeyConfig.In, out var value) ?? false)
+        if (auth?.EnumType() == PostmanAuthType.apikey)
         {
-            if (Enum.TryParse<In>(value, true, out var enumValue))
+            if (auth.TryGetApiKeyConfig(ApiKeyConfig.In, out var value))
             {
-                if (enumValue == In.Query)
+                if (Enum.TryParse<In>(value, true, out var enumValue) && enumValue == In.Query)
                 {
                     var keyValue = auth.TryGetApiKeyConfig(ApiKeyConfig.Key, out var key) ? key : "api_key";
                     if (requestHasQueryString)
@@ -430,6 +430,19 @@ public static class HttpCallSerializer
                         sb.AppendLine(indent + $@"var parametersDict = new Dictionary<string, string>() {{ {{ ""{keyValue}"", {Consts._apiKey} }} }};");
                         requestHasQueryString = true;
                     }
+                }
+            }
+            else
+            {
+                var keyValue = auth.TryGetApiKeyConfig(ApiKeyConfig.Key, out var key) ? key : "api_key";
+                if (requestHasQueryString)
+                {
+                    sb.AppendLine(indent + $@"parametersDict.Add($""{keyValue}"", {Consts._apiKey});");
+                }
+                else
+                {
+                    sb.AppendLine(indent + $@"var parametersDict = new Dictionary<string, string>() {{ {{ ""{keyValue}"", {Consts._apiKey} }} }};");
+                    requestHasQueryString = true;
                 }
             }
         }

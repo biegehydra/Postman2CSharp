@@ -69,7 +69,7 @@ public static class ApiClientSerializer
         SyntaxTree tree = CSharpSyntaxTree.ParseText(str);
         var root = tree.GetRoot();
         var newRoot = CodeAnalysisUtils.CarefullyRemoveAsyncAwait(root);
-        return newRoot.NormalizeWhitespace().ToFullString();
+        return newRoot.ToFullString();
     }
 
     private static void ApiClientConstructor(StringBuilder sb, List<Header> commonHeaders, List<AuthSettings> uniqueAuths, string apiClientName, 
@@ -433,29 +433,6 @@ public static class ApiClientSerializer
         sb.AppendLine();
 
         sb.ErrorHandlingSinks(options.ErrorHandlingSinks, LogLevel.Information, indent, $"{apiClientName}: Operation failed. Retrying... Retry Attempt: {{i + 1}}, Allowed Retries: {{retryCount}}. Source - Member Name: {{callerMemberName}}, File Path: {{sourceFilePath}}, Line Number: {{sourceLineNumber}}");
-        sb.AppendLine();
-
-        sb.AppendLine(indent + "_httpClient = new HttpClient()");
-        sb.AppendLine(indent + "{");
-        indent = Consts.Indent(intIndent + 4);
-        sb.AppendLine(indent + $"BaseAddress = new Uri($\"{baseUrl}\")");
-        indent = Consts.Indent(intIndent + 3);
-        sb.AppendLine(indent + "};");
-
-        var importantHeaders = commonHeaders.Where(Header.IsImportant).ToList();
-        if (importantHeaders.Count > 0)
-        {
-            sb.AppendLine();
-        }
-
-        foreach (var header in importantHeaders)
-        {
-            sb.AddDefaultRequestHeader(indent, $"$\"{header.Key}\"", $"$\"{header.Value}\"");
-            if (addAuthToHeader && uniqueAuths.FirstOrDefault() is { } auth)
-            {
-                sb.SetAuthenticationHeader(auth, indent);
-            }
-        }
 
         indent = Consts.Indent(intIndent + 2);
         sb.AppendLine(indent + "}");
