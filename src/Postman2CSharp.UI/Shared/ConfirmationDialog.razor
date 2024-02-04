@@ -1,0 +1,44 @@
+﻿<style>
+    .mud-dialog-title > h6 {
+        margin-right: 35px;
+    }
+</style>
+<MudDialog>
+    <DialogContent>
+        <MudText Class="@ContentClass">@ContentText</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="@CancelColor" StartIcon="@CancelIcon" Variant="@CancelVariant">@CancelText</MudButton>
+        <MudButton Color="@ConfirmColor" StartIcon="@ConfirmIcon" Variant="@ConfirmVariant" OnClick="Submit">@ConfirmText</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    private string ContentClass => ContentText != null ? "ma-4" : "mb-4";
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter] public string? ContentText { get; set; } 
+
+    [Parameter] public string ConfirmText { get; set; } = null!;
+
+    [Parameter] public Color ConfirmColor { get; set; }
+
+    [Parameter] public string? ConfirmIcon { get; set; }
+
+    [Parameter] public string CancelText { get; set; } = "Cancel";
+
+    [Parameter] public Color CancelColor { get; set; } = Color.Default;
+
+    [Parameter] public string? CancelIcon { get; set; }
+
+    [Parameter] public Variant CancelVariant { get; set; } = Variant.Outlined;
+
+    [Parameter] public Variant ConfirmVariant { get; set; } = Variant.Filled;
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel()
+    {
+        MudDialog.Close(DialogResult.Ok(false));
+    }
+
+}

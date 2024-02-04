@@ -3,16 +3,13 @@
 @if (ApiClientGroups != null)
 {
     <MudTreeView T="string" Class="collection-tree-root" Hover ExpandOnClick>
-     @{
-            ApiClientTreeViewGuidDict = new();
-     }
      <CascadingValue Value="this">
          @foreach (var group in ApiClientGroups)
          {
              <div class="f-column">
                  @foreach (var apiClient in group)
                  {
-                     <ApiClientTreeItem @ref="ApiClientTreeViewGuidDict[apiClient.Id]" ApiClient="apiClient" ApiCollection="ApiCollection"/>
+                     <ApiClientTreeItem ApiClient="apiClient" ApiCollection="ApiCollection"/>
                  }
              </div>
          }
@@ -24,8 +21,6 @@
 
     [Parameter]
     public ApiCollection? ApiCollection { get; set; }
-
-    public Dictionary<string, ApiClientTreeItem> ApiClientTreeViewGuidDict { get; set; } = new();
 
     private List<List<ApiClient>>? ApiClientGroups { get; set; }
 
@@ -40,57 +35,6 @@
         ApiClientGroups = GroupEqually(ApiCollection?.ApiClients ?? new(), 3);
         _shouldRender = true;
         _cachedApiCollection = ApiCollection;
-    }
-
-    public string? NextApiClientWithDefaultNameSpaceId(ApiClient lastEditedApiClient)
-    {
-        var apiClients = ApiCollection?.ApiClients;
-        if (apiClients is not {Count: > 0}) return null;
-
-        var lastEditedIndex = ApiCollection?.ApiClients.FindIndex(x => x.Id == lastEditedApiClient.Id) ?? -1;
-        if (lastEditedIndex < 0) return null;
-        if (FindApiClientAfter() is {} nextApiClient)
-        {
-            _shouldRender = false;
-            return nextApiClient.Id;
-        }
-        else if (FindApiClientBefore() is { } beforeApiClient)
-        {
-            _shouldRender = false;
-            return beforeApiClient.Id;
-        }
-        return null;
-        ApiClient? FindApiClientAfter()
-        {
-            return apiClients!.Skip(lastEditedIndex).FirstOrDefault(x => x.NameSpace == Consts.Postman2CSharp);
-        }
-        ApiClient? FindApiClientBefore()
-        {
-            for (var i = lastEditedIndex - 1; i >= 0; i--)
-            {
-                if (apiClients![i].NameSpace == Consts.Postman2CSharp)
-                {
-                    return apiClients[i];
-                }
-            }
-            return null;
-        }
-    }
-
-    public async Task StartEditingNextApiClientNameSpace(string nextApiClientId)
-    {
-        try
-        {
-            _shouldRender = true;
-            await ApiClientTreeViewGuidDict[nextApiClientId].BeginEditingApiClientNamespace(true);
-            SnackBar.Value?.Add("Began editing next namespace with default value.");
-        }
-        catch (Exception ex)
-        {
-            #if DEBUG
-            Console.WriteLine(ex);
-            #endif
-        }
     }
 
     private bool _shouldRender = true;

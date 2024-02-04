@@ -55,7 +55,7 @@ public class ApiClient
 
     public string Id { get; init; } = Guid.NewGuid().ToString();
     public required string NameSpace { get; set; }
-    public required string Name { get; set; }
+    public string Name => NameSpace + "ApiClient";
     public required string? Description { get; set; }
     public string InterfaceName => $"I{Name}";
     public string TestClassName => $"{Name}Tests";
@@ -105,12 +105,11 @@ public class ApiClient
     }
 
     [SetsRequiredMembers]
-    public ApiClient(string name, string? description, string nameSpace, string? baseUrl, List<HttpCall> httpCalls,
+    public ApiClient(string? description, string nameSpace, string? baseUrl, List<HttpCall> httpCalls,
         List<Header> commonHeaders, AuthSettings? collectionAuth, List<VariableUsage> variableUsages, ApiClientOptions options, 
         int totalClassesGenerated, List<DuplicateRoot> duplicateRoots)
 #pragma warning restore CS8618
     {
-        Name = name;
         Description = description;
         NameSpace = nameSpace;
         BaseUrl = baseUrl;

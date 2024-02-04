@@ -15,12 +15,12 @@
     <div class="info-container" >
         <div class="f-row-column" style="gap: 20px; justify-content: space-between;">
             <div>
-                <ApiClientDetails ApiClient="SelectedApiClient"></ApiClientDetails>
+                <ApiClientDetails NamespaceChanged="StateHasChanged" ApiClient="SelectedApiClient"></ApiClientDetails>
             </div>
             <MudGrid Spacing="3" Class="api-client-grid">
                 <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
                     <p>Download ApiClient Project</p>
-                    <MudIconButton Size="Size.Medium" OnClick="() => Interop.Value.DownloadApiClient(SelectedApiClient, () => InvokeAsync(StateHasChanged))" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+                    <MudIconButton Size="Size.Medium" OnClick="DownloadApiClient" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
                 </MudItem>
                 <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
                     <p>Download Test Class</p>
@@ -141,8 +141,49 @@
 @code {
     [Parameter] public string? CollectionId { get; set; }
     [Parameter] public ApiClient? SelectedApiClient { get; set; }
+    [Inject] private IDialogService? DialogService { get; set; }
 
     private bool ShowConfigurations { get; set; }
+
+    private async Task DownloadApiClient()
+    {
+        if (SelectedApiClient == null) return;
+        if (DialogService == null || CollectionId == null)
+        {
+            await Interop.Value.DownloadApiClient(SelectedApiClient, () => InvokeAsync(StateHasChanged));
+            return;
+        }
+        var unresolvedDuplicateRootsCount = SelectedApiClient.DuplicateRoots.Count(x => x.Resolved == false);
+        if (unresolvedDuplicateRootsCount > 0)
+        {
+            var dialogParameters = new DialogParameters<ConfirmationDialog>
+            {
+                {x => x.ContentText, $"There are still {unresolvedDuplicateRootsCount} unresolved duplicate roots. Would you like to resolve them before downloading?"},
+                {x => x.ConfirmColor, Color.Info},
+                {x => x.CancelColor, Color.Warning},
+                {x => x.ConfirmText, "Resolve Duplicate"},
+                {x => x.CancelText, "Download Anyway"},
+                {x => x.ConfirmIcon, Icons.AutoFixHigh },
+                {x => x.CancelIcon, Icons.Warning },
+            };
+            var dialogReference = await DialogService.ShowAsync<ConfirmationDialog>("Unresolved Duplicate Roots", dialogParameters, new DialogOptions()
+            {
+                Position = DialogPosition.Center
+            });
+            var result = await dialogReference.Result;
+            if (result.Data is bool val)
+            {
+                if (val)
+                {
+                    await TabsService.Value.AddApiClientDuplicateRootsTab(CollectionId, SelectedApiClient.Id);
+                }
+                else
+                {
+                    await Interop.Value.DownloadApiClient(SelectedApiClient, () => InvokeAsync(StateHasChanged));
+                }
+            }
+        }
+    }
 
     private void SelectedErrorHandlingSinksChanged(IEnumerable<string> errorHandlingSinks)
     {

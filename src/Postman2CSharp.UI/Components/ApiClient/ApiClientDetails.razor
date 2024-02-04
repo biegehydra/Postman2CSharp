@@ -1,6 +1,26 @@
 ﻿@if (ApiClient != null)
 {
-    <MudText Typo="Typo.h1">@ApiClient.Name</MudText>
+    <div class="f-row gap-3 align-items-baseline" >
+        @if (_showEdit)
+        {
+            <div @onclick:stopPropagation="true" @onclick:preventDefault="true" class="mud-treeview-item-content cursor-pointer">
+                <MudTooltip Text="The name you give here will determine the namespace, apiclient name, and interface name.">
+                    <div @onfocus:stopPropagation="true" @onfocus:preventDefault="true" @onfocusin:stopPropagation="true" @onfocusin:preventDefault="true"  >
+                        <MudTextField @bind-Value="@_newApiClientNamespace" OnKeyUp="OnEditingApiClientNamespaceKeyUp" OnClearButtonClick="() => _newApiClientNamespace = null" AutoFocus Clearable Label="New Namespace" HelperText="Press enter to confirm" />
+                    </div>
+                </MudTooltip>
+                <MudIconButton Icon="@Icons.Cancel" Class="ml-0 mr-2" Size="Size.Large" OnClick="CancelEditingApiClientNamespace" Color="@Color.Default" />
+                <MudIconButton Icon="@Icons.Check" Disabled="string.IsNullOrWhiteSpace(_newApiClientNamespace)" Class="ml-0 mr-2" Size="Size.Large" OnClick="ConfirmApiClientNamespace" Color="@Color.Default"/>
+            </div>
+        }
+        else
+        {
+            <MudText Typo="Typo.h1">@ApiClient.Name</MudText>
+            <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                <MudIconButton Icon="@Icons.Edit" Class="ml-0 mr-2" OnClick="() => BeginEditingApiClientNamespace()" Size="Size.Large" Color="@Color.Default" />
+            </div>
+        }
+    </div>
     <br />
     <Detail Key="Id" Value="@ApiClient.Id" FontSize="FontSize.Larger"></Detail>
     <Detail Key="Base Url" Value="@(ApiClient.BaseUrl ?? "None")" FontSize="FontSize.Larger"></Detail>
@@ -37,6 +57,53 @@
 {
     private bool _verbose { get; set; }
 
-    [Parameter]
-    public ApiClient? ApiClient { get; set; }
+    [Parameter] public ApiClient? ApiClient { get; set; }
+    [Inject] public Interop Interop { get; set; } = null!;
+    [Inject] public ISnackbar? Snackbar { get; set; }
+    [Parameter] public EventCallback NamespaceChanged { get; set; }
+
+    private bool _showEdit;
+
+    private string? _newApiClientNamespace = null;
+    public void BeginEditingApiClientNamespace()
+    {
+        if (_newApiClientNamespace != null || ApiClient == null) return;
+        _newApiClientNamespace = ApiClient.NameSpace;
+        _showEdit = true;
+        StateHasChanged();
+    }
+
+    private Task OnEditingApiClientNamespaceKeyUp(KeyboardEventArgs obj)
+    {
+        if (obj.Code == "Enter")
+        {
+            return ConfirmApiClientNamespace();
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task ConfirmApiClientNamespace()
+    {
+        if (ApiClient == null) return Task.CompletedTask;
+        if (ApiClient.NameSpace == _newApiClientNamespace) return Task.CompletedTask;
+        if (string.IsNullOrWhiteSpace(_newApiClientNamespace))
+        {
+            Snackbar?.Add("Cannot set namespace to empty.", Severity.Warning);
+            return Task.CompletedTask;
+        }
+        var oldNamespace = ApiClient.NameSpace;
+        ApiClient.NameSpace = Utils.NormalizeToCsharpPropertyName(_newApiClientNamespace);
+        ApiClient.GenerateSourceCode();
+        ApiClient.FixNamespaces(oldNamespace, _newApiClientNamespace);
+        _showEdit = false;
+        _newApiClientNamespace = null;
+        return NamespaceChanged.InvokeAsync();
+    }
+
+    private void CancelEditingApiClientNamespace()
+    {
+        if (ApiClient == null) return;
+        _showEdit = false;
+        _newApiClientNamespace = null;
+    }
 }

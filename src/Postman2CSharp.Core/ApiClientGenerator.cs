@@ -188,7 +188,7 @@ public class ApiClientGenerator
         var uniqueNamesList = new List<string>() { normalizedNameSpace, name };
         var (httpCalls, totalClassesGeneratedFromHttpCalls, duplicateRoots) = await GetHttpCalls(rootItem, commonHeaders, normalizedNameSpace, uniqueNamesList);
 
-        var apiClient = new ApiClient(name, rootItem.Description, normalizedNameSpace, leastPossibleUri, httpCalls, commonHeaders, rootItem.Auth, variableUsages,
+        var apiClient = new ApiClient(rootItem.Description, normalizedNameSpace, leastPossibleUri, httpCalls, commonHeaders, rootItem.Auth, variableUsages,
             Options.ApiClientOptions, totalClassesGeneratedFromHttpCalls + 1, duplicateRoots);
         return apiClient;
     }

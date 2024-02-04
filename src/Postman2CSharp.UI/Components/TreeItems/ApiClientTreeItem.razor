@@ -1,5 +1,5 @@
 ﻿@inherits MainLayoutComponent
-@implements IDisposable
+
 @if (ApiClient != null && UserAttributes != null && ApiCollection != null)
 {
     <MudTreeViewItem UserAttributes="UserAttributes" Class="file-tree-item" Value="@ApiClient.NameSpace" @bind-Expanded="Expanded" >
@@ -11,11 +11,11 @@
                 <div @onclick:stopPropagation="true" @onclick:preventDefault="true" class="mud-treeview-item-content cursor-pointer">
                     <MudTooltip Text="The name you give here will determine the namespace, apiclient name, and interface name.">
                         <div @onfocus:stopPropagation="true" @onfocus:preventDefault="true" @onfocusin:stopPropagation="true" @onfocusin:preventDefault="true"  >
-                            <MudTextField Style="margin-top: 0; z-index: 10;" @bind-Value="@ApiClient.NameSpace" OnKeyUp="OnEditingApiClientNamespaceKeyUp" AutoFocus Clearable Label="ApiClient name" HelperText="Press enter to confirm"/>
+                            <MudTextField Style="margin-top: 0; z-index: 10;" @bind-Value="@_newApiClientName" OnKeyUp="OnEditingApiClientNamespaceKeyUp" AutoFocus Clearable Label="ApiClient name" OnClearButtonClick="() => _newApiClientName = null" HelperText="Press enter to confirm"/>
                         </div>
                     </MudTooltip>
                     <MudIconButton Icon="@Icons.Cancel" Class="ml-0 mr-2" OnClick="CancelEditingApiClientNamespace" Color="@Color.Default"/>
-                    <MudIconButton Icon="@Icons.Check" Class="ml-0 mr-2" OnClick="ConfirmApiClientNamespace" Color="@Color.Default"/>
+                    <MudIconButton Icon="@Icons.Check" Disabled="string.IsNullOrWhiteSpace(_newApiClientName)" Class="ml-0 mr-2" OnClick="ConfirmApiClientNamespace" Color="@Color.Default"/>
                 </div>
             }
             else
@@ -98,12 +98,12 @@
     }
 
     private bool _expandedAtStartEdit;
-    private string? _cachedApiClientNamespace = null;
+    private string? _newApiClientName = null;
     public async Task BeginEditingApiClientNamespace(bool scroll = false)
     {
-        if (_cachedApiClientNamespace != null || ApiClient == null) return;
+        if (_newApiClientName != null || ApiClient == null) return;
         _expandedAtStartEdit = Expanded;
-        _cachedApiClientNamespace = ApiClient.NameSpace;
+        _newApiClientName = ApiClient.NameSpace;
         ShowEdit = true;
 
         if (scroll)
@@ -111,10 +111,10 @@
             await Interop.Value.ScrollToSection(_guid, 900);
             await Task.Delay(100);
         }
-        if (_cachedApiClientNamespace == Consts.Postman2CSharp)
+        if (_newApiClientName == Consts.Postman2CSharp)
         {
             Expanded = true;
-            ApiClient.NameSpace = string.Empty;
+            _newApiClientName = "";
         }
         StateHasChanged();
     }
@@ -127,69 +127,53 @@
         }
     }
 
-    private async Task ConfirmApiClientNamespace()
+    private Task ConfirmApiClientNamespace()
     {
-        if (ApiClient!.NameSpace == Consts.Postman2CSharp)
+        if (ApiClient == null) return Task.CompletedTask;
+        if (_newApiClientName == Consts.Postman2CSharp)
         {
             ShowEdit = false;
-            _cachedApiClientNamespace = null;
-            return;
+            _newApiClientName = null;
+            return Task.CompletedTask;
         }
-        if (WarnWhenCachedNamespaceIsEmpty()) return;
-        if (string.IsNullOrWhiteSpace(ApiClient.NameSpace))
+        if (string.IsNullOrWhiteSpace(_newApiClientName))
         {
-            SnackBar.Value?.Add("Namespace cannot be empty.", Severity.Warning);
-            return;
+            SnackBar.Value?.Add("Something went wrong. Cached namespace was empty.", Severity.Warning);
+            return Task.CompletedTask;
         }
-        ApiClient.NameSpace = Utils.NormalizeToCsharpPropertyName(ApiClient.NameSpace);
-        ApiClient.Name = ApiClient.NameSpace + "ApiClient";
+
+        var oldNamespace = ApiClient.NameSpace;
+        ApiClient.NameSpace = Utils.NormalizeToCsharpPropertyName(_newApiClientName);
         ApiClient.GenerateSourceCode();
-        ApiClient.FixNamespaces(_cachedApiClientNamespace!, ApiClient.NameSpace);
+        ApiClient.FixNamespaces(oldNamespace, _newApiClientName);
         ShowEdit = false;
 
-        if (_cachedApiClientNamespace == Consts.Postman2CSharp && CollectionTreeItem.NextApiClientWithDefaultNameSpaceId(ApiClient) is { } nextApiClientId)
-        {
-            Expanded = false;
-            StateHasChanged();
-            await Task.Delay(100);
-            await CollectionTreeItem.StartEditingNextApiClientNameSpace(nextApiClientId);
-        }
-
-        _cachedApiClientNamespace = null;
+        _newApiClientName = null;
+        return InvokeAsync(StateHasChanged);
     }
 
     private void CancelEditingApiClientNamespace()
     {
-        if (WarnWhenCachedNamespaceIsEmpty()) return;
-        if (_cachedApiClientNamespace == Consts.Postman2CSharp && !_expandedAtStartEdit)
+        if (_newApiClientName == Consts.Postman2CSharp && !_expandedAtStartEdit)
         {
             Expanded = false;
         }
-        ApiClient!.NameSpace = _cachedApiClientNamespace!;
         ShowEdit = false;
-        _cachedApiClientNamespace = null;
-    }
-
-    private bool WarnWhenCachedNamespaceIsEmpty()
-    {
-        if (string.IsNullOrWhiteSpace(_cachedApiClientNamespace))
-        {
-            SnackBar.Value?.Add("Something went wrong. Cached namespace was empty.", Severity.Warning);
-            return true;
-        }
-        return false;
+        _newApiClientName = null;
     }
 
     private string? _cachedApiCollectionId;
     private string? _cachedApiClientId;
     private bool _cachedExpanded;
     private bool _cachedShowEdit;
+    private string? _cachedNewApiClientName;
 
     private bool _shouldRender;
     protected override bool ShouldRender()
     {
         _shouldRender = Expanded != _cachedExpanded || 
                         ShowEdit != _cachedShowEdit ||
+                        _newApiClientName != _cachedNewApiClientName ||
                         ApiCollection?.Id != _cachedApiCollectionId || 
                         ApiClient?.Id != _cachedApiClientId;
         if (_shouldRender)
@@ -205,14 +189,6 @@
         _cachedShowEdit = ShowEdit;
         _cachedApiCollectionId = ApiCollection!.Id;
         _cachedApiClientId = ApiClient!.Id!;
+        _cachedNewApiClientName = _newApiClientName;
     }
-
-    public void Dispose()
-    {
-        if (ApiClient != null)
-        {
-            CollectionTreeItem.ApiClientTreeViewGuidDict.Remove(ApiClient.Id);
-        }
-    }
-
 }
