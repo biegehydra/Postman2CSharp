@@ -230,3 +230,28 @@ function scrollToElement(elementId, extraScrollDistance) {
         behavior: 'smooth'
     });
 }
+
+// JavaScript function to get the scroll position
+function getScrollPositionTop(elementId) {
+    var element = document.getElementById(elementId);
+    if (element) {
+        return element.scrollTop;
+    }
+    return 0;
+}
+function getScrollPositionLeft(elementId) {
+    var element = document.getElementById(elementId);
+    if (element) {
+        return element.scrollLeft;
+    }
+    return 0;
+}
+
+// JavaScript function to set the scroll position
+function setScrollPosition(elementId, scrollTop, scrollLeft) {
+    var element = document.getElementById(elementId);
+    if (element) {
+        element.scrollTop = scrollTop;
+        element.scrollLeft = scrollLeft;
+    }
+}

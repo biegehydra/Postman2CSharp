@@ -2,7 +2,7 @@
     ::-webkit-scrollbar-corner {
         background: transparent;
     }
-    .container-@Id {
+    .container-@_id {
         @if (DisplayType == CodeBlockDisplayType.Contents)
         {
             @:display: contents;
@@ -10,7 +10,7 @@
     }
     @if (DisplayType == CodeBlockDisplayType.Scroll)
     {
-        @:.container-@Id .code-toolbar { 
+        @:.container-@_id .code-toolbar { 
         @:display: inline-grid;
         @:width: @MaxWidth;
     }
@@ -18,9 +18,9 @@
 </style>
 @if(DisplayType == CodeBlockDisplayType.Normal)
 {
-    <div class="container-@Id">
-        <pre @key="@Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
-                <code @key="@Value" id="@(Id + "code")" class="@CodeClass()">
+    <div class="container-@_id">
+        <pre @key="@Value" id="@_id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+                <code @key="@Value" id="@(_id + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {
                         @Value
@@ -32,9 +32,9 @@
 else if (DisplayType == CodeBlockDisplayType.Contents)
 {
     <div style="position: relative; display: grid; width: 100%;">
-        <div class="container-@Id">
-            <pre @key="@Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
-                <code @key="@Value" id="@(Id + "code")" class="@CodeClass()">
+        <div class="container-@_id">
+            <pre @key="@Value" id="@_id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+                <code @key="@Value" id="@(_id + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {
                         @Value
@@ -46,9 +46,9 @@ else if (DisplayType == CodeBlockDisplayType.Contents)
 }
 else if(DisplayType == CodeBlockDisplayType.Scroll)
 {
-    <div class="container-@Id">
-        <pre @key="@Value" id="@Id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
-                <code @key="@Value" id="@(Id + "code")" class="@CodeClass()">
+    <div class="container-@_id">
+        <pre @key="@Value" id="@_id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+                <code @key="@Value" id="@(_id + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {
                         @Value
@@ -83,16 +83,21 @@ else if(DisplayType == CodeBlockDisplayType.Scroll)
         set
         {
             if (_value == value) return;
+            SaveScrollPosition();
             _value = value;
-            Id = Guid.NewGuid().ToString();
             StateHasChanged();
             
         }
     }
 
+    private void SaveScrollPosition()
+    {
+        _scrollPosition = Interop.GetScrollPosition(_id);
+    }
+
     [Inject] private Interop Interop { get; set; } = default!;
 
-    private string Id = Guid.NewGuid().ToString();
+    private string _id = Guid.NewGuid().ToString();
 
     private string DataUrl()
     {
@@ -139,6 +144,7 @@ else if(DisplayType == CodeBlockDisplayType.Scroll)
         };
     }
 
+    private ScrollPosition? _scrollPosition;
     private string? _cachedValue;
     protected override bool ShouldRender()
     {
@@ -148,6 +154,15 @@ else if(DisplayType == CodeBlockDisplayType.Scroll)
             return true;
         }
         return false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_scrollPosition != null)
+        {
+            await Task.Delay(10);
+            await Interop.SetScrollPosition(_id, _scrollPosition);
+        }
     }
 
     [Parameter]

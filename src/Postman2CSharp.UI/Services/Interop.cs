@@ -1,11 +1,11 @@
-﻿using Microsoft.JSInterop;
+﻿using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.JSInterop;
 using MudBlazor;
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Utilities;
 using Postman2CSharp.UI.Components;
 using Postman2CSharp.UI.Models;
 using Postman2CSharp.UI.Shared;
-using static MudBlazor.CategoryTypes;
 
 namespace Postman2CSharp.UI.Services
 {
@@ -15,13 +15,15 @@ namespace Postman2CSharp.UI.Services
         private readonly AnalyticsInterop _analytics;
         private readonly IJSRuntime _jsRuntime;
         private readonly Lazy<ISnackbar?> _snackBar;
+        private readonly IWebAssemblyHostEnvironment _hostEnv;
 
-        public Interop(IJSRuntime jsRuntime, Lazy<ISnackbar?> snackBar, AnalyticsInterop analytics, AppState appState)
+        public Interop(IJSRuntime jsRuntime, Lazy<ISnackbar?> snackBar, AnalyticsInterop analytics, AppState appState, IWebAssemblyHostEnvironment hostEnv)
         {
             _jsRuntime = jsRuntime;
             _snackBar = snackBar;
             _analytics = analytics;
             _appState = appState;
+            _hostEnv = hostEnv;
         }
 
         public async Task DownloadFile(string fileName, string fileContent, string fileExtension = ".cs")
@@ -148,9 +150,9 @@ namespace Postman2CSharp.UI.Services
             }
         }
 
-        public async Task ScrollToSection(string elementId, int scrollDuration)
+        public ValueTask ScrollToSection(string elementId, int scrollDuration)
         {
-            await _jsRuntime.InvokeVoidAsync("scrollToSection", elementId, scrollDuration);
+            return _jsRuntime.InvokeVoidAsync("scrollToSection", elementId, scrollDuration);
         }
 
         public async Task LoadFile(string filePathAndName)
@@ -163,69 +165,102 @@ namespace Postman2CSharp.UI.Services
             await _jsRuntime.InvokeVoidAsync("loadStyle", stylePath);
         }
 
-        public async Task FixFaviconViewBox(string? guid = null)
+        public ValueTask FixFaviconViewBox(string? guid = null)
         {
-            await _jsRuntime.InvokeVoidAsync("setFaviconViewBox", guid);
+            return _jsRuntime.InvokeVoidAsync("setFaviconViewBox", guid);
         }
 
-        public async Task ApplyMarkdown(string elementId, string markdownText)
+        public ValueTask ApplyMarkdown(string elementId, string markdownText)
         {
-            await _jsRuntime.InvokeVoidAsync("applyMarkdown", elementId, markdownText);
+            return _jsRuntime.InvokeVoidAsync("applyMarkdown", elementId, markdownText);
         }
 
-        public async Task EmptyElement(string elementId)
+        public ValueTask EmptyElement(string elementId)
         {
-            await _jsRuntime.InvokeVoidAsync("emptyElement", elementId);
+            return _jsRuntime.InvokeVoidAsync("emptyElement", elementId);
         }
 
-        public async Task SplitVertical(string id1, string id2)
+        public ValueTask SplitVertical(string id1, string id2)
         {
-            await _jsRuntime.InvokeVoidAsync("splitVertical", id1, id2);
+            return _jsRuntime.InvokeVoidAsync("splitVertical", id1, id2);
         }
 
-        public async Task SetupPrismObserver()
+        public ValueTask SetupPrismObserver()
         {
-            await _jsRuntime.InvokeVoidAsync("setupPrismObserver");
+            return _jsRuntime.InvokeVoidAsync("setupPrismObserver");
         }
 
-        public async Task RemovePrismObserver()
+        public ValueTask RemovePrismObserver()
         {
-            await _jsRuntime.InvokeVoidAsync("removePrismObserver");
+            return _jsRuntime.InvokeVoidAsync("removePrismObserver");
         }
 
-        public async Task ClearLocalStorage()
+        public ValueTask ClearLocalStorage()
         {
-            await _jsRuntime.InvokeVoidAsync("clearLocalStorage");
+            return _jsRuntime.InvokeVoidAsync("clearLocalStorage");
         }
 
-        public async Task<T> GetFromStorage<T>(string name)
+        public ValueTask<T> GetFromStorage<T>(string name)
         {
-            return await _jsRuntime.InvokeAsync<T>("getLocalStorage", name);
+            return _jsRuntime.InvokeAsync<T>("getLocalStorage", name);
         }
 
-        public async Task SetLocalStorage<T>(string name, T obj)
+        public ValueTask SetLocalStorage<T>(string name, T obj)
         {
-            await _jsRuntime.InvokeVoidAsync("setLocalStorage", name, obj);
+            return _jsRuntime.InvokeVoidAsync("setLocalStorage", name, obj);
         }
 
-        public async Task DeleteFromStorage(string name)
+        public ValueTask DeleteFromStorage(string name)
         {
-            await _jsRuntime.InvokeVoidAsync("deleteLocalStorage", name);
+            return _jsRuntime.InvokeVoidAsync("deleteLocalStorage", name);
         }
 
-        public async Task ScrollToElement(string elementId, int extraScrollDistance)
+        public ValueTask ScrollToElement(string elementId, int extraScrollDistance)
         {
-            await _jsRuntime.InvokeVoidAsync("scrollToElement", elementId, extraScrollDistance);
+            return _jsRuntime.InvokeVoidAsync("scrollToElement", elementId, extraScrollDistance);
         }
 
-        public async Task<double> GetCurrentScrollPosition()
+        public ValueTask<double> GetCurrentScrollPosition()
         {
-            return await _jsRuntime.InvokeAsync<double>("getCurrentScrollPosition");
+            return _jsRuntime.InvokeAsync<double>("getCurrentScrollPosition");
         }
 
-        public async Task ScrollToSavedPosition(double savedPosition)
+        public ValueTask ScrollToSavedPosition(double savedPosition)
         {
-            await _jsRuntime.InvokeVoidAsync("scrollToSavedPosition", savedPosition);
+            return _jsRuntime.InvokeVoidAsync("scrollToSavedPosition", savedPosition);
         }
+
+        public async Task SetScrollPosition(string elementId, ScrollPosition scrollPosition)
+        {
+            if (_hostEnv.Environment == "Server")
+            {
+                return;
+            }
+            await _jsRuntime.InvokeVoidAsync("setScrollPosition", elementId, scrollPosition.ScrollTop, scrollPosition.ScrollLeft);
+        }
+
+        public ScrollPosition GetScrollPosition(string elementId)
+        {
+            if (_hostEnv.Environment == "Server")
+            {
+                return new ScrollPosition()
+                {
+                    ScrollLeft = 0,
+                    ScrollTop = 0
+                };
+            }
+            var scrollTop = ((IJSInProcessRuntime)_jsRuntime).Invoke<double>("getScrollPositionTop", elementId);
+            var scrollLeft = ((IJSInProcessRuntime)_jsRuntime).Invoke<double>("getScrollPositionLeft", elementId);
+            return new ScrollPosition()
+            {
+                ScrollTop = scrollTop,
+                ScrollLeft = scrollLeft
+            };
+        }
+    }
+    public class ScrollPosition
+    {
+        public double ScrollTop { get; set; }
+        public double ScrollLeft { get; set; }
     }
 }
