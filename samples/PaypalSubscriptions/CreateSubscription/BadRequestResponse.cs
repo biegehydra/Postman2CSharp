@@ -5,8 +5,8 @@ using System.Text.Json.Serialization;
 
 namespace PaypalSubscription
 {
-    // Root myDeserializedClass = JsonSerializer.Deserialize<CreateSubscription>(myJsonResponse);
-    public class CreateSubscription
+    // Root myDeserializedClass = JsonSerializer.Deserialize<BadRequestResponse>(myJsonResponse);
+    public class BadRequestResponse
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }

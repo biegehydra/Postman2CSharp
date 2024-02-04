@@ -37,7 +37,7 @@ namespace PaypalSubscription
         /// <summary>
         /// Creates a subscription.
         /// </summary>
-        public async Task<OneOf<SubscriptionResponse, CreateSubscription, UnauthorizedResponse>> CreateSubscription(CreateSubscriptionRequest request)
+        public async Task<OneOf<SubscriptionResponse, BadRequestResponse, UnauthorizedResponse>> CreateSubscription(CreateSubscriptionRequest request)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -55,7 +55,7 @@ namespace PaypalSubscription
             }
             if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
-                return await response.ReadJsonAsync<CreateSubscription>();
+                return await response.ReadJsonAsync<BadRequestResponse>();
             }
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -67,7 +67,7 @@ namespace PaypalSubscription
         /// <summary>
         /// Shows details for a subscription, by ID.
         /// </summary>
-        public async Task<OneOf<SubscriptionResponse, CreateSubscription, UnauthorizedResponse>> ShowSubscriptionDetails(ShowSubscriptionDetailsParameters queryParameters, string subscriptionId)
+        public async Task<OneOf<SubscriptionResponse, BadRequestResponse, UnauthorizedResponse>> ShowSubscriptionDetails(ShowSubscriptionDetailsParameters queryParameters, string subscriptionId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -87,7 +87,7 @@ namespace PaypalSubscription
             }
             if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound)
             {
-                return await response.ReadJsonAsync<CreateSubscription>();
+                return await response.ReadJsonAsync<BadRequestResponse>();
             }
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -111,7 +111,7 @@ namespace PaypalSubscription
         /// (for subscriptions funded
         /// by card payments)replace
         /// </summary>
-        public async Task<OneOf<Stream, UnauthorizedResponse, CreateSubscription>> UpdateSubscription(List<UpdateSubscriptionRequest> request, string subscriptionId)
+        public async Task<OneOf<Stream, UnauthorizedResponse, BadRequestResponse>> UpdateSubscription(List<UpdateSubscriptionRequest> request, string subscriptionId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -133,7 +133,7 @@ namespace PaypalSubscription
             }
             if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
-                return await response.ReadJsonAsync<CreateSubscription>();
+                return await response.ReadJsonAsync<BadRequestResponse>();
             }
             throw new Exception($"UpdateSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
@@ -143,7 +143,7 @@ namespace PaypalSubscription
         /// the plan and update the `shipping_amount`, `shipping_address` values for the subscription. This type 
         /// of update requires the buyer's consent.
         /// </summary>
-        public async Task<OneOf<RevisePlanOrQuantityOfSubscriptionOKResponse, UnauthorizedResponse, CreateSubscription>> RevisePlanOrQuantityOfSubscription(RevisePlanOrQuantityOfSubscriptionRequest request, string subscriptionId)
+        public async Task<OneOf<RevisePlanOrQuantityOfSubscriptionOKResponse, UnauthorizedResponse, BadRequestResponse>> RevisePlanOrQuantityOfSubscription(RevisePlanOrQuantityOfSubscriptionRequest request, string subscriptionId)
         {
             var response = await _httpClient.PostAsJsonAsync($"{subscriptionId}/revise", request);
             if (response.StatusCode == HttpStatusCode.OK)
@@ -156,7 +156,7 @@ namespace PaypalSubscription
             }
             if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
-                return await response.ReadJsonAsync<CreateSubscription>();
+                return await response.ReadJsonAsync<BadRequestResponse>();
             }
             throw new Exception($"RevisePlanOrQuantityOfSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
@@ -164,7 +164,7 @@ namespace PaypalSubscription
         /// <summary>
         /// Suspends the subscription.
         /// </summary>
-        public async Task<OneOf<Stream, UnauthorizedResponse, CreateSubscription>> SuspendSubscription(ReasonRequest request, string subscriptionId)
+        public async Task<OneOf<Stream, UnauthorizedResponse, BadRequestResponse>> SuspendSubscription(ReasonRequest request, string subscriptionId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -186,7 +186,7 @@ namespace PaypalSubscription
             }
             if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
-                return await response.ReadJsonAsync<CreateSubscription>();
+                return await response.ReadJsonAsync<BadRequestResponse>();
             }
             throw new Exception($"SuspendSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
@@ -194,7 +194,7 @@ namespace PaypalSubscription
         /// <summary>
         /// Activates the subscription.
         /// </summary>
-        public async Task<OneOf<Stream, UnauthorizedResponse, CreateSubscription>> ActivateSubscription(ReasonRequest request, string subscriptionId)
+        public async Task<OneOf<Stream, UnauthorizedResponse, BadRequestResponse>> ActivateSubscription(ReasonRequest request, string subscriptionId)
         {
             var response = await _httpClient.PostAsJsonAsync($"{subscriptionId}/activate", request);
             if (response.StatusCode == HttpStatusCode.NoContent)
@@ -207,7 +207,7 @@ namespace PaypalSubscription
             }
             if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
-                return await response.ReadJsonAsync<CreateSubscription>();
+                return await response.ReadJsonAsync<BadRequestResponse>();
             }
             throw new Exception($"ActivateSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
@@ -215,7 +215,7 @@ namespace PaypalSubscription
         /// <summary>
         /// Cancels the subscription.
         /// </summary>
-        public async Task<OneOf<Stream, UnauthorizedResponse, CreateSubscription>> CancelSubscription(ReasonRequest request, string subscriptionId)
+        public async Task<OneOf<Stream, UnauthorizedResponse, BadRequestResponse>> CancelSubscription(ReasonRequest request, string subscriptionId)
         {
             var response = await _httpClient.PostAsJsonAsync($"{subscriptionId}/cancel", request);
             if (response.StatusCode == HttpStatusCode.NoContent)
@@ -228,7 +228,7 @@ namespace PaypalSubscription
             }
             if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
-                return await response.ReadJsonAsync<CreateSubscription>();
+                return await response.ReadJsonAsync<BadRequestResponse>();
             }
             throw new Exception($"CancelSubscription: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}");
         }
@@ -236,7 +236,7 @@ namespace PaypalSubscription
         /// <summary>
         /// Captures an authorized payment from the subscriber on the subscription.
         /// </summary>
-        public async Task<OneOf<UnauthorizedResponse, CreateSubscription, Stream>> CaptureAuthorizedPaymentOnSubscription(CaptureAuthorizedPaymentOnSubscriptionRequest request, string subscriptionId)
+        public async Task<OneOf<UnauthorizedResponse, BadRequestResponse, Stream>> CaptureAuthorizedPaymentOnSubscription(CaptureAuthorizedPaymentOnSubscriptionRequest request, string subscriptionId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -254,7 +254,7 @@ namespace PaypalSubscription
             }
             if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
             {
-                return await response.ReadJsonAsync<CreateSubscription>();
+                return await response.ReadJsonAsync<BadRequestResponse>();
             }
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -266,7 +266,7 @@ namespace PaypalSubscription
         /// <summary>
         /// Lists transactions for a subscription.
         /// </summary>
-        public async Task<OneOf<ListTransactionsForSubscriptionOKResponse, CreateSubscription, UnauthorizedResponse>> ListTransactionsForSubscription(ListTransactionsForSubscriptionParameters queryParameters, string subscriptionId)
+        public async Task<OneOf<ListTransactionsForSubscriptionOKResponse, BadRequestResponse, UnauthorizedResponse>> ListTransactionsForSubscription(ListTransactionsForSubscriptionParameters queryParameters, string subscriptionId)
         {
             var headers = new Dictionary<string, string>()
             {
@@ -286,7 +286,7 @@ namespace PaypalSubscription
             }
             if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound)
             {
-                return await response.ReadJsonAsync<CreateSubscription>();
+                return await response.ReadJsonAsync<BadRequestResponse>();
             }
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
