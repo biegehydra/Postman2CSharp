@@ -183,6 +183,10 @@
                 }
             }
         }
+        else
+        {
+            await Interop.Value.DownloadApiClient(SelectedApiClient, () => InvokeAsync(StateHasChanged));
+        }
     }
 
     private void SelectedErrorHandlingSinksChanged(IEnumerable<string> errorHandlingSinks)
