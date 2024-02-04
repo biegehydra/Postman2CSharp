@@ -232,7 +232,7 @@ namespace Postman2CSharp.UI.Services
 
         public async Task SetScrollPosition(string elementId, ScrollPosition scrollPosition)
         {
-            if (_hostEnv.Environment == "Server")
+            if (_hostEnv.Environment == "Server" || _hostEnv.Environment.Equals("Prerendering", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -241,7 +241,7 @@ namespace Postman2CSharp.UI.Services
 
         public ScrollPosition GetScrollPosition(string elementId)
         {
-            if (_hostEnv.Environment == "Server")
+            if (_hostEnv.Environment == "Server" || _hostEnv.Environment.Equals("Prerendering", StringComparison.OrdinalIgnoreCase))
             {
                 return new ScrollPosition()
                 {
