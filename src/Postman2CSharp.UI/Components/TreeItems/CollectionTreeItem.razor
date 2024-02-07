@@ -2,6 +2,18 @@
 
 @if (ApiClientGroups != null)
 {
+    <MudBreakpointProvider>
+        <MudHidden Breakpoint="Breakpoint.LgAndUp">
+            @{
+                GroupApiClients(2);
+            }
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.MdAndDown">
+            @{
+                GroupApiClients(3);
+            }
+        </MudHidden>
+    </MudBreakpointProvider>
     <MudTreeView T="string" Class="collection-tree-root" Hover ExpandOnClick>
      <CascadingValue Value="this">
          @foreach (var group in ApiClientGroups)
@@ -27,20 +39,33 @@
     private ApiCollection? _cachedApiCollection;
     protected override void OnParametersSet()
     {
-        if (ApiCollection == _cachedApiCollection)
+        if (_cachedApiCollection == ApiCollection)
         {
-            _shouldRender = false;
             return;
         }
-        ApiClientGroups = GroupEqually(ApiCollection?.ApiClients ?? new(), 3);
-        _shouldRender = true;
         _cachedApiCollection = ApiCollection;
+        GroupApiClients(3);
     }
 
     private bool _shouldRender = true;
     protected override bool ShouldRender()
     {
-        return _shouldRender;
+        if (_shouldRender)
+        {
+            _shouldRender = false;
+            return true;
+        }
+        return false;
+    }
+
+    private int _groups;
+    private void GroupApiClients(int groups)
+    {
+        if(groups == _groups) return;
+        _groups = groups;
+        ApiClientGroups = GroupEqually(ApiCollection?.ApiClients ?? new(), _groups);
+        _shouldRender = true;
+        StateHasChanged();
     }
 
     private static List<List<T>> GroupEqually<T>(List<T> list, int numberOfGroups)

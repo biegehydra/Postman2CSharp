@@ -412,11 +412,11 @@ public static partial class Utils
     {
         if (request.Body is { Mode: "raw", Options.Raw.Language: "json" })
         {
-            return DataType.Json;
+            return !string.IsNullOrWhiteSpace(request.Body.Raw) ? DataType.Json : DataType.QueryOnly;
         }
         if (request.Body is { Mode: "raw", Options: null })
         {
-            return DataType.Json;
+            return !string.IsNullOrWhiteSpace(request.Body.Raw) ? DataType.Json : DataType.QueryOnly;
         }
         if (request.Body is { Mode: "raw", Options.Raw.Language: "xml" })
         {

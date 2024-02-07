@@ -156,6 +156,8 @@ namespace Postman2CSharp.Core.Serialization
                 "POST" => $"HttpPost",
                 "PATCH" => $"HttpPatch",
                 "DELETE" => $"HttpDelete",
+                "HEAD" => $"HttpHead",
+                "OPTIONS" => $"HttpOptions",
                 _ => throw new NotImplementedException(),
             };
         }
