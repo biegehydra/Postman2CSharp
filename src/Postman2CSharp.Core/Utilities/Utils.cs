@@ -94,6 +94,8 @@ public static partial class Utils
                     "POST" => $"Post{suffix}Async",
                     "PATCH" => $"Patch{suffix}Async",
                     "DELETE" => $"Delete{suffix}Async",
+                    "HEAD" => $"Head{suffix}Async",
+                    "OPTIONS" => $"Options{suffix}Async",
                     _ => throw new NotImplementedException(),
                 };
             }
@@ -106,6 +108,8 @@ public static partial class Utils
                     "POST" => $"PostAs{suffix}Async",
                     "PATCH" => $"PatchAs{suffix}Async",
                     "DELETE" => $"DeleteAs{suffix}Async",
+                    "HEAD" => $"HeadAs{suffix}Async",
+                    "OPTIONS" => $"OptionsAs{suffix}Async",
                     _ => throw new NotImplementedException(),
                 };
             }
@@ -121,6 +125,8 @@ public static partial class Utils
                     "POST" => $"PostFrom{suffix}Async",
                     "PATCH" => $"PatchFrom{suffix}Async",
                     "DELETE" => $"DeleteFrom{suffix}Async",
+                    "HEAD" => $"HeadFrom{suffix}Async",
+                    "OPTIONS" => $"OptionsFrom{suffix}Async",
                     _ => throw new NotImplementedException(),
                 };
             }
@@ -133,6 +139,8 @@ public static partial class Utils
                     "POST" => "PostAsync",
                     "PATCH" => "PatchAsync",
                     "DELETE" => "DeleteAsync",
+                    "HEAD" => $"HeadAsync",
+                    "OPTIONS" => $"OptionsAsync",
                     _ => throw new NotImplementedException(),
                 };
             }
