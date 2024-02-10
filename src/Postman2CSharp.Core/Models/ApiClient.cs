@@ -199,9 +199,15 @@ public class ApiClient
 
     public int FixCommonClass(string commonClassOld, string commonClassNew)
     {
+        if (string.IsNullOrWhiteSpace(commonClassOld) || string.IsNullOrWhiteSpace(commonClassNew)) return 0;
         int fixedClasses = 0;
         foreach (var httpCall in HttpCalls)
         {
+            if (httpCall.GraphQlParametersClassName == commonClassOld)
+            {
+                httpCall.RenameGraphQlParameters(commonClassNew);
+                fixedClasses++;
+            }
             if (httpCall.RequestClassName == commonClassOld)
             {
                 httpCall.RenameRequest(commonClassNew);
@@ -244,6 +250,10 @@ public class ApiClient
             if (httpCall.FormDataClassName == className && httpCall.FormDataSourceCode != null)
             {
                 return httpCall.FormDataSourceCode.ExtractClassDeclaration(className);
+            }
+            if (httpCall.GraphQlParametersClassName == className && httpCall.GraphQlParametersSourceCode != null)
+            {
+                return httpCall.GraphQlParametersSourceCode.ExtractClassDeclaration(className);
             }
         }
         return null;

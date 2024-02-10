@@ -2,7 +2,6 @@
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
-using Postman2CSharp.Core.Models.PostmanCollection.Http.Response;
 using Postman2CSharp.Core.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Web;
 using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Serialization;
@@ -93,25 +93,30 @@ public static class HttpCallSerializer
     }
 
 
-    private static void GraphQlString(StringBuilder sb, GraphQl? graphQl, string indent)
+    private static void GraphQlString(StringBuilder sb, GraphQl? graphQl, string? graphQlParametersClassName, JsonLibrary jsonLibrary, int intIndent)
     {
         if (graphQl == null)
         {
             return;
         }
-        sb.AppendLine(indent + "var graphQlQuery = @\"");
 
+        string indent = Consts.Indent(intIndent);
+        sb.AppendLine(indent + $"var query = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Query).Replace(@"\r\n", "\n").Replace(@"\n", "\n")}\";");
+
+        sb.AppendLine(indent + "var requestPayload = new");
         sb.AppendLine(indent + "{");
-
-        sb.Append(indent + "\t\\\"query\\\": \\\"");
-        sb.Append(graphQl.Query.Replace("\"", "\\\"").Replace("\r\n", "\\n").Replace("\n", "\\n"));
-        sb.AppendLine("\\\",");
-
-        sb.Append(indent + "\t\\\"variables\\\": ");
-        sb.AppendLine(graphQl.Variables.Replace("\"", "\\\"").Replace("\r\n", "\\n").Replace("\n", "\\n"));
-        sb.AppendLine(indent + "}\";");
-
-        sb.AppendLine(indent + "var httpContent = new StringContent(graphQlQuery, Encoding.UTF8, \"application/json\");");
+        indent = Consts.Indent(++intIndent);
+        sb.AppendLine(indent + "query = query,");
+        if (!string.IsNullOrWhiteSpace(graphQlParametersClassName))
+        {
+            sb.AppendLine(indent + "variables = graphQlParameters");
+        }
+        else if (!string.IsNullOrWhiteSpace(graphQl.Variables))
+        {
+            sb.AppendLine(indent + $"variables = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Variables).Replace(@"\r\n", "\n").Replace(@"\n", "\n")}\";");
+        }
+        indent = Consts.Indent(--intIndent);
+        sb.AppendLine(indent + "};");
     }
 
     private static void Catch(StringBuilder sb, CatchExceptionTypes catchExceptionType, List<ErrorHandlingSinks> errorHandlingSinks, ErrorHandlingStrategy errorHandlingStrategy,
@@ -184,7 +189,7 @@ public static class HttpCallSerializer
         }
         else if (call.RequestDataType is DataType.GraphQl)
         {
-            GraphQlString(sb, call.Request.Body!.Graphql, indent);
+            GraphQlString(sb, call.Request.Body!.Graphql, call.GraphQlParametersClassName, options.JsonLibrary, intIndent);
         }
 
         // We need to use the HttpRequestMessage
@@ -246,7 +251,7 @@ public static class HttpCallSerializer
         }
         else if (call.RequestDataType is DataType.GraphQl)
         {
-            GraphQlString(sb, call.Request.Body!.Graphql, indent);
+            GraphQlString(sb, call.Request.Body!.Graphql, call.GraphQlParametersClassName, options.JsonLibrary, intIndent);
         }
 
         
@@ -350,8 +355,15 @@ public static class HttpCallSerializer
                 var func = "To" + (call.FormDataClassName.Contains(Consts.Classes.MultipartFormData) ? Consts.Classes.MultipartFormData : Consts.Classes.FormData);
                 list.Add($"formData.{func}()");
             }
-            if (call.RequestDataType is DataType.Html or DataType.Text or DataType.Xml or DataType.Binary or DataType.GraphQl)
+            else if (call.RequestDataType is DataType.Html or DataType.Text or DataType.Xml or DataType.Binary)
+            {
                 list.Add("httpContent");
+            }
+            else if (call.RequestDataType is DataType.GraphQl)
+            {
+                list.Add("requestPayload");
+            }
+
             if (hasHeaders)
             {
                 list.Add("headers");

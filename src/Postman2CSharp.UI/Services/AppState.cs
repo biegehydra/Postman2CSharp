@@ -6,7 +6,7 @@ namespace Postman2CSharp.UI.Services;
 
 public class AppState
 {
-    public const string CurrentVersion = "0.3";
+    public const string CurrentVersion = "0.4";
 
     public List<Assembly> AdditionalAssemblies { get; set; } = new();
     public ApiClientOptions ApiClientOptions { get; private set; } = new();

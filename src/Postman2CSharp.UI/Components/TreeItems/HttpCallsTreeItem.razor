@@ -13,6 +13,7 @@
                 <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.RequestClassName" SourceCode="@HttpCall.RequestSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
                 <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.QueryParameterClassName" SourceCode="@HttpCall.QueryParameterSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
                 <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.FormDataClassName" SourceCode="@HttpCall.FormDataSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
+                <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.GraphQlParametersClassName" SourceCode="@HttpCall.GraphQlParametersSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
                 @foreach (var response in HttpCall.AllResponses)
                 {
                     <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@response.ClassName" SourceCode="@response.SourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>

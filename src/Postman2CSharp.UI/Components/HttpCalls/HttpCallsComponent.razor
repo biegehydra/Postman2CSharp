@@ -46,6 +46,10 @@
                         {
                             <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.FormDataSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
                         }
+                        @if (SelectedClassName == httpCall.GraphQlParametersClassName)
+                        {
+                            <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.GraphQlParametersSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+                        }
                     }
                     <div></div>
                 </div>
@@ -67,6 +71,10 @@
                     @if (SelectedClassName == httpCall.FormDataClassName)
                     {
                         <PrismCodeBlock FileName="@httpCall.FormDataClassName" Language="PrismLanguage.CSharp" Value="@httpCall.FormDataSourceCode" />
+                    }
+                    @if (SelectedClassName == httpCall.GraphQlParametersClassName)
+                    {
+                        <PrismCodeBlock FileName="@httpCall.GraphQlParametersClassName" Language="PrismLanguage.CSharp" Value="@httpCall.GraphQlParametersSourceCode" />
                     }
                 }
             </MudTabPanel>
@@ -119,6 +127,11 @@ else
         if (httpCall.FormDataSourceCode != null)
         {
             allClassNames.Add(httpCall.FormDataClassName);
+        }
+
+        if (httpCall.GraphQlParametersSourceCode != null)
+        {
+            allClassNames.Add(httpCall.GraphQlParametersClassName);
         }
         AllClassNames = allClassNames.Where(x => !string.IsNullOrWhiteSpace(x)).ToList()!;
         SelectedClassName = AllClassNames.FirstOrDefault();

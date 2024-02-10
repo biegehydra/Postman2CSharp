@@ -330,6 +330,86 @@ public class ApiClientGenerator
                 }
             }
 
+            string? graphQlParametersSourceCode = null;
+            string? graphQlClassName = null;
+            bool graphQlParametersRootWasArray = false;
+            List<ClassType>? graphQlParametersTypes = null;
+            if (requestDataType is DataType.GraphQl)
+            {
+                var temp = Options.CSharpCodeWriterConfig.AttributeUsage;
+                Options.CSharpCodeWriterConfig.AttributeUsage = JsonPropertyAttributeUsage.Always;
+                var json = requestItem.Request.Body!.Graphql!.Variables;
+
+                // Will fix any issues caused by collection variables
+                json = VariableExtractor.ReplaceVariablesWith1(json);
+
+                if (!string.IsNullOrWhiteSpace(json))
+                {
+                    try
+                    {
+                        
+                        ProcessItem(jsonClassGenerator, json, uniqueName, Consts.GraphQlParameters, ref graphQlClassName,
+                            ref graphQlParametersSourceCode, ref graphQlParametersTypes, ref graphQlParametersRootWasArray);
+                    }
+                    catch (Newtonsoft.Json.JsonException)
+                    {
+#if DEBUG
+                        Debug.WriteLine($"JsonException no classes generated. {uniqueName}");
+#endif
+                        Reset();
+                    }
+                    catch (NoClassesGeneratedException)
+                    {
+#if DEBUG
+                        Debug.WriteLine($"Request no classes generated. {uniqueName}");
+#endif
+                        Reset();
+                    }
+                    catch (DuplicateRootException ex)
+                    {
+                        AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, graphQlClassName, uniqueName,
+                            GeneratedClassType.Request);
+
+                        graphQlClassName = ex.OriginalRootName;
+                        graphQlParametersRootWasArray = ex.DuplicateIsArray;
+                        graphQlParametersSourceCode = null;
+                        graphQlParametersTypes = null;
+                    }
+                    catch (XmlException ex)
+                    {
+#if DEBUG
+                        Debug.WriteLine($@"{uniqueName} - Xml exception. Message: {ex.Message}, Json: {json}");
+#endif
+                        Reset();
+                    }
+                    catch (TextWasNotJsonException ex)
+                    {
+#if DEBUG
+                        Debug.WriteLine($@"{uniqueName} - TextWasNotJsonException. Message: {ex.Message}, Text: {ex.Text}");
+#endif
+
+                        Reset();
+                    }
+                    catch (Exception ex)
+                    {
+                        Reset();
+#if DEBUG
+                        Debug.WriteLine(ex);
+                        throw;
+#endif
+                    }
+                    void Reset()
+                    {
+                        graphQlClassName = null;
+                        graphQlParametersSourceCode = null;
+                        graphQlParametersTypes = null;
+                        graphQlParametersRootWasArray = false;
+                    }
+                }
+
+                Options.CSharpCodeWriterConfig.AttributeUsage = temp;
+            }
+
             string? formClassName = null;
             string? formClassSourceCode = null;
             if (requestDataType is DataType.ComplexFormData or DataType.SimpleFormData)
@@ -365,8 +445,7 @@ public class ApiClientGenerator
                     var json = response.Body;
                     if (string.IsNullOrWhiteSpace(json))
                     {
-                        responseClassName = "EmptyResponse";
-                        allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
+                        allApiResponse.Add(new ApiResponse(response.Code.Value, null, null, DataType.Binary, false));
                         continue;
                     }
 
@@ -431,8 +510,10 @@ public class ApiClientGenerator
                     allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, responseSourceCode, DataType.Json, rootWasArray));
                     continue;
                 }
-
-                allApiResponse.Add(new ApiResponse(response.Code.Value, null, null, DataType.Binary, false));
+                else
+                {
+                    allApiResponse.Add(new ApiResponse(response.Code.Value, null, null, DataType.Binary, false));
+                }
             }
             // If there is no success response, add one
             if (!allApiResponse.Any(x => x.IsSuccessCode))
@@ -533,6 +614,10 @@ public class ApiClientGenerator
                 UniqueHeaders = uniqueHeaders,
                 RequestTypes = requestTypes,
                 QueryParameterTypes = queryParameterTypes,
+                GraphQlParametersClassName = graphQlClassName,
+                GraphQlParametersSourceCode = graphQlParametersSourceCode,
+                GraphQlParametersRootWasArray = graphQlParametersRootWasArray,
+                GraphQlParametersTypes = graphQlParametersTypes
             });
 
             _processedRequests += 1;

@@ -66,6 +66,11 @@ public class HttpCall
     public required string? FormDataClassName { get; set; }
     public required string? FormDataSourceCode { get; set; }
 
+    public required string? GraphQlParametersClassName { get; set; } 
+    public required string? GraphQlParametersSourceCode { get; set; }
+    public required List<ClassType>? GraphQlParametersTypes { get; init; }
+    public required bool GraphQlParametersRootWasArray { get; set; }
+
     public ApiResponse? SuccessResponse => AllResponses.FirstOrDefault(x => x is { Code: 200 }) 
                                            ?? AllResponses.FirstOrDefault(x => x is {Code: >= 200 and < 300});
     public required List<ApiResponse> AllResponses { get; init; }
@@ -92,6 +97,13 @@ public class HttpCall
         {
             var formData = new HttpCallMethodParameter(HttpCallMethodParameterType.FormData, FormDataClassName, "formData");
             methodParameters.Add(formData);
+        }
+
+        if (RequestDataType == DataType.GraphQl && GraphQlParametersClassName != null)
+        {
+            var signatureClassName = Common.SignatureClassName(GraphQlParametersClassName, GraphQlParametersRootWasArray, outputCollectionType);
+            var graphQlParameters = new HttpCallMethodParameter(HttpCallMethodParameterType.GraphQlParameters, signatureClassName, "graphQlParameters");
+            methodParameters.Add(graphQlParameters);
         }
 
         if (RequestDataType == DataType.Html)
@@ -145,6 +157,11 @@ public class HttpCall
             return true;
         }
 
+        if (!string.IsNullOrWhiteSpace(GraphQlParametersClassName))
+        {
+            return true;
+        }
+
         if (AllResponses?.Any(x => !string.IsNullOrWhiteSpace(x.SourceCode)) == true)
         {
             return true;
@@ -184,6 +201,13 @@ public class HttpCall
         QueryParameterSourceCode = QueryParameterSourceCode?.Replace(QueryParameterClassName, newName);
         QueryParameterClassName = newName;
     }
+
+    public void RenameGraphQlParameters(string newName)
+    {
+        if (GraphQlParametersClassName == null) throw new UnreachableException("RenameRequest");
+        GraphQlParametersSourceCode = GraphQlParametersSourceCode?.Replace(GraphQlParametersClassName, newName);
+        GraphQlParametersClassName = newName;
+    }
 }
 public record HttpCallMethodParameter(HttpCallMethodParameterType Type, string VariableType, string ParameterName)
 {
@@ -199,5 +223,6 @@ public enum HttpCallMethodParameterType
     RawText,
     Path,
     Stream,
-    CancellationToken
+    CancellationToken,
+    GraphQlParameters
 }

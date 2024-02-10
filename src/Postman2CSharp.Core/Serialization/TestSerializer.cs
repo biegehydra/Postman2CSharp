@@ -55,6 +55,10 @@ namespace Postman2CSharp.Core.Serialization
                             AppendGeneratedClass(sb, httpCall.FormDataClassName, httpCall.FormDataSourceCode);
                             parameterNames.Add(httpCall.FormDataClassName!.ToLower());
                             break;
+                        case HttpCallMethodParameterType.GraphQlParameters:
+                            AppendGeneratedClass(sb, httpCall.GraphQlParametersClassName, httpCall.GraphQlParametersSourceCode);
+                            parameterNames.Add(httpCall.GraphQlParametersClassName!.ToLower());
+                            break;
                         case HttpCallMethodParameterType.RawText:
                             sb.AppendLine(indent + $"var {httpCallMethodParameter.ParameterName} = \"Test Data\";");
                             parameterNames.Add(httpCallMethodParameter.ParameterName);

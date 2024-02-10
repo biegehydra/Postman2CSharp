@@ -83,7 +83,7 @@ public static partial class Utils
     {
         string function;
         var suffix = jsonLibrary == JsonLibrary.SystemTextJson ? "Json" : "NewtonsoftJson";
-        if (requestDataType == DataType.Json)
+        if (requestDataType is DataType.Json or DataType.GraphQl)
         {
             if (responseDataType == DataType.Json && !multipleResponses)
             {
@@ -457,7 +457,7 @@ public static partial class Utils
 
         if (request.Body.Mode == "graphql")
         {
-            return DataType.GraphQl;
+            return request.Body.Graphql != null && !string.IsNullOrWhiteSpace(request.Body.Graphql.Query) ? DataType.GraphQl : DataType.QueryOnly;
         }
         if (request.Body.Mode == null)
         {
