@@ -101,22 +101,19 @@ public static class HttpCallSerializer
         }
 
         string indent = Consts.Indent(intIndent);
-        sb.AppendLine(indent + $"var query = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Query).Replace(@"\r\n", "\n").Replace(@"\n", "\n")}\";");
+        sb.AppendLine(indent + $"var query = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Query).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
 
-        sb.AppendLine(indent + "var requestPayload = new");
-        sb.AppendLine(indent + "{");
-        indent = Consts.Indent(++intIndent);
-        sb.AppendLine(indent + "query = query,");
+        List<string> parameters = ["query"];
         if (!string.IsNullOrWhiteSpace(graphQlVariablesClassName))
         {
-            sb.AppendLine(indent + "variables = graphQlVariables");
+            parameters.Add("graphQlVariables");
         }
         else if (!string.IsNullOrWhiteSpace(graphQl.Variables))
         {
-            sb.AppendLine(indent + $"variables = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Variables).Replace(@"\r\n", "\n").Replace(@"\n", "\n")}\";");
+            sb.AppendLine(indent + $"var graphQlVariables = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Variables).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
+            parameters.Add("graphQlVariables");
         }
-        indent = Consts.Indent(--intIndent);
-        sb.AppendLine(indent + "};");
+        sb.AppendLine(indent + $"var graphQlRequest = new GraphQlRequest({string.Join(", ", parameters)});");
     }
 
     private static void Catch(StringBuilder sb, CatchExceptionTypes catchExceptionType, List<ErrorHandlingSinks> errorHandlingSinks, ErrorHandlingStrategy errorHandlingStrategy,
@@ -361,7 +358,7 @@ public static class HttpCallSerializer
             }
             else if (call.RequestDataType is DataType.GraphQl)
             {
-                list.Add("requestPayload");
+                list.Add("graphQlRequest");
             }
 
             if (hasHeaders)

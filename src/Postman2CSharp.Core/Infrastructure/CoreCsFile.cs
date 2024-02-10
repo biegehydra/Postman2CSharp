@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Xamasoft.JsonClassGenerator.Models;
+
 
 namespace Postman2CSharp.Core.Infrastructure
 {
@@ -13,6 +16,57 @@ namespace Postman2CSharp.Core.Infrastructure
             {nameof(HttpJsonExtensions), HttpJsonExtensions},
             {nameof(NewtonsoftHttpJsonExtensions), NewtonsoftHttpJsonExtensions}
         };
+
+        public static string GraphQlRequest(JsonLibrary jsonLibrary)
+        {
+            return jsonLibrary switch
+            {
+                JsonLibrary.NewtonsoftJson => GraphQlRequestNewtonsoft,
+                JsonLibrary.SystemTextJson => GraphQlRequestSystemTextJson,
+                _ => throw new ArgumentOutOfRangeException(nameof(jsonLibrary), jsonLibrary, null)
+            };
+        }
+
+        private const string GraphQlRequestNewtonsoft = @"public class GraphQLRequest
+{
+    [JsonProperty(""query"")]
+    public string Query { get; set; }
+
+    // Using 'object' to allow for flexible input, either a structured object or a JSON string.
+    [JsonProperty(""variables"", NullValueHandling = NullValueHandling.Ignore)]
+    public object Variables { get; set; }
+
+    [JsonProperty(""operationName"", NullValueHandling = NullValueHandling.Ignore)]
+    public string OperationName { get; set; }
+
+    public GraphQLRequest(string query, object variables = null, string operationName = null)
+    {
+        Query = query;
+        Variables = variables;
+        OperationName = operationName;
+    }
+}";
+        private const string GraphQlRequestSystemTextJson = @"public class GraphQLRequest
+{
+    [JsonPropertyName(""query"")]
+    public string Query { get; set; }
+
+    // Using 'object' to allow for various input types, including structured objects or JSON strings.
+    [JsonPropertyName(""variables"")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public object Variables { get; set; }
+
+    [JsonPropertyName(""operationName"")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string OperationName { get; set; }
+
+    public GraphQLRequest(string query, object variables = null, string operationName = null)
+    {
+        Query = query;
+        Variables = variables;
+        OperationName = operationName;
+    }
+}";
 
         // no pad
         public const string QueryHelpers = @"public static class QueryHelpers

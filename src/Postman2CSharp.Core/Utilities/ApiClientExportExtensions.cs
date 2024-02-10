@@ -40,6 +40,7 @@ namespace Postman2CSharp.Core.Utilities
                 }
                 AddToDictionary(httpCall.RequestSourceCode, httpCall.RequestClassName, httpCall.Name);
                 AddToDictionary(httpCall.QueryParameterSourceCode, httpCall.QueryParameterClassName, httpCall.Name);
+                AddToDictionary(httpCall.GraphQlVariablesSourceCode, httpCall.GraphQlVariablesClassName, httpCall.Name);
             }
 
             var apiClientNamespaces = apiClient.NameSpaces();
@@ -58,6 +59,14 @@ namespace Postman2CSharp.Core.Utilities
 
             string? httpExtensionsSourceCode;
             string? httpExtensionsClassName;
+            List<string> graphQlRequestNamespaces = apiClient.Options.JsonLibrary == JsonLibrary.SystemTextJson ? ["System.Text.Json"] : ["Newtonsoft.Json"];
+            string? graphQlRequestClassName = null;
+            string? graphQlRequestSourceCode = null;
+            if (apiClient.HttpCalls.Any(x => x.RequestDataType == DataType.GraphQl))
+            {
+                graphQlRequestSourceCode = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.GraphQlRequest(apiClient.Options.JsonLibrary), true, graphQlRequestNamespaces);
+                graphQlRequestClassName = nameof(CoreCsFile.GraphQlRequest);
+            }
             if (apiClient.Options.JsonLibrary == JsonLibrary.SystemTextJson)
             {
                 httpExtensionsSourceCode = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.HttpJsonExtensions, true, HttpExtensionsNamespaces);
