@@ -66,10 +66,10 @@ public class HttpCall
     public required string? FormDataClassName { get; set; }
     public required string? FormDataSourceCode { get; set; }
 
-    public required string? GraphQlParametersClassName { get; set; } 
-    public required string? GraphQlParametersSourceCode { get; set; }
-    public required List<ClassType>? GraphQlParametersTypes { get; init; }
-    public required bool GraphQlParametersRootWasArray { get; set; }
+    public required string? GraphQlVariablesClassName { get; set; } 
+    public required string? GraphQlVariablesSourceCode { get; set; }
+    public required List<ClassType>? GraphQlVariablesTypes { get; init; }
+    public required bool GraphQlVariablesRootWasArray { get; set; }
 
     public ApiResponse? SuccessResponse => AllResponses.FirstOrDefault(x => x is { Code: 200 }) 
                                            ?? AllResponses.FirstOrDefault(x => x is {Code: >= 200 and < 300});
@@ -99,11 +99,11 @@ public class HttpCall
             methodParameters.Add(formData);
         }
 
-        if (RequestDataType == DataType.GraphQl && GraphQlParametersClassName != null)
+        if (RequestDataType == DataType.GraphQl && GraphQlVariablesClassName != null)
         {
-            var signatureClassName = Common.SignatureClassName(GraphQlParametersClassName, GraphQlParametersRootWasArray, outputCollectionType);
-            var graphQlParameters = new HttpCallMethodParameter(HttpCallMethodParameterType.GraphQlParameters, signatureClassName, "graphQlParameters");
-            methodParameters.Add(graphQlParameters);
+            var signatureClassName = Common.SignatureClassName(GraphQlVariablesClassName, GraphQlVariablesRootWasArray, outputCollectionType);
+            var graphQlVariables = new HttpCallMethodParameter(HttpCallMethodParameterType.GraphQlVariables, signatureClassName, "graphQlVariables");
+            methodParameters.Add(graphQlVariables);
         }
 
         if (RequestDataType == DataType.Html)
@@ -157,7 +157,7 @@ public class HttpCall
             return true;
         }
 
-        if (!string.IsNullOrWhiteSpace(GraphQlParametersClassName))
+        if (!string.IsNullOrWhiteSpace(GraphQlVariablesClassName))
         {
             return true;
         }
@@ -202,11 +202,11 @@ public class HttpCall
         QueryParameterClassName = newName;
     }
 
-    public void RenameGraphQlParameters(string newName)
+    public void RenameGraphQlVariables(string newName)
     {
-        if (GraphQlParametersClassName == null) throw new UnreachableException("RenameRequest");
-        GraphQlParametersSourceCode = GraphQlParametersSourceCode?.Replace(GraphQlParametersClassName, newName);
-        GraphQlParametersClassName = newName;
+        if (GraphQlVariablesClassName == null) throw new UnreachableException("RenameRequest");
+        GraphQlVariablesSourceCode = GraphQlVariablesSourceCode?.Replace(GraphQlVariablesClassName, newName);
+        GraphQlVariablesClassName = newName;
     }
 }
 public record HttpCallMethodParameter(HttpCallMethodParameterType Type, string VariableType, string ParameterName)
@@ -224,5 +224,5 @@ public enum HttpCallMethodParameterType
     Path,
     Stream,
     CancellationToken,
-    GraphQlParameters
+    GraphQlVariables
 }

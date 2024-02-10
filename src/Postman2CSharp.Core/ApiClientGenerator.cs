@@ -330,10 +330,10 @@ public class ApiClientGenerator
                 }
             }
 
-            string? graphQlParametersSourceCode = null;
-            string? graphQlClassName = null;
-            bool graphQlParametersRootWasArray = false;
-            List<ClassType>? graphQlParametersTypes = null;
+            string? graphQlVariablesSourceCode = null;
+            string? graphQlVariablesClassName = null;
+            bool graphQlVariablesRootWasArray = false;
+            List<ClassType>? graphQlVariablesTypes = null;
             if (requestDataType is DataType.GraphQl)
             {
                 var temp = Options.CSharpCodeWriterConfig.AttributeUsage;
@@ -348,8 +348,8 @@ public class ApiClientGenerator
                     try
                     {
                         
-                        ProcessItem(jsonClassGenerator, json, uniqueName, Consts.GraphQlParameters, ref graphQlClassName,
-                            ref graphQlParametersSourceCode, ref graphQlParametersTypes, ref graphQlParametersRootWasArray);
+                        ProcessItem(jsonClassGenerator, json, uniqueName, Consts.GraphQlVariables, ref graphQlVariablesClassName,
+                            ref graphQlVariablesSourceCode, ref graphQlVariablesTypes, ref graphQlVariablesRootWasArray);
                     }
                     catch (Newtonsoft.Json.JsonException)
                     {
@@ -367,13 +367,13 @@ public class ApiClientGenerator
                     }
                     catch (DuplicateRootException ex)
                     {
-                        AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, graphQlClassName, uniqueName,
+                        AddDuplicateRootUsage(ex.OriginalRootName, ex.OriginalIsRoot, graphQlVariablesClassName, uniqueName,
                             GeneratedClassType.Request);
 
-                        graphQlClassName = ex.OriginalRootName;
-                        graphQlParametersRootWasArray = ex.DuplicateIsArray;
-                        graphQlParametersSourceCode = null;
-                        graphQlParametersTypes = null;
+                        graphQlVariablesClassName = ex.OriginalRootName;
+                        graphQlVariablesRootWasArray = ex.DuplicateIsArray;
+                        graphQlVariablesSourceCode = null;
+                        graphQlVariablesTypes = null;
                     }
                     catch (XmlException ex)
                     {
@@ -400,10 +400,10 @@ public class ApiClientGenerator
                     }
                     void Reset()
                     {
-                        graphQlClassName = null;
-                        graphQlParametersSourceCode = null;
-                        graphQlParametersTypes = null;
-                        graphQlParametersRootWasArray = false;
+                        graphQlVariablesClassName = null;
+                        graphQlVariablesSourceCode = null;
+                        graphQlVariablesTypes = null;
+                        graphQlVariablesRootWasArray = false;
                     }
                 }
 
@@ -614,10 +614,10 @@ public class ApiClientGenerator
                 UniqueHeaders = uniqueHeaders,
                 RequestTypes = requestTypes,
                 QueryParameterTypes = queryParameterTypes,
-                GraphQlParametersClassName = graphQlClassName,
-                GraphQlParametersSourceCode = graphQlParametersSourceCode,
-                GraphQlParametersRootWasArray = graphQlParametersRootWasArray,
-                GraphQlParametersTypes = graphQlParametersTypes
+                GraphQlVariablesClassName = graphQlVariablesClassName,
+                GraphQlVariablesSourceCode = graphQlVariablesSourceCode,
+                GraphQlVariablesRootWasArray = graphQlVariablesRootWasArray,
+                GraphQlVariablesTypes = graphQlVariablesTypes
             });
 
             _processedRequests += 1;

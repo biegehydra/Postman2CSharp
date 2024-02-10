@@ -46,9 +46,9 @@
                         {
                             <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.FormDataSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
                         }
-                        @if (SelectedClassName == httpCall.GraphQlParametersClassName)
+                        @if (SelectedClassName == httpCall.GraphQlVariablesClassName)
                         {
-                            <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.GraphQlParametersSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+                            <MudIconButton Size="Size.Medium" OnClick="() => DownloadFile(httpCall.GraphQlVariablesSourceCode)" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
                         }
                     }
                     <div></div>
@@ -72,9 +72,9 @@
                     {
                         <PrismCodeBlock FileName="@httpCall.FormDataClassName" Language="PrismLanguage.CSharp" Value="@httpCall.FormDataSourceCode" />
                     }
-                    @if (SelectedClassName == httpCall.GraphQlParametersClassName)
+                    @if (SelectedClassName == httpCall.GraphQlVariablesClassName)
                     {
-                        <PrismCodeBlock FileName="@httpCall.GraphQlParametersClassName" Language="PrismLanguage.CSharp" Value="@httpCall.GraphQlParametersSourceCode" />
+                        <PrismCodeBlock FileName="@httpCall.GraphQlVariablesClassName" Language="PrismLanguage.CSharp" Value="@httpCall.GraphQlVariablesSourceCode" />
                     }
                 }
             </MudTabPanel>
@@ -129,9 +129,9 @@ else
             allClassNames.Add(httpCall.FormDataClassName);
         }
 
-        if (httpCall.GraphQlParametersSourceCode != null)
+        if (httpCall.GraphQlVariablesSourceCode != null)
         {
-            allClassNames.Add(httpCall.GraphQlParametersClassName);
+            allClassNames.Add(httpCall.GraphQlVariablesClassName);
         }
         AllClassNames = allClassNames.Where(x => !string.IsNullOrWhiteSpace(x)).ToList()!;
         SelectedClassName = AllClassNames.FirstOrDefault();

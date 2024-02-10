@@ -93,7 +93,7 @@ public static class HttpCallSerializer
     }
 
 
-    private static void GraphQlString(StringBuilder sb, GraphQl? graphQl, string? graphQlParametersClassName, JsonLibrary jsonLibrary, int intIndent)
+    private static void GraphQlString(StringBuilder sb, GraphQl? graphQl, string? graphQlVariablesClassName, int intIndent)
     {
         if (graphQl == null)
         {
@@ -107,9 +107,9 @@ public static class HttpCallSerializer
         sb.AppendLine(indent + "{");
         indent = Consts.Indent(++intIndent);
         sb.AppendLine(indent + "query = query,");
-        if (!string.IsNullOrWhiteSpace(graphQlParametersClassName))
+        if (!string.IsNullOrWhiteSpace(graphQlVariablesClassName))
         {
-            sb.AppendLine(indent + "variables = graphQlParameters");
+            sb.AppendLine(indent + "variables = graphQlVariables");
         }
         else if (!string.IsNullOrWhiteSpace(graphQl.Variables))
         {
@@ -189,7 +189,7 @@ public static class HttpCallSerializer
         }
         else if (call.RequestDataType is DataType.GraphQl)
         {
-            GraphQlString(sb, call.Request.Body!.Graphql, call.GraphQlParametersClassName, options.JsonLibrary, intIndent);
+            GraphQlString(sb, call.Request.Body!.Graphql, call.GraphQlVariablesClassName, intIndent);
         }
 
         // We need to use the HttpRequestMessage
@@ -251,7 +251,7 @@ public static class HttpCallSerializer
         }
         else if (call.RequestDataType is DataType.GraphQl)
         {
-            GraphQlString(sb, call.Request.Body!.Graphql, call.GraphQlParametersClassName, options.JsonLibrary, intIndent);
+            GraphQlString(sb, call.Request.Body!.Graphql, call.GraphQlVariablesClassName, intIndent);
         }
 
         

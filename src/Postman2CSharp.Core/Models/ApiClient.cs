@@ -203,9 +203,9 @@ public class ApiClient
         int fixedClasses = 0;
         foreach (var httpCall in HttpCalls)
         {
-            if (httpCall.GraphQlParametersClassName == commonClassOld)
+            if (httpCall.GraphQlVariablesClassName == commonClassOld)
             {
-                httpCall.RenameGraphQlParameters(commonClassNew);
+                httpCall.RenameGraphQlVariables(commonClassNew);
                 fixedClasses++;
             }
             if (httpCall.RequestClassName == commonClassOld)
@@ -251,9 +251,9 @@ public class ApiClient
             {
                 return httpCall.FormDataSourceCode.ExtractClassDeclaration(className);
             }
-            if (httpCall.GraphQlParametersClassName == className && httpCall.GraphQlParametersSourceCode != null)
+            if (httpCall.GraphQlVariablesClassName == className && httpCall.GraphQlVariablesSourceCode != null)
             {
-                return httpCall.GraphQlParametersSourceCode.ExtractClassDeclaration(className);
+                return httpCall.GraphQlVariablesSourceCode.ExtractClassDeclaration(className);
             }
         }
         return null;
