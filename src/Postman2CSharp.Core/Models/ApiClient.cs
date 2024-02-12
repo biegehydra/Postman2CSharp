@@ -202,6 +202,8 @@ public class ApiClient
                 httpCall.GraphQlVariablesSourceCode = httpCall.GraphQlVariablesSourceCode?.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
             }
         }
+        GraphQLQueriesSourceCode = GraphQLQueriesSourceCode?.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}")
+            .Replace($"public static class {oldNamespace}GraphQLQueries", $"public static class {newNewspace}GraphQLQueries");
     }
 
     public int FixCommonClass(string commonClassOld, string commonClassNew)
