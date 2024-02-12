@@ -173,7 +173,7 @@ hood of an error in generated code (minor issues usually) and increase the likel
         InvokeAsync(StateHasChanged);
     }
 
-    private static CSharpCodeWriterConfigInputModel InputModelWithDefaults() => new()
+    public static CSharpCodeWriterConfigInputModel InputModelWithDefaults() => new()
     {
             AttributeUsage = JsonPropertyAttributeUsage.Always,
             CollectionType = OutputCollectionType.MutableList,

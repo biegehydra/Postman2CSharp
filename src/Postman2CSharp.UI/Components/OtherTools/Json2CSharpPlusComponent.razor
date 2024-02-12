@@ -67,7 +67,7 @@
 
     private bool _firstProcess = false;
     private bool _oneTypePerJsonMemberName = true;
-    private CSharpCodeWriterConfig _options = new();
+    private CSharpCodeWriterConfig _options = Json2CSharpPlusOptions.InputModelWithDefaults().ToCSharpCodeWriterConfig();
     private DuplicateOptions _duplicateOptions = new();
     private JsonEditor? _jsonEditor;
     private bool _isJsonValid = false;
