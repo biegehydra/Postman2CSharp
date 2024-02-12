@@ -17,7 +17,7 @@ namespace Postman2CSharp.Core.Infrastructure
             {nameof(NewtonsoftHttpJsonExtensions), NewtonsoftHttpJsonExtensions}
         };
 
-        public static string GraphQlRequest(JsonLibrary jsonLibrary)
+        public static string GraphQLRequest(JsonLibrary jsonLibrary)
         {
             return jsonLibrary switch
             {

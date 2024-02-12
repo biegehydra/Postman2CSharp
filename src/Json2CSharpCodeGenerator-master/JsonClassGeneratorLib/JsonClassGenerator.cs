@@ -417,8 +417,7 @@ namespace Xamasoft.JsonClassGenerator
 #if DEBUG
                 var test = potentialDup;
 #endif
-                var firstMatchingType =
-                    typesWithNoDuplicates.FirstOrDefault(x => x.OriginalName == potentialDup.OriginalName);
+                var firstMatchingType = typesWithNoDuplicates.FirstOrDefault(x => x.OriginalName == potentialDup.OriginalName);
 
                 if (oneOriginalName)
                 {
@@ -626,7 +625,7 @@ namespace Xamasoft.JsonClassGenerator
             if (dup.Fields!.Count > orig.Fields!.Count) return false;
             if (strict && dup.Fields!.Count != orig.Fields!.Count) return false;
             if (dup.OriginalName != orig.OriginalName &&
-                orig.Fields.Count - dup.Fields.Count > differentOriginalNameSensitivity)
+                (dup.Fields!.Count == 0 || orig.Fields!.Count == 0 || orig.Fields.Count - dup.Fields.Count > differentOriginalNameSensitivity))
             {
                 return false;
             }

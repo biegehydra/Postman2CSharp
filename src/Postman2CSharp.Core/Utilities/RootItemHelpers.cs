@@ -149,6 +149,14 @@ namespace Postman2CSharp.Core.Utilities
                             {
                                 leastPossibleUriSegments.Add(withBrackets);
                             }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            break;
                         }
                     }
                     else

@@ -59,13 +59,12 @@ namespace Postman2CSharp.Core.Utilities
 
             string? httpExtensionsSourceCode;
             string? httpExtensionsClassName;
-            List<string> graphQlRequestNamespaces = apiClient.Options.JsonLibrary == JsonLibrary.SystemTextJson ? ["System.Text.Json"] : ["Newtonsoft.Json"];
-            string? graphQlRequestClassName = null;
-            string? graphQlRequestSourceCode = null;
+            List<string> graphQlRequestNamespaces = apiClient.Options.JsonLibrary == JsonLibrary.SystemTextJson ? ["System.Text.Json.Serialization"] : ["Newtonsoft.Json"];
             if (apiClient.HttpCalls.Any(x => x.RequestDataType == DataType.GraphQl))
             {
-                graphQlRequestSourceCode = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.GraphQlRequest(apiClient.Options.JsonLibrary), true, graphQlRequestNamespaces);
-                graphQlRequestClassName = nameof(CoreCsFile.GraphQlRequest);
+                var graphQlRequestSourceCode = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, CoreCsFile.GraphQLRequest(apiClient.Options.JsonLibrary), true, graphQlRequestNamespaces);
+                var graphQlRequestClassName = nameof(CoreCsFile.GraphQLRequest);
+                AddToDictionary(graphQlRequestSourceCode, graphQlRequestClassName);
             }
             if (apiClient.Options.JsonLibrary == JsonLibrary.SystemTextJson)
             {

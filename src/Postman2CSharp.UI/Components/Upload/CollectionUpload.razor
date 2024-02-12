@@ -182,7 +182,7 @@ else
             {
                 SnackBar.Value?.Remove(ProgressSnackbar);
             }
-            SnackBar.Value?.Add($"Something went wrong. {exception.Message}", Severity.Error);
+            SnackBar.Value?.Add($"Something went wrong. {exception.Message}", Severity.Error, configure => configure.VisibleStateDuration = 7000);
         }
         finally
         {

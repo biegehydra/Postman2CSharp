@@ -348,7 +348,7 @@ public class ApiClientGenerator
                     try
                     {
                         
-                        ProcessItem(jsonClassGenerator, json, uniqueName, Consts.GraphQlVariables, ref graphQlVariablesClassName,
+                        ProcessItem(jsonClassGenerator, json, uniqueName, Consts.GraphQLVariables, ref graphQlVariablesClassName,
                             ref graphQlVariablesSourceCode, ref graphQlVariablesTypes, ref graphQlVariablesRootWasArray);
                     }
                     catch (Newtonsoft.Json.JsonException)

@@ -13,7 +13,7 @@ public static class Consts
     public const string Response = nameof(Response);
     public const string FormData = nameof(FormData);
     public const string QueryParameters = nameof(QueryParameters); 
-    public const string GraphQlVariables = nameof(GraphQlVariables);
+    public const string GraphQLVariables = nameof(GraphQLVariables);
     public const string Parameters = nameof(Parameters);
     public const string _encodedCredentials = nameof(_encodedCredentials);
     public const string _bearerToken = nameof(_bearerToken);

@@ -113,7 +113,7 @@ public static class HttpCallSerializer
             sb.AppendLine(indent + $"var graphQlVariables = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Variables).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
             parameters.Add("graphQlVariables");
         }
-        sb.AppendLine(indent + $"var graphQlRequest = new GraphQlRequest({string.Join(", ", parameters)});");
+        sb.AppendLine(indent + $"var graphQlRequest = new GraphQLRequest({string.Join(", ", parameters)});");
     }
 
     private static void Catch(StringBuilder sb, CatchExceptionTypes catchExceptionType, List<ErrorHandlingSinks> errorHandlingSinks, ErrorHandlingStrategy errorHandlingStrategy,
