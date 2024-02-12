@@ -123,6 +123,12 @@ namespace Postman2CSharp.Core.Serialization
                             }
                         }
                     }
+                    // If "in" isn't part of auth, it's in the header by default.
+                    else
+                    {
+                        var keyValue = auth.TryGetApiKeyConfig(ApiKeyConfig.Key, out var key) ? key : "api_key";
+                        sb.AddDefaultRequestHeader(indent, $@"$""{keyValue}""", Consts._apiKey);
+                    }
                     break;
                 case PostmanAuthType.awsv4:
                     sb.SetDefaultAuthorizationHeader(indent, @"$""AWS4-HMAC-SHA256""", Consts._awsSignature);

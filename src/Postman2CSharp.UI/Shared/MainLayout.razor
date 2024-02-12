@@ -265,6 +265,12 @@
             {
                 requestBody!.Raw = null;
             }
+            foreach (var graphQl in apiCollection.ApiClients.Where(x => x.Options.GraphQLQueriesInSeperateFile).SelectMany(x => x.HttpCalls)
+                         .Where(x => !string.IsNullOrWhiteSpace(x.Request.Body?.Graphql?.Query))
+                         .Select(x => x.Request.Body!.Graphql))
+            {
+                graphQl!.Query = string.Empty;
+            }
         }
     }
 

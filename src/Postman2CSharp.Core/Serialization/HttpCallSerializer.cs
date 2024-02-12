@@ -17,7 +17,7 @@ namespace Postman2CSharp.Core.Serialization;
 public static class HttpCallSerializer
 {
     public static void SerializeHttpCall(StringBuilder sb, AuthSettings? auth, string? baseUrl, HttpCall call, bool constructorHasAuthHeader,
-        ApiClientOptions options)
+        ApiClientOptions options, string graphQlQueriesClassName)
     {
         string relativePath;
         try
@@ -43,7 +43,7 @@ public static class HttpCallSerializer
 
         if (options.ErrorHandlingStrategy == ErrorHandlingStrategy.None)
         {
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, options);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, options, graphQlQueriesClassName);
         }
         else
         {
@@ -54,7 +54,7 @@ public static class HttpCallSerializer
             sb.AppendLine(indent + "try");
             sb.AppendLine(indent + "{");
 
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, options);
+            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, options, graphQlQueriesClassName);
 
             indent = Consts.Indent(2);
             sb.AppendLine(indent + "}");
@@ -93,7 +93,7 @@ public static class HttpCallSerializer
     }
 
 
-    private static void GraphQlString(StringBuilder sb, GraphQl? graphQl, string? graphQlVariablesClassName, int intIndent)
+    private static void GraphQlString(StringBuilder sb, GraphQl? graphQl, bool queriesInSeparateFile, string? graphQlQueriesClassName, string requestName, string? graphQlVariablesClassName, int intIndent)
     {
         if (graphQl == null)
         {
@@ -101,7 +101,15 @@ public static class HttpCallSerializer
         }
 
         string indent = Consts.Indent(intIndent);
-        sb.AppendLine(indent + $"var query = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Query).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
+
+        if (queriesInSeparateFile)
+        {
+            sb.AppendLine(indent + $"string query = {graphQlQueriesClassName}.{requestName};");
+        }
+        else
+        {
+            sb.AppendLine(indent + $"var query = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Query).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
+        }
 
         List<string> parameters = ["query"];
         if (!string.IsNullOrWhiteSpace(graphQlVariablesClassName))
@@ -132,21 +140,21 @@ public static class HttpCallSerializer
     }
 
     private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool constructorHasHeader,
-        int intIndent, string relativePath, ApiClientOptions options)
+        int intIndent, string relativePath, ApiClientOptions options, string graphQlQueriesClassName)
     {
         if (call.AllResponses.Count == 0) throw new UnreachableException("No success responses found. Should never happen.");
         if (call.AllResponses.Count > 1 && options.HandleMultipleResponses)
         {
-            HttpCallMultipleResponseTypesBody(sb, auth, call, constructorHasHeader, intIndent, relativePath, options);
+            HttpCallMultipleResponseTypesBody(sb, auth, call, constructorHasHeader, intIndent, relativePath, options, graphQlQueriesClassName);
         }
         else
         {
-            HttpCallSingleResponseTypeBody(sb, auth, call, constructorHasHeader, intIndent, relativePath, options);
+            HttpCallSingleResponseTypeBody(sb, auth, call, constructorHasHeader, intIndent, relativePath, options, graphQlQueriesClassName);
         }
     }
 
     private static void HttpCallSingleResponseTypeBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
-        bool constructorHasHeader, int intIndent, string relativePath, ApiClientOptions options)
+        bool constructorHasHeader, int intIndent, string relativePath, ApiClientOptions options, string graphQlQueriesClassName)
     {
         var indent = Consts.Indent(intIndent);
         if (!constructorHasHeader)
@@ -154,11 +162,6 @@ public static class HttpCallSerializer
             sb.SetAuthenticationHeader(call.Request.Auth, indent);
         }
         UniqueHeaders(sb, call, intIndent, out var hasUniqueHeaders);
-
-        if (call.UniqueHeaders.Where(Header.IsImportant).Any())
-        {
-            sb.AppendLine();
-        }
 
         var requestHasQueryString = QueryParameters(sb, call.Request.Auth ?? auth, call, indent, relativePath);
 
@@ -186,7 +189,7 @@ public static class HttpCallSerializer
         }
         else if (call.RequestDataType is DataType.GraphQl)
         {
-            GraphQlString(sb, call.Request.Body!.Graphql, call.GraphQlVariablesClassName, intIndent);
+            GraphQlString(sb, call.Request.Body!.Graphql, options.GraphQLQueriesInSeperateFile, graphQlQueriesClassName, call.Name, call.GraphQlVariablesClassName, intIndent);
         }
 
         // We need to use the HttpRequestMessage
@@ -207,7 +210,7 @@ public static class HttpCallSerializer
     }
 
     private static void HttpCallMultipleResponseTypesBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
-        bool constructorHasHeader, int intIndent, string relativePath, ApiClientOptions options)
+        bool constructorHasHeader, int intIndent, string relativePath, ApiClientOptions options, string graphQlQueriesClassName)
     {
         var indent = Consts.Indent(intIndent);
         if (!constructorHasHeader)
@@ -215,11 +218,6 @@ public static class HttpCallSerializer
             sb.SetAuthenticationHeader(call.Request.Auth, indent);
         }
         UniqueHeaders(sb, call, intIndent, out var hasUniqueHeaders);
-
-        if (call.UniqueHeaders.Where(Header.IsImportant).Any())
-        {
-            sb.AppendLine();
-        }
 
         var requestHasQueryString = QueryParameters(sb, call.Request.Auth ?? auth, call, indent, relativePath);
 
@@ -248,7 +246,7 @@ public static class HttpCallSerializer
         }
         else if (call.RequestDataType is DataType.GraphQl)
         {
-            GraphQlString(sb, call.Request.Body!.Graphql, call.GraphQlVariablesClassName, intIndent);
+            GraphQlString(sb, call.Request.Body!.Graphql, options.GraphQLQueriesInSeperateFile, graphQlQueriesClassName, call.Name, call.GraphQlVariablesClassName, intIndent);
         }
 
         
@@ -443,19 +441,6 @@ public static class HttpCallSerializer
                     }
                 }
             }
-            else
-            {
-                var keyValue = auth.TryGetApiKeyConfig(ApiKeyConfig.Key, out var key) ? key : "api_key";
-                if (requestHasQueryString)
-                {
-                    sb.AppendLine(indent + $@"parametersDict.Add($""{keyValue}"", {Consts._apiKey});");
-                }
-                else
-                {
-                    sb.AppendLine(indent + $@"var parametersDict = new Dictionary<string, string>() {{ {{ ""{keyValue}"", {Consts._apiKey} }} }};");
-                    requestHasQueryString = true;
-                }
-            }
         }
 
         if (requestHasQueryString)
@@ -492,5 +477,6 @@ public static class HttpCallSerializer
         }
         indent = Consts.Indent(intIndent);
         sb.AppendLine(indent + "};");
+        sb.AppendLine();
     }
 }

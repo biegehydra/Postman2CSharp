@@ -12,6 +12,7 @@ namespace Postman2CSharp.Core
         public bool MakePathCollectionVariablesFunctionParameters { get; set; }
         public bool UseCancellationTokens { get; set; }
         public bool HandleMultipleResponses { get; set; } = true;
+        public bool GraphQLQueriesInSeperateFile { get; set; } = true;
         public MultipleResponseHandling MultipleResponseHandling { get; set; } = MultipleResponseHandling.OneOf;
         public OutputCollectionType OutputCollectionType { get; set; } = OutputCollectionType.MutableList;
         public JsonLibrary JsonLibrary { get; set; } = JsonLibrary.SystemTextJson;
@@ -25,7 +26,7 @@ namespace Postman2CSharp.Core
 
         public List<CatchExceptionTypes> CatchExceptionTypes { get; set; } = new()
         {
-            Infrastructure.CatchExceptionTypes.HttpRequestException
+            Infrastructure.CatchExceptionTypes.Exception
         };
         public JsonPropertyAttributeUsage AttributeUsage { get; set; } = JsonPropertyAttributeUsage.Always;
         public RootDefinition RootDefinition { get; set; } = RootDefinition.PerAuthorityPerFolder;

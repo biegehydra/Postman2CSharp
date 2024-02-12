@@ -19,7 +19,9 @@ using Xamasoft.JsonClassGenerator.Models;
 using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Utilities;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 #pragma warning disable CS0162 // Unreachable code detected
 
 namespace Postman2CSharp.Core;
@@ -186,10 +188,10 @@ public class ApiClientGenerator
 
         var commonHeaders = rootItem.GetCommonHeaders();
         var uniqueNamesList = new List<string>() { normalizedNameSpace, name };
-        var (httpCalls, totalClassesGeneratedFromHttpCalls, duplicateRoots) = await GetHttpCalls(rootItem, commonHeaders, normalizedNameSpace, uniqueNamesList);
+        var (httpCalls, totalClassesGeneratedFromHttpCalls, duplicateRoots, graphQlQueriesCode) = await GetHttpCalls(rootItem, commonHeaders, normalizedNameSpace, uniqueNamesList);
 
         var apiClient = new ApiClient(rootItem.Description, normalizedNameSpace, leastPossibleUri, httpCalls, commonHeaders, rootItem.Auth, variableUsages,
-            Options.ApiClientOptions, totalClassesGeneratedFromHttpCalls + 1, duplicateRoots);
+            Options.ApiClientOptions, totalClassesGeneratedFromHttpCalls + 1, duplicateRoots, graphQlQueriesCode);
         return apiClient;
     }
 
@@ -224,15 +226,22 @@ public class ApiClientGenerator
         }
     }
 
-    private async Task<(List<HttpCall> HttpCalls, int TotalClassesGenerated, List<DuplicateRoot> DuplicateRoots)> GetHttpCalls(CollectionItem item, List<Header> commonHeaders, string nameSpace, List<string> uniqueNames)
+    private async Task<(List<HttpCall> HttpCalls, int TotalClassesGenerated, List<DuplicateRoot> DuplicateRoots, string? GraphQLQueriesCode)> GetHttpCalls(CollectionItem item, List<Header> commonHeaders, string nameSpace, List<string> uniqueNames)
     {
         List<DuplicateRoot> duplicateRoots = new();
         List<HttpCall> httpCalls = new ();
         var requestItems = item.RequestItems();
         var writeFormDataComments = Options.ApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.FormData);
         var totalClassesGenerated = 0;
-
-        if(requestItems == null) return (httpCalls, totalClassesGenerated, duplicateRoots);
+        StringBuilder? queriesSb = null;
+        bool firstGraphQl = true;
+        if (Options.ApiClientOptions.GraphQLQueriesInSeperateFile)
+        {
+            queriesSb = new();
+            queriesSb.AppendLine($"public static class {nameSpace}GraphQLQueries");
+            queriesSb.AppendLine("{");
+        }
+        if(requestItems == null) return (httpCalls, totalClassesGenerated, duplicateRoots, null);
 
         var jsonClassGenerator = ClassGenerator();
         foreach (var requestItem in requestItems)
@@ -271,7 +280,7 @@ public class ApiClientGenerator
                 {
                     try
                     {
-                        ProcessItem(jsonClassGenerator, json, uniqueName, Consts.Request, ref requestClassName,
+                        ProcessJson(jsonClassGenerator, json, uniqueName, Consts.Request, ref requestClassName,
                             ref requestSourceCode, ref requestTypes, ref requestRootWasArray);
                     }
                     catch (Newtonsoft.Json.JsonException)
@@ -336,6 +345,15 @@ public class ApiClientGenerator
             List<ClassType>? graphQlVariablesTypes = null;
             if (requestDataType is DataType.GraphQl)
             {
+                if (Options.ApiClientOptions.GraphQLQueriesInSeperateFile)
+                {
+                    if (!firstGraphQl)
+                    {
+                        queriesSb!.AppendLine();
+                    }
+                    queriesSb!.AppendLine(Consts.Indent(1) + $"public const string {uniqueName} = @\"\n{HttpUtility.JavaScriptStringEncode(requestItem.Request.Body!.Graphql!.Query).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
+                    firstGraphQl = false;
+                }
                 var temp = Options.CSharpCodeWriterConfig.AttributeUsage;
                 Options.CSharpCodeWriterConfig.AttributeUsage = JsonPropertyAttributeUsage.Always;
                 var json = requestItem.Request.Body!.Graphql!.Variables;
@@ -348,7 +366,7 @@ public class ApiClientGenerator
                     try
                     {
                         
-                        ProcessItem(jsonClassGenerator, json, uniqueName, Consts.GraphQLVariables, ref graphQlVariablesClassName,
+                        ProcessJson(jsonClassGenerator, json, uniqueName, Consts.GraphQLVariables, ref graphQlVariablesClassName,
                             ref graphQlVariablesSourceCode, ref graphQlVariablesTypes, ref graphQlVariablesRootWasArray);
                     }
                     catch (Newtonsoft.Json.JsonException)
@@ -455,7 +473,7 @@ public class ApiClientGenerator
                         var type = allResponses.Count > 1
                             ? (HttpStatusCode) response.Code + Consts.Response
                             : Consts.Response;
-                        ProcessItem(jsonClassGenerator, json, uniqueName, type, ref responseClassName,
+                        ProcessJson(jsonClassGenerator, json, uniqueName, type, ref responseClassName,
                             ref responseSourceCode, ref _, ref rootWasArray);
                     }
                     catch (Newtonsoft.Json.JsonException)
@@ -543,7 +561,7 @@ public class ApiClientGenerator
                 try
                 {
                     bool _ = false;
-                    ProcessItem(jsonClassGenerator, queryParametersAsJson, uniqueName, Consts.Parameters,
+                    ProcessJson(jsonClassGenerator, queryParametersAsJson, uniqueName, Consts.Parameters,
                         ref queryParametersClassName, ref queryParametersSourceCode, ref queryParameterTypes, ref _,
                         descriptionDict);
                 }
@@ -596,7 +614,6 @@ public class ApiClientGenerator
             var multipleResponse = allApiResponse.Count > 1;
             var httpClientFunction = Utils.HttpClientCall(requestItem.Request.Method, requestDataType, successResponseDataType, Options.CSharpCodeWriterConfig.AttributeLibrary, multipleResponse);
 
-
             httpCalls.Add(new ()
             {
                 Name = uniqueName,
@@ -625,9 +642,14 @@ public class ApiClientGenerator
                 throw new Exception("Something went wrong. Processed requests greater than total requests.");
             await RaiseProgressCallback((float) _processedRequests / TotalRequest);
         }
-        return (httpCalls, totalClassesGenerated, duplicateRoots);
+        if (Options.ApiClientOptions.GraphQLQueriesInSeperateFile)
+        {
+            queriesSb!.AppendLine("}");
+        }
+
+        return (httpCalls, totalClassesGenerated, duplicateRoots, queriesSb?.ToString());
         
-        void ProcessItem(JsonClassGenerator classGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, 
+        void ProcessJson(JsonClassGenerator classGenerator, string json, string itemName, string itemType, ref string? className, ref string? sourceCode, 
             ref List<ClassType>? types, ref bool rootWasArray, Dictionary<string, string?>? descriptionDict = null)
         {
             className = Utils.GenerateUniqueName(itemName + itemType, uniqueNames);

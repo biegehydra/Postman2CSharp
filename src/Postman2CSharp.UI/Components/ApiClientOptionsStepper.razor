@@ -104,7 +104,7 @@
                 <PrismCodeBlock Value="@StepperExamples.ClassDeduping(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
             </Example>
             <AdditionalInfo>
-                <div style="overflow: scroll;">
+                <div>
                     <ul>
                         <li>
                             @InlineEmphasis("Duplicate Roots") - Root classes are your responses and requests; all other classes generated descend from them. Deduping them
@@ -129,18 +129,26 @@
     <MudStep Title="Miscellaneous">
         <StepperItem>
             <Input>
+                @if (_collection?.GetAllCollectionItems().Any(x => !string.IsNullOrWhiteSpace(x?.Request?.Body?.Graphql?.Query)) == true)
+                {
+                    <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.GraphQLQueriesInSeperateFile">GraphQL Queries In Separate File</MudCheckBox>
+                }
                 <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="_dirtyApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
                 <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="_dirtyApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
-                <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" Exclude="new List<RootDefinition>() { RootDefinition.Manual }" AlwaysShowAllEnumValues Label="Root Definition"></EnumSelectComponent>
+                <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" Exclude="new List<RootDefinition>() {RootDefinition.Manual}" AlwaysShowAllEnumValues Label="Request Grouping"></EnumSelectComponent>
             </Input>
             <Example>
                 <PrismCodeBlock Value="@StepperExamples.Miscellaneous(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
             </Example>
             <AdditionalInfo>
                 <ul>
-                    <li>@InlineEmphasis("Root"): A root is any folder in a collection that has a request (including the root itself).</li>
-                    <li>@InlineEmphasis("Authority"): Includes the authentication section, the host, and the port of a url. In the URL http://username:password@example.com:8080/path/to/file - @InlineValue("Authority"): @InlineCode("\"username:password@example.com:8080\"").</li>
-                    <Break Size="P2CsSize.Small"></Break>
+                    @if (_collection?.GetAllCollectionItems().Any(x => !string.IsNullOrWhiteSpace(x?.Request?.Body?.Graphql?.Query)) == true)
+                    {
+                        <li>
+                            @InlineValue("GraphQL Queries In Separate File") - Inlining the query of a GraphQL request (@InlineCode("string query = \"some long query\"")) in a function can take up a lot of space. Enabling this option will put the queries in a separate static class.
+                        </li>
+                        <Break Size="P2CsSize.Small" ></Break>
+                    }
                     <li>@InlineValue("PerAuthorityPerFolder"): An ApiClient will be created for each root, with a caveat being that if a root uses different authorities in it's requests, the requests will be regrouped into new roots based on authority.</li>
                     <ul>
                         <li>Useful when the postman collection is well organized and you want your ApiClients to have separation of concerns</li>
@@ -149,6 +157,9 @@
                     <ul>
                         <li>Useful when the you want a monolithic ApiClient but authorization schemes may be lost.</li>
                     </ul>
+                    <Break Size="P2CsSize.Small"></Break>
+                    <li>@InlineEmphasis("Root"): A root is any folder in a collection that has a request (including the root itself).</li>
+                    <li>@InlineEmphasis("Authority"): Includes the authentication section, the host, and the port of a url. In the URL http://username:password@example.com:8080/path/to/file - @InlineValue("Authority"): @InlineCode("\"username:password@example.com:8080\"").</li>
                 </ul>
             </AdditionalInfo>
         </StepperItem>

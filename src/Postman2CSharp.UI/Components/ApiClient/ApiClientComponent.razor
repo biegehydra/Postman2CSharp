@@ -22,21 +22,6 @@
                     <p>Download ApiClient Project</p>
                     <MudIconButton Size="Size.Medium" OnClick="DownloadApiClient" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
                 </MudItem>
-                <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
-                    <p>Download Test Class</p>
-                    <MudIconButton Color="@Color.Tertiary" Size="Size.Medium" Icon="@Icons.Download" Variant="Variant.Filled" OnClick="() => Interop.Value.DownloadFile(SelectedApiClient.TestClassName, SelectedApiClient.TestClassSourceCode)"></MudIconButton>
-                </MudItem>
-                @if (SelectedApiClient.ControllerSourceCode != null)
-                {
-                    <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
-                        <p>Download Empty Controller</p>
-                        <MudIconButton Color="@Color.Tertiary" Size="Size.Medium" Icon="@Icons.Download" Variant="Variant.Filled" OnClick="() => Interop.Value.DownloadFile(SelectedApiClient.ControllerClassName, SelectedApiClient.ControllerSourceCode)"></MudIconButton>
-                    </MudItem>
-                }
-                <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
-                    <p>View Test Class</p>
-                    <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientTestsTab(CollectionId, SelectedApiClient.Id, SelectedApiClient.TestClassName)"></OpenInNewTab>
-                </MudItem>
                 @if (SelectedApiClient.HttpCalls.Any(x => x.AnyClassesGenerated()))
                 {
                     <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
@@ -51,17 +36,6 @@
                         <MudTooltip Delay="400" Text="No classes generated" >
                             <OpenInNewTab Disabled="true" ></OpenInNewTab>
                         </MudTooltip>
-                    </MudItem>
-                }
-                <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
-                    <p>View Interface</p>
-                    <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientInterfaceTab(CollectionId, SelectedApiClient.Id, SelectedApiClient.InterfaceName)"></OpenInNewTab>
-                </MudItem>
-                @if (SelectedApiClient.ControllerSourceCode != null)
-                {
-                    <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
-                        <p>View Empty Controller</p>
-                        <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientControllerTab(CollectionId, SelectedApiClient.Id, SelectedApiClient.ControllerClassName)"></OpenInNewTab>
                     </MudItem>
                 }
                 @if (SelectedApiClient.DuplicateRoots.Count > 0)
@@ -133,17 +107,88 @@
          </SlideDown>
     </div>
     <br />
+
+    <div class="f-row aic gap-5">
+        <div style="max-width: 20em;" >
+            <EnumSelectComponent TEnum="CodeOption" AlwaysShowAllEnumValues="true" Label="Selected File" Exclude="CodeOptionsExclude()" @bind-Value:get="_currentCode" @bind-Value:set="CurrentCodeChanged"></EnumSelectComponent>
+        </div>
+        @{
+            string text = _currentCode switch
+            {
+                CodeOption.Implementation => "Download Implementation",
+                CodeOption.Interface => "Download Interface",
+                CodeOption.Controller => "Download Empty Controller",
+                CodeOption.GraphQLQueries => "Download GraphQL Queries",
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+        @if (FileName != null && SourceCode != null)
+        {
+            <p>@text</p>
+            <MudIconButton Color="@Color.Tertiary" Size="Size.Medium" Icon="@Icons.Download" Variant="Variant.Filled" OnClick="() => Interop.Value.DownloadFile(FileName, SourceCode)"></MudIconButton>
+        }
+    </div>
     <br />
 
-    <PrismCodeBlock FileName="@SelectedApiClient.Name" Language="PrismLanguage.CSharp" Value="@SelectedApiClient.SourceCode" />
+
+    <PrismCodeBlock FileName="@FileName" Language="PrismLanguage.CSharp" Value="@SourceCode" />
 }
 
 @code {
+
+    private enum CodeOption
+    {
+        Implementation,
+        Interface,
+        Controller,
+        GraphQLQueries
+    }
+
     [Parameter] public string? CollectionId { get; set; }
     [Parameter] public ApiClient? SelectedApiClient { get; set; }
     [Inject] private IDialogService? DialogService { get; set; }
 
     private bool ShowConfigurations { get; set; }
+
+    private List<CodeOption> CodeOptionsExclude()
+    {
+        var exclude = new List<CodeOption>();
+        if (SelectedApiClient == null) return Enum.GetValues<CodeOption>().ToList();
+        if (SelectedApiClient.ControllerSourceCode == null)
+        {
+            exclude.Add(CodeOption.Controller);
+        }
+        if (SelectedApiClient.GraphQLQueriesSourceCode == null)
+        {
+            exclude.Add(CodeOption.GraphQLQueries);
+        }
+        return exclude;
+    }
+
+    private string? FileName => _currentCode switch
+    {
+        CodeOption.Implementation => SelectedApiClient?.Name,
+        CodeOption.Interface => SelectedApiClient?.InterfaceName,
+        CodeOption.Controller => SelectedApiClient?.ControllerClassName,
+        CodeOption.GraphQLQueries => SelectedApiClient?.GraphQLQueriesClassName,
+        _ => throw new ArgumentOutOfRangeException()
+    };
+
+    private string? SourceCode => _currentCode switch
+    {
+        CodeOption.Implementation => SelectedApiClient?.SourceCode,
+        CodeOption.Interface => SelectedApiClient?.InterfaceSourceCode,
+        CodeOption.Controller => SelectedApiClient?.ControllerSourceCode,
+        CodeOption.GraphQLQueries => SelectedApiClient?.GraphQLQueriesSourceCode,
+        _ => throw new ArgumentOutOfRangeException()
+    };
+
+    private CodeOption _currentCode = CodeOption.Implementation;
+    private Task CurrentCodeChanged(CodeOption arg)
+    {
+        _currentCode = arg;
+        return InvokeAsync(StateHasChanged);
+    }
 
     private async Task DownloadApiClient()
     {
@@ -211,5 +256,4 @@
         SelectedApiClient.GenerateSourceCode();
         StateHasChanged();
     }
-
 }

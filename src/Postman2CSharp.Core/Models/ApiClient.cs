@@ -60,6 +60,7 @@ public class ApiClient
     public string InterfaceName => $"I{Name}";
     public string TestClassName => $"{Name}Tests";
     public string ControllerClassName => $"{NameSpace}Controller";
+    public string GraphQLQueriesClassName => $"{NameSpace}GraphQLQueries";
     public required string TestClassSourceCode { get; set; }
     private string? _controllerSourceCode;
     public required string? ControllerSourceCode
@@ -74,6 +75,7 @@ public class ApiClient
     public required AuthSettings? CollectionAuth { get; set; }
     public required string SourceCode { get; set; }
     public required string InterfaceSourceCode { get; set; }
+    public required string? GraphQLQueriesSourceCode { get; set; }
     public required List<VariableUsage> VariableUsages { get; set; }
     public required ApiClientOptions Options { get; set; }
     public required int TotalClassesGenerated { get; set; }
@@ -107,7 +109,7 @@ public class ApiClient
     [SetsRequiredMembers]
     public ApiClient(string? description, string nameSpace, string? baseUrl, List<HttpCall> httpCalls,
         List<Header> commonHeaders, AuthSettings? collectionAuth, List<VariableUsage> variableUsages, ApiClientOptions options, 
-        int totalClassesGenerated, List<DuplicateRoot> duplicateRoots)
+        int totalClassesGenerated, List<DuplicateRoot> duplicateRoots, string? graphQlQueriesSourceCode)
 #pragma warning restore CS8618
     {
         Description = description;
@@ -120,6 +122,7 @@ public class ApiClient
         Options = options;
         TotalClassesGenerated = totalClassesGenerated;
         DuplicateRoots = duplicateRoots;
+        GraphQLQueriesSourceCode = graphQlQueriesSourceCode;
 
         GenerateSourceCode();
     }

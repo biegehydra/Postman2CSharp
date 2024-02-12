@@ -157,7 +157,7 @@ public class HttpCall
             return true;
         }
 
-        if (!string.IsNullOrWhiteSpace(GraphQlVariablesClassName))
+        if (!string.IsNullOrWhiteSpace(GraphQlVariablesSourceCode))
         {
             return true;
         }

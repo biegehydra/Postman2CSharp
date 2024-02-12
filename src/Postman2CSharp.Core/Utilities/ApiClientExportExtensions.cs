@@ -77,6 +77,12 @@ namespace Postman2CSharp.Core.Utilities
                 httpExtensionsClassName = nameof(CoreCsFile.NewtonsoftHttpJsonExtensions);
             }
 
+            if (apiClient.Options.GraphQLQueriesInSeperateFile)
+            {
+                var graphQlQueriesCode = AddNamespaceAndUsingsToSourceCode(apiClient.NameSpace, apiClient.GraphQLQueriesSourceCode, true);
+                AddToDictionary(graphQlQueriesCode, apiClient.GraphQLQueriesClassName);
+            }
+
             AddToDictionary(apiClientSc, apiClient.Name);
             AddToDictionary(apiClient.InterfaceSourceCode, apiClient.InterfaceName);
             if (apiClient.UniqueAuths.Any(x => x.EnumType() == PostmanAuthType.oauth2))
