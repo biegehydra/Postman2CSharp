@@ -197,6 +197,10 @@ public class ApiClient
             {
                 httpCall.FormDataSourceCode = httpCall.FormDataSourceCode?.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
             }
+            if (httpCall.GraphQlVariablesClassName != null)
+            {
+                httpCall.GraphQlVariablesSourceCode = httpCall.GraphQlVariablesSourceCode?.Replace($"namespace {oldNamespace}", $"namespace {newNewspace}");
+            }
         }
     }
 
