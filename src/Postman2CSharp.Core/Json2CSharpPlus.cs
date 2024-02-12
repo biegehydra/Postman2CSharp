@@ -15,7 +15,7 @@ namespace Postman2CSharp.Core
         public Json2CSharpPlus(CSharpCodeWriterConfig config, DuplicateOptions duplicateOptions)
         {
             config.SetNoNamespace();
-            _codeWriter = new CSharpCodeWriter(config, false);
+            _codeWriter = new CSharpCodeWriter(config, false, false);
             _classGenerator = new JsonClassGenerator(_codeWriter, duplicateOptions);
         }
         private int TotalGeneratedClasses { get; set; }

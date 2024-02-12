@@ -9,6 +9,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
 {
     public class CSharpCodeWriter : ICodeWriter
     {
+        public bool WriteDeserializationComments { get; set; }
         public bool WriteDescriptions { get; set; }
         public CSharpCodeWriter()
         {
@@ -16,10 +17,11 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
 
         }
 
-        public CSharpCodeWriter(CSharpCodeWriterConfig writerConfig, bool writeDescriptions)
+        public CSharpCodeWriter(CSharpCodeWriterConfig writerConfig, bool writeDescriptions, bool writeDeserializationComments)
         {
             this.config = writerConfig;
             this.WriteDescriptions = writeDescriptions;
+            this.WriteDeserializationComments = writeDeserializationComments;
         }
 
         private readonly CSharpCodeWriterConfig config;
@@ -182,7 +184,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
 
         public void WriteClass(StringBuilder sw, JsonType type, bool isXml)
         {
-            if (type.IsRoot)
+            if (type.IsRoot && WriteDeserializationComments)
             {
                 this.WriteDeserializationComment(sw, type.NewAssignedName, type.IsArray);
             }

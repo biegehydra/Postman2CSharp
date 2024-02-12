@@ -664,7 +664,7 @@ public class ApiClientGenerator
             {
                 var codeWriterClone = Options.CSharpCodeWriterConfig.Clone();
                 codeWriterClone.Namespace = nameSpace;
-                classGenerator.CodeWriter = new CSharpCodeWriter(codeWriterClone, writeComments);
+                classGenerator.CodeWriter = new CSharpCodeWriter(codeWriterClone, writeComments, false);
                 classGenerator.SetCurrentRootIsQueryParameters(false);
             }
             classGenerator.SetDescriptionDict(descriptionDict);
@@ -690,7 +690,7 @@ public class ApiClientGenerator
                     AttributeUsage = JsonPropertyAttributeUsage.Never,
                     Namespace = nameSpacee
                 };
-                return new CSharpCodeWriter(config, writeDescriptions);
+                return new CSharpCodeWriter(config, writeDescriptions, false);
             }
         }
 
@@ -714,7 +714,7 @@ public class ApiClientGenerator
     private CSharpCodeWriter CSharpCodeWriter()
     {
         var writeComments = Options.ApiClientOptions.XmlCommentTypes.Contains(XmlCommentTypes.QueryParameters);
-        return new CSharpCodeWriter(Options.CSharpCodeWriterConfig, writeComments);
+        return new CSharpCodeWriter(Options.CSharpCodeWriterConfig, writeComments, false);
     }
 
     private static (string SourceCode, int ClassCount, bool RootWasArray) GenerateClasses(JsonClassGenerator jsonClassGenerator, string json, ref List<ClassType>? types, string rootClassName, bool hasDescriptions)
