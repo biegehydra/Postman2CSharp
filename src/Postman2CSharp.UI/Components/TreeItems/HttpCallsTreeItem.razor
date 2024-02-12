@@ -1,7 +1,7 @@
 ﻿@if (ApiClientId != null && ApiCollectionId != null && HttpCall != null && _shouldRender)
 {
     @if (!string.IsNullOrWhiteSpace(HttpCall.RequestSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.QueryParameterSourceCode)
-        || !string.IsNullOrWhiteSpace(HttpCall.FormDataSourceCode) || HttpCall.AllResponses.Any(x => !string.IsNullOrWhiteSpace(x.SourceCode)))
+        || !string.IsNullOrWhiteSpace(HttpCall.FormDataSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.GraphQlVariablesSourceCode) || HttpCall.AllResponses.Any(x => !string.IsNullOrWhiteSpace(x.SourceCode)))
     {
         <MudTreeViewItem Value="@HttpCall.Name" @bind-Expanded="Expanded" >
             <Content>
