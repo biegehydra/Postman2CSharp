@@ -42,6 +42,7 @@ namespace Postman2CSharp.UI.Services
             "System.Xml.XDocument.dll",
             "System.Xml.XPath.XDocument.dll",
             "System.Diagnostics.TraceSource.dll",
+            "System.Web.HttpUtility.dll"
         };
 
         private static List<string> AdvancedSettingsAssemblies { get; set; } = new()
