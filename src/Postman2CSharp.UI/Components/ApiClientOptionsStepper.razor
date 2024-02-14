@@ -375,7 +375,8 @@
             {
                 Snackbar?.Remove(_progressSnackbar);
             }
-            Snackbar?.Add($"Something went wrong. {exception.Message}", Severity.Error);
+            Snackbar?.Add($"Something went wrong. {exception.Message}", Severity.Error, configure => configure.VisibleStateDuration = 7000);
+            await AnalyticsInterop.TrackAction($"Error Generating ApiClient: {exception.Message}");
         }
     }
 
