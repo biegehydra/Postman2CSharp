@@ -235,12 +235,6 @@ public class ApiClientGenerator
         var totalClassesGenerated = 0;
         StringBuilder? queriesSb = null;
         bool firstGraphQl = true;
-        if (Options.ApiClientOptions.GraphQLQueriesInSeperateFile)
-        {
-            queriesSb = new();
-            queriesSb.AppendLine($"public static class {nameSpace}GraphQLQueries");
-            queriesSb.AppendLine("{");
-        }
         if(requestItems == null) return (httpCalls, totalClassesGenerated, duplicateRoots, null);
 
         var jsonClassGenerator = ClassGenerator();
@@ -347,12 +341,18 @@ public class ApiClientGenerator
             {
                 if (Options.ApiClientOptions.GraphQLQueriesInSeperateFile)
                 {
-                    if (!firstGraphQl)
+                    if (firstGraphQl)
+                    {
+                        queriesSb = new();
+                        queriesSb.AppendLine($"public static class {nameSpace}GraphQLQueries");
+                        queriesSb.AppendLine("{");
+                        firstGraphQl = false;
+                    }
+                    else
                     {
                         queriesSb!.AppendLine();
                     }
                     queriesSb!.AppendLine(Consts.Indent(1) + $"public const string {uniqueName} = @\"\n{HttpUtility.JavaScriptStringEncode(requestItem.Request.Body!.Graphql!.Query).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
-                    firstGraphQl = false;
                 }
                 var temp = Options.CSharpCodeWriterConfig.AttributeUsage;
                 Options.CSharpCodeWriterConfig.AttributeUsage = JsonPropertyAttributeUsage.Always;
@@ -642,9 +642,9 @@ public class ApiClientGenerator
                 throw new Exception("Something went wrong. Processed requests greater than total requests.");
             await RaiseProgressCallback((float) _processedRequests / TotalRequest);
         }
-        if (Options.ApiClientOptions.GraphQLQueriesInSeperateFile)
+        if (Options.ApiClientOptions.GraphQLQueriesInSeperateFile && queriesSb != null)
         {
-            queriesSb!.AppendLine("}");
+            queriesSb.AppendLine("}");
         }
 
         return (httpCalls, totalClassesGenerated, duplicateRoots, queriesSb?.ToString());
