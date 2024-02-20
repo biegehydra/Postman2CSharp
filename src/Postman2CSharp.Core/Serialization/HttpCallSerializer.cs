@@ -16,7 +16,7 @@ namespace Postman2CSharp.Core.Serialization;
 
 public static class HttpCallSerializer
 {
-    public static void SerializeHttpCall(StringBuilder sb, AuthSettings? auth, string? baseUrl, HttpCall call, bool constructorHasAuthHeader,
+    public static void SerializeHttpCall(StringBuilder sb, string? baseUrl, HttpCall call, bool constructorHasAuthHeader,
         ApiClientOptions options, string graphQlQueriesClassName)
     {
         string relativePath;
@@ -43,7 +43,7 @@ public static class HttpCallSerializer
 
         if (options.ErrorHandlingStrategy == ErrorHandlingStrategy.None)
         {
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 2, relativePath, options, graphQlQueriesClassName);
+            HttpCallBody(sb, call, constructorHasAuthHeader, 2, relativePath, options, graphQlQueriesClassName);
         }
         else
         {
@@ -54,7 +54,7 @@ public static class HttpCallSerializer
             sb.AppendLine(indent + "try");
             sb.AppendLine(indent + "{");
 
-            HttpCallBody(sb, auth, call, constructorHasAuthHeader, 3, relativePath, options, graphQlQueriesClassName);
+            HttpCallBody(sb, call, constructorHasAuthHeader, 3, relativePath, options, graphQlQueriesClassName);
 
             indent = Consts.Indent(2);
             sb.AppendLine(indent + "}");
@@ -139,21 +139,21 @@ public static class HttpCallSerializer
         sb.AppendLine(indent + "}");
     }
 
-    private static void HttpCallBody(StringBuilder sb, AuthSettings? auth, HttpCall call, bool constructorHasHeader,
+    private static void HttpCallBody(StringBuilder sb, HttpCall call, bool constructorHasHeader,
         int intIndent, string relativePath, ApiClientOptions options, string graphQlQueriesClassName)
     {
         if (call.AllResponses.Count == 0) throw new UnreachableException("No success responses found. Should never happen.");
         if (call.AllResponses.Count > 1 && options.HandleMultipleResponses)
         {
-            HttpCallMultipleResponseTypesBody(sb, auth, call, constructorHasHeader, intIndent, relativePath, options, graphQlQueriesClassName);
+            HttpCallMultipleResponseTypesBody(sb, call, constructorHasHeader, intIndent, relativePath, options, graphQlQueriesClassName);
         }
         else
         {
-            HttpCallSingleResponseTypeBody(sb, auth, call, constructorHasHeader, intIndent, relativePath, options, graphQlQueriesClassName);
+            HttpCallSingleResponseTypeBody(sb, call, constructorHasHeader, intIndent, relativePath, options, graphQlQueriesClassName);
         }
     }
 
-    private static void HttpCallSingleResponseTypeBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
+    private static void HttpCallSingleResponseTypeBody(StringBuilder sb, HttpCall call,
         bool constructorHasHeader, int intIndent, string relativePath, ApiClientOptions options, string graphQlQueriesClassName)
     {
         var indent = Consts.Indent(intIndent);
@@ -163,7 +163,7 @@ public static class HttpCallSerializer
         }
         UniqueHeaders(sb, call, intIndent, out var hasUniqueHeaders);
 
-        var requestHasQueryString = QueryParameters(sb, call.Request.Auth ?? auth, call, indent, relativePath);
+        var requestHasQueryString = QueryParameters(sb, call.Request.Auth, call, indent, relativePath);
 
         if (call.RequestDataType is DataType.Html or DataType.Text or DataType.Xml)
         {
@@ -199,6 +199,17 @@ public static class HttpCallSerializer
                                             !(call.HttpClientFunction.Contains("AsJson") ||
                                               call.HttpClientFunction.Contains("AsNewtonsoftJson"));
 
+        if (call.Request.Auth?.EnumType() == PostmanAuthType.oauth2 && call.Request.Auth.TryGetAuth2Config(OAuth2Config.AddTokenTo, out var addTokenToValue))
+        {
+            if (Enum.TryParse<AddTokenTo>(addTokenToValue, true, out var addTokenTo))
+            {
+                if (addTokenTo == AddTokenTo.Header)
+                {
+                    sb.AppendLine(indent + $"await {OAuth2Functions.AddAccessTokenToRequest}();");
+                }
+            }
+        }
+
         ReturnOrVarResponse(sb, httpClientCallReturnsResponse, indent);
 
         HttpClientRequest(sb, call, httpClientCallReturnsResponse, requestHasQueryString, relativePath, hasUniqueHeaders, options);
@@ -209,7 +220,7 @@ public static class HttpCallSerializer
         }
     }
 
-    private static void HttpCallMultipleResponseTypesBody(StringBuilder sb, AuthSettings? auth, HttpCall call,
+    private static void HttpCallMultipleResponseTypesBody(StringBuilder sb, HttpCall call,
         bool constructorHasHeader, int intIndent, string relativePath, ApiClientOptions options, string graphQlQueriesClassName)
     {
         var indent = Consts.Indent(intIndent);
@@ -219,7 +230,7 @@ public static class HttpCallSerializer
         }
         UniqueHeaders(sb, call, intIndent, out var hasUniqueHeaders);
 
-        var requestHasQueryString = QueryParameters(sb, call.Request.Auth ?? auth, call, indent, relativePath);
+        var requestHasQueryString = QueryParameters(sb, call.Request.Auth, call, indent, relativePath);
 
         if (call.RequestDataType is DataType.Html or DataType.Text or DataType.Xml)
         {
@@ -249,7 +260,16 @@ public static class HttpCallSerializer
             GraphQlString(sb, call.Request.Body!.Graphql, options.GraphQLQueriesInSeperateFile, graphQlQueriesClassName, call.Name, call.GraphQlVariablesClassName, intIndent);
         }
 
-        
+        if (call.Request.Auth?.EnumType() == PostmanAuthType.oauth2 && call.Request.Auth.TryGetAuth2Config(OAuth2Config.AddTokenTo, out var addTokenToValue))
+        {
+            if (Enum.TryParse<AddTokenTo>(addTokenToValue, true, out var addTokenTo))
+            {
+                if (addTokenTo == AddTokenTo.Header)
+                {
+                    sb.AppendLine(indent + $"await {OAuth2Functions.AddAccessTokenToRequest}();");
+                }
+            }
+        }
 
         ReturnOrVarResponse(sb, false, indent);
 

@@ -56,7 +56,7 @@ public static class ApiClientSerializer
             AddOAuth2Methods(sb, uniqueAuthOAuth2, 1);
         }
 
-        ApiClientCalls(sb, client.CollectionAuth, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: client.AddAuthHeaderToConstructor, client.Options, client.GraphQLQueriesClassName);
+        ApiClientCalls(sb, client.BaseUrl, client.HttpCalls, constructorHasAuthHeader: client.AddAuthHeaderToConstructor, client.Options, client.GraphQLQueriesClassName);
         sb.AppendLine();
         if (client.Options.ExecuteWithRetry)
         {
@@ -138,14 +138,14 @@ public static class ApiClientSerializer
         sb.AppendLine(indent + "}");
     }
 
-    private static void ApiClientCalls(StringBuilder sb, AuthSettings? auth, string? baseUrl, List<HttpCall> calls, bool constructorHasAuthHeader, 
+    private static void ApiClientCalls(StringBuilder sb, string? baseUrl, List<HttpCall> calls, bool constructorHasAuthHeader, 
         ApiClientOptions options, string graphQlQueriesClassName)
     {
         var last = calls.Last();
         foreach (var call in calls)
         {
             sb.AppendLine();
-            HttpCallSerializer.SerializeHttpCall(sb, auth, baseUrl, call, constructorHasAuthHeader, options, graphQlQueriesClassName);
+            HttpCallSerializer.SerializeHttpCall(sb, baseUrl, call, constructorHasAuthHeader, options, graphQlQueriesClassName);
             if (!Equals(call, last))
             {
                 sb.AppendLine();
