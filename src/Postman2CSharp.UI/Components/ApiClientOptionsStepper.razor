@@ -111,12 +111,12 @@
                             will cause some endpoints to return the same model, rather than all returning a unique model.
                         </li>
                         <li>
-                            @InlineValue("Semi-Duplicate Classes") - A semi-duplicate class is a class that has that has all matching members to another class, except fewer.
+                            @InlineEmphasis("Semi-Duplicate Classes") - A semi-duplicate class is a class that has that has all matching members to another class, except fewer.
                             It's not uncommon to see JSON responses representing the same model with different amounts of properties. This is usually because the API is returning
                             a subset of the properties in the model. Enabling this will dedupe these "semi-duplicates".
                         </li>
                         <li>
-                            @InlineValue("Same vs Different Json Name Sensitivity") - If you enable removing semi-duplicates, you probably want to set limits on the difference in the amount
+                            @InlineEmphasis("Same vs Different Json Name Sensitivity") - If you enable removing semi-duplicates, you probably want to set limits on the difference in the amount
                             of properties on 2 classes for them be to be considered semi-duplicates - you don't want an error response with only a "Message" property being deduped into the chat message model
                             just because it also happens to have a "Message" property. The same sensitivity is the the difference in the amount of properties 2 classes can have and still be considered semi-duplicate
                             when they have the same key in json. The different sensitivity works the same but when the keys in the json are different.
@@ -159,7 +159,7 @@
                     </ul>
                     <Break Size="P2CsSize.Small"></Break>
                     <li>@InlineEmphasis("Root"): A root is any folder in a collection that has a request (including the root itself).</li>
-                    <li>@InlineEmphasis("Authority"): Includes the authentication section, the host, and the port of a url. In the URL http://username:password@example.com:8080/path/to/file - @InlineValue("Authority"): @InlineCode("\"username:password@example.com:8080\"").</li>
+                    <li>@InlineEmphasis("Authority"): Includes the authentication section, the host, and the port of a url. In the URL @InlineCode("\"http://username:password@example.com:8080/path/to/file\"") - @InlineValue("Authority"): @InlineCode("\"username:password@example.com:8080\"").</li>
                 </ul>
             </AdditionalInfo>
         </StepperItem>

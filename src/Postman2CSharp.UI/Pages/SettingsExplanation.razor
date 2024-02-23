@@ -69,13 +69,13 @@ how all the configurations work."
             </p>
             <br />
             <p>
-                @InlineValue("Handle"): The first option you have is whether or not you handle multiple responses at all. If you choose not to handle multiple response,
-                then only the first success response (status code &gt;= 200 and &lt; 300, preference to 200 if present) will be used in the generation process.
-                <u>All others will be discarded</u>. This means that classes won't be generated for all other responses. This setting <u>can't be enabled</u> after generation.
+                @InlineEmphasis("Handle"): The first option you have is whether you handle multiple responses at all. If you choose not to handle multiple response,
+                then only the first success response (@InlineCode("StatusCode") &gt;= 200 and &lt; 300, preference to 200 if present) will be used in the generation process.
+                <u>All others will be discarded</u>. This means that classes won't be generated for all other responses.
             </p>
             <br />
             <p>
-                @InlineValue("MultipleResponseHandling"): If you do decide to handle multiple responses by setting @InlineValue("Handle") to true, then you will need to decide
+                @InlineEmphasis("MultipleResponseHandling"): If you do decide to handle multiple responses by setting @InlineValue("Handle") to true, then you will need to decide
                 what you want the return type to be when there are multiple responses. You can either return an @InlineCode("object") and allow the caller to determine the type... ew.
                 Or you can use a discriminated union via the popular @InlineCode("OneOf") library. A discriminated union is a type that can be one of many types, but only ever ONE OF.
                 In this case, the discriminated union will be one of the possible response types. This is the recommended option.
@@ -160,7 +160,7 @@ how all the configurations work."
                 <li>@InlineEmphasis("Root"): A root is any folder in a collection that has a request (including the root itself).</li>
                 @* Technical definition of Host  *@
                 <li>@InlineEmphasis("Host"): The host part of a URL is the domain name or IP address that indicates where the resources are served from.</li>
-                <li>@InlineEmphasis("Authority"): The authority component of a URL includes the authentication section, the host, and the port. In the URL http://username:password@example.com:8080/path/to/file - @InlineEmphasis("Authority"): @InlineCode("\"username:password@example.com:8080\""), @InlineEmphasis("Host"): @InlineCode("\"example.com\"").</li>
+                <li>@InlineEmphasis("Authority"): The authority component of a URL includes the authentication section, the host, and the port. In the URL @InlineCode("\"http://username:password@example.com:8080/path/to/file\"") - @InlineEmphasis("Authority"): @InlineCode("\"username:password@example.com:8080\""), @InlineEmphasis("Host"): @InlineCode("\"example.com\"").</li>
                 <Break Size="P2CsSize.Small"></Break>
                 <li>@InlineValue("PerAuthorityPerFolder"): An ApiClient will be created for each root, with a caveat being that if a root uses different authorities in it's requests, the requests will be regrouped into new roots based on authority.</li>
                 <ul>
@@ -200,7 +200,7 @@ how all the configurations work."
             </p>
             <br />
             <p>
-                <b>@InlineValue("RemoveSemiDuplicateClasses"):</b> The second option lets you choose whether or not to remove "semi-duplciates", see definition above. Enabling this setting lets you dedupe these semi-duplicate classes. This is useful for json that
+                <b>@InlineValue("RemoveSemiDuplicateClasses"):</b> The second option lets you choose whether to remove @InlineEmphasis("Semi-Duplicate"), see definition above. Enabling this setting lets you dedupe these semi-duplicate classes. This is useful for json that
                 has multiple examples of the same class but examples differ in name. For example, if you have Response that both have a Person object, but the json property names
                 are different, this setting would let you dedupe the second example and put all unique properties in the first example. You are also able to adjust the sensitivity of this
                 settings. The sensitivity is how many more properties the original can have than the duplicate. For example, if the original has 8 properties and the duplicate has 2 (all matching the original).
@@ -249,20 +249,20 @@ how all the configurations work."
 
     public const string MakePathCollectionVariablesFunctionParameters_Description =
 @"By default, path parameters become function parameters and collection variables in paths become instance variables of the ApiClient.
-This changes that and makes collection variables function parameters.";
+This changes that and makes collection variables function parameters. Ex: ""https://someurl.com/:pathVariable/{{someCllectionVariable}}"". `pathVariable` will always be a function variable but this option gives you control over where `someCllectionVariable` goes.";
 
     public const string MakePathCollectionVariablesFunctionParameters_False =
-@"private readonly string _someVariable; // Private variable
+@"private readonly string _somePathCollectionVariable; // Private variable
 public async Task<List<Ticket>> GetTickets()
 {
-    return await _httpClient.GetFromJsonAsync<List<Ticket>>($""{_someVariable}/ticket.php"");
+    return await _httpClient.GetFromJsonAsync<List<Ticket>>($""{_somePathCollectionVariable}/ticket.php"");
 }";
     
     public const string MakePathCollectionVariablesFunctionParameters_True = 
 @"// No private Variable
-public async Task<Stream> GetTickets(string someVariable) // Now a function parameter
+public async Task<Stream> GetTickets(string somePathCollectionVariable) // Now a function parameter
 {
-    return await _httpClient.GetFromJsonAsync<List<Ticket>>($""{_someVariable}/ticket.php"");
+    return await _httpClient.GetFromJsonAsync<List<Ticket>>($""{somePathCollectionVariable}/ticket.php"");
 }";
     #endregion
 

@@ -175,11 +175,17 @@ public class ApiClientGenerator
         string normalizedNameSpace;
         if (Options.ApiClientOptions.RootDefinition == RootDefinition.Manual || commonBase == null || allCallNames.Count == 1)
         {
-            normalizedNameSpace = Utils.NormalizeToCsharpPropertyName(rootItem.Name);
+            normalizedNameSpace = !string.IsNullOrWhiteSpace(rootItem.Name) 
+                ? Utils.NormalizeToCsharpPropertyName(rootItem.Name)
+                : !string.IsNullOrWhiteSpace(commonBase) 
+                    ? Utils.NormalizeToCsharpPropertyName(commonBase)
+                    : "Postman2CSharp";
         }
         else
         {
-            normalizedNameSpace = Utils.NormalizeToCsharpPropertyName(commonBase);
+            normalizedNameSpace = !string.IsNullOrWhiteSpace(commonBase) 
+                ? Utils.NormalizeToCsharpPropertyName(commonBase)
+                : "Postman2CSharp";
         }
         var name = normalizedNameSpace + "ApiClient";
         var leastPossibleUri = rootItem.FindLeastPossibleUri(variableUsages);
