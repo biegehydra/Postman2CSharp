@@ -32,11 +32,19 @@ namespace Postman2CSharp.Core.Utilities
         /// <returns></returns>
         public static List<Header> GetCommonHeaders(this CollectionItem rootItem)
         {
+            var requestItemsCount = rootItem.RequestItems()!.Count();
             var firstHeaders = rootItem.RequestItems()!.FirstOrDefault()?.Request?.Header;
             if (firstHeaders == null)
                 return new List<Header>();
             var commonHeaders = firstHeaders
-                .Where(header => rootItem.RequestItems()!.All(r => r.Request?.Header.Any(h => h.Key == header.Key && h.Value == header.Value) == true))
+                .Where(header =>
+                {
+                    var percent = (decimal)rootItem.RequestItems()!.Count(r =>
+                                      r.Request?.Header.Any(h => h.Key == header.Key && h.Value == header.Value) == true) /
+                                  requestItemsCount;
+
+                    return percent == 1m || (percent > 0.90m && rootItem.RequestItems()!.All(r => r.Request?.Header.Any(h => h.Key == header.Key) == true));
+                })
                 .ToList();
             return commonHeaders;
         }
