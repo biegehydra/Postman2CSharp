@@ -226,7 +226,7 @@ public async Task<{patchUserReturnType}> PatchUser(User user)
             : null;
 
         var parameters = "$\"{id}\"";
-        string headersDeclaration = null;
+        string? headersDeclaration = null;
         if (!options.RemoveDisabled.Contains(RemoveDisabled.Headers))
         {
             parameters += ", headers";
