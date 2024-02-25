@@ -1,6 +1,6 @@
 ﻿@inherits MainLayoutComponent
 
-@if (ApiClient != null && UserAttributes != null && ApiCollection != null)
+@if (ApiClient != null && UserAttributes != null && ApiCollection != null && _matchesQuery && (!_firstRender || ApiClient.MatchesSearchQuery(SearchQuery)))
 {
     <MudTreeViewItem UserAttributes="UserAttributes" Class="file-tree-item" Value="@ApiClient.NameSpace" @bind-Expanded="Expanded" >
         <Content>
@@ -37,7 +37,7 @@
         <ChildContent>
             @foreach (var httpCall in ApiClient.HttpCalls.OrderBy(x => x.Name))
             {
-                <HttpCallsTreeItem ApiCollectionId="@ApiCollection.Id" ApiClientId="@ApiClient.Id" HttpCall="httpCall" IsParentExpanded="@Expanded"></HttpCallsTreeItem>
+                <HttpCallsTreeItem @ref="_httpCallsTreeItem" SearchQuery="@SearchQuery" ApiCollectionId="@ApiCollection.Id" ApiClientId="@ApiClient.Id" HttpCall="httpCall" IsParentExpanded="@Expanded"></HttpCallsTreeItem>
             }
             <MudTreeViewItem Value="@ApiClient.Name">
                 <Content>
@@ -66,14 +66,22 @@
 }
 @code {
     [Inject] private AppState AppState { get; set; } = null!;
-    [CascadingParameter] public CollectionTreeItem CollectionTreeItem { get; set; } = null!;
+    [Parameter, EditorRequired] public string? SearchQuery { get; set; }
     [Parameter, EditorRequired] public ApiCollection? ApiCollection { get; set; }
     [Parameter, EditorRequired] public ApiClient? ApiClient { get; set; }
+    private HttpCallsTreeItem? _httpCallsTreeItem;
+    private bool _matchesQuery = true;
+    private bool _firstRender = true;
 
     private readonly string _guid = Guid.NewGuid().ToString();
 
 
-    private bool Expanded { get; set; }
+    private bool _expanded;
+    private bool Expanded
+    {
+        get => _expanded || (_matchesQuery && !string.IsNullOrWhiteSpace(SearchQuery));
+        set => _expanded = value;
+    }
     private bool ShowEdit { get; set; }
     private Dictionary<string, object>? UserAttributes { get; set; }
 
@@ -81,6 +89,11 @@
     {
         UserAttributes = new Dictionary<string, object>() { { "id", _guid } };
         SetCache();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender) _firstRender = false;
     }
 
     private ApiClient? _cachedApiClient;
@@ -162,6 +175,7 @@
         _newApiClientName = null;
     }
 
+    private bool _cachedMatchesQuery;
     private string? _cachedApiCollectionId;
     private string? _cachedApiClientId;
     private bool _cachedExpanded;
@@ -171,14 +185,20 @@
     private bool _shouldRender;
     protected override bool ShouldRender()
     {
+        _matchesQuery = ApiClient?.MatchesSearchQuery(SearchQuery) ?? true;
         _shouldRender = Expanded != _cachedExpanded || 
                         ShowEdit != _cachedShowEdit ||
                         _newApiClientName != _cachedNewApiClientName ||
                         ApiCollection?.Id != _cachedApiCollectionId || 
-                        ApiClient?.Id != _cachedApiClientId;
+                        ApiClient?.Id != _cachedApiClientId ||
+                        _matchesQuery != _cachedMatchesQuery;
         if (_shouldRender)
         {
             SetCache();
+        }
+        else if (Expanded && !string.IsNullOrWhiteSpace(SearchQuery))
+        {
+            _httpCallsTreeItem?.TriggerRender();
         }
         return _shouldRender;
     }
@@ -190,5 +210,6 @@
         _cachedApiCollectionId = ApiCollection!.Id;
         _cachedApiClientId = ApiClient!.Id!;
         _cachedNewApiClientName = _newApiClientName;
+        _cachedMatchesQuery = _matchesQuery;
     }
 }

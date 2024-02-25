@@ -1,4 +1,5 @@
-﻿@if (ApiClientId != null && ApiCollectionId != null && HttpCall != null && _shouldRender)
+﻿@using System.Net
+@if (ApiClientId != null && ApiCollectionId != null && HttpCall != null && _httpCallItems != null && (_shouldRender || (IsParentExpanded && !string.IsNullOrWhiteSpace(SearchQuery))) && _matchesQuery)
 {
     @if (!string.IsNullOrWhiteSpace(HttpCall.RequestSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.QueryParameterSourceCode)
         || !string.IsNullOrWhiteSpace(HttpCall.FormDataSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.GraphQlVariablesSourceCode) || HttpCall.AllResponses.Any(x => !string.IsNullOrWhiteSpace(x.SourceCode)))
@@ -10,13 +11,13 @@
                 <MudText Style="user-select: none;">@HttpCall.Name</MudText>
             </Content>
             <ChildContent>
-                <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.RequestClassName" SourceCode="@HttpCall.RequestSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
-                <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.QueryParameterClassName" SourceCode="@HttpCall.QueryParameterSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
-                <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.FormDataClassName" SourceCode="@HttpCall.FormDataSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
-                <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@HttpCall.GraphQlVariablesClassName" SourceCode="@HttpCall.GraphQlVariablesSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
-                @foreach (var response in HttpCall.AllResponses)
+                <HttpCallTreeItem @ref="_httpCallItems[0]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.RequestClassName" SourceCode="@HttpCall.RequestSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
+                <HttpCallTreeItem @ref="_httpCallItems[1]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.QueryParameterClassName" SourceCode="@HttpCall.QueryParameterSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
+                <HttpCallTreeItem @ref="_httpCallItems[2]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.FormDataClassName" SourceCode="@HttpCall.FormDataSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
+                <HttpCallTreeItem @ref="_httpCallItems[3]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.GraphQlVariablesClassName" SourceCode="@HttpCall.GraphQlVariablesSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
+                @foreach (var (response, index) in HttpCall.AllResponses.Select((x, i) => (x, i)))
                 {
-                    <HttpCallTreeItem IsParentExpanded="Expanded" ClassName="@response.ClassName" SourceCode="@response.SourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
+                    <HttpCallTreeItem @ref="_httpCallItems[4 + index]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@response.ClassName" SourceCode="@response.SourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
                 }
             </ChildContent>
         </MudTreeViewItem>
@@ -24,32 +25,66 @@
 }
 
 @code {
-    private bool Expanded { get; set; }
+    private HttpCallTreeItem?[]? _httpCallItems;
+    private bool _expanded;
+    private bool Expanded
+    {
+        get => _expanded || (_matchesQuery && !string.IsNullOrWhiteSpace(SearchQuery));
+        set => _expanded = value;
+    }
     [Parameter, EditorRequired] public string? ApiCollectionId { get; set; }
     [Parameter, EditorRequired] public string? ApiClientId { get; set; }
     [Parameter, EditorRequired] public HttpCall? HttpCall { get; set; }
     [Parameter, EditorRequired] public bool IsParentExpanded { get; set; }
+    [Parameter, EditorRequired] public string? SearchQuery { get; set; }
+    private bool _matchesQuery = true;
 
+    private bool _cachedMatchesQuery;
     private string? _cachedApiCollectionId;
     private string? _cachedApiClientId;
     private HttpCall? _cachedHttpCallId;
     private bool _cachedExpanded;
 
     private bool _shouldRender;
+
+    protected override void OnParametersSet()
+    {
+        if (_httpCallItems == null && HttpCall != null)
+        {
+            var size = 4 + HttpCall.AllResponses.Count;
+            _httpCallItems = new HttpCallTreeItem[size];
+        }
+    }
+
+    public void TriggerRender()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     protected override bool ShouldRender()
     {
         if (!IsParentExpanded)
         {
             return false;
         }
+
+        _matchesQuery = HttpCall?.MatchesSearchQuery(SearchQuery) ?? true;
         _shouldRender = Expanded != _cachedExpanded || ApiCollectionId != _cachedApiCollectionId
-               || ApiClientId != _cachedApiClientId || HttpCall != _cachedHttpCallId;
+               || ApiClientId != _cachedApiClientId || HttpCall != _cachedHttpCallId || _cachedMatchesQuery != _matchesQuery;
         if (_shouldRender)
         {
             _cachedExpanded = Expanded;
             _cachedApiCollectionId = ApiCollectionId!;
             _cachedApiClientId = ApiClientId!;
             _cachedHttpCallId = HttpCall;
+            _cachedMatchesQuery = _matchesQuery;
+        }
+        else if (Expanded && !string.IsNullOrWhiteSpace(SearchQuery) && _httpCallItems != null)
+        {
+            foreach (var httpCall in _httpCallItems)
+            {
+                httpCall?.TriggerRender();
+            }
         }
         return _shouldRender;
     }

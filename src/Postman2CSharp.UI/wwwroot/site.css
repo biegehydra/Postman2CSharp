@@ -24,6 +24,10 @@ div.code-toolbar > .toolbar > .toolbar-item {
     margin: 0px 15px;
 }
 
+.mud-input {
+    background-color: #d7faf61a;
+}
+
 .gutter.gutter-horizontal {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
     cursor: col-resize;

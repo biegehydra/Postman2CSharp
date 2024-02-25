@@ -15,6 +15,8 @@ public class AppState
     public bool IsAdvancedSettingsLoaded { get; set; }
     public bool IsConvertLoaded { get; set; }
 
+    public readonly Dictionary<string, string?> CachedSearchValues = new ();
+
     public event Action? CSharpCodeWriterConfigInputModelChanged;
     public event Action? SettingsChanged;
     public event Action? OptionsChanged;

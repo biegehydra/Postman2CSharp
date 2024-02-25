@@ -17,7 +17,7 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
 
         }
 
-        public CSharpCodeWriter(CSharpCodeWriterConfig writerConfig, bool writeDescriptions, bool writeDeserializationComments)
+        public CSharpCodeWriter(CSharpCodeWriterConfig writerConfig, bool writeDescriptions, bool writeDeserializationComments = false)
         {
             this.config = writerConfig;
             this.WriteDescriptions = writeDescriptions;

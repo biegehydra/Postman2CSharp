@@ -1,5 +1,6 @@
 ﻿@using Postman2CSharp.UI.Models
-@if (ClassName != null && ApiClientId != null && HttpCallName != null && ApiCollectionId != null && SourceCode != null && _shouldRender)
+@if (ClassName != null && ApiClientId != null && HttpCallName != null && ApiCollectionId != null
+    && SourceCode != null && (_shouldRender || (IsParentExpanded && !string.IsNullOrWhiteSpace(SearchQuery))) && _matchesSq)
 {
     <MudTreeViewItem Class="file-tree-item" Value="@ClassName" >
         <Content>
@@ -18,13 +19,14 @@
     [Inject] private AppState AppState { get; set; } = null!;
     [Inject] private TabsService TabsService { get; set; } = null!;
     [Inject] private Interop Interop { get; set; } = null!;
-
+    [Parameter, EditorRequired] public string? SearchQuery { get; set; }
     [Parameter, EditorRequired] public string? ApiCollectionId { get; set; }
     [Parameter, EditorRequired] public string? ApiClientId { get; set; }
     [Parameter, EditorRequired] public string? HttpCallName { get; set; }
     [Parameter, EditorRequired] public string? ClassName { get; set; }
     [Parameter, EditorRequired] public string? SourceCode { get; set; }
     [Parameter, EditorRequired] public bool IsParentExpanded { get; set; }
+    private bool _matchesSq = true;
 
     private async Task DownloadFile()
     {
@@ -32,6 +34,12 @@
         await Interop.DownloadFile(ClassName, SourceCode);
     }
 
+    public void TriggerRender()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private bool _cachedMatchesSq;
     private string? _cachedApiCollectionId;
     private string? _cachedApiClientId;
     private string? _cachedHttpCallName;
@@ -41,12 +49,19 @@
     private bool _shouldRender;
     protected override bool ShouldRender()
     {
-        if (!IsParentExpanded) return false;
+        if (!IsParentExpanded)
+        {
+            _shouldRender = false;
+            return false;
+        }
+
+        _matchesSq = string.IsNullOrWhiteSpace(SearchQuery) || ClassName?.Contains(SearchQuery, StringComparison.CurrentCultureIgnoreCase) == true;
         _shouldRender = _cachedApiCollectionId != ApiCollectionId
             || _cachedApiClientId != ApiClientId
             || _cachedHttpCallName != HttpCallName
             || _cachedClassName != ClassName
-            || _cachedSourceCode != SourceCode;
+            || _cachedSourceCode != SourceCode
+            || _cachedMatchesSq != _matchesSq;
 
         if (_shouldRender)
         {
@@ -55,6 +70,7 @@
             _cachedHttpCallName = HttpCallName;
             _cachedClassName = ClassName;
             _cachedSourceCode = SourceCode;
+            _cachedMatchesSq = _matchesSq;
         }
 
         return _shouldRender;

@@ -1,5 +1,14 @@
 ﻿@inherits MainLayoutComponent
 
+@if (ApiCollection?.ApiClients?.Count > 0)
+{
+    <MudTextField T="string" @bind-Value:get="_searchQuery" @bind-Value:set="x => { _shouldRender = true; AppState.CachedSearchValues[ApiCollection.Id] = x; _searchQuery = x; }" 
+                  Style="max-width: 30em; margin-left: 20px;margin-bottom: 15px;" Clearable="true"
+                  OnClearButtonClick="() => { _shouldRender = true; AppState.CachedSearchValues[ApiCollection.Id] = null; _searchQuery = null; }"
+                  Immediate="true" DebounceInterval="250" Variant="Variant.Outlined" Placeholder="Search" 
+                  AdornmentColor="@Color.Info"AdornmentIcon="@Icons.Search" Adornment="Adornment.End"></MudTextField>
+}
+
 @if (ApiClientGroups != null)
 {
     <MudBreakpointProvider>
@@ -15,36 +24,48 @@
         </MudHidden>
     </MudBreakpointProvider>
     <MudTreeView T="string" Class="collection-tree-root" Hover ExpandOnClick>
-     <CascadingValue Value="this">
-         @foreach (var group in ApiClientGroups)
-         {
-             <div class="f-column">
-                 @foreach (var apiClient in group)
-                 {
-                     <ApiClientTreeItem ApiClient="apiClient" ApiCollection="ApiCollection"/>
-                 }
-             </div>
-         }
-     </CascadingValue>
+        <CascadingValue Value="this">
+            @foreach (var group in ApiClientGroups)
+            {
+                <div class="f-column">
+                    @foreach (var apiClient in group)
+                    {
+                        <ApiClientTreeItem SearchQuery="@(Utils.NormalizeToCsharpPropertyName(_searchQuery).Length > 3 ? Utils.NormalizeToCsharpPropertyName(_searchQuery) : null)" ApiClient="apiClient" ApiCollection="ApiCollection" />
+                    }
+                </div>
+            }
+        </CascadingValue>
     </MudTreeView>
 }
 
 @code {
-
+    [Inject] private AppState AppState { get; set; } = null!;
     [Parameter]
     public ApiCollection? ApiCollection { get; set; }
+
+    private string? _searchQuery;
 
     private List<List<ApiClient>>? ApiClientGroups { get; set; }
 
     private ApiCollection? _cachedApiCollection;
-    protected override void OnParametersSet()
+    protected override Task OnParametersSetAsync()
     {
         if (_cachedApiCollection == ApiCollection)
         {
-            return;
+            return Task.CompletedTask;
+        }
+        _shouldRender = true;
+        if (ApiCollection != null && AppState.CachedSearchValues.TryGetValue(ApiCollection.Id, out var sq))
+        {
+            _searchQuery = sq;
+        }
+        else
+        {
+            _searchQuery = null;
         }
         _cachedApiCollection = ApiCollection;
-        GroupApiClients(3);
+        GroupApiClients(3, true);
+        return InvokeAsync(StateHasChanged);
     }
 
     private bool _shouldRender = true;
@@ -59,9 +80,9 @@
     }
 
     private int _groups;
-    private void GroupApiClients(int groups)
+    private void GroupApiClients(int groups, bool force = false)
     {
-        if(groups == _groups) return;
+        if(groups == _groups && !force) return;
         _groups = groups;
         ApiClientGroups = GroupEqually(ApiCollection?.ApiClients ?? new(), _groups);
         _shouldRender = true;

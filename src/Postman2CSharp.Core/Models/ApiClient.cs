@@ -206,6 +206,20 @@ public class ApiClient
             .Replace($"public static class {oldNamespace}GraphQLQueries", $"public static class {newNewspace}GraphQLQueries");
     }
 
+    private const StringComparison _comparer = StringComparison.CurrentCultureIgnoreCase;
+    public bool MatchesSearchQuery(string? sq)
+    {
+        if (string.IsNullOrWhiteSpace(sq)) return true;
+        if (NameSpace?.Contains(sq, _comparer) == true) return true;
+        if (Name?.Contains(sq, _comparer) == true) return true;
+        if (ControllerClassName?.Contains(sq, _comparer) == true) return true;
+        if (TestClassName?.Contains(sq, _comparer) == true) return true;
+        if (GraphQLQueriesClassName?.Contains(sq) == true) return true;
+        if (InterfaceName?.Contains(sq, _comparer) == true) return true;
+        if (HttpCalls.Any(x => x.MatchesSearchQuery(sq))) return true;
+        return false;
+    }
+
     public int FixCommonClass(string commonClassOld, string commonClassNew)
     {
         if (string.IsNullOrWhiteSpace(commonClassOld) || string.IsNullOrWhiteSpace(commonClassNew)) return 0;

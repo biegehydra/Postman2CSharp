@@ -170,6 +170,23 @@ public class HttpCall
         return false;
     }
 
+    private const StringComparison _comparer = StringComparison.CurrentCultureIgnoreCase;
+    public bool MatchesSearchQuery(string? sq)
+    {
+        if (string.IsNullOrWhiteSpace(sq)) return true;
+        if (RequestClassName?.Contains(sq, _comparer) == true) 
+            return true;
+        if (QueryParameterClassName?.Contains(sq, _comparer) == true)
+            return true;
+        if (FormDataClassName?.Contains(sq, _comparer) == true)
+            return true;
+        if (GraphQlVariablesClassName?.Contains(sq, _comparer) == true)
+            return true;
+        if (AllResponses.Any(x => x.ClassName?.Contains(sq, _comparer) == true))
+            return true;
+        return false;
+    }
+
     public void RenameRequest(string newName)
     {
         if (RequestClassName == null) throw new UnreachableException("RenameRequest");
