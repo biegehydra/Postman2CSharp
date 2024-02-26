@@ -20,7 +20,7 @@
             }
             else
             {
-                <MudText Class="file-tree-text" >@ApiClient.NameSpace</MudText>
+                <MudText Class="file-tree-text">@HighlightString(ApiClient.NameSpace, SearchQuery)</MudText>
                 <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
                     <MudIconButton Icon="@Icons.Edit" Class="ml-0 mr-2" OnClick="() => BeginEditingApiClientNamespace()" Color="@Color.Default"/>
                 </div>
@@ -39,28 +39,31 @@
             {
                 <HttpCallsTreeItem @ref="_httpCallsTreeItem" SearchQuery="@SearchQuery" ApiCollectionId="@ApiCollection.Id" ApiClientId="@ApiClient.Id" HttpCall="httpCall" IsParentExpanded="@Expanded"></HttpCallsTreeItem>
             }
-            <MudTreeViewItem Value="@ApiClient.Name">
-                <Content>
-                    <MudTreeViewItemToggleButton Visible="false"/>
-                    <MudText Style="user-select: none;">@ApiClient.Name</MudText>
+            @if (string.IsNullOrWhiteSpace(SearchQuery) || ApiClient.Name?.Contains(SearchQuery, StringComparison.CurrentCultureIgnoreCase) == true)
+            {
+                <MudTreeViewItem Value="@ApiClient.Name">
+                    <Content>
+                        <MudTreeViewItemToggleButton Visible="false"/>
+                        <MudText Style="user-select: none;">@HighlightString(ApiClient.Name, SearchQuery)</MudText>
                         @if (AppState.SiteSettings.ShowDownloadInTreeView)
-                    {
-                        <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.Name, ApiClient.SourceCode)"></MudIconButton>
-                    }
-                    <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientTab(ApiCollection.Id, ApiClient.Id, ApiClient.Name)" />
-                </Content>
-            </MudTreeViewItem>
-            <MudTreeViewItem Value="@ApiClient.InterfaceName">
-                <Content>
-                    <MudTreeViewItemToggleButton Visible="false"/>
-                    <MudText Style="user-select: none;">@ApiClient.InterfaceName</MudText>
-                    @if (AppState.SiteSettings.ShowDownloadInTreeView)
-                    {
-                        <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.InterfaceName, ApiClient.InterfaceSourceCode)"></MudIconButton>
-                    }
-                    <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientInterfaceTab(ApiCollection.Id, ApiClient.Id, ApiClient.InterfaceName)" />
-                </Content>
-            </MudTreeViewItem>
+                        {
+                            <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.Name, ApiClient.SourceCode)"></MudIconButton>
+                        }
+                        <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientTab(ApiCollection.Id, ApiClient.Id, ApiClient.Name)" />
+                    </Content>
+                </MudTreeViewItem>
+                <MudTreeViewItem Value="@ApiClient.InterfaceName">
+                    <Content>
+                        <MudTreeViewItemToggleButton Visible="false"/>
+                        <MudText Style="user-select: none;">@HighlightString(ApiClient.InterfaceName, SearchQuery)</MudText>
+                        @if (AppState.SiteSettings.ShowDownloadInTreeView)
+                        {
+                            <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.InterfaceName, ApiClient.InterfaceSourceCode)"></MudIconButton>
+                        }
+                        <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientInterfaceTab(ApiCollection.Id, ApiClient.Id, ApiClient.InterfaceName)" />
+                    </Content>
+                </MudTreeViewItem>
+            }
         </ChildContent>
     </MudTreeViewItem>
 }
@@ -176,6 +179,7 @@
     }
 
     private bool _cachedMatchesQuery;
+    private string? _cachedSq;
     private string? _cachedApiCollectionId;
     private string? _cachedApiClientId;
     private bool _cachedExpanded;
@@ -191,12 +195,10 @@
                         _newApiClientName != _cachedNewApiClientName ||
                         ApiCollection?.Id != _cachedApiCollectionId || 
                         ApiClient?.Id != _cachedApiClientId ||
-                        _matchesQuery != _cachedMatchesQuery;
-        if (_shouldRender)
-        {
-            SetCache();
-        }
-        else if (Expanded && !string.IsNullOrWhiteSpace(SearchQuery))
+                        _matchesQuery != _cachedMatchesQuery ||
+                        (_matchesQuery && _cachedSq != SearchQuery);
+        SetCache();
+        if (!_shouldRender && Expanded && !string.IsNullOrWhiteSpace(SearchQuery))
         {
             _httpCallsTreeItem?.TriggerRender();
         }
@@ -205,6 +207,7 @@
 
     private void SetCache()
     {
+        _cachedSq = SearchQuery;
         _cachedExpanded = Expanded;
         _cachedShowEdit = ShowEdit;
         _cachedApiCollectionId = ApiCollection!.Id;

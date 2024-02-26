@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -30,9 +31,10 @@ public class DuplicateRoot
     }
 }
 public record DuplicateRootUsage(string HttpCallName, string? IntendedClassName, GeneratedClassType ClassType);
-
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class ApiClient
 {
+    private string DebuggerDisplay => Name;
     private static readonly List<string> ImplicitNamespaces = new() {"System", "System.IO", "System.Net.Http", "System.Threading.Tasks"};
     private static readonly List<string> DefaultApiClientNamespaces = new() { "System.Net.Http.Headers", "System.Text" };
 
@@ -206,16 +208,11 @@ public class ApiClient
             .Replace($"public static class {oldNamespace}GraphQLQueries", $"public static class {newNewspace}GraphQLQueries");
     }
 
-    private const StringComparison _comparer = StringComparison.CurrentCultureIgnoreCase;
+    private const StringComparison Comparer = StringComparison.CurrentCultureIgnoreCase;
     public bool MatchesSearchQuery(string? sq)
     {
         if (string.IsNullOrWhiteSpace(sq)) return true;
-        if (NameSpace?.Contains(sq, _comparer) == true) return true;
-        if (Name?.Contains(sq, _comparer) == true) return true;
-        if (ControllerClassName?.Contains(sq, _comparer) == true) return true;
-        if (TestClassName?.Contains(sq, _comparer) == true) return true;
-        if (GraphQLQueriesClassName?.Contains(sq) == true) return true;
-        if (InterfaceName?.Contains(sq, _comparer) == true) return true;
+        if (NameSpace?.Contains(sq, Comparer) == true) return true;
         if (HttpCalls.Any(x => x.MatchesSearchQuery(sq))) return true;
         return false;
     }

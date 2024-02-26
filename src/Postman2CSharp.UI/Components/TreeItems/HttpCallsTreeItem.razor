@@ -1,5 +1,5 @@
 ﻿@using System.Net
-@if (ApiClientId != null && ApiCollectionId != null && HttpCall != null && _httpCallItems != null && (_shouldRender || (IsParentExpanded && !string.IsNullOrWhiteSpace(SearchQuery))) && _matchesQuery)
+@if (ApiClientId != null && ApiCollectionId != null && HttpCall != null && _httpCallItems != null && (_shouldRender || (IsParentExpanded && !string.IsNullOrWhiteSpace(SearchQuery) && HttpCall.MatchesSearchQuery(SearchQuery))) && _matchesQuery)
 {
     @if (!string.IsNullOrWhiteSpace(HttpCall.RequestSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.QueryParameterSourceCode)
         || !string.IsNullOrWhiteSpace(HttpCall.FormDataSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.GraphQlVariablesSourceCode) || HttpCall.AllResponses.Any(x => !string.IsNullOrWhiteSpace(x.SourceCode)))
@@ -8,7 +8,7 @@
             <Content>
                 <MudTreeViewItemToggleButton Visible="true" @bind-Expanded="Expanded"/>
                 <MudIcon Icon="@IconHelpers.Folder(Expanded)" Style="margin-right: 15px;"></MudIcon>
-                <MudText Style="user-select: none;">@HttpCall.Name</MudText>
+                <MudText Style="user-select: none;">@HighlightString(HttpCall.Name, SearchQuery)</MudText>
             </Content>
             <ChildContent>
                 <HttpCallTreeItem @ref="_httpCallItems[0]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.RequestClassName" SourceCode="@HttpCall.RequestSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
@@ -22,16 +22,20 @@
             </ChildContent>
         </MudTreeViewItem>
     }
+    else
+    {
+        <MudTreeViewItem Value="@HttpCall.Name" Expanded="false" Disabled="true">
+            <Content>
+                <MudIcon Style="margin-left: 40px; margin-right: 15px;" Icon="@IconHelpers.Folder(Expanded)"></MudIcon>
+                <MudText Style="user-select: none;">@HighlightString(HttpCall.Name, SearchQuery)</MudText>
+            </Content>
+        </MudTreeViewItem>
+    }
 }
 
 @code {
     private HttpCallTreeItem?[]? _httpCallItems;
-    private bool _expanded;
-    private bool Expanded
-    {
-        get => _expanded || (_matchesQuery && !string.IsNullOrWhiteSpace(SearchQuery));
-        set => _expanded = value;
-    }
+    private bool Expanded { get; set; }
     [Parameter, EditorRequired] public string? ApiCollectionId { get; set; }
     [Parameter, EditorRequired] public string? ApiClientId { get; set; }
     [Parameter, EditorRequired] public HttpCall? HttpCall { get; set; }
@@ -40,6 +44,7 @@
     private bool _matchesQuery = true;
 
     private bool _cachedMatchesQuery;
+    private string? _cachedSq;
     private string? _cachedApiCollectionId;
     private string? _cachedApiClientId;
     private HttpCall? _cachedHttpCallId;
@@ -70,16 +75,16 @@
 
         _matchesQuery = HttpCall?.MatchesSearchQuery(SearchQuery) ?? true;
         _shouldRender = Expanded != _cachedExpanded || ApiCollectionId != _cachedApiCollectionId
-               || ApiClientId != _cachedApiClientId || HttpCall != _cachedHttpCallId || _cachedMatchesQuery != _matchesQuery;
-        if (_shouldRender)
-        {
-            _cachedExpanded = Expanded;
-            _cachedApiCollectionId = ApiCollectionId!;
-            _cachedApiClientId = ApiClientId!;
-            _cachedHttpCallId = HttpCall;
-            _cachedMatchesQuery = _matchesQuery;
-        }
-        else if (Expanded && !string.IsNullOrWhiteSpace(SearchQuery) && _httpCallItems != null)
+               || ApiClientId != _cachedApiClientId || HttpCall != _cachedHttpCallId || _cachedMatchesQuery != _matchesQuery
+               || (_matchesQuery && _cachedSq != SearchQuery);
+
+        _cachedSq = SearchQuery;
+        _cachedExpanded = Expanded;
+        _cachedApiCollectionId = ApiCollectionId!;
+        _cachedApiClientId = ApiClientId!;
+        _cachedHttpCallId = HttpCall;
+        _cachedMatchesQuery = _matchesQuery;
+        if (!_shouldRender && Expanded && !string.IsNullOrWhiteSpace(SearchQuery) && _httpCallItems != null)
         {
             foreach (var httpCall in _httpCallItems)
             {

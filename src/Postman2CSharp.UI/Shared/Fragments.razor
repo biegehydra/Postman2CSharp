@@ -20,6 +20,44 @@
     {
         return @<div>
                    <MudText Typo="Typo.body1" >Has Postman2CSharp helped you? Consider starring the project on <a class="link-normal" style="color: #007cff;" href="@GitHubUrls.BaseUrl" target="_blank" >GitHub</a> to show your support.</MudText>
-               </div>;
+               </div>
+    ;
+    }
+
+    public static RenderFragment HighlightString(string str, string? sq)
+    {
+        if (string.IsNullOrWhiteSpace(str) || string.IsNullOrWhiteSpace(sq))
+        {
+            return @<text>@str</text>;
+        }
+
+        var index = str.IndexOf(sq, StringComparison.CurrentCultureIgnoreCase);
+        if (index < 0) return @<text>@str</text>;
+        // Calculate the parts of the string
+        var beforeMatch = str.Substring(0, index);
+        var match = str.Substring(index, sq.Length);
+        var afterMatch = str.Substring(index + sq.Length);
+        return builder =>
+        {
+            int seq = 0; // Sequence for ensuring unique keys for elements
+
+            // Render the part of the string before the match, if it exists
+            if (!string.IsNullOrEmpty(beforeMatch))
+            {
+                builder.AddContent(seq++, beforeMatch);
+            }
+
+            // Render the matched part with highlighting
+            builder.OpenElement(seq++, "span");
+            builder.AddAttribute(seq++, "style", "background-color: yellow; color: black;"); // Example of highlighting
+            builder.AddContent(seq++, match);
+            builder.CloseElement();
+
+            // Render the part of the string after the match, if it exists
+            if (!string.IsNullOrEmpty(afterMatch))
+            {
+                builder.AddContent(seq++, afterMatch);
+            }
+        };
     }
 }

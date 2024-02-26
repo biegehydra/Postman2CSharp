@@ -130,7 +130,7 @@ public class ApiClientGenerator
             apiClients.Add(apiClient);
         }
         await RaiseProgressCallback(1);
-        return apiClients;
+        return apiClients.OrderBy(x => x.NameSpace).ToList();
     }
 
     private async Task<List<List<VariableUsage>>> DoPreProcessing(List<CollectionItem> rootItems)
@@ -192,6 +192,7 @@ public class ApiClientGenerator
                 ? Utils.NormalizeToCsharpPropertyName(commonBase)
                 : "Postman2CSharp";
         }
+        if (string.IsNullOrWhiteSpace(normalizedNameSpace)) normalizedNameSpace = "Postman2CSharp";
         var name = normalizedNameSpace + "ApiClient";
         var leastPossibleUri = rootItem.FindLeastPossibleUri(variableUsages);
 
