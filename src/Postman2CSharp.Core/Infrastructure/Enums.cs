@@ -35,6 +35,7 @@
     {
         PerAuthorityPerFolder,
         PerAuthority,
+        FlattenHierarchy,
         Manual
     }
 

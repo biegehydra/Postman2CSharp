@@ -30,6 +30,16 @@ namespace Postman2CSharp.Core
         };
         public JsonPropertyAttributeUsage AttributeUsage { get; set; } = JsonPropertyAttributeUsage.Always;
         public RootDefinition RootDefinition { get; set; } = RootDefinition.PerAuthorityPerFolder;
+        private int _newMaxDepth = 2;
+        public int NewMaxDepth
+        {
+            get => _newMaxDepth;
+            set
+            {
+                if (value < 2) return;
+                _newMaxDepth = value;
+            }
+        }
         public ErrorHandlingStrategy ErrorHandlingStrategy { get; set; } = ErrorHandlingStrategy.None;
         public LogLevel LogLevel { get; set; } = LogLevel.Error;
         public List<XmlCommentTypes> XmlCommentTypes { get; set; } = new()
@@ -71,6 +81,7 @@ namespace Postman2CSharp.Core
                    && options1.DuplicateOptions.RemoveSemiDuplicates == options2.DuplicateOptions.RemoveSemiDuplicates
                    && options1.DuplicateOptions.SameOriginalNameSensitivity == options2.DuplicateOptions.SameOriginalNameSensitivity
                    && options1.DuplicateOptions.DifferentOriginalNameSensitivity == options2.DuplicateOptions.DifferentOriginalNameSensitivity
+                   && options1.NewMaxDepth == options2.NewMaxDepth
                    && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch && allRemovedDisabledMatch;
         }
     }

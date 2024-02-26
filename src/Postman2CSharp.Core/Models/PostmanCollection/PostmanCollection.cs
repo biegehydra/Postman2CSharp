@@ -81,5 +81,33 @@ namespace Postman2CSharp.Core.Models.PostmanCollection
                 item.RemoveItemsWithNullUrls();
             }
         }
+
+        public int CalculateNesting()
+        {
+            if (Item == null || Item.Count == 0)
+            {
+                return 1;
+            }
+            int max = 1;
+            foreach (var item in Item)
+            {
+                int nesting = item.CalculateNesting();
+                if (nesting > max)
+                {
+                    max = nesting;
+                }
+            }
+            return max + 1;
+        }
+
+        public void ReduceNestingTo(int maxDepth)
+        {
+            if (Item == null || Item.Count == 0 || maxDepth < 2) return;
+            var initialItems = Item.ToArray();
+            foreach (var item in initialItems)
+            {
+                item.ReduceNestingRecursive(Item, maxDepth: maxDepth, currentLevel: 1);
+            }
+        }
     }
 }

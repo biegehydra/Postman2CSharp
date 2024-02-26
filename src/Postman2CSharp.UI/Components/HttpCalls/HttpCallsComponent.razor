@@ -13,7 +13,7 @@
                 <div class="f-row" style="gap: 50px; align-items: baseline;">
                     @if (AllClassNames.Count > 1)
                     {
-                        <MudSelect Style="min-width: 16em;" T="string" Label="Select a class" @bind-Value="SelectedClassName">
+                        <MudSelect Variant="Variant.Outlined" Style="min-width: 16em;" T="string" Label="Select a class" @bind-Value="SelectedClassName">
                             @foreach (var className in AllClassNames)
                             {
                                 <MudSelectItem Value="@className">@className</MudSelectItem>

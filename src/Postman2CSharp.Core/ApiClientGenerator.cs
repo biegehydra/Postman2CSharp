@@ -87,6 +87,11 @@ public class ApiClientGenerator
 
         PostmanCollection.CascadeAuth();
 
+        if (Options.ApiClientOptions.RootDefinition == RootDefinition.FlattenHierarchy)
+        {
+            PostmanCollection.ReduceNestingTo(Options.ApiClientOptions.NewMaxDepth);
+        }
+
         var rootItems = PostmanCollection.GetRootCollections();
 
 

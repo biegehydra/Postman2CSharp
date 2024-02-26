@@ -28,7 +28,7 @@
             DisableAnimation="false" ValidateStep="ValidateStep" AllowNext="ValidateNext" ActiveStepChanged="OnActiveIndexChanged" >
     <MudStep Title="Upload">
         <div class="my-step-container" style="min-height: 50vh;"  >
-            <CollectionUpload Small="false" Collection="_collection" UploadedFile="_uploadedFile" SuccessfulUpload="OnSuccessfulUpload"></CollectionUpload>
+            <CollectionUpload Small="false" Collection="_postmanCollection" UploadedFile="_uploadedFile" SuccessfulUpload="OnSuccessfulUpload"></CollectionUpload>
         </div>
     </MudStep>
     <MudStep Title="Json">
@@ -129,25 +129,36 @@
     <MudStep Title="Miscellaneous">
         <StepperItem>
             <Input>
-                @if (_collection?.GetAllCollectionItems().Any(x => !string.IsNullOrWhiteSpace(x?.Request?.Body?.Graphql?.Query)) == true)
+                @if (_postmanCollection?.GetAllCollectionItems().Any(x => !string.IsNullOrWhiteSpace(x?.Request?.Body?.Graphql?.Query)) == true)
                 {
                     <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.GraphQLQueriesInSeperateFile">GraphQL Queries In Separate File</MudCheckBox>
                 }
                 <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="_dirtyApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
                 <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="_dirtyApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
                 <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" Exclude="new List<RootDefinition>() {RootDefinition.Manual}" AlwaysShowAllEnumValues Label="Request Grouping"></EnumSelectComponent>
+                @if (_dirtyApiClientOptions.RootDefinition == RootDefinition.FlattenHierarchy)
+                {
+                    <p>Postman Collection Depth: @_postmanCollectionDepth</p>
+                    <MudNumericField T="int" Min="2" Max="_postmanCollectionDepth - 1" Immediate="true" @bind-Value="_dirtyApiClientOptions.NewMaxDepth" Label="New Max Depth" Variant="Variant.Outlined" ></MudNumericField>
+                }
             </Input>
             <Example>
                 <PrismCodeBlock Value="@StepperExamples.Miscellaneous(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
             </Example>
             <AdditionalInfo>
                 <ul>
-                    @if (_collection?.GetAllCollectionItems().Any(x => !string.IsNullOrWhiteSpace(x?.Request?.Body?.Graphql?.Query)) == true)
+                    <li>@InlineEmphasis("Root"): A root is any folder in a collection that has a request.</li>
+                    <li>@InlineEmphasis("Authority"): Includes the authentication section, the host, and the port of a url.</li>
+                    <ul>
+                        <li>In the URL @InlineCode("\"http://user:pass@ex.com:8080/path\""), the Authority is @InlineCode("\"user:pass@ex.com:8080\"").</li>
+                    </ul>
+                    <Break Size="P2CsSize.Small"></Break>
+                    @if (_postmanCollection?.GetAllCollectionItems().Any(x => !string.IsNullOrWhiteSpace(x?.Request?.Body?.Graphql?.Query)) == true)
                     {
                         <li>
                             @InlineValue("GraphQL Queries In Separate File") - Inlining the query of a GraphQL request (@InlineCode("string query = \"some long query\"")) in a function can take up a lot of space. Enabling this option will put the queries in a separate static class.
                         </li>
-                        <Break Size="P2CsSize.Small" ></Break>
+                        <Break Size="P2CsSize.Small"></Break>
                     }
                     <li>@InlineValue("PerAuthorityPerFolder"): An ApiClient will be created for each root, with a caveat being that if a root uses different authorities in it's requests, the requests will be regrouped into new roots based on authority.</li>
                     <ul>
@@ -155,11 +166,23 @@
                     </ul>
                     <li>@InlineValue("PerAuthority"): An ApiClient will be created for each authority disregarding the folders requests are in.</li>
                     <ul>
-                        <li>Useful when the you want a monolithic ApiClient but authorization schemes may be lost.</li>
+                        <li>Useful when the you want a monolithic ApiClient but may lead to weird behaviour with mixed authentication types.</li>
                     </ul>
-                    <Break Size="P2CsSize.Small"></Break>
-                    <li>@InlineEmphasis("Root"): A root is any folder in a collection that has a request (including the root itself).</li>
-                    <li>@InlineEmphasis("Authority"): Includes the authentication section, the host, and the port of a url. In the URL @InlineCode("\"http://username:password@example.com:8080/path/to/file\"") - @InlineValue("Authority"): @InlineCode("\"username:password@example.com:8080\"").</li>
+                    <li>@InlineValue("FlattenHierarchy"): Requests deeper than the specified max depth will be moved up, then the behaviour will mimic @InlineValue("PerAuthorityPerFolder").</li>
+                    <ul>
+                        <li>Useful when you have a structure where folders contain subfolders of related requests.</li>
+                        <ul>
+                            <li>
+                                Example Usage Scenario: Collection has a folder @InlineCode("\"Contacts\"") which has subfolders @InlineCode("\"Employees\""), @InlineCode("\"Customers\""), and @InlineCode("\"Suppliers\"")
+                                with all requests in subfolders sharing path @InlineCode("\"/contacts\""). In this structure, the depth is 4: Collection->Contacts->Employee->Requests.
+                                If you were to generate with PerAuthorityPerFolder, an ApiClient would be created for each subfolder, @InlineCode("\"Employees\""), @InlineCode("\"Customers\""), and @InlineCode("\"Suppliers\"").
+                                With FlattenHierarchy enabled and a @InlineValue("NewMaxValue") set to 3, the @InlineCode("\"Employees\""), @InlineCode("\"Customers\""), and @InlineCode("\"Suppliers\"") would disappear and all their
+                                requests would be moved into the @InlineCode("\"Contacts\"") folder. A single ApiClient would then be generated for the Contacts folder. The
+                                new structure has a depth of 3. Collection->Contacts->Requests
+                            </li>
+                        </ul>
+                        <li>The minimum allowed NewMaxDepth is 2 because you cannot flatten the hierarchy smaller than Collection->Requests</li>
+                    </ul>
                 </ul>
             </AdditionalInfo>
         </StepperItem>
@@ -177,6 +200,8 @@
     [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
     [Parameter] public EventCallback<ApiCollection> SuccessfulGeneration { get; set; }
 
+    private int _postmanCollectionDepth = 20;
+
     private MudStepper? _stepper;
     private enum Steps
     {
@@ -190,7 +215,7 @@
         Result
     }
 
-    private PostmanCollection? _collection;
+    private PostmanCollection? _postmanCollection;
     private IBrowserFile? _uploadedFile;
 
 
@@ -219,7 +244,7 @@
         switch (step)
         {
             case Steps.Upload:
-                return Task.FromResult(_collection != null && _uploadedFile != null);
+                return Task.FromResult(_postmanCollection != null && _uploadedFile != null);
             case Steps.Json:
                 break;
             case Steps.MultipleResponseHandling:
@@ -347,10 +372,10 @@
 
     private async Task GenerateApiClientsWithTracking()
     {
-        if (_collection == null || _uploadedFile == null) return;
+        if (_postmanCollection == null || _uploadedFile == null) return;
         try
         {
-            var apiClientGenerator = new ApiClientGenerator(_collection, new ApiClientGeneratorOptions(AppState.CodeWriterConfigInputModel.ToCSharpCodeWriterConfig(), AppState.ApiClientOptions));
+            var apiClientGenerator = new ApiClientGenerator(_postmanCollection, new ApiClientGeneratorOptions(AppState.CodeWriterConfigInputModel.ToCSharpCodeWriterConfig(), AppState.ApiClientOptions));
             StartTrackingGenerator(apiClientGenerator);
             _forceRender = true;
             StateHasChanged();
@@ -359,7 +384,7 @@
             var apiCollection = new ApiCollection()
             {
                 ApiClients = apiClients,
-                CollectionInfo = _collection.Info
+                CollectionInfo = _postmanCollection.Info
             };
 
             var isTestData = _uploadedFile.Name == Consts.TestDataName;
@@ -415,11 +440,13 @@
     private void OnSuccessfulUpload((IBrowserFile BrowserFile, PostmanCollection Collection) args)
     {
         _uploadedFile = args.BrowserFile;
-        _collection = args.Collection;
-        if (_collection?.Item?.Count > 0)
+        _postmanCollection = args.Collection;
+        _postmanCollectionDepth = _postmanCollection.CalculateNesting();
+        _dirtyApiClientOptions.NewMaxDepth = _postmanCollectionDepth - 1;
+        if (_postmanCollection?.Item?.Count > 0)
         {
-            var requestsCount = _collection.GetAllCollectionItems().Count();
-            var requestsWithoutResponsesCount = _collection.GetAllCollectionItems().Count(x => x.Response == null || x.Response.Count == 0);
+            var requestsCount = _postmanCollection.GetAllCollectionItems().Count();
+            var requestsWithoutResponsesCount = _postmanCollection.GetAllCollectionItems().Count(x => x.Response == null || x.Response.Count == 0);
             var percentOfRequestsWithoutResponses = (double) requestsWithoutResponsesCount / requestsCount;
             if (percentOfRequestsWithoutResponses > 0.5)
             {

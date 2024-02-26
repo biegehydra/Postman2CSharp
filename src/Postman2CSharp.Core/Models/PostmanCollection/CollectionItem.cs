@@ -88,5 +88,66 @@ namespace Postman2CSharp.Core.Models.PostmanCollection
                 item.RemoveItemsWithNullUrls();
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<CollectionItem>? ReduceNestingRecursive(List<CollectionItem> parentItems, int maxDepth, int currentLevel)
+        {
+            if (IsRequestItem && currentLevel >= maxDepth)
+            {
+                return [this];
+            }
+
+            if (Item == null || Item.Count == 0) return null;
+
+            var initialItems = Item.ToArray();
+            List<CollectionItem>? itemsToMoveUp = null;
+            foreach (var item in initialItems)
+            {
+                var itemsToMoveUp2 = item.ReduceNestingRecursive(Item, maxDepth, currentLevel + 1);
+                if (itemsToMoveUp2 == null) continue;
+                if (itemsToMoveUp == null)
+                {
+                    itemsToMoveUp = itemsToMoveUp2;
+                }
+                else
+                {
+                    itemsToMoveUp.AddRange(itemsToMoveUp2);
+                }
+
+            }
+            if (currentLevel >= maxDepth - 1)
+            {
+                parentItems.Remove(this);
+                Item.Clear();
+            }
+
+            if (currentLevel == maxDepth - 1 && itemsToMoveUp != null)
+            {
+                parentItems.AddRange(itemsToMoveUp);
+                return null;
+            }
+
+            return itemsToMoveUp;
+        }
+
+        public int CalculateNesting()
+        {
+            if (Item == null || Item.Count == 0)
+            {
+                return 1;
+            }
+            int max = 1;
+            foreach (var item in Item)
+            {
+                int nesting = item.CalculateNesting();
+                if (nesting > max)
+                {
+                    max = nesting;
+                }
+            }
+            return max + 1;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿@typeparam TEnum where TEnum : struct, Enum
+<Foo SomeListOfStringParam="new List<string>()" />
 <div class="enum-select-container">
-    <MudSelect @ref="_select" T="string" Label="@Label" Variant="Variant.Outlined" Disabled="Disabled" MultiSelection="true" @bind-SelectedValues="SelectedValues" AutoFocus="false" >
+    <MudSelect Test="new List<string>()" @ref="_select" T="string" Label="@Label" Variant="Variant.Outlined"Disabled="Disabled" MultiSelection="true" @bind-SelectedValues="SelectedValues" AutoFocus="false" >
         @foreach (var enumType in Enum.GetValues<TEnum>())
         {
             <MudSelectItem @key="@enumType" T="string" Value="@enumType.ToString()">@enumType.ToString()</MudSelectItem>
