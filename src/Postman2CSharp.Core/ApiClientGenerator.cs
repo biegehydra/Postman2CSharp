@@ -364,7 +364,7 @@ public class ApiClientGenerator
                     {
                         queriesSb!.AppendLine();
                     }
-                    queriesSb!.AppendLine(Consts.Indent(1) + $"public const string {uniqueName} = @\"\n{HttpUtility.JavaScriptStringEncode(requestItem.Request.Body!.Graphql!.Query).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
+                    queriesSb!.AppendLine(Consts.Indent(1) + $"public const string {uniqueName} = \n@\"{HttpUtility.JavaScriptStringEncode(requestItem.Request.Body!.Graphql!.Query).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
                 }
                 var temp = Options.CSharpCodeWriterConfig.AttributeUsage;
                 Options.CSharpCodeWriterConfig.AttributeUsage = JsonPropertyAttributeUsage.Always;
