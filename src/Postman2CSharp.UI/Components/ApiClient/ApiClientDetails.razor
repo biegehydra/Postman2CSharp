@@ -15,7 +15,7 @@
         }
         else
         {
-            <MudText Typo="Typo.h1">@ApiClient.Name</MudText>
+            <MudText Style="overflow: hidden; text-overflow: ellipsis;" Typo="Typo.h1">@ApiClient.Name</MudText>
             <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
                 <MudIconButton Icon="@Icons.Edit" Class="ml-0 mr-2" OnClick="() => BeginEditingApiClientNamespace()" Size="Size.Large" Color="@Color.Default" />
             </div>

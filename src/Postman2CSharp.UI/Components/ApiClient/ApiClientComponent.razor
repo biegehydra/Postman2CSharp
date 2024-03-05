@@ -14,36 +14,36 @@
 {
     <div class="info-container" >
         <div class="f-row-column" style="gap: 20px; justify-content: space-between;">
-            <div>
+            <div style="width: 50%;">
                 <ApiClientDetails NamespaceChanged="StateHasChanged" ApiClient="SelectedApiClient"></ApiClientDetails>
             </div>
             <MudGrid Spacing="3" Class="api-client-grid">
-                <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
-                    <p>Download ApiClient Project</p>
-                    <MudIconButton Size="Size.Medium" OnClick="DownloadApiClient" Color="Color.Tertiary" Icon="@Icons.Download" Variant="Variant.Filled"></MudIconButton>
+                <MudItem Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
+                    <p><b>Download ApiClient Project</b></p>
+                    <MudFab Size="Size.Medium" OnClick="DownloadApiClient" Color="Color.Tertiary" StartIcon="@Icons.Download" ></MudFab>
                 </MudItem>
                 @if (SelectedApiClient.HttpCalls.Any(x => x.AnyClassesGenerated()))
                 {
-                    <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
-                        <p>View All Generated Classes</p>
-                        <OpenInNewTab NavigateAction="() => TabsService.Value.AddHttpCalls(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
+                    <MudItem Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
+                        <p><b>View All Generated Classes</b></p>
+                        <OpenInNewTab IconButton="false" NavigateAction="() => TabsService.Value.AddHttpCalls(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
                     </MudItem>
                 }
                 else
                 {
-                    <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
-                        <p>View All Generated Classes</p>
+                    <MudItem Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
+                        <p><b>View All Generated Classes</b></p>
                         <MudTooltip Delay="400" Text="No classes generated" >
-                            <OpenInNewTab Disabled="true" ></OpenInNewTab>
+                            <OpenInNewTab IconButton="false" Disabled="true"></OpenInNewTab>
                         </MudTooltip>
                     </MudItem>
                 }
                 @if (SelectedApiClient.DuplicateRoots.Count > 0)
                 {
-                    <MudItem Class="f-row aic" Style="gap: 12px; height: max-content;" md="6">
-                        <p>Resolve Duplicate Roots</p>
+                    <MudItem Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
+                        <p><b>Resolve Duplicate Roots</b></p>
                         <MudBadge Color="Color.Primary" Overlap Visible="SelectedApiClient.DuplicateRoots.Count(x => !x.Resolved) > 0" Content="@SelectedApiClient.DuplicateRoots.Count(x => !x.Resolved)">
-                            <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientDuplicateRootsTab(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
+                            <OpenInNewTab IconButton="false" NavigateAction="() => TabsService.Value.AddApiClientDuplicateRootsTab(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
                          </MudBadge>
                      </MudItem>
                 }

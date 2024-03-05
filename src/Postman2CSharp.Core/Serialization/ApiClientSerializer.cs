@@ -42,7 +42,7 @@ public static class ApiClientSerializer
         {
             sb.AppendLine(indent + $"private readonly ILogger<{client.Name}> _logger;");
         }
-        VariableUsagesAsPrivateProperties(sb, client.VariableUsages, indent);
+        VariableUsagesAsPrivateProperties(sb, client.BaseUrl ?? string.Empty, client.VariableUsages, indent);
         AuthProperties(client.CollectionAuth, sb, indent);
         foreach (var otherUniqueAuth in client.UniqueAuths.Where(x => x.EnumType() != client.CollectionAuth?.EnumType()))
         {
@@ -182,13 +182,18 @@ public static class ApiClientSerializer
         }
     }
 
-    private static void VariableUsagesAsPrivateProperties(StringBuilder sb, List<VariableUsage> variableUsages, string indent)
+    private static void VariableUsagesAsPrivateProperties(StringBuilder sb, string baseUrl, List<VariableUsage> variableUsages, string indent)
     {
         foreach (var variableUsage in variableUsages.Where(x => !x.Original.StartsWith(":")))
         {
             var normalizedKey = variableUsage.CSPropertyUsage(CsharpPropertyType.Private);
             var valueLiteral = string.IsNullOrWhiteSpace(variableUsage.Value) ? "string.Empty" : $"\"{variableUsage.Value}\"";
             sb.AppendLine(indent + $"private string {normalizedKey} = {valueLiteral};");
+        }
+
+        if (baseUrl.Contains("{_unknownBaseUrl}"))
+        {
+            sb.AppendLine(indent + $"private readonly string _unknownBaseUrl = \"NOT IN POSTMAN. FILL MANUALLY\";");
         }
     }
 

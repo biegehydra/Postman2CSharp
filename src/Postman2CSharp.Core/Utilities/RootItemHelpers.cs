@@ -190,10 +190,16 @@ namespace Postman2CSharp.Core.Utilities
             foreach (var requestItem in rootItem.RequestItems() ?? new List<CollectionItem>())
             {
                 var url = requestItem.Request!.Url;
+                url.Raw = url.Raw.Trim();
+                if (url.Raw.StartsWith('/'))
+                {
+                    url.Raw = "https://{_unknownBaseUrl}" + url.Raw;
+                }
                 if (url.Protocol == null && !(url.Raw.StartsWith("https://") || url.Raw.StartsWith("http://")))
                 {
-                    requestItem.Request.Url.Raw = $"https://{url.Raw}";
+                    url.Raw = $"https://{url.Raw}";
                 }
+                url.Raw = url.Raw.Trim();
             }
         }
 

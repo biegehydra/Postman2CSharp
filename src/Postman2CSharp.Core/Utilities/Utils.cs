@@ -192,7 +192,7 @@ public static partial class Utils
         relativePath = relativePath.AddBackBrackets();
         return relativePath;
     }
-
+    private static readonly Regex VariablePort = new Regex(@"(https?:\/\/)([^\/]+)", RegexOptions.Compiled);
     public static string AddBackBrackets(this string str)
     {
         str = str.Replace("leftcurly", "{"); // better way to do this?
@@ -206,6 +206,7 @@ public static partial class Utils
             var letter = m.Value.TrimStart('-').ToUpperInvariant();
             return letter;
         });
+        str = str.Replace("colonlolwow", ":");
         return str;
     }
 
@@ -221,7 +222,11 @@ public static partial class Utils
 
         str = str.Replace("{", "leftcurly");
         str = str.Replace("}", "rightcurly");
-
+        str = VariablePort.Replace(str, m =>
+        {
+            string partAfterScheme = Regex.Replace(m.Groups[2].Value, ":", "colonlolwow");
+            return m.Groups[1].Value + partAfterScheme;
+        });
         return str;
     }
 

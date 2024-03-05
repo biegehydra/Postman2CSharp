@@ -7,16 +7,19 @@
 
 <br />
 
-<MudText Typo="Typo.h1" Style="font-size: 2.3em">@SelectedApiClient?.Name - Duplicate Roots</MudText>
-<br/>
-<p>
-    If you are seeing this page, it's because you enabled the remove duplicate roots option on the Convert page.
-    What that settings does is it removes duplicate classes from the generated code even if it is a root class.
-    For example, if DeleteUserResponse and DeleteItemResponse (and every duplicate root after) 
-    both a single bool property called "Success", only the first example would be generated. This is usually ideal in most situations,
-    be it a request or response, however it can cause some confusion due to naming; you don't want the DeleteItem function
-    returning a DeleteUserResponse. Instead, you would probably want them to both return a SuccessResponse. That is what this page is for.
-</p>
+<div class="info-container">
+    <MudText Typo="Typo.h1" Style="font-size: 2.3em">Resolve Duplicate Roots Tool | @SelectedApiClient?.Name</MudText>
+    <br/>
+    <p>
+        If you are seeing this page, it's because you enabled the @InlineEmphasis("Remove Duplicate Roots") option on the Convert page.
+        What that setting does is it removes duplicate classes from the generated code even if it is a root class.
+        For example, if DeleteUserResponse and DeleteItemResponse both contain a single boolean json property called "Success",
+        only one class would be generated with this setting enabled compared to two. This is usually ideal in most situations,
+        however it can cause some confusion due to naming; you don't want the DeleteItem function
+        returning a DeleteUserResponse. Instead, you would probably want them to both return a SuccessResponse. That is what this page is for.
+        You get to pick the common name, e.g. SuccessResponse.
+    </p>
+</div>
 <br/>
 <br/>
 @if (SelectedApiClient != null)
