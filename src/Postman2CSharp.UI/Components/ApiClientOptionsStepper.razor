@@ -160,7 +160,7 @@
                         </li>
                         <Break Size="P2CsSize.Small"></Break>
                     }
-                    <li>@InlineValue("PerAuthorityPerFolder"): An ApiClient will be created for each root, with a caveat being that if a root uses different authorities in it's requests, the requests will be regrouped into new roots based on authority.</li>
+                    <li>@InlineValue("PerAuthorityPerFolder"): An ApiClient will be created for each @InlineEmphasis("root"), with a caveat being that if a root uses different authorities in it's requests, the requests will be regrouped into new roots based on authority.</li>
                     <ul>
                         <li>Useful when the postman collection is well organized and you want your ApiClients to have separation of concerns</li>
                     </ul>
@@ -176,7 +176,7 @@
                                 Example Usage Scenario: Collection has a folder @InlineCode("\"Contacts\"") which has subfolders @InlineCode("\"Employees\""), @InlineCode("\"Customers\""), and @InlineCode("\"Suppliers\"")
                                 with all requests in subfolders sharing path @InlineCode("\"/contacts\""). In this structure, the depth is 4: Collection->Contacts->Employee->Requests.
                                 If you were to generate with PerAuthorityPerFolder, an ApiClient would be created for each subfolder, @InlineCode("\"Employees\""), @InlineCode("\"Customers\""), and @InlineCode("\"Suppliers\"").
-                                With FlattenHierarchy enabled and a @InlineValue("NewMaxValue") set to 3, the @InlineCode("\"Employees\""), @InlineCode("\"Customers\""), and @InlineCode("\"Suppliers\"") would disappear and all their
+                                With FlattenHierarchy enabled and a @InlineValue("NewMaxValue") set to 3, the @InlineCode("\"Employees\""), @InlineCode("\"Customers\""), and @InlineCode("\"Suppliers\"") folders would disappear and all their
                                 requests would be moved into the @InlineCode("\"Contacts\"") folder. A single ApiClient would then be generated for the Contacts folder. The
                                 new structure has a depth of 3. Collection->Contacts->Requests
                             </li>

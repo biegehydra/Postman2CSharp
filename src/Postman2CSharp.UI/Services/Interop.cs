@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.JSInterop;
 using MudBlazor;
+using Postman2CSharp.Core.Infrastructure;
 using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Utilities;
 using Postman2CSharp.UI.Components;
@@ -50,10 +51,17 @@ namespace Postman2CSharp.UI.Services
                     {
                         x.VisibleStateDuration = 25_000;
                         x.SnackbarTypeClass = "mud-theme-tertiary";
+                        x.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
+                        x.ShowCloseIcon = false;
+                        x.CloseAfterNavigation = false;
+                        x.Icon = NavMenu.FavIcon;
+                        x.IconSize = Size.Large;
+                        x.IconColor = Color.Primary;
                     });
                 }
                 await invokeStateHasChanged();
-                await Task.Delay(5);
+                await Task.Delay(15);
+                await FixFaviconViewBox();
             }
 
             await SetLocalStorage("siteSettings", _appState.SiteSettings);

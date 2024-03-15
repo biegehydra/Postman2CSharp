@@ -164,8 +164,14 @@ function loadStyle(stylePath) {
 
 function setFaviconViewBox(elementId) {
     if (!elementId) {
-        const svgElement = document.querySelector('.favicon-container .mud-icon-root.mud-icon-default.mud-svg-icon');
-        svgElement.setAttribute('viewBox', '0 0 256 256');
+        var svgElement1 = document.querySelector('.mud-snackbar.mud-theme-tertiary .mud-snackbar-icon .mud-icon-root.mud-svg-icon');
+        if (svgElement1) {
+            svgElement1.setAttribute('viewBox', '0 0 256 256');
+        }
+        var svgElement2 = document.querySelector('.favicon-container .mud-icon-root.mud-icon-default.mud-svg-icon');
+        if (svgElement2) {
+            svgElement2.setAttribute('viewBox', '0 0 256 256');
+        }
     } else {
         const svgElement = document.getElementById(elementId);
         if (svgElement) {
