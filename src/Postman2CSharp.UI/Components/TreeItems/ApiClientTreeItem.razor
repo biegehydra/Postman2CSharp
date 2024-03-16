@@ -1,4 +1,7 @@
 ﻿@inherits MainLayoutComponent
+@implements IHandle<ExpandApiClientEvent>
+@using EventAggregator.Blazor
+@implements IDisposable
 
 @if (ApiClient != null && UserAttributes != null && ApiCollection != null && _matchesQuery && (!_firstRender || ApiClient.MatchesSearchQuery(SearchQuery)))
 {
@@ -20,9 +23,10 @@
             }
             else
             {
+                var attributes = FirstApiClient ? new Dictionary<string, object>() { { "id", "first-api-client-edit" } } : null;
                 <MudText Class="file-tree-text">@HighlightString(ApiClient.NameSpace, SearchQuery)</MudText>
                 <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
-                    <MudIconButton Icon="@Icons.Edit" Class="ml-0 mr-2" OnClick="() => BeginEditingApiClientNamespace()" Color="@Color.Default"/>
+                    <MudIconButton UserAttributes="attributes" Icon="@Icons.Edit" Class="ml-0 mr-2" OnClick="() => BeginEditingApiClientNamespace()" Color="@Color.Default"/>
                 </div>
             }
             @if (AppState.SiteSettings.ShowDownloadInTreeView && !ShowEdit)
@@ -31,13 +35,25 @@
             }
             @if (!ShowEdit)
             {
-                <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientTab(ApiCollection.Id, ApiClient.Id, ApiClient.Name)"/>
+                var attributes = FirstApiClient ? new Dictionary<string, object>() {{"id", "first-api-client-view"}} : null; 
+                <OpenInNewTab Attributes="attributes" NavigateAction="() => TabsService.Value.AddApiClientTab(ApiCollection.Id, ApiClient.Id, ApiClient.Name)"/>
             }
         </Content>
         <ChildContent>
+            @{
+                var firstApiCallWithItems = false;
+            }
             @foreach (var httpCall in ApiClient.HttpCalls.OrderBy(x => x.Name))
             {
-                <HttpCallsTreeItem @ref="_httpCallsTreeItem" SearchQuery="@SearchQuery" ApiCollectionId="@ApiCollection.Id" ApiClientId="@ApiClient.Id" HttpCall="httpCall" IsParentExpanded="@Expanded"></HttpCallsTreeItem>
+                if (firstApiCallWithItems)
+                {
+                    <HttpCallsTreeItem FirstApiCallWithItems="false" @ref="_httpCallsTreeItem" SearchQuery="@SearchQuery" ApiCollectionId="@ApiCollection.Id" ApiClientId="@ApiClient.Id" HttpCall="httpCall" IsParentExpanded="@Expanded"></HttpCallsTreeItem>
+                }
+                else
+                {
+                    firstApiCallWithItems = FirstApiClient && httpCall.AnyClassesGenerated();
+                    <HttpCallsTreeItem FirstApiCallWithItems="firstApiCallWithItems" @ref="_httpCallsTreeItem" SearchQuery="@SearchQuery" ApiCollectionId="@ApiCollection.Id" ApiClientId="@ApiClient.Id" HttpCall="httpCall" IsParentExpanded="@Expanded"></HttpCallsTreeItem>
+                }
             }
             @if (string.IsNullOrWhiteSpace(SearchQuery) || ApiClient.Name?.Contains(SearchQuery, StringComparison.CurrentCultureIgnoreCase) == true)
             {
@@ -49,7 +65,7 @@
                         {
                             <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.Name, ApiClient.SourceCode)"></MudIconButton>
                         }
-                        <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientTab(ApiCollection.Id, ApiClient.Id, ApiClient.Name)" />
+                        <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientTab(ApiCollection.Id, ApiClient.Id, ApiClient.Name)"/>
                     </Content>
                 </MudTreeViewItem>
                 <MudTreeViewItem Value="@ApiClient.InterfaceName">
@@ -60,7 +76,7 @@
                         {
                             <MudIconButton Color="@Color.Info" Icon="@Icons.Download" OnClick="() => Interop.Value.DownloadFile(ApiClient.InterfaceName, ApiClient.InterfaceSourceCode)"></MudIconButton>
                         }
-                        <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientInterfaceTab(ApiCollection.Id, ApiClient.Id, ApiClient.InterfaceName)" />
+                        <OpenInNewTab NavigateAction="() => TabsService.Value.AddApiClientInterfaceTab(ApiCollection.Id, ApiClient.Id, ApiClient.InterfaceName)"/>
                     </Content>
                 </MudTreeViewItem>
             }
@@ -69,9 +85,11 @@
 }
 @code {
     [Inject] private AppState AppState { get; set; } = null!;
+    [Inject] private IEventAggregator EventAggregator { get; set; } = null!;
     [Parameter, EditorRequired] public string? SearchQuery { get; set; }
     [Parameter, EditorRequired] public ApiCollection? ApiCollection { get; set; }
     [Parameter, EditorRequired] public ApiClient? ApiClient { get; set; }
+    [Parameter, EditorRequired] public bool FirstApiClient { get; set; }
     private HttpCallsTreeItem? _httpCallsTreeItem;
     private bool _matchesQuery = true;
     private bool _firstRender = true;
@@ -91,7 +109,12 @@
     protected override void OnInitialized()
     {
         UserAttributes = new Dictionary<string, object>() { { "id", _guid } };
+        if (FirstApiClient)
+        {
+            UserAttributes["id"] = "first-api-client";
+        }
         SetCache();
+        EventAggregator.Subscribe(this);
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -100,10 +123,12 @@
     }
 
     private ApiClient? _cachedApiClient;
+
     protected override void OnParametersSet()
     {
         if (_cachedApiClient == ApiClient) return;
         _cachedApiClient = ApiClient;
+
         Reset();
     }
 
@@ -215,4 +240,19 @@
         _cachedNewApiClientName = _newApiClientName;
         _cachedMatchesQuery = _matchesQuery;
     }
+
+    public void Dispose()
+    {
+        EventAggregator.Unsubscribe(this);
+    }
+
+    public async Task HandleAsync(ExpandApiClientEvent message)
+    {
+        if (ApiClient != null && message.ApiClient == ApiClient)
+        {
+            Expanded = message.Expanded;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
 }

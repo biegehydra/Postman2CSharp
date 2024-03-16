@@ -170,6 +170,36 @@ public class HttpCall
         return false;
     }
 
+    public string? FirstGeneratedClassName()
+    {
+        if (!string.IsNullOrWhiteSpace(RequestSourceCode))
+        {
+            return RequestClassName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(QueryParameterSourceCode))
+        {
+            return QueryParameterClassName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(FormDataSourceCode))
+        {
+            return FormDataClassName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(GraphQlVariablesSourceCode))
+        {
+            return GraphQlVariablesClassName;
+        }
+
+        if (AllResponses?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.SourceCode)) is { } response)
+        {
+            return response.ClassName;
+        }
+
+        return null;
+    }
+
     private const StringComparison Comparer = StringComparison.CurrentCultureIgnoreCase;
     public bool MatchesSearchQuery(string? sq)
     {

@@ -1,53 +1,77 @@
-﻿@inherits MainLayoutComponent
+﻿@using Blazor.DriverJs.Models
+@using EventAggregator.Blazor
+@using System.Xml.Schema
+@inherits MainLayoutComponent
 
-@if (ApiCollection?.ApiClients?.Count > 0)
-{
-    <MudTextField T="string" @bind-Value:get="_searchQuery" @bind-Value:set="x => { _shouldRender = true; AppState.CachedSearchValues[ApiCollection.Id] = x; _searchQuery = x; }" 
-                  Style="max-width: 30em; margin-left: 20px;margin-bottom: 15px;" Clearable="true"
-                  OnClearButtonClick="() => { _shouldRender = true; AppState.CachedSearchValues[ApiCollection.Id] = null; _searchQuery = null; }"
-                  Immediate="true" DebounceInterval="250" Variant="Variant.Outlined" Placeholder="Search" 
-                  AdornmentColor="@Color.Info"AdornmentIcon="@Icons.Search" Adornment="Adornment.End"></MudTextField>
-}
+<style>
+    .search-query-input-control {
+        min-width: 30em;
+        width: fit-content;
+    }
+</style>
 
-@if (ApiClientGroups != null)
-{
-    <MudBreakpointProvider>
-        <MudHidden Breakpoint="Breakpoint.LgAndUp">
-            @{
-                GroupApiClients(2);
-            }
-        </MudHidden>
-        <MudHidden Breakpoint="Breakpoint.MdAndDown">
-            @{
-                GroupApiClients(3);
-            }
-        </MudHidden>
-    </MudBreakpointProvider>
-    <MudTreeView T="string" Class="collection-tree-root" Hover ExpandOnClick>
-        <CascadingValue Value="this">
-            @foreach (var group in ApiClientGroups)
-            {
-                <div class="f-column">
-                    @foreach (var apiClient in group)
-                    {
-                        <ApiClientTreeItem SearchQuery="@(Utils.NormalizeToCsharpPropertyName(_searchQuery).Length > 3 ? Utils.NormalizeToCsharpPropertyName(_searchQuery) : null)" ApiClient="apiClient" ApiCollection="ApiCollection" />
-                    }
-                </div>
-            }
-        </CascadingValue>
-    </MudTreeView>
-}
+<DriverStore @ref="_driverStore" OnNextStep="OnNextStep" OnPreviousStep="OnPreviousStep" Configuration="@(new DriverConfigurationModel() {  AllowClose = false, PopoverClass = "driverjs-theme", ShowButtons = AppSettings.ShowButtons, DisableActiveInteraction = true, SmoothScroll =true})">
+    @if (ApiCollection?.ApiClients?.Count > 0)
+    {
+        <MudTextField Class="search-query-input-control" T="string" @bind-Value:get="_searchQuery" @bind-Value:set="x => { _shouldRender = true; AppState.CachedSearchValues[ApiCollection.Id] = x; _searchQuery = x; }"
+                      Style="max-width: 30em; margin-left: 20px;margin-bottom: 15px;" Clearable="true"
+                      OnClearButtonClick="() => { _shouldRender = true; AppState.CachedSearchValues[ApiCollection.Id] = null; _searchQuery = null; }"
+                      Immediate="true" DebounceInterval="250" Variant="Variant.Outlined" Placeholder="Search" 
+                      AdornmentColor="@Color.Info"AdornmentIcon="@Icons.Search" Adornment="Adornment.End"></MudTextField>
+    }
+
+    @if (ApiClientGroups != null)
+    {
+        <MudBreakpointProvider>
+            <MudHidden Breakpoint="Breakpoint.LgAndUp">
+                @{
+                    GroupApiClients(2);
+                }
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                @{
+                    GroupApiClients(3);
+                }
+            </MudHidden>
+        </MudBreakpointProvider>
+        <MudTreeView T="string" Class="collection-tree-root" Hover ExpandOnClick>
+            <CascadingValue Value="this">
+                @{
+                    bool firstApiClientWithRequests = false;
+                }
+                @foreach (var group in ApiClientGroups)
+                {
+                    <div class="f-column">
+                        @foreach (var apiClient in group)
+                        {
+                            if (apiClient.HttpCalls.Any(x => x.AnyClassesGenerated()))
+                            {
+                                firstApiClientWithRequests = true;
+                            }
+                            <ApiClientTreeItem FirstApiClient="firstApiClientWithRequests" SearchQuery="@(Utils.NormalizeToCsharpPropertyName(_searchQuery).Length > 3 ? Utils.NormalizeToCsharpPropertyName(_searchQuery) : null)" ApiClient="apiClient" ApiCollection="ApiCollection"/>
+                            firstApiClientWithRequests = false;
+                        }
+                    </div>
+                }
+            </CascadingValue>
+        </MudTreeView>
+    }
+</DriverStore>
 
 @code {
     [Inject] private AppState AppState { get; set; } = null!;
-    [Parameter]
-    public ApiCollection? ApiCollection { get; set; }
+    [Inject] private IEventAggregator EventBus { get; set; }
+    [Parameter] public ApiCollection? ApiCollection { get; set; }
+
 
     private string? _searchQuery;
 
     private List<List<ApiClient>>? ApiClientGroups { get; set; }
 
     private ApiCollection? _cachedApiCollection;
+
+    private DriverStore? _driverStore;
+
     protected override Task OnParametersSetAsync()
     {
         if (_cachedApiCollection == ApiCollection)
@@ -66,6 +90,84 @@
         _cachedApiCollection = ApiCollection;
         GroupApiClients(3, true);
         return InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && ApiCollection?.ApiClients.Count > 0 && AppState.SiteSettings.ViewedCollectionTour == false)
+        {
+            var firstApiClient = ApiCollection.ApiClients.FirstOrDefault(x => x.HttpCalls.Any(y => y.AnyClassesGenerated())) ?? ApiCollection.ApiClients.FirstOrDefault();
+            if (firstApiClient == null) return;
+            int step = 1;
+            var apiClientModel = new PopoverModel()
+            {
+                ElementSelector = "#first-api-client",
+                Title = "Entire ApiClient Project",
+                Description = "Each folder represents an ApiClient project that was generated.",
+                DisableButtons = [DriverJsDefaultValues.ButtonPrevious],
+            };
+            apiClientModel.Description += firstApiClient.Options.RootDefinition switch
+            {
+                RootDefinition.PerAuthorityPerFolder => " Since you chose PerAuthorityPerFolder for Request Grouping, each folder here likely represents a folder in your postman collection.",
+                RootDefinition.PerAuthority => " Since you chose PerAuthority for request grouping, each folder you see here represents a distinct url authority used in your postman collection.",
+                RootDefinition.FlattenHierarchy or RootDefinition.Manual => string.Empty,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            _driverStore!.AddPopover(step++, apiClientModel);
+            _driverStore!.AddPopover(step++, new PopoverModel()
+            {
+                ElementSelector = "#first-api-client-edit",
+                Title = "Edit ApiClient Namespace",
+            });
+            _driverStore!.AddPopover(step++, new PopoverModel()
+            {
+                ElementSelector = "#first-api-client-view",
+                Title = "Go To ApiClient Page",
+            });
+
+            var model = new PopoverModel()
+            {
+                ElementSelector = "#first-api-call",
+                Title = "Postman Request",
+                Description = "Each sub-folder represents an individual postman request. In the ApiClient service, each request has a corresponding function that performs it.",
+            };
+            _driverStore!.AddPopover(step++, model);
+            if (firstApiClient.HttpCalls.FirstOrDefault(x => x.AnyClassesGenerated() && x.FirstGeneratedClassName() != null) is { } httpCall)
+            {
+                var firstClassName = httpCall.FirstGeneratedClassName();
+                var model2 = new PopoverModel()
+                {
+                    ElementSelector = "#first-api-call-item",
+                    Title = "Generated Class",
+                    Description = "Each item in a request folder represents a class that was generated for the postman request.",
+                };
+                model2.Description += firstClassName == null
+                    ? null
+                    : firstClassName.EndsWith(Consts.Request)
+                        ? " This item represents a class generated for the json body of this request."
+                        : firstClassName.EndsWith(Consts.Response)
+                            ? " This item represents a class generated for the response json of this request."
+                            : firstClassName.EndsWith(Consts.FormData) || firstClassName.EndsWith(Consts.MultipartFormData)
+                                ? " This item represents a class generated for the form data of this request."
+                                : firstClassName.EndsWith(Consts.GraphQLVariables)
+                                    ? " This item represents a class generated to hold the graph ql variables of this request."
+                                    : firstClassName.EndsWith(Consts.Parameters)
+                                        ? " This item represents a class generated to hold the parameters of this request."
+                                        : null;
+                _driverStore!.AddPopover(step++, model2);
+            }
+            _driverStore!.AddPopover(step, new PopoverModel()
+            {
+                ElementSelector = ".search-query-input-control",
+                Title = "Search For Requests",
+                Description = "Enter a folder or request name to search all api clients for it.",
+            });
+            await Task.Delay(1000);
+            await _driverStore.StartDrive();
+            AppState.SiteSettings.ViewedCollectionTour = true;
+            AppState.UpdateSiteSettings(AppState.SiteSettings);
+            await Layout.SetSiteSettings();
+        }
     }
 
     private bool _shouldRender = true;
@@ -103,5 +205,46 @@
         return groupedLists;
     }
 
+    private async Task OnNextStep(int arg)
+    {
+        var firstApiClient = ApiCollection?.ApiClients.FirstOrDefault(x => x.HttpCalls.Any(y => y.AnyClassesGenerated())) ?? ApiCollection?.ApiClients.FirstOrDefault();
+        if (arg == 2 && firstApiClient != null)
+        {
+            await EventBus.PublishAsync(new ExpandApiClientEvent(firstApiClient, true));
+        }
+        else if (arg == 3 && firstApiClient?.HttpCalls.OrderBy(x => x.Name).FirstOrDefault(x => x.AnyClassesGenerated()) is { } httpCall)
+        {
+            await EventBus.PublishAsync(new ExpandHttpCallEvent(httpCall, true));
+        }
+        else if (arg == 4)
+        {
+            if (firstApiClient?.HttpCalls.OrderBy(x => x.Name).FirstOrDefault(x => x.AnyClassesGenerated()) is { } httpCall2)
+            {
+                await EventBus.PublishAsync(new ExpandHttpCallEvent(httpCall2, false));
+            }
+            if (firstApiClient != null)
+            {
+                await EventBus.PublishAsync(new ExpandApiClientEvent(firstApiClient, false));
+            }
+        }
+    }
+
+    private async Task OnPreviousStep(int arg)
+    {
+        var firstApiClient = ApiCollection?.ApiClients.FirstOrDefault(x => x.HttpCalls.Any(y => y.AnyClassesGenerated())) ?? ApiCollection?.ApiClients.FirstOrDefault();
+        if (arg == 3 && firstApiClient != null)
+        {
+            await EventBus.PublishAsync(new ExpandApiClientEvent(firstApiClient, false));
+        }
+        else if (arg == 4 && firstApiClient?.HttpCalls.OrderBy(x => x.Name).FirstOrDefault(x => x.AnyClassesGenerated()) is { } httpCall)
+        {
+            await EventBus.PublishAsync(new ExpandHttpCallEvent(httpCall, false));
+        }
+        else if (arg == 5 && firstApiClient?.HttpCalls.OrderBy(x => x.Name).FirstOrDefault(x => x.AnyClassesGenerated()) is { } httpCall2)
+        {
+            await EventBus.PublishAsync(new ExpandApiClientEvent(firstApiClient, true));
+            await EventBus.PublishAsync(new ExpandHttpCallEvent(httpCall2, true));
+        }
+    }
 }
 

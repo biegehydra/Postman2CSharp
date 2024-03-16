@@ -116,12 +116,21 @@ else
         }
         catch (JsonException exception)
         {
+            bool v201 = Collection?.Info.Schema?.Contains("v2.0.1") == true;
             Collection = null;
             if (ProgressSnackbar != null)
             {
                 SnackBar.Value?.Remove(ProgressSnackbar);
             }
-            SnackBar.Value?.Add($"Json could not be deserialized. {exception.Message}", Severity.Error);
+
+            if (!v201)
+            {
+                SnackBar.Value?.Add($"Json is in the wrong schema. Version must be v2.0.1. Deserialization failed. \n {exception.Message}", Severity.Error, x => x.VisibleStateDuration = 20000);
+            }
+            else
+            {
+                SnackBar.Value?.Add($"Json could not be deserialized. {exception.Message}", Severity.Error, x => x.VisibleStateDuration = 20000);
+            }
         }
         catch (Exception exception)
         {

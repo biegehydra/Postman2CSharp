@@ -18,11 +18,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="EventAggregator.Blazor" Version="2.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.11" />
 		<PackageReference Include="MudBlazor" Version="6.11.0" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Blazor.DriverJs\Blazor.DriverJs.csproj" />
 		<ProjectReference Include="..\Postman2CSharp.Core\Postman2CSharp.Core.csproj" />
 	</ItemGroup>
 </Project>

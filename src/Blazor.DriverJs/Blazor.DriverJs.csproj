@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Title>Blazor DriverJs</Title>
+        <Description>Wrapper for driverjs lib</Description>
+        <PackageProjectUrl>https://github.com/ilsadq/Blazor.DriverJs</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/ilsadq/Blazor.DriverJs</RepositoryUrl>
+        <PackageTags>Blazor, DriverJs</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>driverjs.png</PackageIcon>
+        <Authors>adequate</Authors>
+        <Version>1.0.1</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.13"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="driverjs.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
+    </ItemGroup>
+
+</Project>

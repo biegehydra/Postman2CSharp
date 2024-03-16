@@ -220,7 +220,7 @@
         return false;
     }
 
-    private async Task SetSiteSettings()
+    public async Task SetSiteSettings()
     {
         AppState.SiteSettings.Version = AppState.CurrentVersion;
         await Interop.SetLocalStorage("siteSettings", AppState.SiteSettings);

@@ -11,4 +11,7 @@ public class SiteSettings
     public int TotalApiClientsGenerated { get; set; }
     public int TotalApiClientsDownloaded { get; set; }
     public string? Version { get; set; }
+
+    public bool ViewedCollectionTour { get; set; }
+    public bool ViewedApiClientTour { get; set; }
 }

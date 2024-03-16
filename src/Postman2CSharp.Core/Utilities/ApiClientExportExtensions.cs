@@ -118,7 +118,7 @@ namespace Postman2CSharp.Core.Utilities
             foreach (var (fileName, detail) in srcCodeDict)
             {
                 if (fileName.Contains(nameof(Consts.Request)) || fileName.Contains(nameof(Consts.Response))
-                || fileName.Contains(nameof(Consts.QueryParameters)) || fileName.Contains(nameof(Consts.FormData)))
+                || fileName.Contains(nameof(Consts.Parameters)) || fileName.Contains(nameof(Consts.FormData)))
                 {
                     if (detail.HttpCall == null) throw new NullReferenceException(nameof(detail.HttpCall));
                     var fullPath = Path.Combine(folderPath, detail.HttpCall);

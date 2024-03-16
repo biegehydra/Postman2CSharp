@@ -1,4 +1,5 @@
-﻿@inherits MainLayoutComponent
+﻿@using Blazor.DriverJs.Models
+@inherits MainLayoutComponent
 <style>
     .api-client-grid {
         max-width: 40%;
@@ -12,130 +13,130 @@
 </style>
 @if (SelectedApiClient != null && CollectionId != null)
 {
-    <div class="info-container" >
-        <div class="f-row-column" style="gap: 20px; justify-content: space-between;">
-            <div style="width: 50%;">
-                <ApiClientDetails NamespaceChanged="StateHasChanged" ApiClient="SelectedApiClient"></ApiClientDetails>
+    <DriverStore @ref="_driverStore" Configuration="@(new DriverConfigurationModel() {  AllowClose = false, PopoverClass = "driverjs-theme", ShowButtons = AppSettings.ShowButtons, DisableActiveInteraction = true, SmoothScroll = true})">
+        <div class="info-container">
+            <div class="f-row-column" style="gap: 20px; justify-content: space-between;">
+                <div style="width: 50%;">
+                    <ApiClientDetails NamespaceChanged="StateHasChanged" ApiClient="SelectedApiClient"></ApiClientDetails>
+                </div>
+                <MudGrid Spacing="3" Class="api-client-grid">
+                    <MudItem UserAttributes="@(new Dictionary<string, object?>() { { "id", "download-apiclient" } } )" Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
+                        <p><b>Download ApiClient Project</b></p>
+                        <MudFab Size="Size.Medium" OnClick="DownloadApiClient" Color="Color.Tertiary" StartIcon="@Icons.Download"></MudFab>
+                    </MudItem>
+                    @if (SelectedApiClient.HttpCalls.Any(x => x.AnyClassesGenerated()))
+                    {
+                        <MudItem UserAttributes="@(new Dictionary<string, object?>() { { "id", "generated-classes" } } )" Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
+                            <p><b>View All Generated Classes</b></p>
+                            <OpenInNewTab IconButton="false" NavigateAction="() => TabsService.Value.AddHttpCalls(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
+                        </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem UserAttributes="@(new Dictionary<string, object?>() { { "id", "generated-classes" } } )" Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
+                            <p><b>View All Generated Classes</b></p>
+                            <MudTooltip Delay="400" Text="No classes generated">
+                                <OpenInNewTab IconButton="false" Disabled="true"></OpenInNewTab>
+                            </MudTooltip>
+                        </MudItem>
+                    }
+                    @if (SelectedApiClient.DuplicateRoots.Count > 0)
+                    {
+                        <MudItem UserAttributes="@(new Dictionary<string, object?>() { { "id", "resolve-duplicate-roots" } } )" Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
+                            <p><b>Resolve Duplicate Roots</b></p>
+                            <MudBadge Color="Color.Primary" Overlap Visible="SelectedApiClient.DuplicateRoots.Count(x => !x.Resolved) > 0" Content="@SelectedApiClient.DuplicateRoots.Count(x => !x.Resolved)">
+                                <OpenInNewTab IconButton="false" NavigateAction="() => TabsService.Value.AddApiClientDuplicateRootsTab(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
+                            </MudBadge>
+                        </MudItem>
+                    }
+                </MudGrid>
             </div>
-            <MudGrid Spacing="3" Class="api-client-grid">
-                <MudItem Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
-                    <p><b>Download ApiClient Project</b></p>
-                    <MudFab Size="Size.Medium" OnClick="DownloadApiClient" Color="Color.Tertiary" StartIcon="@Icons.Download" ></MudFab>
-                </MudItem>
-                @if (SelectedApiClient.HttpCalls.Any(x => x.AnyClassesGenerated()))
-                {
-                    <MudItem Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
-                        <p><b>View All Generated Classes</b></p>
-                        <OpenInNewTab IconButton="false" NavigateAction="() => TabsService.Value.AddHttpCalls(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
-                    </MudItem>
-                }
-                else
-                {
-                    <MudItem Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
-                        <p><b>View All Generated Classes</b></p>
-                        <MudTooltip Delay="400" Text="No classes generated" >
-                            <OpenInNewTab IconButton="false" Disabled="true"></OpenInNewTab>
-                        </MudTooltip>
-                    </MudItem>
-                }
-                @if (SelectedApiClient.DuplicateRoots.Count > 0)
-                {
-                    <MudItem Class="f-row aic" Style="gap: 12px; height: max-content; justify-content: space-between;" md="6">
-                        <p><b>Resolve Duplicate Roots</b></p>
-                        <MudBadge Color="Color.Primary" Overlap Visible="SelectedApiClient.DuplicateRoots.Count(x => !x.Resolved) > 0" Content="@SelectedApiClient.DuplicateRoots.Count(x => !x.Resolved)">
-                            <OpenInNewTab IconButton="false" NavigateAction="() => TabsService.Value.AddApiClientDuplicateRootsTab(CollectionId, SelectedApiClient.Id)"></OpenInNewTab>
-                         </MudBadge>
-                     </MudItem>
-                }
-            </MudGrid>
+            <Break Size="P2CsSize.Medium"></Break>
+            <MudText Typo="Typo.h2" Class="mt-4">Configure This ApiClient</MudText>
+            <br />
+            <p>
+                At this point it is to late to change class generation options and a few others but most can still be configured.
+            </p>
+            <SlideDown AnimationDuration=".5" MaxHeight="700px" ShowMoreText="Expand Configurations" ShowLessText="Hide Configurations">
+                <Break Size="P2CsSize.Small" />
+                <MudGrid Spacing="3">
+                    <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
+                        <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="SelectedApiClient.Options.XmlCommentTypes" SelectedValuesChanged="SelectedCommentTypesChanged" Label="Comment Types"></MultiEnumSelectComponent>
+                    </AdvancedSettingItem>
+                </MudGrid>
+                <MudDivider Class="my-divider" Light="true" FlexItem="true" />
+                <MudGrid Spacing="3">
+                    <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle is enabled and a request has multiple response types.">
+                        <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="SelectedApiClient.Options.MultipleResponseHandling" Disabled="SelectedApiClient.Options.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
+                    </AdvancedSettingItem>
+
+                    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+                        <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.HandleMultipleResponses">Handle</MudCheckBox>
+                    </AdvancedSettingItem>
+                </MudGrid>
+                <MudDivider Class="my-divider" Light="true" FlexItem="true" />
+                <MudGrid Spacing="3">
+                    <AdvancedSettingItem ToolTip="Determines whether or not to handle errors when making http client calls and how to handle them when they happen.">
+                        <EnumSelectComponent @bind-Value="SelectedApiClient.Options.ErrorHandlingStrategy" AlwaysShowAllEnumValues Label="Error Handling Strategy"></EnumSelectComponent>
+                    </AdvancedSettingItem>
+
+                    <AdvancedSettingItem ToolTip="Choose how to output your exceptions, if at all.">
+                        <MultiEnumSelectComponent Disabled="SelectedApiClient.Options.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="ErrorHandlingSinks" Value="SelectedApiClient.Options.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
+                    </AdvancedSettingItem>
+
+                    <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handled by the sinks.">
+                        <MultiEnumSelectComponent Disabled="SelectedApiClient.Options.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="SelectedApiClient.Options.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
+                    </AdvancedSettingItem>
+
+                    <AdvancedSettingItem ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
+                        <EnumSelectComponent Disabled="SelectedApiClient.Options.ErrorHandlingStrategy == ErrorHandlingStrategy.None || !SelectedApiClient.Options.ErrorHandlingSinks.Contains(ErrorHandlingSinks.LogException)" @bind-Value="SelectedApiClient.Options.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
+                    </AdvancedSettingItem>
+                </MudGrid>
+                <MudDivider Class="my-divider" Light="true" FlexItem="true" />
+                <MudText Class="setting-section-header mb-3" Typo="Typo.h5">Function Configurations</MudText>
+                <MudGrid Spacing="3">
+                    <AdvancedSettingItem ToolTip="@(@"All actual ""path variables"" (/:pathVariable/) are automatically treated as function parameters, but collection variables in paths (/{{variable}}/) will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
+                        <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudCheckBox>
+                    </AdvancedSettingItem>
+
+                    <AdvancedSettingItem ToolTip="@(@"If true each request function on the generated ApiClient will be have a Cancellation token parameter with a default value of default.")">
+                        <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.UseCancellationTokens">Use Cancellation Tokens</MudCheckBox>
+                    </AdvancedSettingItem>
+                </MudGrid>
+                <MudButton Style="margin:10px;" Variant="Variant.Filled" Color="Color.Tertiary" EndIcon="@Icons.Build" OnClick="RegenerateApiClient">
+                    Regenerate
+                </MudButton>
+            </SlideDown>
         </div>
-        <Break Size="P2CsSize.Medium"></Break>
-        <MudText Typo="Typo.h2" Class="mt-4">Configure This ApiClient</MudText>
         <br />
-        <p>
-            At this point it is to late to change class generation options and a few others but most can still be configured.
-        </p>
-        <SlideDown AnimationDuration=".5" MaxHeight="700px" ShowMoreText="Expand Configurations" ShowLessText="Hide Configurations">
-            <Break Size="P2CsSize.Small" />
-            <MudGrid Spacing="3">
-                <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
-                    <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="SelectedApiClient.Options.XmlCommentTypes" SelectedValuesChanged="SelectedCommentTypesChanged" Label="Comment Types"></MultiEnumSelectComponent>
-                </AdvancedSettingItem>
-            </MudGrid>
-            <MudDivider Class="my-divider" Light="true" FlexItem="true" />
-            <MudGrid Spacing="3">
-                <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle is enabled and a request has multiple response types.">
-                    <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="SelectedApiClient.Options.MultipleResponseHandling" Disabled="SelectedApiClient.Options.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
-                </AdvancedSettingItem>
 
-                <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
-                    <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.HandleMultipleResponses">Handle</MudCheckBox>
-                </AdvancedSettingItem>
-            </MudGrid>
-            <MudDivider Class="my-divider" Light="true" FlexItem="true" />
-            <MudGrid Spacing="3">
-                <AdvancedSettingItem ToolTip="Determines whether or not to handle errors when making http client calls and how to handle them when they happen.">
-                    <EnumSelectComponent @bind-Value="SelectedApiClient.Options.ErrorHandlingStrategy" AlwaysShowAllEnumValues Label="Error Handling Strategy"></EnumSelectComponent>
-                 </AdvancedSettingItem>
-
-                 <AdvancedSettingItem ToolTip="Choose how to output your exceptions, if at all.">
-                     <MultiEnumSelectComponent Disabled="SelectedApiClient.Options.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="ErrorHandlingSinks" Value="SelectedApiClient.Options.ErrorHandlingSinks" Label="Error Handling Sinks" SelectedValuesChanged="SelectedErrorHandlingSinksChanged"></MultiEnumSelectComponent>
-                 </AdvancedSettingItem>
-
-                 <AdvancedSettingItem ToolTip="If ErrorHandlingStrategy does not equal none, these are the exceptions that will be caught and handled by the sinks.">
-                     <MultiEnumSelectComponent Disabled="SelectedApiClient.Options.ErrorHandlingStrategy == ErrorHandlingStrategy.None" TEnum="CatchExceptionTypes" Label="Catch Exception Types" ForbidNoValue Value="SelectedApiClient.Options.CatchExceptionTypes" SelectedValuesChanged="SelectedCatchExceptionTypesChanged"></MultiEnumSelectComponent>
-                 </AdvancedSettingItem>
-
-                 <AdvancedSettingItem ToolTip="When using LogException as an Error Handling Sink, this is the log level that the exception(s) will be logged at.">
-                     <EnumSelectComponent Disabled="SelectedApiClient.Options.ErrorHandlingStrategy == ErrorHandlingStrategy.None || !SelectedApiClient.Options.ErrorHandlingSinks.Contains(ErrorHandlingSinks.LogException)" @bind-Value="SelectedApiClient.Options.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
-                 </AdvancedSettingItem>
-             </MudGrid>
-             <MudDivider Class="my-divider" Light="true" FlexItem="true" />
-             <MudText Class="setting-section-header mb-3" Typo="Typo.h5">Function Configurations</MudText>
-             <MudGrid Spacing="3">
-                 <AdvancedSettingItem ToolTip="@(@"All actual ""path variables"" (/:pathVariable/) are automatically treated as function parameters, but collection variables in paths (/{{variable}}/) will by default be instance variables of the ApiClient. This setting will change it to treat collection variables in the path as path variables (function parameter instead of instance variable).")">
-                     <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.MakePathCollectionVariablesFunctionParameters">Make Path Collection Variables Function Parameters</MudCheckBox>
-                 </AdvancedSettingItem>
-
-                 <AdvancedSettingItem ToolTip="@(@"If true each request function on the generated ApiClient will be have a Cancellation token parameter with a default value of default.")">
-                     <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.UseCancellationTokens">Use Cancellation Tokens</MudCheckBox>
-                 </AdvancedSettingItem>
-             </MudGrid>
-             <MudButton Style="margin:10px;" Variant="Variant.Filled" Color="Color.Tertiary" EndIcon="@Icons.Build" OnClick="RegenerateApiClient">
-                 Regenerate
-             </MudButton>
-         </SlideDown>
-    </div>
-    <br />
-
-    <div class="f-row aic gap-5">
-        <div style="max-width: 20em;" >
-            <EnumSelectComponent TEnum="CodeOption" AlwaysShowAllEnumValues="true" Label="Selected File" Exclude="CodeOptionsExclude()" @bind-Value:get="_currentCode" @bind-Value:set="CurrentCodeChanged"></EnumSelectComponent>
-        </div>
-        @{
-            string text = _currentCode switch
+        <div class="f-row aic gap-5">
+            <div style="max-width: 20em;">
+                <EnumSelectComponent TEnum="CodeOption" AlwaysShowAllEnumValues="true" Label="Selected File" Exclude="CodeOptionsExclude()" @bind-Value:get="_currentCode" @bind-Value:set="CurrentCodeChanged"></EnumSelectComponent>
+            </div>
+            @{
+                string text = _currentCode switch
+                {
+                    CodeOption.Implementation => "Download Implementation",
+                    CodeOption.Interface => "Download Interface",
+                    CodeOption.Controller => "Download Empty Controller",
+                    CodeOption.GraphQLQueries => "Download GraphQL Queries",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+            }
+            @if (FileName != null && SourceCode != null)
             {
-                CodeOption.Implementation => "Download Implementation",
-                CodeOption.Interface => "Download Interface",
-                CodeOption.Controller => "Download Empty Controller",
-                CodeOption.GraphQLQueries => "Download GraphQL Queries",
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
-        @if (FileName != null && SourceCode != null)
-        {
-            <p>@text</p>
-            <MudIconButton Color="@Color.Tertiary" Size="Size.Medium" Icon="@Icons.Download" Variant="Variant.Filled" OnClick="() => Interop.Value.DownloadFile(FileName, SourceCode)"></MudIconButton>
-        }
-    </div>
-    <br />
+                <p>@text</p>
+                <MudIconButton Color="@Color.Tertiary" Size="Size.Medium" Icon="@Icons.Download" Variant="Variant.Filled" OnClick="() => Interop.Value.DownloadFile(FileName, SourceCode)"></MudIconButton>
+            }
+        </div>
+        <br />
 
-
-    <PrismCodeBlock FileName="@FileName" Language="PrismLanguage.CSharp" Value="@SourceCode" />
+        <PrismCodeBlock FileName="@FileName" Language="PrismLanguage.CSharp" Value="@SourceCode" />
+    </DriverStore>
 }
 
 @code {
-
     private enum CodeOption
     {
         Implementation,
@@ -147,8 +148,51 @@
     [Parameter] public string? CollectionId { get; set; }
     [Parameter] public ApiClient? SelectedApiClient { get; set; }
     [Inject] private IDialogService? DialogService { get; set; }
+    [Inject] private AppState? AppState { get; set; }
+    private DriverStore? _driverStore;
 
     private bool ShowConfigurations { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && SelectedApiClient != null && _driverStore != null && AppState != null && AppState.SiteSettings.ViewedApiClientTour != true)
+        {
+            _driverStore.AddPopover(1, new PopoverModel()
+            {
+                ElementSelector = "#download-apiclient",
+                Title = "Download Entire Project",
+                Description = "Downloaded project comes with classes for requests, query parameters, responses, and form data. As well as an ApiClient service to perform requests and an interface for that service.",
+                DisableButtons = [DriverJsDefaultValues.ButtonClose, DriverJsDefaultValues.ButtonPrevious],
+            });
+            var model = new PopoverModel()
+            {
+                ElementSelector = "#generated-classes",
+                Title = "View All Generated Classes",
+                Description = "This button will take you to a page where you can see all the classes that were generated for each request.",
+                DisableButtons = [DriverJsDefaultValues.ButtonClose]
+            };
+            if (SelectedApiClient.HttpCalls.Any(x => x.AnyClassesGenerated()) != true)
+            {
+                model.Description += " Note, no classes were generated for this ApiClient so the button is disabled.";
+            }
+            _driverStore.AddPopover(2, model);
+            if (SelectedApiClient.DuplicateRoots.Count > 0)
+            {
+                _driverStore.AddPopover(3, new PopoverModel()
+                {
+                    ElementSelector = "#resolve-duplicate-roots",
+                    Title = "Resolve Duplicate Roots",
+                    Description = "Some endpoints will use the same models for requests/responses, this tool will let you pick a common name for the models that get reused.",
+                    DisableButtons = [DriverJsDefaultValues.ButtonClose],
+                });
+            }
+            await Task.Delay(1000);
+            await _driverStore.StartDrive();
+            AppState.SiteSettings.ViewedApiClientTour = true;
+            AppState.UpdateSiteSettings(AppState.SiteSettings);
+            await Layout.SetSiteSettings();
+        }
+    }
 
     private List<CodeOption> CodeOptionsExclude()
     {
@@ -256,4 +300,5 @@
         SelectedApiClient.GenerateSourceCode();
         StateHasChanged();
     }
+
 }

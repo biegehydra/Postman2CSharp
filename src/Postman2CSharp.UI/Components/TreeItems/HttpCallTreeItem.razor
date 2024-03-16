@@ -2,7 +2,7 @@
 @if (ClassName != null && ApiClientId != null && HttpCallName != null && ApiCollectionId != null
     && SourceCode != null && (_shouldRender || (IsParentExpanded && !string.IsNullOrWhiteSpace(SearchQuery))))
 {
-    <MudTreeViewItem Class="file-tree-item" Value="@ClassName" >
+    <MudTreeViewItem UserAttributes="_attributes" Class="file-tree-item" Value="@ClassName" >
         <Content>
             <MudTreeViewItemToggleButton Visible="false" />
             <MudText Style="user-select: none;">@ClassName.Replace(HttpCallName, string.Empty)</MudText>
@@ -26,11 +26,20 @@
     [Parameter, EditorRequired] public string? ClassName { get; set; }
     [Parameter, EditorRequired] public string? SourceCode { get; set; }
     [Parameter, EditorRequired] public bool IsParentExpanded { get; set; }
+    [Parameter, EditorRequired] public bool IsFirstClass { get; set; }
 
     private async Task DownloadFile()
     {
         if (ClassName == null || SourceCode == null) return;
         await Interop.DownloadFile(ClassName, SourceCode);
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (IsFirstClass)
+        {
+            _attributes["id"] = "first-api-call-item";
+        }
     }
 
     public void TriggerRender()
@@ -43,6 +52,7 @@
     private string? _cachedHttpCallName;
     private string? _cachedClassName;
     private string? _cachedSourceCode;
+    private Dictionary<string, object> _attributes = new();
 
     private bool _shouldRender;
     protected override bool ShouldRender()

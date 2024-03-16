@@ -20,6 +20,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postman2CSharp.Server", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TESTS-JSON-to-CSHARP", "src\Json2CSharpCodeGenerator-master\TESTS-JSON-to-CSHARP\TESTS-JSON-to-CSHARP.csproj", "{4BA8E8FA-207F-4713-959C-1D8B0E4B3CAE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.DriverJs", "src\Blazor.DriverJs\Blazor.DriverJs.csproj", "{594D1052-AA6B-44FF-B5AE-A7395D3FC2CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{4BA8E8FA-207F-4713-959C-1D8B0E4B3CAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BA8E8FA-207F-4713-959C-1D8B0E4B3CAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BA8E8FA-207F-4713-959C-1D8B0E4B3CAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{594D1052-AA6B-44FF-B5AE-A7395D3FC2CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{594D1052-AA6B-44FF-B5AE-A7395D3FC2CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{594D1052-AA6B-44FF-B5AE-A7395D3FC2CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{594D1052-AA6B-44FF-B5AE-A7395D3FC2CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

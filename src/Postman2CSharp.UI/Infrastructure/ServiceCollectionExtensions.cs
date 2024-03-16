@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+﻿using Blazor.DriverJs;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
@@ -33,6 +34,8 @@ namespace Postman2CSharp.UI.Infrastructure
             services.AddScoped<JsonEditorInterop>();
             services.AddScoped<TabsService>();
             services.AddScoped(typeof(Lazy<>), typeof(Lazy<>));
+            services.AddScoped<DriverJs>();
+            services.AddEventAggregator(x => x.AutoRefresh = true);
             if (isServer)
             {
                 services.AddScoped<ILazyLoader, ServerLazyLoader>();

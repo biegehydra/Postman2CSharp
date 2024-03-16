@@ -1,23 +1,42 @@
 ﻿@using System.Net
+@using EventAggregator.Blazor
+@implements IHandle<ExpandHttpCallEvent>
+@implements IDisposable
 @if (ApiClientId != null && ApiCollectionId != null && HttpCall != null && _httpCallItems != null && (_shouldRender || (IsParentExpanded && !string.IsNullOrWhiteSpace(SearchQuery) && HttpCall.MatchesSearchQuery(SearchQuery))) && _matchesQuery)
 {
     @if (!string.IsNullOrWhiteSpace(HttpCall.RequestSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.QueryParameterSourceCode)
         || !string.IsNullOrWhiteSpace(HttpCall.FormDataSourceCode) || !string.IsNullOrWhiteSpace(HttpCall.GraphQlVariablesSourceCode) || HttpCall.AllResponses.Any(x => !string.IsNullOrWhiteSpace(x.SourceCode)))
     {
-        <MudTreeViewItem Value="@HttpCall.Name" @bind-Expanded="Expanded" >
+        <MudTreeViewItem UserAttributes="UserAttributes" Value="@HttpCall.Name" @bind-Expanded="Expanded" >
             <Content>
                 <MudTreeViewItemToggleButton Visible="true" @bind-Expanded="Expanded"/>
                 <MudIcon Icon="@IconHelpers.Folder(Expanded)" Style="margin-right: 15px;"></MudIcon>
                 <MudText Style="user-select: none;">@HighlightString(HttpCall.Name, SearchQuery)</MudText>
             </Content>
             <ChildContent>
-                <HttpCallTreeItem @ref="_httpCallItems[0]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.RequestClassName" SourceCode="@HttpCall.RequestSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
-                <HttpCallTreeItem @ref="_httpCallItems[1]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.QueryParameterClassName" SourceCode="@HttpCall.QueryParameterSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
-                <HttpCallTreeItem @ref="_httpCallItems[2]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.FormDataClassName" SourceCode="@HttpCall.FormDataSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
-                <HttpCallTreeItem @ref="_httpCallItems[3]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.GraphQlVariablesClassName" SourceCode="@HttpCall.GraphQlVariablesSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
+                @{
+                    bool isRequestFirstClass = FirstApiCallWithItems && !string.IsNullOrWhiteSpace(HttpCall.RequestClassName);
+                    bool isQpFirstClass = !isRequestFirstClass && FirstApiCallWithItems && !string.IsNullOrWhiteSpace(HttpCall.QueryParameterClassName);
+                    bool isFdFirstClass = !isRequestFirstClass && !isQpFirstClass && FirstApiCallWithItems && !string.IsNullOrWhiteSpace(HttpCall.FormDataClassName);
+                    bool isGqlFirstClass = !isRequestFirstClass && !isQpFirstClass && !isFdFirstClass && FirstApiCallWithItems && !string.IsNullOrWhiteSpace(HttpCall.GraphQlVariablesClassName);
+                    var responseCanBeFirstClass = FirstApiCallWithItems && !isRequestFirstClass && !isQpFirstClass && !isFdFirstClass && !isGqlFirstClass;
+                    bool responseIsFirstClass = false;
+                }
+                <HttpCallTreeItem IsFirstClass="isRequestFirstClass" @ref="_httpCallItems[0]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.RequestClassName" SourceCode="@HttpCall.RequestSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
+                <HttpCallTreeItem IsFirstClass="isQpFirstClass" @ref="_httpCallItems[1]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.QueryParameterClassName" SourceCode="@HttpCall.QueryParameterSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
+                <HttpCallTreeItem IsFirstClass="isFdFirstClass" @ref="_httpCallItems[2]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.FormDataClassName" SourceCode="@HttpCall.FormDataSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
+                <HttpCallTreeItem IsFirstClass="isGqlFirstClass" @ref="_httpCallItems[3]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@HttpCall.GraphQlVariablesClassName" SourceCode="@HttpCall.GraphQlVariablesSourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
                 @foreach (var (response, index) in HttpCall.AllResponses.Select((x, i) => (x, i)))
                 {
-                    <HttpCallTreeItem @ref="_httpCallItems[4 + index]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@response.ClassName" SourceCode="@response.SourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId" />
+                    if (responseCanBeFirstClass && responseIsFirstClass == false && !string.IsNullOrWhiteSpace(response.ClassName))
+                    {
+                        responseIsFirstClass = true;
+                        <HttpCallTreeItem IsFirstClass="true" @ref="_httpCallItems[4 + index]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@response.ClassName" SourceCode="@response.SourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
+                    }
+                    else
+                    {
+                        <HttpCallTreeItem IsFirstClass="false" @ref="_httpCallItems[4 + index]" SearchQuery="@SearchQuery" IsParentExpanded="Expanded" ClassName="@response.ClassName" SourceCode="@response.SourceCode" HttpCallName="@HttpCall.Name" ApiClientId="@ApiClientId" ApiCollectionId="@ApiCollectionId"/>
+                    }
                 }
             </ChildContent>
         </MudTreeViewItem>
@@ -34,6 +53,7 @@
 }
 
 @code {
+    [Inject] private IEventAggregator EventAggregator { get; set; } = null!;
     private HttpCallTreeItem?[]? _httpCallItems;
     private bool Expanded { get; set; }
     [Parameter, EditorRequired] public string? ApiCollectionId { get; set; }
@@ -41,23 +61,32 @@
     [Parameter, EditorRequired] public HttpCall? HttpCall { get; set; }
     [Parameter, EditorRequired] public bool IsParentExpanded { get; set; }
     [Parameter, EditorRequired] public string? SearchQuery { get; set; }
+    [Parameter, EditorRequired] public bool FirstApiCallWithItems { get; set; }
     private bool _matchesQuery = true;
 
     private bool _cachedMatchesQuery;
     private string? _cachedSq;
     private string? _cachedApiCollectionId;
     private string? _cachedApiClientId;
-    private HttpCall? _cachedHttpCallId;
+    private HttpCall? _cachedHttpCall;
     private bool _cachedExpanded;
 
     private bool _shouldRender;
+    private Dictionary<string, object> UserAttributes { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        EventAggregator.Subscribe(this);
+    }
 
     protected override void OnParametersSet()
     {
-        if (_httpCallItems == null && HttpCall != null)
+        if (_httpCallItems != null || HttpCall == null) return;
+        var size = 4 + HttpCall.AllResponses.Count;
+        _httpCallItems = new HttpCallTreeItem[size];
+        if (FirstApiCallWithItems)
         {
-            var size = 4 + HttpCall.AllResponses.Count;
-            _httpCallItems = new HttpCallTreeItem[size];
+            UserAttributes["id"] = "first-api-call";
         }
     }
 
@@ -75,14 +104,14 @@
 
         _matchesQuery = HttpCall?.MatchesSearchQuery(SearchQuery) ?? true;
         _shouldRender = Expanded != _cachedExpanded || ApiCollectionId != _cachedApiCollectionId
-               || ApiClientId != _cachedApiClientId || HttpCall != _cachedHttpCallId || _cachedMatchesQuery != _matchesQuery
+               || ApiClientId != _cachedApiClientId || HttpCall != _cachedHttpCall || _cachedMatchesQuery != _matchesQuery
                || (_matchesQuery && _cachedSq != SearchQuery);
 
         _cachedSq = SearchQuery;
         _cachedExpanded = Expanded;
         _cachedApiCollectionId = ApiCollectionId!;
         _cachedApiClientId = ApiClientId!;
-        _cachedHttpCallId = HttpCall;
+        _cachedHttpCall = HttpCall;
         _cachedMatchesQuery = _matchesQuery;
         if (!_shouldRender && Expanded && !string.IsNullOrWhiteSpace(SearchQuery) && _httpCallItems != null)
         {
@@ -92,6 +121,20 @@
             }
         }
         return _shouldRender;
+    }
+
+    public async Task HandleAsync(ExpandHttpCallEvent message)
+    {
+        if (message.HttpCall != null && message.HttpCall == HttpCall)
+        {
+            Expanded = message.Expanded;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void Dispose()
+    {
+        EventAggregator.Unsubscribe(this);
     }
 
 }

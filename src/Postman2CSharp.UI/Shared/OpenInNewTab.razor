@@ -1,14 +1,15 @@
 ﻿@if (IconButton)
 {
-    <MudIconButton Icon="@Icons.OpenInNew" Color="Color.Info" Size="Size.Medium" Disabled="Disabled" OnClick="NavigateAction" />
+    <MudIconButton UserAttributes="Attributes" Icon="@Icons.OpenInNew" Color="Color.Info" Size="Size.Medium" Disabled="Disabled" OnClick="NavigateAction" />
 }
 else
 {
-    <MudFab  StartIcon="@Icons.OpenInNew" Color="Color.Info" Size="Size.Medium" Disabled="Disabled" OnClick="NavigateAction" />
+    <MudFab UserAttributes="Attributes" StartIcon="@Icons.OpenInNew" Color="Color.Info" Size="Size.Medium" Disabled="Disabled" OnClick="NavigateAction" />
 }
 
 @code {
     [Parameter] public EventCallback NavigateAction { get; set; }
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public bool IconButton { get; set; } = true;
+    [Parameter] public Dictionary<string, object> Attributes { get; set; }
 }
