@@ -49,10 +49,19 @@
                 <MudCheckBox Color="Color.Primary" @bind-Checked:get="AppState.SiteSettings.ShowDownloadInTreeView"
                              @bind-Checked:set="x => { AppState.SiteSettings.ShowDownloadInTreeView = x; AppState.UpdateSiteSettings(AppState.SiteSettings); }">Show Download Button In Tree View</MudCheckBox>
             </MudItem>
+            @if (AppState.SiteSettings.ViewedApiClientTour || AppState.SiteSettings.ViewedCollectionTour)
+            {
+                <MudItem>
+                    <MudTooltip Text="Allows you to view the tours on the api collection page and api client page again">
+                        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="ResetGuidedTours">Reset guided tours</MudButton>
+                    </MudTooltip>
+                </MudItem>
+            }
         </MudGrid>
     }
 </div>
 @code {
+    [CascadingParameter] protected MainLayout Layout { get; set; } = null!;
     [Inject] private ISnackbar? Snackbar { get; set; }
     [Inject] private AppState AppState { get; set; } = null!;
     [Inject] private Interop Interop { get; set; } = null!;
@@ -76,6 +85,14 @@
     {
         AppState.SettingsChanged += InvokeStateHasChanged;
         AppState.AdvancedSettingsLoaded += AdvancedSettingsLoadedChanged;
+    }
+
+    protected async Task ResetGuidedTours()
+    {
+        AppState.SiteSettings.ViewedApiClientTour = false;
+        AppState.SiteSettings.ViewedCollectionTour = false;
+        AppState.UpdateSiteSettings(AppState.SiteSettings);
+        await Layout.SetSiteSettings();
     }
 
     private void InvokeStateHasChanged()
