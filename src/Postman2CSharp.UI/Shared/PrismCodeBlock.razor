@@ -2,7 +2,7 @@
     ::-webkit-scrollbar-corner {
         background: transparent;
     }
-    .container-@_id {
+    .container-@InternalId {
         @if (DisplayType == CodeBlockDisplayType.Contents)
         {
             @:display: contents;
@@ -10,7 +10,7 @@
     }
     @if (DisplayType == CodeBlockDisplayType.Scroll)
     {
-        @:.container-@_id .code-toolbar { 
+        @:.container-@InternalId .code-toolbar { 
         @:display: inline-grid;
         @:width: @MaxWidth;
     }
@@ -18,9 +18,9 @@
 </style>
 @if(DisplayType == CodeBlockDisplayType.Normal)
 {
-    <div class="container-@_id">
-        <pre @key="@Value" id="@_id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
-                <code @key="@Value" id="@(_id + "code")" class="@CodeClass()">
+    <div class="container-@InternalId">
+        <pre @key="@Value" id="@InternalId" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+                <code @key="@Value" id="@(InternalId + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {
                         @Value
@@ -32,9 +32,9 @@
 else if (DisplayType == CodeBlockDisplayType.Contents)
 {
     <div style="position: relative; display: grid; width: 100%;">
-        <div class="container-@_id">
-            <pre @key="@Value" id="@_id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
-                <code @key="@Value" id="@(_id + "code")" class="@CodeClass()">
+        <div class="container-@InternalId">
+            <pre @key="@Value" id="@InternalId" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+                <code @key="@Value" id="@(InternalId + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {
                         @Value
@@ -46,9 +46,9 @@ else if (DisplayType == CodeBlockDisplayType.Contents)
 }
 else if(DisplayType == CodeBlockDisplayType.Scroll)
 {
-    <div class="container-@_id">
-        <pre @key="@Value" id="@_id" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
-                <code @key="@Value" id="@(_id + "code")" class="@CodeClass()">
+    <div class="container-@InternalId">
+        <pre @key="@Value" id="@InternalId" style="@PreStyle()" class="@PreClass()" data-src="@DataUrl()" data-src-name="@FileNameWithExtension()" data-download-link-label="Download">
+                <code @key="@Value" id="@(InternalId + "code")" class="@CodeClass()">
                     @if (!string.IsNullOrWhiteSpace(Value))
                     {
                         @Value
@@ -62,6 +62,9 @@ else if(DisplayType == CodeBlockDisplayType.Scroll)
 
     [Parameter]
     public CodeBlockDisplayType DisplayType { get; set; } = CodeBlockDisplayType.Normal;
+
+    [Parameter]
+    public string? Id { get; set; }
 
     [Parameter]
     public string? Style { get; set; }
@@ -92,12 +95,13 @@ else if(DisplayType == CodeBlockDisplayType.Scroll)
 
     private void SaveScrollPosition()
     {
-        _scrollPosition = Interop.GetScrollPosition(_id);
+        _scrollPosition = Interop.GetScrollPosition(InternalId);
     }
 
     [Inject] private Interop Interop { get; set; } = default!;
 
     private string _id = Guid.NewGuid().ToString();
+    private string InternalId => Id ?? _id;
 
     private string DataUrl()
     {
@@ -161,7 +165,7 @@ else if(DisplayType == CodeBlockDisplayType.Scroll)
         if (_scrollPosition != null)
         {
             await Task.Delay(10);
-            await Interop.SetScrollPosition(_id, _scrollPosition);
+            await Interop.SetScrollPosition(InternalId, _scrollPosition);
         }
     }
 

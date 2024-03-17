@@ -14,4 +14,5 @@ public class SiteSettings
 
     public bool ViewedCollectionTour { get; set; }
     public bool ViewedApiClientTour { get; set; }
+    public bool ViewedDuplicateTour { get; set; }
 }

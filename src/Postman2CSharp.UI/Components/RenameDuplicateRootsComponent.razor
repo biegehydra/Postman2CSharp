@@ -1,8 +1,18 @@
-﻿@if (ApiClient != null)
+﻿@using Blazor.DriverJs.Models
+@if (ApiClient != null)
 {
+    <DriverStore @ref="_driverStore" Configuration="@AppSettings.DriverConfig" ></DriverStore>
     <div class="f-column">
+        @{
+            var first = new First();
+        }
         @foreach (var apiClientDuplicateRoot in ApiClient.DuplicateRoots)
         {
+            var isFirst = first.IsFirst;
+            var retainedId = isFirst ? "first-retained-name" : null;
+            var dedupedClassesId = isFirst ? "first-deduped-classes" : null;
+            var firstJsonId = isFirst ? "first-retained-json" : null;
+            var firstEditId = isFirst ? "first-retained-edit" : null;
             <div class="f-row aic">
                 @if (_oldClassName != apiClientDuplicateRoot.ClassName)
                 {
@@ -12,45 +22,98 @@
                     <MudTooltip Text="@text">
                         <MudIconButton Icon="@icon" Color="@color"></MudIconButton>
                     </MudTooltip>
-                    <Detail Key="Retained" Value="@apiClientDuplicateRoot.ClassName" FontSize="FontSize.XLarge"/>
+                    <Detail Id="@retainedId" Key="Retained" Value="@apiClientDuplicateRoot.ClassName" FontSize="FontSize.XLarge" />
                     if (!apiClientDuplicateRoot.Resolved)
                     {
                         <MudTooltip Text="Edit Name For All Usages">
-                            <MudIconButton Icon="@Icons.Edit" Color="Color.Primary" OnClick="() => BeginEditNameForAllUsages(apiClientDuplicateRoot.ClassName)" ></MudIconButton>
+                            <MudIconButton UserAttributes="@(new Dictionary<string, object?>() { {"id", firstEditId} })" 
+                                           Icon="@Icons.Edit" Color="Color.Primary" 
+                                           OnClick="() => BeginEditNameForAllUsages(apiClientDuplicateRoot.ClassName)" />
                         </MudTooltip>
                     }
                 }
                 else
                 {
-                    <MudTextField @bind-Value="@_editingNameForDuplicate" OnKeyUp="OnKeyUp" AutoFocus Clearable Label="New Name" HelperText="Press enter to confirm" />
-                    <MudIconButton Icon="@Icons.Cancel" Class="ml-0 mr-2" OnClick="CancelEditNameForAllUsages" Color="@Color.Default" />
-                    <MudIconButton Icon="@Icons.Check" Class="ml-0 mr-2" OnClick="ConfirmEditNameForAllUsages" Color="@Color.Default" />
+                    <MudTextField Class="ml-7" @bind-Value="@_editingNameForDuplicate" OnKeyUp="OnKeyUp" AutoFocus Clearable Label="New Name" HelperText="Press enter to confirm"/>
+                    <MudIconButton Icon="@Icons.Cancel" Class="ml-0 mr-2" OnClick="CancelEditNameForAllUsages" Color="@Color.Default"/>
+                    <MudIconButton Icon="@Icons.Check" Class="ml-0 mr-2" OnClick="ConfirmEditNameForAllUsages" Color="@Color.Default"/>
                 }
             </div>
             <div style="width: fit-content; padding-left: 20px;">
                 @if (ApiClient.GetClassSourceCode(apiClientDuplicateRoot.ClassName) is { } sourceCode)
                 {
-                    <PrismCodeBlock UseLineNumbers="false" FileName="@apiClientDuplicateRoot.ClassName" Language="PrismLanguage.CSharp" Value="@sourceCode" />
+                    <PrismCodeBlock Id="@firstJsonId" UseLineNumbers="false" FileName="@apiClientDuplicateRoot.ClassName" Language="PrismLanguage.CSharp" Value="@sourceCode"/>
                 }
             </div>
-            <div style="padding-left: 20px;">
+            <div id="@dedupedClassesId" style="padding-left: 20px; width: fit-content;">
                 @foreach (var usage in apiClientDuplicateRoot.Usages)
                 {
-                    <Detail Key="Deduped" Value="@usage.IntendedClassName" FontSize="FontSize.Medium" />
+                    <Detail Key="Deduped" Value="@usage.IntendedClassName" FontSize="FontSize.Medium"/>
                 }
             </div>
-            <br />
+            <br/>
         }
     </div>
 }
 
 @code {
+    [CascadingParameter] public MainLayout Layout { get; set; } = null!;
+    [Inject] private AppState? AppState { get; set; }
     [Inject] private ISnackbar? Snackbar { get; set; }
-    
+    [Inject] private AnalyticsInterop Interop { get; set; } = null!;
+
+    private DriverStore? _driverStore;
     private string? _oldClassName;
     private string? _editingNameForDuplicate;
 
     [Parameter] public Core.Models.ApiClient? ApiClient { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Interop.TrackAction("Visited Resolved Duplicate Roots");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && ApiClient != null && _driverStore != null && AppState != null && AppState.SiteSettings.ViewedDuplicateTour != true)
+        {
+            var firstDedupedClassName = ApiClient.DuplicateRoots.FirstOrDefault();
+            if (firstDedupedClassName == null) return;
+            _driverStore.AddPopover(1, new PopoverModel()
+            {
+                ElementSelector = "#first-retained-json",
+                Title = "Retained Class",
+                Description = "Multiple classes were generated that had this structure.",
+                DisableButtons = [DriverJsDefaultValues.ButtonClose, DriverJsDefaultValues.ButtonPrevious],
+            });
+            _driverStore.AddPopover(2, new PopoverModel()
+            {
+                ElementSelector = "#first-retained-name",
+                Title = "Retained Class Name",
+                Description = "This is the name of the first generated class that had that structure. It was retained.",
+                DisableButtons = [DriverJsDefaultValues.ButtonClose]
+            });
+            _driverStore.AddPopover(3, new PopoverModel()
+            {
+                ElementSelector = "#first-deduped-classes",
+                Title = "Deduped Classes",
+                Description = $"These are the names of all the classes that had the same structure as {firstDedupedClassName.ClassName}. Classes were not generated for any of these. Instead, anywhere that these would have been used currently use {firstDedupedClassName.ClassName}",
+                DisableButtons = [DriverJsDefaultValues.ButtonClose],
+            });
+            _driverStore.AddPopover(4, new PopoverModel()
+            {
+                ElementSelector = "#first-retained-edit",
+                Title = "Edit Name",
+                Description = $"Editing the name here will update all usages of {firstDedupedClassName.ClassName} to be a new name of your choosing.",
+                DisableButtons = [DriverJsDefaultValues.ButtonClose],
+            });
+            await Task.Delay(1000);
+            await _driverStore.StartDrive();
+            AppState.SiteSettings.ViewedDuplicateTour = true;
+            AppState.UpdateSiteSettings(AppState.SiteSettings);
+            await Layout.SetSiteSettings();
+        }
+    }
 
     private void BeginEditNameForAllUsages(string className)
     {
@@ -59,7 +122,7 @@
         _editingNameForDuplicate = className;
     }
 
-    private void ConfirmEditNameForAllUsages()
+    private async Task ConfirmEditNameForAllUsages()
     {
         if (_oldClassName == null || ApiClient == null) return;
         if (string.IsNullOrWhiteSpace(_editingNameForDuplicate))
@@ -78,6 +141,7 @@
         }
         duplicateRoot.ClassName = _editingNameForDuplicate;
         duplicateRoot.Resolved = true;
+        await Interop.TrackAction("Resolved Duplicate Root");
         ApiClient.GenerateSourceCode();
         _oldClassName = null;
         _editingNameForDuplicate = null;
@@ -89,11 +153,11 @@
         _oldClassName = null;
     }
 
-    private void OnKeyUp(KeyboardEventArgs obj)
+    private async Task OnKeyUp(KeyboardEventArgs obj)
     {
         if (obj.Code == "Enter")
         {
-            ConfirmEditNameForAllUsages();
+            await ConfirmEditNameForAllUsages();
         }
     }
 
