@@ -12,7 +12,7 @@
 @code {
     private List<BreadcrumbItem> _breadCrumbs = new();
 
-
+    [Inject] private AnalyticsInterop Analytics { get; set; } = null!;
     [Parameter] public string? ApiClientId { get; set; }
     [Parameter] public string? CollectionId { get; set; }
 
@@ -21,6 +21,8 @@
     protected override async Task OnInitializedAsync()
     {
         if (!GetApiClientFromParameters()) return;
+
+        await Analytics.TrackAction("Visited all generated classes page");
 
         await TabsService.Value.AddHttpCalls(CollectionId!, SelectedApiClient!.Id);
     }

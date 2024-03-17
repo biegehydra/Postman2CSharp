@@ -10,7 +10,7 @@
     }
 </style>
 
-<DriverStore @ref="_driverStore" OnNextStep="OnNextStep" OnPreviousStep="OnPreviousStep" Configuration="@(new DriverConfigurationModel() {  AllowClose = false, PopoverClass = "driverjs-theme", ShowButtons = AppSettings.ShowButtons, DisableActiveInteraction = true, SmoothScroll =true})">
+<DriverStore @ref="_driverStore" OnNextStep="OnNextStep" OnPreviousStep="OnPreviousStep" Configuration="@AppSettings.DriverConfig">
     @if (ApiCollection?.ApiClients?.Count > 0)
     {
         <MudTextField Class="search-query-input-control" T="string" @bind-Value:get="_searchQuery" @bind-Value:set="x => { _shouldRender = true; AppState.CachedSearchValues[ApiCollection.Id] = x; _searchQuery = x; }"
@@ -37,19 +37,14 @@
         <MudTreeView T="string" Class="collection-tree-root" Hover ExpandOnClick>
             <CascadingValue Value="this">
                 @{
-                    bool firstApiClientWithRequests = false;
+                    var first = new First<ApiClient>(x => x.HttpCalls.Any(y => y.AnyClassesGenerated()));
                 }
                 @foreach (var group in ApiClientGroups)
                 {
                     <div class="f-column">
                         @foreach (var apiClient in group)
                         {
-                            if (apiClient.HttpCalls.Any(x => x.AnyClassesGenerated()))
-                            {
-                                firstApiClientWithRequests = true;
-                            }
-                            <ApiClientTreeItem FirstApiClient="firstApiClientWithRequests" SearchQuery="@(Utils.NormalizeToCsharpPropertyName(_searchQuery).Length > 3 ? Utils.NormalizeToCsharpPropertyName(_searchQuery) : null)" ApiClient="apiClient" ApiCollection="ApiCollection"/>
-                            firstApiClientWithRequests = false;
+                            <ApiClientTreeItem FirstApiClient="first.IsFirst(apiClient)" SearchQuery="@(Utils.NormalizeToCsharpPropertyName(_searchQuery).Length > 3 ? Utils.NormalizeToCsharpPropertyName(_searchQuery) : null)" ApiClient="apiClient" ApiCollection="ApiCollection"/>
                         }
                     </div>
                 }

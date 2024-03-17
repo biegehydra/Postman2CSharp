@@ -387,10 +387,7 @@
                 CollectionInfo = _postmanCollection.Info
             };
 
-            var isTestData = _uploadedFile.Name == Consts.TestDataName;
-            var dataType = isTestData ? "Test Data" : "Real Data";
-            var message = $"Generate ApiClient - {dataType}";
-            await AnalyticsInterop.TrackAction(message);
+            await AnalyticsInterop.TrackAction("Stepper - Generate ApiClient");
             await Task.Delay(3000);
             await SuccessfulGeneration.InvokeAsync(apiCollection);
         }

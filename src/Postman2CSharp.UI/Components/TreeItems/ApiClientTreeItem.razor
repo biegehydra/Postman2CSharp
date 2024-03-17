@@ -168,19 +168,19 @@
         }
     }
 
-    private Task ConfirmApiClientNamespace()
+    private async Task ConfirmApiClientNamespace()
     {
-        if (ApiClient == null) return Task.CompletedTask;
+        if (ApiClient == null) return;
         if (_newApiClientName == Consts.Postman2CSharp)
         {
             ShowEdit = false;
             _newApiClientName = null;
-            return Task.CompletedTask;
+            return;
         }
         if (string.IsNullOrWhiteSpace(_newApiClientName))
         {
             SnackBar.Value?.Add("Something went wrong. Cached namespace was empty.", Severity.Warning);
-            return Task.CompletedTask;
+            return;
         }
 
         var oldNamespace = ApiClient.NameSpace;
@@ -190,7 +190,8 @@
         ShowEdit = false;
 
         _newApiClientName = null;
-        return InvokeAsync(StateHasChanged);
+        await AnalyticsInterop.Value.TrackAction("Tree - Change Namespace");
+        await InvokeAsync(StateHasChanged);
     }
 
     private void CancelEditingApiClientNamespace()

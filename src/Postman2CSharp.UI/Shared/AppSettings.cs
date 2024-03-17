@@ -1,4 +1,5 @@
 ﻿using Blazor.DriverJs;
+using Blazor.DriverJs.Models;
 
 namespace Postman2CSharp.UI.Shared
 {
@@ -10,5 +11,11 @@ namespace Postman2CSharp.UI.Shared
             DriverJsDefaultValues.ButtonPrevious,
         ];
         public bool ShowSnackBarPopups { get; set; } = true;
+
+        public static DriverConfigurationModel DriverConfig = new DriverConfigurationModel()
+        {
+            AllowClose = false, PopoverClass = "driverjs-theme", ShowButtons = AppSettings.ShowButtons,
+            DisableActiveInteraction = true, SmoothScroll = true
+        };
     }
 }

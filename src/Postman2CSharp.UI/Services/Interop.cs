@@ -97,10 +97,7 @@ namespace Postman2CSharp.UI.Services
                     await invokeStateHasChanged();
                     await Task.Delay(5);
                 }
-
-                bool isTestData = apiClient.BaseUrl?.Contains("googleapis") ?? false;
-                var dataType = isTestData ? "Test Data" : "Real Data";
-                await _analytics.TrackAction($"Download ApiClient - {dataType}");
+                await _analytics.TrackAction($"Download ApiClient - Real Data");
             }
             catch (OutOfMemoryException)
             {

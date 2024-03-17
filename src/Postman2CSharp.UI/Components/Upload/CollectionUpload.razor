@@ -178,11 +178,7 @@ else
                 ApiClients = apiClients,
                 CollectionInfo = Collection.Info
             };
-
-            var isTestData = UploadedFile?.Name == Consts.TestDataName;
-            var dataType = isTestData ? "Test Data" : "Real Data";
-            var message = $"Generate ApiClient - {dataType}";
-            await AnalyticsInterop.TrackAction(message);
+            await AnalyticsInterop.TrackAction("Condensed - Generate ApiClient");
             await SuccessfulGeneration.InvokeAsync(apiCollection);
         }
         catch (Exception exception)

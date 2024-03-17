@@ -11,6 +11,7 @@ namespace Postman2CSharp.UI.Shared
         [Inject] protected Lazy<Interop> Interop { get; set; } = null!;
         [Inject] protected Lazy<ISnackbar?> SnackBar { get; set; } = null!;
         [Inject] protected Lazy<Navigate> Navigate { get; set; } = null!;
+        [Inject] protected Lazy<AnalyticsInterop> AnalyticsInterop { get; set; } = null!;
         [Inject] protected Lazy<TabsService> TabsService { get; set; } = null!;
         [CascadingParameter] protected List<ApiCollection>? ApiCollections { get; set; }
         [CascadingParameter] protected MainLayout Layout { get; set; } = null!;

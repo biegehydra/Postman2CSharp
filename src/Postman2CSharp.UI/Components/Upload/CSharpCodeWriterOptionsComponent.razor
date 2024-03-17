@@ -71,6 +71,7 @@
 
 @code {
     [Inject] private AppState AppState { get; set; } = null!;
+    [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
     [Inject] private Lazy<ISnackbar?> SnackBar { get; set; } = default!;
     private CSharpCodeWriterConfigInputModel InputModel { get; set; } = CSharpCodeWriterConfigInputModel.InputModelWithDefaults();
 
@@ -108,10 +109,11 @@
     }
 
 
-    private void SaveOptions()
+    private async Task SaveOptions()
     {
         AppState.UpdateCodeWriterConfigInputModel(InputModel.Clone());
         SnackBar.Value?.Add($"Class generation options saved", Severity.Success);
+        await AnalyticsInterop.TrackAction("Saved advanced settings");
     }
 
     public void Dispose()

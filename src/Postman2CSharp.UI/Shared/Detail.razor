@@ -1,9 +1,10 @@
-﻿<div class="f-row" style="@($"font-size:{FontSizeStr()}")" >
+﻿<div id="@Id" class="f-row" style="@($"font-size:{FontSizeStr()}")" >
     <p><b>@Key:</b>&emsp;@Value</p>
 </div>
 
 @code {
     [Parameter] public bool Flip { get; set; }
+    [Parameter] public string Id { get; set; }
 
     [EditorRequired, Parameter]
     public string? Key { get; set; }

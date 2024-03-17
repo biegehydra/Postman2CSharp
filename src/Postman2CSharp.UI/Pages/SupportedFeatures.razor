@@ -111,6 +111,7 @@
 
 @code {
     [Inject] private TabsService TabsService { get; set; } = null!;
+    [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
     {
         new("Home", "/", icon: Icons.Home),
@@ -120,6 +121,7 @@
     protected override async Task OnInitializedAsync()
     {
         await TabsService.SetHome(null);
+        await AnalyticsInterop.TrackAction("Visited supported features");
     }
 
     private Dictionary<SupportedLevel, string?> SupportLevelToText = new()

@@ -59,6 +59,7 @@
 
     [Parameter] public ApiClient? ApiClient { get; set; }
     [Inject] public Interop Interop { get; set; } = null!;
+    [Inject] public AnalyticsInterop AnalyticsInterop { get; set; } = null!;
     [Inject] public ISnackbar? Snackbar { get; set; }
     [Parameter] public EventCallback NamespaceChanged { get; set; }
 
@@ -82,14 +83,14 @@
         return Task.CompletedTask;
     }
 
-    private Task ConfirmApiClientNamespace()
+    private async Task ConfirmApiClientNamespace()
     {
-        if (ApiClient == null) return Task.CompletedTask;
-        if (ApiClient.NameSpace == _newApiClientNamespace) return Task.CompletedTask;
+        if (ApiClient == null) return;
+        if (ApiClient.NameSpace == _newApiClientNamespace) return;
         if (string.IsNullOrWhiteSpace(_newApiClientNamespace))
         {
             Snackbar?.Add("Cannot set namespace to empty.", Severity.Warning);
-            return Task.CompletedTask;
+            return;
         }
         var oldNamespace = ApiClient.NameSpace;
         ApiClient.NameSpace = Utils.NormalizeToCsharpPropertyName(_newApiClientNamespace);
@@ -97,7 +98,8 @@
         ApiClient.FixNamespaces(oldNamespace, _newApiClientNamespace);
         _showEdit = false;
         _newApiClientNamespace = null;
-        return NamespaceChanged.InvokeAsync();
+        await AnalyticsInterop.TrackAction("ApiClient - Changed Namespace");
+        await NamespaceChanged.InvokeAsync();
     }
 
     private void CancelEditingApiClientNamespace()

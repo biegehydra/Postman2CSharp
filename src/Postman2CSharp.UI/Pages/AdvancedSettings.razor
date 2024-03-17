@@ -30,7 +30,7 @@
                 @if (!Equals(AppState.SiteSettings, DefaultSiteSettings()))
                 {
                     <MudTooltip Text="Resets settings to default values">
-                        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="() => AppState.UpdateSiteSettings(DefaultSiteSettings())">Reset</MudButton>
+                        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="Reset">Reset</MudButton>
                     </MudTooltip>
                 }
             </div>
@@ -49,10 +49,10 @@
                 <MudCheckBox Color="Color.Primary" @bind-Checked:get="AppState.SiteSettings.ShowDownloadInTreeView"
                              @bind-Checked:set="x => { AppState.SiteSettings.ShowDownloadInTreeView = x; AppState.UpdateSiteSettings(AppState.SiteSettings); }">Show Download Button In Tree View</MudCheckBox>
             </MudItem>
-            @if (AppState.SiteSettings.ViewedApiClientTour || AppState.SiteSettings.ViewedCollectionTour)
+            @if (AppState.SiteSettings.ViewedApiClientTour || AppState.SiteSettings.ViewedCollectionTour || AppState.SiteSettings.ViewedDuplicateTour)
             {
                 <MudItem>
-                    <MudTooltip Text="Allows you to view the tours on the api collection page and api client page again">
+                    <MudTooltip Text="Allows you to view the guided tours again">
                         <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="ResetGuidedTours">Reset guided tours</MudButton>
                     </MudTooltip>
                 </MudItem>
@@ -65,6 +65,7 @@
     [Inject] private ISnackbar? Snackbar { get; set; }
     [Inject] private AppState AppState { get; set; } = null!;
     [Inject] private Interop Interop { get; set; } = null!;
+    [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
     [Inject] private ILazyLoader LazyLoader { get; set; } = null!;
 
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
@@ -81,17 +82,20 @@
                settings1.ShowDownloadInTreeView == settings2.ShowDownloadInTreeView;
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         AppState.SettingsChanged += InvokeStateHasChanged;
         AppState.AdvancedSettingsLoaded += AdvancedSettingsLoadedChanged;
+        await AnalyticsInterop.TrackAction("Visited advanced settings");
     }
 
     protected async Task ResetGuidedTours()
     {
         AppState.SiteSettings.ViewedApiClientTour = false;
         AppState.SiteSettings.ViewedCollectionTour = false;
+        AppState.SiteSettings.ViewedDuplicateTour = false;
         AppState.UpdateSiteSettings(AppState.SiteSettings);
+        await AnalyticsInterop.TrackAction("Reset guided tours");
         await Layout.SetSiteSettings();
     }
 
@@ -110,4 +114,11 @@
         AppState.SettingsChanged -= InvokeStateHasChanged;
         AppState.AdvancedSettingsLoaded -= AdvancedSettingsLoadedChanged;
     }
+
+    private async Task Reset()
+    {
+        AppState.UpdateSiteSettings(DefaultSiteSettings());
+        await AnalyticsInterop.TrackAction("Reset advanced settings default");
+    }
+
 }

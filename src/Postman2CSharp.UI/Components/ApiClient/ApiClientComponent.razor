@@ -13,7 +13,7 @@
 </style>
 @if (SelectedApiClient != null && CollectionId != null)
 {
-    <DriverStore @ref="_driverStore" Configuration="@(new DriverConfigurationModel() {  AllowClose = false, PopoverClass = "driverjs-theme", ShowButtons = AppSettings.ShowButtons, DisableActiveInteraction = true, SmoothScroll = true})">
+    <DriverStore @ref="_driverStore" Configuration="@AppSettings.DriverConfig">
         <div class="info-container">
             <div class="f-row-column" style="gap: 20px; justify-content: space-between;">
                 <div style="width: 50%;">
@@ -149,9 +149,15 @@
     [Parameter] public ApiClient? SelectedApiClient { get; set; }
     [Inject] private IDialogService? DialogService { get; set; }
     [Inject] private AppState? AppState { get; set; }
+    [Inject] private AnalyticsInterop Analytics { get; set; } = null!;
     private DriverStore? _driverStore;
 
     private bool ShowConfigurations { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Analytics.TrackAction("Visited Api Client Page");
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -294,11 +300,12 @@
         SelectedApiClient.Options.XmlCommentTypes = commentTypes.Select(Enum.Parse<XmlCommentTypes>).ToList();
     }
 
-    private void RegenerateApiClient()
+    private async Task RegenerateApiClient()
     {
         if (SelectedApiClient == null) return;
         SelectedApiClient.GenerateSourceCode();
         StateHasChanged();
+        await Analytics.TrackAction("Regenerate ApiClient New Settings");
     }
 
 }

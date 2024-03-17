@@ -27,6 +27,7 @@
             new("Core Files", "/CoreFiles", icon: Icons.Code),
             new(FileName!, $"/CoreFiles/{FileName}", true)
         };
+        await AnalyticsInterop.Value.TrackAction("Visited core files");
     }
 
 }

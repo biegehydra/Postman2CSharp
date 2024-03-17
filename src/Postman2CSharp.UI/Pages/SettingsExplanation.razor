@@ -362,4 +362,10 @@ catch (Exception ex)
                    <PrismCodeBlock Language="PrismLanguage.CSharp" Value="@truee" UseLineNumbers="false"/>
                </div>;
     }
+
+    [Inject] private AnalyticsInterop AnalyticsInterop { get; set; } = null!;
+    protected override Task OnInitializedAsync()
+    {
+        return AnalyticsInterop.TrackAction("Visited settings explanations");
+    }
 }

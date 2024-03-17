@@ -24,9 +24,11 @@
 
 @code
 {
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
         Layout.ToggleDrawer(false);
+        await AnalyticsInterop.Value.TrackAction("Visited interactive demo");
     }
 
     private static readonly List<BreadcrumbItem> BreadCrumbs = new()
