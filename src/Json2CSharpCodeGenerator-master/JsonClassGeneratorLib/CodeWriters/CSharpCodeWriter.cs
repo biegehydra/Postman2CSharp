@@ -582,13 +582,10 @@ namespace Xamasoft.JsonClassGenerator.CodeWriters
                     {
                         case XmlType.Element:
                             return $"[{attributeTarget}XmlElement(ElementName=\"{field.JsonMemberName}\")]";
-                            break;
                         case XmlType.Attribute:
                             return $"[{attributeTarget}XmlAttribute(AttributeName=\"{field.JsonMemberName[1..]}\")]";
-                            break;
                         case XmlType.Text:
                             return $"[{attributeTarget}XmlText]";
-                            break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }

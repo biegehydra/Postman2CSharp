@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
@@ -14,6 +14,10 @@
         <Authors>adequate</Authors>
         <Version>1.0.1</Version>
     </PropertyGroup>
+
+	<PropertyGroup>
+		<NoWarn>BL0007;BL0005</NoWarn>
+	</PropertyGroup>
 
     <ItemGroup>
         <SupportedPlatform Include="browser"/>

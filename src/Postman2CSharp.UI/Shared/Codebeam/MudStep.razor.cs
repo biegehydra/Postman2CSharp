@@ -13,13 +13,13 @@ namespace CodeBeamMudExtensions
         private bool StepIsNotActive => ((MudStepper.ActiveIndex < MudStepper.Steps.Count && MudStepper.Steps[MudStepper.ActiveIndex] != this) || (MudStepper.ShowResultStep() && !IsResultStep)) || (IsResultStep && !MudStepper.ShowResultStep());
 
         [CascadingParameter]
-        protected MudStepper MudStepper { get; set; }
+        protected MudStepper MudStepper { get; set; } = null!;
 
         /// <summary>
         /// Step text to show on header.
         /// </summary>
         [Parameter]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         StepStatus _status = StepStatus.Continued;
         /// <summary>
@@ -53,7 +53,7 @@ namespace CodeBeamMudExtensions
         public bool IsResultStep { get; set; } = false;
 
         [Parameter]
-        public RenderFragment ChildContent { get; set; }
+        public RenderFragment? ChildContent { get; set; }
 
         /// <summary>
         /// Fires when step status changed.

@@ -55,10 +55,10 @@ namespace Postman2CSharp.UI.Extensions
             var uri = new Uri(navManager.Uri);
             var parsedQuery = HttpUtility.ParseQueryString(uri.Query);
 
-#pragma warning disable CS8714
+#pragma warning disable CS8714, CS8621
             var queryParams = parsedQuery.AllKeys.Where(k => k != keyToRemove)
                 .ToDictionary(k => k, k => parsedQuery[k]);
-#pragma warning restore CS8714
+#pragma warning restore CS8714, CS8621
             var queryStr = string.Join("&", queryParams.Select(kvp => $"{HttpUtility.UrlEncode(kvp.Key)}={HttpUtility.UrlEncode(kvp.Value)}"));
 
             return queryStr;

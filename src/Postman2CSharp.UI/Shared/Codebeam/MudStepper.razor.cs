@@ -119,7 +119,7 @@ namespace CodeBeamMudExtensions
         /// A static content that always show with all steps.
         /// </summary>
         [Parameter]
-        public RenderFragment StaticContent { get; set; }
+        public RenderFragment? StaticContent { get; set; }
 
         /// <summary>
         /// If true, action buttons have icons instead of text to gain more space.
@@ -153,13 +153,13 @@ namespace CodeBeamMudExtensions
         /// The child content where MudSteps should be inside.
         /// </summary>
         [Parameter]
-        public RenderFragment ChildContent { get; set; }
+        public RenderFragment? ChildContent { get; set; }
 
         /// <summary>
         /// Overrides the action buttons (previous, next etc.) with custom render fragment.
         /// </summary>
         [Parameter]
-        public RenderFragment ActionContent { get; set; }
+        public RenderFragment? ActionContent { get; set; }
 
         [Parameter]
         public EventCallback<int> ActiveStepChanged { get; set; }
@@ -180,7 +180,7 @@ namespace CodeBeamMudExtensions
 
         [Parameter] public bool UseStepBorder { get; set; }
 
-        public string StepBorderStyle => UseStepBorder ? "border-color: rgb(208 213 221 / 1); border-width: 1px; padding: 0 10px; background: black;" : null;
+        public string? StepBorderStyle => UseStepBorder ? "border-color: rgb(208 213 221 / 1); border-width: 1px; padding: 0 10px; background: black;" : null;
 
         List<MudStep> _steps = new();
         List<MudStep> _allSteps = new();

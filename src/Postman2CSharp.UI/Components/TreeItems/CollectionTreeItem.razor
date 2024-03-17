@@ -55,7 +55,7 @@
 
 @code {
     [Inject] private AppState AppState { get; set; } = null!;
-    [Inject] private IEventAggregator EventBus { get; set; }
+    [Inject] private IEventAggregator EventBus { get; set; } = null!;
     [Parameter] public ApiCollection? ApiCollection { get; set; }
 
 

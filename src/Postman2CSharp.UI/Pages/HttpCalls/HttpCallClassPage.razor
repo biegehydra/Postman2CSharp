@@ -50,9 +50,9 @@
         {
             new("Home", "/", icon: Icons.Home),
             new("Collection", $"/Collection/{CollectionId}", icon: NavMenu.FavIcon),
-            new(_selectedApiClientName, $"/Collection/{CollectionId}/ApiClient/{ApiClientId}"),
+            new(_selectedApiClientName!, $"/Collection/{CollectionId}/ApiClient/{ApiClientId}"),
             new("Http Calls", $"/Collection/{CollectionId}/ApiClient/{ApiClientId}/HttpCalls"),
-            new(ClassName, $"Collection/{CollectionId}/ApiClient/{ApiClientId}/HttpCalls/{HttpCallName}/{ClassName}", true),
+            new(ClassName!, $"Collection/{CollectionId}/ApiClient/{ApiClientId}/HttpCalls/{HttpCallName}/{ClassName}", true),
         };
     }
 

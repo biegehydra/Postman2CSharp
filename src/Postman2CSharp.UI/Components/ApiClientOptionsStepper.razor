@@ -393,17 +393,12 @@
         }
         catch (Exception exception)
         {
-            if (_progressSnackbar != null)
-            {
-                Snackbar?.Remove(_progressSnackbar);
-            }
             Snackbar?.Add($"Something went wrong. Create issue on GitHub if issue persists. Error Message: {exception.Message}", Severity.Error, configure => configure.VisibleStateDuration = 7000);
             await AnalyticsInterop.TrackAction($"Error Generating ApiClient: {exception.Message}");
         }
     }
 
     private ProgressPopupOptions? _progressOptions;
-    private Snackbar? _progressSnackbar;
     private void StartTrackingGenerator(ApiClientGenerator apiClientGenerator)
     {
         var options = new ProgressPopupOptions("Deserializing collection...", "Finished Generating ApiClients!");

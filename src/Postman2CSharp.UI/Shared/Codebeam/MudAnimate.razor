@@ -3,6 +3,7 @@
 @using MudExtensions.Enums
 @using MudExtensions.Utilities
 @using Category= MudBlazor.CategoryAttribute
+@using System.Reflection
 @inherits MudComponentBase
 
 @code{
@@ -189,7 +190,7 @@
     @(Selector)@(Hover ? ":hover" : null) {
         @if (_show == true)
         {
-            @($"animation: {AnimationName} {Duration.ToInvariantString()}s {AnimationTiming.ToDescriptionString()} {(Delay != 0 ? Delay.ToInvariantString() + "s" : null)} {(Infinite ? "infinite" : IterationCount.ToString())} {AnimationDirection.ToDescriptionString()} {(Paused ? "paused" : null)}  {AnimationFillMode.ToDescriptionString()};");
+            @($"animation: {AnimationName} {Duration.ToInvariantString()}s {ToDescriptionString(AnimationTiming)} {(Delay != 0 ? Delay.ToInvariantString() + "s" : null)} {(Infinite ? "infinite" : IterationCount.ToString())} {ToDescriptionString(AnimationDirection)} {(Paused ? "paused" : null)}  {ToDescriptionString(AnimationFillMode)};");
         }
         else
         {
@@ -201,3 +202,14 @@
         @GetKeyframeCode()
     }
 </style>
+
+@code
+{
+    private static string ToDescriptionString(Enum value)
+    {
+        FieldInfo? field = value.GetType().GetField(value.ToString());
+        if ((object?) field == null)
+            return value.ToString().ToLower();
+        return Attribute.GetCustomAttributes((MemberInfo) field, typeof (DescriptionAttribute), false) is not DescriptionAttribute[] {Length: > 0} customAttributes ? value.ToString().ToLower() : customAttributes[0].Description;
+    }
+}

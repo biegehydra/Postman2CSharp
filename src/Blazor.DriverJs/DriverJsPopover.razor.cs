@@ -8,11 +8,15 @@ public partial class DriverJsPopover : IDisposable
 {
     private ElementReference _ref;
 
-    [CascadingParameter] public DriverStore Store { get; set; }
+    [CascadingParameter] public DriverStore? Store { get; set; }
 
     protected override void OnAfterRender(bool firstRender)
     {
         Model.Element = _ref;
+        if (Store == null)
+        {
+            throw new Exception("DriverJsPopover not inside driver store");
+        }
         if (firstRender) Store.AddPopover(Step, Model);
         base.OnAfterRender(firstRender);
     }
@@ -41,6 +45,6 @@ public partial class DriverJsPopover : IDisposable
 
     public void Dispose()
     {
-        Store.RemovePopover(Step);
+        Store?.RemovePopover(Step);
     }
 }

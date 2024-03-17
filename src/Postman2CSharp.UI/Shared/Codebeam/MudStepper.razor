@@ -13,7 +13,7 @@
                     continue;
                 }
                 bool active = IsStepActive(step);
-                <div @onclick="@(Linear ? null : () => SetActiveIndex(step))" Class="@HeaderClassname">
+                <div @onclick="@(Linear ? null! : () => SetActiveIndex(step))" Class="@HeaderClassname">
                         <MudAvatar Class="@((active || step.Status != StepStatus.Continued) ? $"mud-theme-{Color.ToDescriptionString()}" : null)" Variant="@Variant" Size="Size.Medium">
                             @if (step.Status == StepStatus.Completed)
                             {

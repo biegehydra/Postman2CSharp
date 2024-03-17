@@ -10,7 +10,7 @@ public partial class DriverStore : IDisposable
 {
     #region Fields
 
-    private DotNetObjectReference<DriverStore> objRef;
+    private DotNetObjectReference<DriverStore> _objRef = null!;
 
     private bool IsCallbackDrive => OnNextStep.HasDelegate || OnPreviousStep.HasDelegate || OnCloseClick.HasDelegate;
 
@@ -20,7 +20,7 @@ public partial class DriverStore : IDisposable
 
     [Parameter] public SortedList<int, PopoverModel> Popovers { get; set; } = new();
 
-    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     [Parameter] public EventCallback<int> OnNextStep { get; set; }
 
@@ -40,7 +40,7 @@ public partial class DriverStore : IDisposable
 
     #region Services
 
-    [Inject] public DriverJs DriverJs { get; set; }
+    [Inject] public DriverJs DriverJs { get; set; } = null!;
 
     #endregion
 
@@ -48,7 +48,7 @@ public partial class DriverStore : IDisposable
 
     protected override void OnInitialized()
     {
-        objRef = DotNetObjectReference.Create(this);
+        _objRef = DotNetObjectReference.Create(this);
         base.OnInitialized();
     }
 
@@ -58,7 +58,7 @@ public partial class DriverStore : IDisposable
 
     public async ValueTask StartDrive()
     {
-        await DriverJs.StartDrive(new DriverModel(Popovers.Values, Configuration), objRef);
+        await DriverJs.StartDrive(new DriverModel(Popovers.Values, Configuration), _objRef);
     }
 
     public void AddPopover(int step, PopoverModel model)
