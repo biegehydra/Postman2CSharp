@@ -459,3 +459,6 @@ ol.normal ol.normal, ul.normal ol.normal {
 .driver-popover.driverjs-theme .driver-popover-arrow-side-bottom.driver-popover-arrow {
   border-bottom-color: #bac3ff;
 }
+.mud-tab {
+    text-transform: none !important;
+}
