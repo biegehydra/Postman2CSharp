@@ -2,18 +2,33 @@
 @inherits MudComponentBase
 @using MudExtensions
 
+@{
+    int baseScreenWidth = 100; // Base screen width for all steps to be visible
+    int decreaseAmount = 10; // Decrease amount per step
+    int totalSteps = Steps.Count; // Total steps in the stepper
+}
+
+<style>
+    @foreach (int visibleSteps in Enumerable.Range(1, totalSteps).Reverse())
+    {
+        int minScreenWidth = baseScreenWidth - (totalSteps - visibleSteps) * decreaseAmount;
+        @($"@media (max-width: {minScreenWidth}rem) {{\n.stepper-hide-{visibleSteps}-steps {{display: none !important;}}}}")
+
+    }
+</style>
+
 <CascadingValue Value="this" IsFixed="true">
     <div class="@Class" style="@Style"> @*Row="Vertical"*@
         <MudStack Style="@StepBorderStyle" Row="true" AlignItems="@(HeaderTextView == HeaderTextView.NewLine ? AlignItems.Start : AlignItems.Center)">
             @*Row="!Vertical"*@
-            @foreach (MudStep step in _steps)
+            @foreach (var step in _steps)
             {
                 if (step.IsResultStep || (MobileView == true && !IsStepActive(step)))
                 {
                     continue;
                 }
                 bool active = IsStepActive(step);
-                <div @onclick="@(Linear ? null! : () => SetActiveIndex(step))" Class="@HeaderClassname">
+                <div @onclick="@(Linear ? null! : () => SetActiveIndex(step))" Class="@(HeaderClassname + " " + StepClass(step))">
                         <MudAvatar Class="@((active || step.Status != StepStatus.Continued) ? $"mud-theme-{Color.ToDescriptionString()}" : null)" Variant="@Variant" Size="Size.Medium">
                             @if (step.Status == StepStatus.Completed)
                             {
@@ -146,4 +161,41 @@
 @if (DisableAnimation == false)
 {
     <MudAnimate @ref="_animate" Selector="@($".mud-stepper-ani-{_animateGuid.ToString()}")" AnimationType="MudExtensions.Enums.AnimationType.Fade" Value="1" Duration="0.5" />
+}
+
+@code {
+    private int TotalSteps => Steps.Count;
+
+    private string StepClass(MudStep step)
+    {
+        var stepIndex = Steps.IndexOf(step);
+        string stepClass = "";
+
+        // Assign the active step class
+        if (stepIndex == ActiveIndex)
+        {
+            return "stepper-active-step";
+        }
+
+        // Calculate and assign classes for hidden steps
+        for (int displaySteps = 2; displaySteps <= TotalSteps; displaySteps++)
+        {
+            int stepsBefore = (displaySteps - 1) / 2;
+            int stepsAfter = displaySteps / 2;
+
+            if (ActiveIndex - stepsBefore < 0) stepsAfter += Math.Abs(ActiveIndex - stepsBefore);
+            if (ActiveIndex + stepsAfter > Steps.Count-1) stepsBefore += ActiveIndex + stepsAfter - Steps.Count + 1;
+
+            int startRange = Math.Max(ActiveIndex - stepsBefore, 0);
+            int endRange = Math.Min(ActiveIndex + stepsAfter, TotalSteps-1);
+
+            // If the step number falls outside the range for the current displaySteps, it should be hidden
+            if (stepIndex < startRange || stepIndex > endRange)
+            {
+                stepClass += $"stepper-hide-{displaySteps}-steps ";
+            }
+        }
+
+        return stepClass.Trim();
+    }
 }

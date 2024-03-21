@@ -120,6 +120,13 @@ hood of an error in generated code (minor issues usually) and increase the likel
         <AdvancedSettingItem Size="P2CsSize" ToolTip="Emabling this will cause each HttpClient request made in your ApiClient to be called within a retry function.">
             <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.ExecuteWithRetry">Execute With Retry</MudCheckBox>
         </AdvancedSettingItem>
+        
+        @if (ShowInteractiveDemoMessage == false)
+        {
+            <AdvancedSettingItem Size="P2CsSize" ToolTip="Inlining the query of a GraphQL request in a function can take up a lot of space. Enabling this option will put the queries in a separate static class.">
+                <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.GraphQLQueriesInSeperateFile">GraphQL Queries In Separate File</MudCheckBox>
+            </AdvancedSettingItem>
+        }
     </MudGrid>
 
     @if (!AutoSave)
