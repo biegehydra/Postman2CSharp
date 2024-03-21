@@ -24,6 +24,22 @@
 </div>
 <br />
 
+@{
+    string? prismWidth = null;
+}
+<MudBreakpointProvider>
+    <MudHidden Breakpoint="Breakpoint.MdAndUp">
+        @{
+            prismWidth = null;
+        }
+    </MudHidden>
+    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+        @{
+            prismWidth = "40vw";
+        }
+    </MudHidden>
+</MudBreakpointProvider>
+
 <MudStepper @ref="_stepper" Linear="true" Color="Color.Primary" Variant="Variant.Filled" UseStepBorder="true"
             DisableAnimation="false" ValidateStep="ValidateStep" AllowNext="ValidateNext" ActiveStepChanged="OnActiveIndexChanged" >
     <MudStep Title="Upload">
@@ -38,7 +54,7 @@
                 <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="_dirtyApiClientOptions.AttributeUsage" Label="JsonProperty Attribute Usage"></EnumSelectComponent>
             </Input>
             <Example>
-                <PrismCodeBlock Value="@StepperExamples.Json(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
+                <PrismCodeBlock Value="@StepperExamples.Json(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="@prismWidth" />
             </Example>
             <AdditionalInfo>
                 <MudText Typo="Typo.h6" >Attribute Usage</MudText>
@@ -63,7 +79,7 @@
                 <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="_dirtyApiClientOptions.MultipleResponseHandling" Disabled="_dirtyApiClientOptions.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
             </Input>
             <Example>
-                <PrismCodeBlock Value="@StepperExamples.MultipleResponses(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
+                <PrismCodeBlock Value="@StepperExamples.MultipleResponses(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="@prismWidth" />
             </Example>
         </StepperItem>
     </MudStep>
@@ -76,7 +92,7 @@
                 <EnumSelectComponent Disabled="_dirtyApiClientOptions.ErrorHandlingStrategy == ErrorHandlingStrategy.None || !_dirtyApiClientOptions.ErrorHandlingSinks.Contains(ErrorHandlingSinks.LogException)" @bind-Value="_dirtyApiClientOptions.LogLevel" AlwaysShowAllEnumValues Label="Log Level"></EnumSelectComponent>
             </Input>
             <Example>
-                <PrismCodeBlock Value="@StepperExamples.ErrorHandling(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
+                <PrismCodeBlock Value="@StepperExamples.ErrorHandling(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="@prismWidth" />
             </Example>
         </StepperItem>
     </MudStep>
@@ -88,7 +104,7 @@
                 <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.ExecuteWithRetry">Execute With Retry</MudCheckBox>
             </Input>
             <Example>
-                <PrismCodeBlock Value="@StepperExamples.FunctionConfigurations(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
+                <PrismCodeBlock Value="@StepperExamples.FunctionConfigurations(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="@prismWidth" />
             </Example>
         </StepperItem>
     </MudStep>
@@ -101,7 +117,7 @@
             <MudNumericField @bind-Value="_dirtyApiClientOptions.DuplicateOptions.DifferentOriginalNameSensitivity" Disabled="_dirtyApiClientOptions.DuplicateOptions.RemoveSemiDuplicates == false" Label="Different Json Name Sensitivity" Variant="Variant.Outlined" Step="1" Min="0" Max="6" />
             </Input>
             <Example>
-                <PrismCodeBlock Value="@StepperExamples.ClassDeduping(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
+                <PrismCodeBlock Value="@StepperExamples.ClassDeduping(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="@prismWidth" />
             </Example>
             <AdditionalInfo>
                 <div>
@@ -143,7 +159,7 @@
                 }
             </Input>
             <Example>
-                <PrismCodeBlock Value="@StepperExamples.Miscellaneous(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="40vw" />
+                <PrismCodeBlock Value="@StepperExamples.Miscellaneous(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="@prismWidth" />
             </Example>
             <AdditionalInfo>
                 <ul>
