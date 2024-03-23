@@ -2,34 +2,46 @@
 
 ### Save yourself hours, days, or even weeks
 
-[Postman2CSharp](https://postman2csharp.com) is a FREE tool that allows you to generate fully featured ApiClients by simply inputting your Postman collections. I hope this tool can make your development process easier, quicker, and more efficient. All generated ApiClient projects come fully packaged and organized and have no dependencies on outside libraries. (Unless you choose Newtonsoft.Json as your json library or choose to handle multiple types with OneOf<,>).
+[Postman2CSharp](https://postman2csharp.com) is a FREE tool that allows you to generate fully featured ApiClients by simply inputting your Postman collection json. All generated ApiClient projects come fully packaged and organized and have no dependencies on outside libraries.
 
-Generated ApiClients are highly configurable to suit your needs. Full explanations about configurations can be found [here](https://postman2csharp.com/ApiClient-Configurations-Explained).
+Generated ApiClients are highly configurable to suit your needs.
 
-## Introduction
-
-I'm tired of making ApiClients, you're tired of making ApiClients, we're all tired of it. It's always the same bs boilerplate code. You gotta keep looking back and forth between postman and visual studio to make sure you don't forget anything. We've all been there. We'll now you don't have to. You can use postman2csharp and be sure that all request parts are included in the generated code.
-
-This doesn't however mean that the generated ApiClient are production ready. You will still need to review and fix the generated code.
+## Latest Fixes and Improvements
+* Add guided tours to improve user experience
+* Fix issues when the url port has a variable `http://localhost:{{port}}/path"
+* GraphQL
+  * Generate paramaters class from parameters json
+  * Optionally put graph ql queries in a seperate file from the service
+* Add search feature to the tree on the collection page
+* Add option to flatten collection hierarchy
+* Add support for `Head` and `Option` http types
+* Group responses by response type for better code generations
+```
+if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
+{
+    return await response.ReadJsonAsync<BadRequestResponse>();
+}
+```
+* Remove async/await on functions that don't need it
+```
+public Task<PlaceDetailsResponse> PlaceDetails(PlaceDetailsParameters queryParameters)
+{
+    return _httpClient.GetFromJsonAsync<PlaceDetailsResponse>("$"details/json"");
+}
+```
 
 ## Features
 
-* Generates an ApiClient, ApiClient interface, and boilerplate test class
-* Generates classes for Requests, Response, Formdata, and Query Parameters
+* Generates an ApiClient service, interface, and boilerplate test class
+* Generates classes for Requests, Responses, Formdata, Query Parameters, and GraphQL Parameters
 * Choose your json library, System.Text.Json or Newtonsoft
-   * Will affect extension methods used and attributes on properties of classes
 * Keeps code clean and consistent
 * Dedupes classes for you to try to make your life easier
   * Dedupe process is highly optimized and configurable
 * Writes xml comments for you based on descriptions
-* Configure error handling
-   * Returns default or rethrow
-   * Configure logging
-   * Configure what exceptions to catch
-* Choose whether or not to use cancellation tokens
-* Configure all other settings found at [Json2CSharp](https://json2csharp.com/)
-* Export the entire generated ApiClient project as a zip folder.
-   * It is organized neatly
+* Configure exception handling and logging
+* Support for cancellation tokens
+* Export the entire generated ApiClient project as a neatly organized zip folder.
 * Easily view generated code using UI
 * Standalone json to C# classes converter
 * And much much more...
@@ -40,7 +52,7 @@ Samples are available in the source code of this repo [here](https://github.com/
 
 ## Data Privacy
 
-Your collections never leave your computer. The website is a standalone blazor wasm app and makes no http calls to a backend. 
+Your collections never leave your computer. The website is a standalone blazor wasm app and makes no calls to a backend. 
 
 ## Contributions, Feature Requests, Feedback
 
@@ -57,4 +69,4 @@ As of 8-14-2023 the project is reaching a stable state. The ApiClient generator 
 
 ## Tech Stack
 
-The website is a standalone blazor wasm app. It uses Prerendering via this amazing project [BlazorWasmPreRendering.Build](https://github.com/jsakamoto/BlazorWasmPreRendering.Build) by  jsakamoto. It is hosted and distributed with s3 and cloudfront.
+The website is a standalone blazor wasm app. It uses Prerendering via this amazing project [BlazorWasmPreRendering.Build](https://github.com/jsakamoto/BlazorWasmPreRendering.Build) by  jsakamoto. It uses guided tours through a fork of [Blazor.DriverJs](https://github.com/ilsadq/Blazor.DriverJs). Class generation uses a heavily modified fork of [Json2CSharp](https://github.com/Json2CSharp/Json2CSharpCodeGenerator) It is hosted and distributed with s3 and cloudfront.
