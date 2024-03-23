@@ -48,7 +48,7 @@ if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound 
 ```
 * Remove async/await on functions that don't need it
 ```
-public Task<PlaceDetailsResponse> PlaceDetails(PlaceDetailsParameters queryParameters)
+public Task<PlaceDetailsResponse> PlaceDetails()
 {
     return _httpClient.GetFromJsonAsync<PlaceDetailsResponse>("$"details/json"");
 }
