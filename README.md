@@ -6,30 +6,6 @@
 
 Generated ApiClients are highly configurable to suit your needs.
 
-## Latest Fixes and Improvements
-* Add guided tours to improve user experience
-* Fix issues when the url port has a variable `http://localhost:{{port}}/path"
-* GraphQL
-  * Generate paramaters class from parameters json
-  * Optionally put graph ql queries in a seperate file from the service
-* Add search feature to the tree on the collection page
-* Add option to flatten collection hierarchy
-* Add support for `Head` and `Option` http types
-* Group responses by response type for better code generations
-```
-if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
-{
-    return await response.ReadJsonAsync<BadRequestResponse>();
-}
-```
-* Remove async/await on functions that don't need it
-```
-public Task<PlaceDetailsResponse> PlaceDetails(PlaceDetailsParameters queryParameters)
-{
-    return _httpClient.GetFromJsonAsync<PlaceDetailsResponse>("$"details/json"");
-}
-```
-
 ## Features
 
 * Generates an ApiClient service, interface, and boilerplate test class
@@ -53,6 +29,30 @@ Samples are available in the source code of this repo [here](https://github.com/
 ## Data Privacy
 
 Your collections never leave your computer. The website is a standalone blazor wasm app and makes no calls to a backend. 
+
+## Latest Fixes and Improvements
+* Add guided tours to improve user experience
+* Fix issues when the url port has a variable `http://localhost:{{port}}/path"
+* GraphQL
+  * Generate paramaters class from parameters json
+  * Optionally put graph ql queries in a seperate file from the service
+* Add search feature to the tree on the collection page
+* Add option to flatten collection hierarchy
+* Add support for `Head` and `Option` http types
+* Group responses by response type for better code generations
+```
+if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound or HttpStatusCode.UnprocessableEntity)
+{
+    return await response.ReadJsonAsync<BadRequestResponse>();
+}
+```
+* Remove async/await on functions that don't need it
+```
+public Task<PlaceDetailsResponse> PlaceDetails(PlaceDetailsParameters queryParameters)
+{
+    return _httpClient.GetFromJsonAsync<PlaceDetailsResponse>("$"details/json"");
+}
+```
 
 ## Contributions, Feature Requests, Feedback
 
