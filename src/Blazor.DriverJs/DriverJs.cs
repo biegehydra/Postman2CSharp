@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 
 namespace Blazor.DriverJs;
 
-public class DriverJs : IDisposable
+public class DriverJs : IDriverJs
 {
     private readonly Lazy<Task<IJSObjectReference>> _jsModule;
 

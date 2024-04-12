@@ -40,7 +40,7 @@ public partial class DriverStore : IDisposable
 
     #region Services
 
-    [Inject] public DriverJs DriverJs { get; set; } = null!;
+    [Inject] public IDriverJs DriverJs { get; set; } = null!;
 
     #endregion
 

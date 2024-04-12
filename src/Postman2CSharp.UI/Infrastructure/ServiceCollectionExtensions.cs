@@ -34,16 +34,17 @@ namespace Postman2CSharp.UI.Infrastructure
             services.AddScoped<JsonEditorInterop>();
             services.AddScoped<TabsService>();
             services.AddScoped(typeof(Lazy<>), typeof(Lazy<>));
-            services.AddScoped<DriverJs>();
             services.AddEventAggregator(x => x.AutoRefresh = true);
             if (isServer)
             {
                 services.AddScoped<ILazyLoader, ServerLazyLoader>();
                 services.AddScoped<IWebAssemblyHostEnvironment, ServerHostEnvironment>();
+                services.AddScoped<IDriverJs, ServerDriverJs>();
             }
             else
             {
                 services.AddScoped<ILazyLoader, LazyLoader>();
+                services.AddScoped<IDriverJs, DriverJs>();
             }
         }
     }
