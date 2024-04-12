@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System;
+using System.Text;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -185,9 +186,11 @@ namespace Postman2CSharp.Core.Utilities
         /// </summary>
         /// <param name="rootItem"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public static void FixUrlsMissingScheme(CollectionItem rootItem)
+        public static void FixUrlsMissingScheme(CollectionItem rootItem, List<VariableUsage>? variableUsages)
         {
-            foreach (var requestItem in rootItem.RequestItems() ?? new List<CollectionItem>())
+            var requestItems = rootItem.RequestItems();
+            if (requestItems == null) return;
+            foreach (var requestItem in requestItems)
             {
                 var url = requestItem.Request!.Url;
                 url.Raw = url.Raw.Trim();
@@ -197,9 +200,38 @@ namespace Postman2CSharp.Core.Utilities
                 }
                 if (url.Protocol == null && !(url.Raw.StartsWith("https://") || url.Raw.StartsWith("http://")))
                 {
+                    var firstVariable = CaptureFirstVariable(url.Raw);
+                    if (!string.IsNullOrWhiteSpace(firstVariable) &&
+                        variableUsages?.FirstOrDefault(x => x.CSPropertyUsage(CsharpPropertyType.Private) == firstVariable) is { } variable)
+                    {
+                        variable.Value = variable.Value?
+                            .Replace("https://", "", StringComparison.CurrentCultureIgnoreCase)
+                            .Replace("http://", "", StringComparison.CurrentCultureIgnoreCase);
+                    }
                     url.Raw = $"https://{url.Raw}";
                 }
                 url.Raw = url.Raw.Trim();
+            }
+
+            string? CaptureFirstVariable(string? str)
+            {
+                if (string.IsNullOrWhiteSpace(str)) return null;
+                if (!str.StartsWith("{"))
+                {
+                    return null;
+                }
+                StringBuilder sb = new ();
+                int i = 1;
+                while (i < str.Length && str[i] != '}')
+                {
+                    sb.Append(str[i]);
+                    i++;
+                }
+                if (str[i] != '}' || sb.Length == 0)
+                {
+                    return null;
+                }
+                return sb.ToString();
             }
         }
 

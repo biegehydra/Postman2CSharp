@@ -158,7 +158,7 @@ public class ApiClientGenerator
                 RootItemHelpers.MakePathCollectionVariablesFunctionParameters(rootItem, variableUsages);
             }
             RootItemHelpers.ReplacePathVariablesWithInterpolatedVariableUsages(rootItem);
-            RootItemHelpers.FixUrlsMissingScheme(rootItem);
+            RootItemHelpers.FixUrlsMissingScheme(rootItem, variableUsages);
             RootItemHelpers.RemoveRequestsWithInvalidUrls(rootItem);
         }
 
@@ -518,6 +518,7 @@ public class ApiClientGenerator
 #endif
                         responseClassName = "EmptyResponse";
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
+                        continue;
                     }
                     catch (TextWasNotJsonException ex)
                     {
@@ -526,6 +527,7 @@ public class ApiClientGenerator
 #endif
                         responseClassName = "EmptyResponse";
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
+                        continue;
                     }
                     catch (Exception ex)
                     {
@@ -533,7 +535,7 @@ public class ApiClientGenerator
                         allApiResponse.Add(new ApiResponse(response.Code.Value, responseClassName, sourceCode: null, DataType.Json, false));
 #if DEBUG
                         Debug.WriteLine(ex);
-                       throw;
+                        throw;
 #endif
                         continue; // do not delete
                     }
