@@ -90,16 +90,17 @@ public static class ApiClientSerializer
         sb.AppendLineIndented(indent, $"public {client.Name}({string.Join(", ", constructorParameters)})");
         sb.AppendLineIndented(indent, "{");
         indent = Consts.Indent(2);
-        if (!string.IsNullOrWhiteSpace(client.BaseUrl) && !client.BaseUrl.EndsWith("/"))
+        string? baseUrl = client.BaseUrl;
+        if (!string.IsNullOrWhiteSpace(baseUrl) && !baseUrl.EndsWith("/"))
         {
-            client.BaseUrl += "/";
+            baseUrl += "/";
         }
         if (client.Options.HttpClientInConstructor)
         {
             sb.AppendLineIndented(indent, "_httpClient = httpClient;");
-            if (client.BaseUrl != null)
+            if (baseUrl != null)
             {
-                sb.AppendLineIndented(indent, $"_httpClient.BaseAddress = new Uri($\"{client.BaseUrl}\");");
+                sb.AppendLineIndented(indent, $"_httpClient.BaseAddress = new Uri($\"{baseUrl}\");");
             }
         }
         else
@@ -107,9 +108,9 @@ public static class ApiClientSerializer
             sb.AppendLineIndented(indent, "_httpClient = new HttpClient()");
             sb.AppendLineIndented(indent, "{");
             indent = Consts.Indent(3);
-            if (client.BaseUrl != null)
+            if (baseUrl != null)
             {
-                sb.AppendLineIndented(indent, $"BaseAddress = new Uri($\"{client.BaseUrl}\");");
+                sb.AppendLineIndented(indent, $"BaseAddress = new Uri($\"{baseUrl}\");");
             }
             indent = Consts.Indent(2);
             sb.AppendLineIndented(indent, "}");

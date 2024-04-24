@@ -178,7 +178,7 @@ public static partial class Utils
 
         var fullUri = new UriBuilder(fullUrl) { Scheme = Uri.UriSchemeHttps }.Uri;
         var baseUri = new UriBuilder(baseUrl) { Scheme = Uri.UriSchemeHttps }.Uri;
-        if (!fullUri.AbsoluteUri.StartsWith(baseUri.AbsoluteUri))
+        if (!fullUri.AbsoluteUri.StartsWith(baseUri.AbsoluteUri.TrimEnd('/')))
         {
             if (safe)
             {
