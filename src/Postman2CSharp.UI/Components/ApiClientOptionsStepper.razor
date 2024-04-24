@@ -154,6 +154,7 @@
                 {
                     <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.GraphQLQueriesInSeperateFile">GraphQL Queries In Separate File</MudCheckBox>
                 }
+                <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.HttpClientInConstructor">Resolve HttpClient From Dependency Injection</MudCheckBox>
                 <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="_dirtyApiClientOptions.XmlCommentTypes" Label="Comment Types" SelectedValuesChanged="SelectedCommentTypesChanged"></MultiEnumSelectComponent>
                 <MultiEnumSelectComponent TEnum="RemoveDisabled" Value="_dirtyApiClientOptions.RemoveDisabled" Label="Remove Disabled" SelectedValuesChanged="SelectedRemovedDisabledChanged"></MultiEnumSelectComponent>
                 <EnumSelectComponent @bind-Value="_dirtyApiClientOptions.RootDefinition" Exclude="new List<RootDefinition>() {RootDefinition.Manual}" AlwaysShowAllEnumValues Label="Request Grouping"></EnumSelectComponent>

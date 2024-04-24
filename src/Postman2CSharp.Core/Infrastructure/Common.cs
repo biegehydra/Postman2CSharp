@@ -45,7 +45,7 @@ namespace Postman2CSharp.Core.Infrastructure
 
         public static void AppendIndented(this StringBuilder sb, string indent, string str)
         {
-            sb.AppendIndented(indent, str);
+            sb.Append(indent + str);
         }
 
         public static void FunctionSignature(this StringBuilder sb, HttpCall call, string indent, List<HttpCallMethodParameter> methodParameters, ApiClientOptions options, bool isInterface = false)

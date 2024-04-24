@@ -9,7 +9,6 @@ using Postman2CSharp.Core.Models;
 using Postman2CSharp.Core.Models.PostmanCollection.Authorization;
 using Postman2CSharp.Core.Models.PostmanCollection.Http;
 using Postman2CSharp.Core.Utilities;
-using Xamasoft.JsonClassGenerator.Models;
 
 namespace Postman2CSharp.Core.Serialization;
 
@@ -88,7 +87,7 @@ public static class ApiClientSerializer
         {
             constructorParameters.Add($"IConfiguration config");
         }
-        sb.AppendIndented(indent, $"public {client.Name}({string.Join(", ", constructorParameters)})");
+        sb.AppendLineIndented(indent, $"public {client.Name}({string.Join(", ", constructorParameters)})");
         sb.AppendLineIndented(indent, "{");
         indent = Consts.Indent(2);
         if (!string.IsNullOrWhiteSpace(client.BaseUrl) && !client.BaseUrl.EndsWith("/"))
@@ -107,10 +106,13 @@ public static class ApiClientSerializer
         {
             sb.AppendLineIndented(indent, "_httpClient = new HttpClient()");
             sb.AppendLineIndented(indent, "{");
+            indent = Consts.Indent(3);
             if (client.BaseUrl != null)
             {
-                sb.AppendLineIndented(indent, $"_httpClient.BaseAddress = new Uri($\"{client.BaseUrl}\");");
+                sb.AppendLineIndented(indent, $"BaseAddress = new Uri($\"{client.BaseUrl}\");");
             }
+            indent = Consts.Indent(2);
+            sb.AppendLineIndented(indent, "}");
         }
         if (logsExceptions)
         {

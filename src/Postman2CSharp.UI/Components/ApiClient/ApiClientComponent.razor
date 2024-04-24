@@ -63,6 +63,9 @@
                     <AdvancedSettingItem ToolTip="Use this setting to choose where descriptions are turned into xml comments.">
                         <MultiEnumSelectComponent TEnum="XmlCommentTypes" Value="SelectedApiClient.Options.XmlCommentTypes" SelectedValuesChanged="SelectedCommentTypesChanged" Label="Comment Types"></MultiEnumSelectComponent>
                     </AdvancedSettingItem>
+                    <AdvancedSettingItem ToolTip="Controls whether httpclient is injected or constructed.">
+                        <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.HttpClientInConstructor">Resolve HttpClient From Dependency Injection</MudCheckBox>
+                    </AdvancedSettingItem>
                 </MudGrid>
                 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
                 <MudGrid Spacing="3">
@@ -101,6 +104,10 @@
 
                     <AdvancedSettingItem ToolTip="@(@"If true each request function on the generated ApiClient will be have a Cancellation token parameter with a default value of default.")">
                         <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.UseCancellationTokens">Use Cancellation Tokens</MudCheckBox>
+                    </AdvancedSettingItem>
+
+                    <AdvancedSettingItem ToolTip="@(@"Enable to make HttpClient requests through with a retry method.")">
+                        <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.ExecuteWithRetry">Execute With Retry</MudCheckBox>
                     </AdvancedSettingItem>
                 </MudGrid>
                 <MudButton Style="margin:10px;" Variant="Variant.Filled" Color="Color.Tertiary" EndIcon="@Icons.Build" OnClick="RegenerateApiClient">
