@@ -16,6 +16,8 @@ namespace Postman2CSharp.Core
         public MultipleResponseHandling MultipleResponseHandling { get; set; } = MultipleResponseHandling.OneOf;
         public OutputCollectionType OutputCollectionType { get; set; } = OutputCollectionType.MutableList;
         public JsonLibrary JsonLibrary { get; set; } = JsonLibrary.SystemTextJson;
+        public bool NullValueHandlingIgnore { get; set; }
+        public bool AlwaysUseNullables { get; set; }
 
         public bool ExecuteWithRetry = false;
 
@@ -82,6 +84,8 @@ namespace Postman2CSharp.Core
                    && options1.DuplicateOptions.SameOriginalNameSensitivity == options2.DuplicateOptions.SameOriginalNameSensitivity
                    && options1.DuplicateOptions.DifferentOriginalNameSensitivity == options2.DuplicateOptions.DifferentOriginalNameSensitivity
                    && options1.NewMaxDepth == options2.NewMaxDepth
+                   && options1.AlwaysUseNullables == options2.AlwaysUseNullables
+                   && options1.NullValueHandlingIgnore == options2.NullValueHandlingIgnore
                    && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch && allRemovedDisabledMatch;
         }
     }

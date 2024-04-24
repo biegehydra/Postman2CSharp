@@ -16,6 +16,8 @@ namespace Postman2CSharp.Core
             ApiClientOptions.OutputCollectionType = CSharpCodeWriterConfig.CollectionType;
             CSharpCodeWriterConfig.AttributeLibrary = ApiClientOptions.JsonLibrary;
             CSharpCodeWriterConfig.AttributeUsage = ApiClientOptions.AttributeUsage;
+            CSharpCodeWriterConfig.AlwaysUseNullables = apiClientOptions.AlwaysUseNullables;
+            CSharpCodeWriterConfig.NullValueHandlingIgnore = apiClientOptions.NullValueHandlingIgnore;
         }
     }
 

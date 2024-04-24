@@ -52,6 +52,11 @@
             <Input>
                 <EnumSelectComponent TEnum="JsonLibrary" @bind-Value="_dirtyApiClientOptions.JsonLibrary" Label="Json Library"></EnumSelectComponent>
                 <EnumSelectComponent TEnum="JsonPropertyAttributeUsage" @bind-Value="_dirtyApiClientOptions.AttributeUsage" Label="JsonProperty Attribute Usage"></EnumSelectComponent>
+                @if (_dirtyApiClientOptions.JsonLibrary == JsonLibrary.NewtonsoftJson)
+                {
+                    <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.NullValueHandlingIgnore" Label="Null Value Handling Ignore"></MudCheckBox>
+                }
+                <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.AlwaysUseNullables" Label="Always Use Nullables"></MudCheckBox>
             </Input>
             <Example>
                 <PrismCodeBlock Value="@StepperExamples.Json(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="@prismWidth" />

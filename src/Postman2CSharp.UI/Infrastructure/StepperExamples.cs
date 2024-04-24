@@ -9,6 +9,9 @@ public static class StepperExamples
 {
     public static string Json(ApiClientOptions options)
     {
+        string intProp = options.AlwaysUseNullables
+            ? $"{(options.AttributeUsage is JsonPropertyAttributeUsage.Never or JsonPropertyAttributeUsage.OnlyWhenNecessary  ? null : $"{Consts.Indent(1)}[JsonPropertyName(\"SomeInt\")]\n")}    public int? SomeInt {{ get; set; }}"
+            : $"{(options.AttributeUsage is JsonPropertyAttributeUsage.Never or JsonPropertyAttributeUsage.OnlyWhenNecessary  ? null : $"{Consts.Indent(1)}[JsonPropertyName(\"SomeInt\")]\n")}    public int SomeInt {{ get; set; }}";
         if (options.JsonLibrary == JsonLibrary.SystemTextJson)
         {
             return
@@ -16,6 +19,7 @@ $@"public class Example
 {{{(options.AttributeUsage is JsonPropertyAttributeUsage.Never or JsonPropertyAttributeUsage.OnlyWhenNecessary  ? null : $"\n{Consts.Indent(1)}[JsonPropertyName(\"PropertyName\")]")}
     public string PropertyName {{ get; set; }}{(options.AttributeUsage is JsonPropertyAttributeUsage.Never ? null : $"\n{Consts.Indent(1)}[JsonPropertyName(\"class\")]")}
     public string @class {{ get; set; }}
+{intProp}
 }}
 
 public static async Task<T> ReadJsonAsync<T>(this HttpResponseMessage response, JsonSerializerOptions? jsonSerializerOptions = null)
@@ -24,11 +28,14 @@ public static async Task<T> ReadJsonAsync<T>(this HttpResponseMessage response, 
     return JsonSerializer.Deserialize<T>(stringContent, jsonSerializerOptions ?? JsonSerializerOptions)!;
 }}";
         }
+
+        string? nullValueHandling = options.NullValueHandlingIgnore ? ", NullValueHandling = NullValueHandling.Ignore" : null;
         return
 $@"public class Example
-{{{(options.AttributeUsage is JsonPropertyAttributeUsage.Never or JsonPropertyAttributeUsage.OnlyWhenNecessary ? null : $"\n{Consts.Indent(1)}[JsonProperty(\"PropertyName\")]")}
-    public string PropertyName {{ get; set; }}{(options.AttributeUsage is JsonPropertyAttributeUsage.Never ? null : $"\n{Consts.Indent(1)}[JsonProperty(\"class\")]")}
+{{{(options.AttributeUsage is JsonPropertyAttributeUsage.Never or JsonPropertyAttributeUsage.OnlyWhenNecessary ? null : $"\n{Consts.Indent(1)}[JsonProperty(\"PropertyName\"{nullValueHandling})]")}
+    public string PropertyName {{ get; set; }}{(options.AttributeUsage is JsonPropertyAttributeUsage.Never ? null : $"\n{Consts.Indent(1)}[JsonProperty(\"class\"{nullValueHandling})]")}
     public string @class {{ get; set; }}
+{intProp}
 }}
 
 public static async Task<T> ReadNewtonsoftJsonAsync<T>(this HttpResponseMessage response,
