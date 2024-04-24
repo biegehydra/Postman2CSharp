@@ -16,7 +16,7 @@ namespace Postman2CSharp.Core.Serialization
                 case PostmanAuthType.basic:
                     sb.AssignVariableToConfig(indent, "var username", "UserName");
                     sb.AssignVariableToConfig(indent, "var password", "Password");
-                    sb.AppendLine(indent + $@"{Consts._encodedCredentials} = Convert.ToBase64String(Encoding.ASCII.GetBytes($""{{username}}:{{password}}""));");
+                    sb.AppendLineIndented(indent, $@"{Consts._encodedCredentials} = Convert.ToBase64String(Encoding.ASCII.GetBytes($""{{username}}:{{password}}""));");
                     break;
                 case PostmanAuthType.oauth1:
                     break;
@@ -57,7 +57,7 @@ namespace Postman2CSharp.Core.Serialization
                     sb.AssignVariableToConfig(indent, Consts._bearerToken, "BearToken");
                     break;
                 case PostmanAuthType.jwt:
-                    sb.AppendLine(indent + "// TODO: JWT will not generally be put in your appsettings.json. Consider this a placeholder.");
+                    sb.AppendLineIndented(indent, "// TODO: JWT will not generally be put in your appsettings.json. Consider this a placeholder.");
                     sb.AssignVariableToConfig(indent, Consts._jwt, "Jwt");
                     break;
                 case PostmanAuthType.digest:

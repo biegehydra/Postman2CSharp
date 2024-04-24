@@ -51,18 +51,18 @@ namespace Postman2CSharp.Core.Serialization
                 httpCall.Request.Url.Path, httpCall.Request.Url.Query, httpCall.Request.Url.Variable, httpCall.Request.Header, indent);
             foreach (var response in httpCall.AllResponses.OrderBy(x => x.Code))
             {
-                sb.Append(indent + $"[ProducesResponseType(StatusCodes.{response.StatusCode()}");
+                sb.AppendIndented(indent, $"[ProducesResponseType(StatusCodes.{response.StatusCode()}");
                 sb.Append($", Type = typeof({Common.SignatureClassName(response.ClassName, response.RootWasArray, outputCollectionType)})");
                 sb.AppendLine(")]");
             }
-            sb.AppendLine(indent + $"[{attribute}{relativePath}]");
+            sb.AppendLineIndented(indent, $"[{attribute}{relativePath}]");
             var responseType = Common.SignatureClassName(httpCall.SuccessResponse?.ClassName, httpCall.SuccessResponse?.RootWasArray ?? false, outputCollectionType);
-            sb.AppendLine(indent + $"public IActionResult<{responseType}> {httpCall.Name}({ControllerParameters(httpCall, apiClient.CommonHeaders, baseUriSegments, outputCollectionType)})");
-            sb.AppendLine(indent + "{");
+            sb.AppendLineIndented(indent, $"public IActionResult<{responseType}> {httpCall.Name}({ControllerParameters(httpCall, apiClient.CommonHeaders, baseUriSegments, outputCollectionType)})");
+            sb.AppendLineIndented(indent, "{");
             indent = Consts.Indent(intIndent + 1);
-            sb.AppendLine(indent + "throw new NotImplementedException();");
+            sb.AppendLineIndented(indent, "throw new NotImplementedException();");
             indent = Consts.Indent(intIndent);
-            sb.AppendLine(indent + "}");
+            sb.AppendLineIndented(indent, "}");
         }
 
         private static void XmlComment(StringBuilder sb, List<XmlCommentTypes> commentTypes, string? requestClassName, string? requestDescription, List<Path>? paths, List<QueryParameter>? queryParameters, List<KeyValueTypeDescription>? variables, List<Header> headers, string indent)

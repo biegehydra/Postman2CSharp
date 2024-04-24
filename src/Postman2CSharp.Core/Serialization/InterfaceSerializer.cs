@@ -21,8 +21,8 @@ public static class InterfaceSerializer
         sb.AppendLine($"namespace {nameSpace}");
         sb.AppendLine("{");
         var indent = Consts.Indent(1);
-        sb.AppendLine(indent + $"public interface I{apiClientName}");
-        sb.AppendLine(indent + "{");
+        sb.AppendLineIndented(indent, $"public interface I{apiClientName}");
+        sb.AppendLineIndented(indent, "{");
 
         indent = Consts.Indent(2);
         foreach (var httpCall in httpsCalls)
@@ -35,7 +35,7 @@ public static class InterfaceSerializer
             sb.FunctionSignature(httpCall, indent, methodParameters, options, true);
         }
         indent = Consts.Indent(1);
-        sb.AppendLine(indent + "}");
+        sb.AppendLineIndented(indent, "}");
         sb.AppendLine("}");
         return sb.ToString();
     }

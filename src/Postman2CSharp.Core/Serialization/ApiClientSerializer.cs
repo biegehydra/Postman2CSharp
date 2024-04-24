@@ -32,15 +32,15 @@ public static class ApiClientSerializer
         var indent = Consts.Indent(1);
         if (client.Options.ExecuteWithRetry)
         {
-            sb.AppendLine(indent + "private HttpClient _httpClient;");
+            sb.AppendLineIndented(indent, "private HttpClient _httpClient;");
         }
         else
         {
-            sb.AppendLine(indent + "private readonly HttpClient _httpClient;");
+            sb.AppendLineIndented(indent, "private readonly HttpClient _httpClient;");
         }
         if (logsExceptions)
         {
-            sb.AppendLine(indent + $"private readonly ILogger<{client.Name}> _logger;");
+            sb.AppendLineIndented(indent, $"private readonly ILogger<{client.Name}> _logger;");
         }
         VariableUsagesAsPrivateProperties(sb, client.BaseUrl ?? string.Empty, client.VariableUsages, indent);
         AuthProperties(client.CollectionAuth, sb, indent);
@@ -48,8 +48,7 @@ public static class ApiClientSerializer
         {
             AuthProperties(otherUniqueAuth, sb, indent);
         }
-        ApiClientConstructor(sb, client.CommonHeaders, client.UniqueAuths, client.Name, client.BaseUrl,
-            client.AddAuthHeaderToConstructor, logsExceptions);
+        ApiClientConstructor(sb, client, logsExceptions);
 
         if (client.UniqueAuths.FirstOrDefault(x => x.EnumType() == PostmanAuthType.oauth2) is { } uniqueAuthOAuth2)
         {
@@ -72,58 +71,72 @@ public static class ApiClientSerializer
         return newRoot.ToFullString();
     }
 
-    private static void ApiClientConstructor(StringBuilder sb, List<Header> commonHeaders, List<AuthSettings> uniqueAuths, string apiClientName, 
-        string? baseUrl, bool addAuthHeaderToConstructor, bool logsExceptions)
+    private static void ApiClientConstructor(StringBuilder sb, ApiClient client, bool logsExceptions)
     {
         var indent = Consts.Indent(1);
-        sb.Append(indent + $"public {apiClientName}(HttpClient httpClient");
+        List<string> constructorParameters = new (3);
+        if (client.Options.HttpClientInConstructor)
+        {
+            constructorParameters.Add("HttpClient httpClient");
+        }
         if (logsExceptions)
         {
-            sb.Append($", ILogger<{apiClientName}> logger");
+            constructorParameters.Add($"ILogger<{client.Name}> logger");
         }
-        if (uniqueAuths.Any(x => x.EnumType() is PostmanAuthType.apikey or PostmanAuthType.oauth1 or PostmanAuthType.oauth2
+        if (client.UniqueAuths.Any(x => x.EnumType() is PostmanAuthType.apikey or PostmanAuthType.oauth1 or PostmanAuthType.oauth2
                 or PostmanAuthType.awsv4 or PostmanAuthType.bearer or PostmanAuthType.jwt or PostmanAuthType.basic))
         {
-            sb.Append(", IConfiguration config");
+            constructorParameters.Add($"IConfiguration config");
         }
-        sb.AppendLine(")");
-        sb.AppendLine(indent + "{");
-
+        sb.AppendIndented(indent, $"public {client.Name}({string.Join(", ", constructorParameters)})");
+        sb.AppendLineIndented(indent, "{");
         indent = Consts.Indent(2);
-        sb.AppendLine(indent + "_httpClient = httpClient;");
-        if (baseUrl != null)
+        if (!string.IsNullOrWhiteSpace(client.BaseUrl) && !client.BaseUrl.EndsWith("/"))
         {
-            if (!baseUrl.EndsWith("/"))
+            client.BaseUrl += "/";
+        }
+        if (client.Options.HttpClientInConstructor)
+        {
+            sb.AppendLineIndented(indent, "_httpClient = httpClient;");
+            if (client.BaseUrl != null)
             {
-                baseUrl += "/";
+                sb.AppendLineIndented(indent, $"_httpClient.BaseAddress = new Uri($\"{client.BaseUrl}\");");
             }
-            sb.AppendLine(indent + $"_httpClient.BaseAddress = new Uri($\"{baseUrl}\");");
+        }
+        else
+        {
+            sb.AppendLineIndented(indent, "_httpClient = new HttpClient()");
+            sb.AppendLineIndented(indent, "{");
+            if (client.BaseUrl != null)
+            {
+                sb.AppendLineIndented(indent, $"_httpClient.BaseAddress = new Uri($\"{client.BaseUrl}\");");
+            }
         }
         if (logsExceptions)
         {
-            sb.AppendLine(indent + "_logger = logger;");
+            sb.AppendLineIndented(indent, "_logger = logger;");
         }
 
-        if (uniqueAuths.Count > 0)
+        if (client.UniqueAuths.Count > 0)
         {
             sb.AppendLine();
         }
 
-        if (addAuthHeaderToConstructor)
+        if (client.AddAuthHeaderToConstructor)
         {
-            var auth = uniqueAuths.SingleOrDefault();
+            var auth = client.UniqueAuths.SingleOrDefault();
             sb.AddAuthVariablesToConstructor(auth, indent);
             sb.SetAuthenticationHeader(auth, indent);
         }
         else
         {
-            foreach (var unique in uniqueAuths)
+            foreach (var unique in client.UniqueAuths)
             {
                 sb.AddAuthVariablesToConstructor(unique, indent);
             }
         }
 
-        var importantHeaders = commonHeaders.Where(Header.IsImportant).ToList();
+        var importantHeaders = client.CommonHeaders.Where(Header.IsImportant).ToList();
         if (importantHeaders.Count > 0)
         {
             sb.AppendLine();
@@ -135,7 +148,7 @@ public static class ApiClientSerializer
         }
 
         indent = Consts.Indent(1);
-        sb.AppendLine(indent + "}");
+        sb.AppendLineIndented(indent, "}");
     }
 
     private static void ApiClientCalls(StringBuilder sb, string? baseUrl, List<HttpCall> calls, bool constructorHasAuthHeader, 
@@ -188,12 +201,12 @@ public static class ApiClientSerializer
         {
             var normalizedKey = variableUsage.CSPropertyUsage(CsharpPropertyType.Private);
             var valueLiteral = string.IsNullOrWhiteSpace(variableUsage.Value) ? "string.Empty" : $"\"{variableUsage.Value}\"";
-            sb.AppendLine(indent + $"private string {normalizedKey} = {valueLiteral};");
+            sb.AppendLineIndented(indent, $"private string {normalizedKey} = {valueLiteral};");
         }
 
         if (baseUrl.Contains("{_unknownBaseUrl}"))
         {
-            sb.AppendLine(indent + $"private readonly string _unknownBaseUrl = \"NOT IN POSTMAN. FILL MANUALLY\";");
+            sb.AppendLineIndented(indent, $"private readonly string _unknownBaseUrl = \"NOT IN POSTMAN. FILL MANUALLY\";");
         }
     }
 
@@ -258,93 +271,93 @@ public static class ApiClientSerializer
         {
             headerPrefix ??= "Bearer";
             var indent = Consts.Indent(intIndent);
-            sb.AppendLine(indent + $"private async Task {OAuth2Functions.AddAccessTokenToRequest}()");
-            sb.AppendLine(indent + "{");
+            sb.AppendLineIndented(indent, $"private async Task {OAuth2Functions.AddAccessTokenToRequest}()");
+            sb.AppendLineIndented(indent, "{");
             indent = Consts.Indent(intIndent + 1);
             var accessToken = "accessToken";
-            sb.AppendLine(indent + $"var {accessToken} = await {OAuth2Functions.GetAccessToken}();");
+            sb.AppendLineIndented(indent, $"var {accessToken} = await {OAuth2Functions.GetAccessToken}();");
             sb.SetDefaultAuthorizationHeader(indent, $"$\"{headerPrefix}\"", accessToken);
             indent = Consts.Indent(intIndent);
-            sb.AppendLine(indent + "}");
+            sb.AppendLineIndented(indent, "}");
         }
 
         static void Implicit(StringBuilder sb, AuthSettings auth, int intIndent)
         {
             var indent = Consts.Indent(intIndent);
-            sb.AppendLine(indent + "public async Task DoAuth()");
-            sb.AppendLine(indent + "{");
+            sb.AppendLineIndented(indent, "public async Task DoAuth()");
+            sb.AppendLineIndented(indent, "{");
             indent = Consts.Indent(2);
-            sb.AppendLine(indent + "var oauthQueryParameters = new OAuth2QueryParameters();");
-            sb.AppendLine(indent + "oauthQueryParameters.ResponseType = \"token\";");
-            sb.AppendLine(indent + "oauthQueryParameters.ClientId = _clientId;");
+            sb.AppendLineIndented(indent, "var oauthQueryParameters = new OAuth2QueryParameters();");
+            sb.AppendLineIndented(indent, "oauthQueryParameters.ResponseType = \"token\";");
+            sb.AppendLineIndented(indent, "oauthQueryParameters.ClientId = _clientId;");
 
             sb.AddCommonApiClientInstanceAuthVariablesToOAuthQueryParameters(auth, indent);
 
             auth.TryGetAuth2Config(OAuth2Config.AuthUrl, out var authUrl);
-            sb.AppendLine(indent + $"var queryString = QueryHelpers.AddQueryString(\"{authUrl}\", oauthQueryParameters.ToDictionary());");
-            sb.AppendLine(indent + $"await _httpClient.GetAsync(queryString);");
+            sb.AppendLineIndented(indent, $"var queryString = QueryHelpers.AddQueryString(\"{authUrl}\", oauthQueryParameters.ToDictionary());");
+            sb.AppendLineIndented(indent, $"await _httpClient.GetAsync(queryString);");
             indent = Consts.Indent(intIndent);
-            sb.AppendLine(indent + "}");
+            sb.AppendLineIndented(indent, "}");
         }
 
         static void AuthorizationCode(StringBuilder sb, AuthSettings auth, int intIndent)
         {
             var indent = Consts.Indent(intIndent);
-            sb.AppendLine(indent + "public async Task DoAuth()");
-            sb.AppendLine(indent + "{");
+            sb.AppendLineIndented(indent, "public async Task DoAuth()");
+            sb.AppendLineIndented(indent, "{");
             indent = Consts.Indent(2);
-            sb.AppendLine(indent + "var oauthQueryParameters = new OAuth2QueryParameters();");
-            sb.AppendLine(indent + "oauthQueryParameters.ResponseType = \"code\";");
-            sb.AppendLine(indent + "oauthQueryParameters.ClientId = _clientId;");
+            sb.AppendLineIndented(indent, "var oauthQueryParameters = new OAuth2QueryParameters();");
+            sb.AppendLineIndented(indent, "oauthQueryParameters.ResponseType = \"code\";");
+            sb.AppendLineIndented(indent, "oauthQueryParameters.ClientId = _clientId;");
 
             sb.AddCommonApiClientInstanceAuthVariablesToOAuthQueryParameters(auth, indent);
 
             auth.TryGetAuth2Config(OAuth2Config.AuthUrl, out var authUrl);
-            sb.AppendLine(indent + $"var queryString = QueryHelpers.AddQueryString(\"{authUrl}\", oauthQueryParameters.ToDictionary());");
-            sb.AppendLine(indent + $"await _httpClient.GetAsync(queryString);");
+            sb.AppendLineIndented(indent, $"var queryString = QueryHelpers.AddQueryString(\"{authUrl}\", oauthQueryParameters.ToDictionary());");
+            sb.AppendLineIndented(indent, $"await _httpClient.GetAsync(queryString);");
             indent = Consts.Indent(intIndent);
-            sb.AppendLine(indent + "}");
+            sb.AppendLineIndented(indent, "}");
         }
         static void Auth(StringBuilder sb, AuthSettings auth, int intIndent)
         {
             var indent = Consts.Indent(intIndent);
-            sb.Append(indent + "public async Task Auth(string code");
+            sb.AppendIndented(indent, "public async Task Auth(string code");
             if (auth.TryGetAuth2Config(OAuth2Config.State, out var _))
             {
                 sb.Append(", string state");
             }
             sb.AppendLine(")");
-            sb.AppendLine(indent + "{");
+            sb.AppendLineIndented(indent, "{");
             indent = Consts.Indent(2);
-            sb.AppendLine(indent + $"var encoded = Convert.ToBase64String(Encoding.GetEncoding(\"ISO-8859-1\").GetBytes({OAuth2Properties.ClientId} + \":\" + {OAuth2Properties.ClientSecret}));");
-            sb.AppendLine(indent + "_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(\"Basic\", encoded);");
+            sb.AppendLineIndented(indent, $"var encoded = Convert.ToBase64String(Encoding.GetEncoding(\"ISO-8859-1\").GetBytes({OAuth2Properties.ClientId} + \":\" + {OAuth2Properties.ClientSecret}));");
+            sb.AppendLineIndented(indent, "_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(\"Basic\", encoded);");
             sb.AppendLine();
-            sb.AppendLine(indent + "var oauthQueryParameters = new OAuth2QueryParameters();");
-            sb.AppendLine(indent + "oauthQueryParameters.Code = code;");
-            sb.AppendLine(indent + "oauthQueryParameters.GrantType = \"authorization_code\";");
+            sb.AppendLineIndented(indent, "var oauthQueryParameters = new OAuth2QueryParameters();");
+            sb.AppendLineIndented(indent, "oauthQueryParameters.Code = code;");
+            sb.AppendLineIndented(indent, "oauthQueryParameters.GrantType = \"authorization_code\";");
 
             sb.AddCommonApiClientInstanceAuthVariablesToOAuthQueryParameters(auth, indent);
 
             auth.TryGetAuth2Config(OAuth2Config.AccessTokenUrl, out var accessTokenUrl);
-            sb.AppendLine(indent + $"var response = await _httpClient.PostAsync(\"{accessTokenUrl}\", new FormUrlEncodedContent(oauthQueryParameters.ToDictionary()));");
+            sb.AppendLineIndented(indent, $"var response = await _httpClient.PostAsync(\"{accessTokenUrl}\", new FormUrlEncodedContent(oauthQueryParameters.ToDictionary()));");
             indent = Consts.Indent(intIndent);
-            sb.AppendLine(indent + "}");
+            sb.AppendLineIndented(indent, "}");
         }
     }
 
     private static void AddCommonApiClientInstanceAuthVariablesToOAuthQueryParameters(this StringBuilder sb, AuthSettings auth, string indent)
     {
         VariableOrEmpty(OAuth2Properties.RedirectUrl, OAuth2Config.RedirectUri, out var redirectUrl);
-        sb.AppendLine(indent + $"oauthQueryParameters.RedirectUrl = {redirectUrl};");
+        sb.AppendLineIndented(indent, $"oauthQueryParameters.RedirectUrl = {redirectUrl};");
 
         if (VariableOrEmpty(OAuth2Properties.Scope, OAuth2Config.Scope, out var scope))
         {
-            sb.AppendLine(indent + $"oauthQueryParameters.Scope = {scope};");
+            sb.AppendLineIndented(indent, $"oauthQueryParameters.Scope = {scope};");
         }
 
         if (VariableOrEmpty(OAuth2Properties.State, OAuth2Config.State, out var state))
         {
-            sb.AppendLine(indent + $"oauthQueryParameters.State = {state};");
+            sb.AppendLineIndented(indent, $"oauthQueryParameters.State = {state};");
         }
         bool VariableOrEmpty(string str, OAuth2Config config, out string value)
         {
@@ -362,14 +375,14 @@ public static class ApiClientSerializer
     {
         returnType = returnType == null ? "Task" : $"Task<{returnType}>";
         var indent = Consts.Indent(intIndent);
-        sb.AppendLine(indent + "// You must implement this yourself");
-        sb.Append(indent + $"private async {returnType} {functionName}(");
+        sb.AppendLineIndented(indent, "// You must implement this yourself");
+        sb.AppendIndented(indent, $"private async {returnType} {functionName}(");
         sb.AppendLine(string.Join(", ", paramaters ?? new()) + ")");
-        sb.AppendLine(indent + "{");
+        sb.AppendLineIndented(indent, "{");
         indent = Consts.Indent(intIndent + 1);
-        sb.AppendLine(indent + "throw new NotImplementedException();");
+        sb.AppendLineIndented(indent, "throw new NotImplementedException();");
         indent = Consts.Indent(intIndent);
-        sb.AppendLine(indent + "}");
+        sb.AppendLineIndented(indent, "}");
     }
 
     private static void AddOAuth2Properties(AuthSettings authSettings, StringBuilder sb, string indent)
@@ -407,45 +420,45 @@ public static class ApiClientSerializer
     {
         var oneIndent = Consts.Indent(1);
         var indent = Consts.Indent(intIndent);
-        sb.AppendLine(indent + "private async Task<T> ExecuteWithRetry<T>(Func<Task<T>> operation, int retryCount = 2,");
-        sb.AppendLine(indent + $"{oneIndent}[CallerMemberName] string callerMemberName = \"\", [CallerFilePath] string sourceFilePath = \"\", [CallerLineNumber] int sourceLineNumber = 0)");
-        sb.AppendLine(indent + "{");
+        sb.AppendLineIndented(indent, "private async Task<T> ExecuteWithRetry<T>(Func<Task<T>> operation, int retryCount = 2,");
+        sb.AppendLineIndented(indent, $"{oneIndent}[CallerMemberName] string callerMemberName = \"\", [CallerFilePath] string sourceFilePath = \"\", [CallerLineNumber] int sourceLineNumber = 0)");
+        sb.AppendLineIndented(indent, "{");
         indent = Consts.Indent(intIndent + 1);
 
-        sb.AppendLine(indent + "for (int i = 0; i < retryCount; i++)");
-        sb.AppendLine(indent + "{");
+        sb.AppendLineIndented(indent, "for (int i = 0; i < retryCount; i++)");
+        sb.AppendLineIndented(indent, "{");
         indent = Consts.Indent(intIndent + 2);
 
-        sb.AppendLine(indent + "try");
-        sb.AppendLine(indent + "{");
+        sb.AppendLineIndented(indent, "try");
+        sb.AppendLineIndented(indent, "{");
         indent = Consts.Indent(intIndent + 3);
-        sb.AppendLine(indent + "return await operation();");
+        sb.AppendLineIndented(indent, "return await operation();");
         indent = Consts.Indent(intIndent + 2);
-        sb.AppendLine(indent + "}");
+        sb.AppendLineIndented(indent, "}");
 
-        sb.AppendLine(indent + "catch (Exception ex)");
-        sb.AppendLine(indent + "{");
+        sb.AppendLineIndented(indent, "catch (Exception ex)");
+        sb.AppendLineIndented(indent, "{");
         indent = Consts.Indent(intIndent + 3);
-        sb.AppendLine(indent + "if (i >= retryCount - 1)");
-        sb.AppendLine(indent + "{");
+        sb.AppendLineIndented(indent, "if (i >= retryCount - 1)");
+        sb.AppendLineIndented(indent, "{");
         indent = Consts.Indent(intIndent + 4);
 
         var throwDeclaration = $"throw new Exception($\"{apiClientName}: Operation failed. Retries exceeded. Allowed Retries: {{retryCount}}. Source - Member Name: {{callerMemberName}}, File Path: {{sourceFilePath}}, Line Number: {{sourceLineNumber}}\", ex);";
         sb.ErrorHandlingStrategy(throwDeclaration, options.ErrorHandlingStrategy, indent);
 
         indent = Consts.Indent(intIndent + 3);
-        sb.AppendLine(indent + "}");
+        sb.AppendLineIndented(indent, "}");
         sb.AppendLine();
 
         sb.ErrorHandlingSinks(options.ErrorHandlingSinks, LogLevel.Information, indent, $"{apiClientName}: Operation failed. Retrying... Retry Attempt: {{i + 1}}, Allowed Retries: {{retryCount}}. Source - Member Name: {{callerMemberName}}, File Path: {{sourceFilePath}}, Line Number: {{sourceLineNumber}}");
 
         indent = Consts.Indent(intIndent + 2);
-        sb.AppendLine(indent + "}");
+        sb.AppendLineIndented(indent, "}");
 
 
         indent = Consts.Indent(intIndent + 1);
-        sb.AppendLine(indent + "}");
+        sb.AppendLineIndented(indent, "}");
         indent = Consts.Indent(intIndent);
-        sb.AppendLine(indent + "}");
+        sb.AppendLineIndented(indent, "}");
     }
 }

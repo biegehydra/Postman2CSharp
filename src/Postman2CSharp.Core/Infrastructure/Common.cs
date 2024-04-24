@@ -11,32 +11,52 @@ namespace Postman2CSharp.Core.Infrastructure
     {
         public static void AddDefaultRequestHeader(this StringBuilder sb, string indent, string key, string value)
         {
-            sb.AppendLine(indent + $@"_httpClient.DefaultRequestHeaders.Add({key}, {value});");
+            sb.AppendLineIndented(indent, $@"_httpClient.DefaultRequestHeaders.Add({key}, {value});");
         }
         public static void SetDefaultAuthorizationHeader(this StringBuilder sb, string indent, string key, string value)
         {
-            sb.AppendLine(indent + $@"_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue({key}, {value});");
+            sb.AppendLineIndented(indent, $@"_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue({key}, {value});");
         }
 
         public static void AssignVariableToConfig(this StringBuilder sb, string indent, string variable, string path)
         {
-            sb.AppendLine(indent + $@"{variable} = config[""Path:To{path}""];");
+            sb.AppendLineIndented(indent, $@"{variable} = config[""Path:To{path}""];");
         }
 
         public static void AddPrivateReadonlyString(this StringBuilder sb, string indent, string variableName)
         {
-            sb.AppendLine(indent + $"private readonly string {variableName};");
+            sb.AppendLineIndented(indent, $"private readonly string {variableName};");
+        }
+
+        public static void AppendLineIndented(this StringBuilder sb, int indent, string str)
+        {
+            sb.AppendLine(Consts.Indent(indent) + str);
+        }
+
+        public static void AppendLineIndented(this StringBuilder sb, string indent, string str)
+        {
+            sb.AppendLine(indent + str);
+        }
+
+        public static void AppendIndented(this StringBuilder sb, int indent, string str)
+        {
+            sb.Append(Consts.Indent(indent) + str);
+        }
+
+        public static void AppendIndented(this StringBuilder sb, string indent, string str)
+        {
+            sb.AppendIndented(indent, str);
         }
 
         public static void FunctionSignature(this StringBuilder sb, HttpCall call, string indent, List<HttpCallMethodParameter> methodParameters, ApiClientOptions options, bool isInterface = false)
         {
             if (isInterface)
             {
-                sb.Append(indent + "Task");
+                sb.AppendIndented(indent, "Task");
             }
             else
             {
-                sb.Append(indent + "public async Task");
+                sb.AppendIndented(indent, "public async Task");
             }
             if (!options.HandleMultipleResponses || call.AllResponses.GroupBy(x => SignatureClassName(x.ClassName, x.RootWasArray, options.OutputCollectionType)).Count() == 1)
             {
@@ -91,13 +111,13 @@ namespace Postman2CSharp.Core.Infrastructure
             switch (errorHandlingStrategy)
             {
                 case Infrastructure.ErrorHandlingStrategy.None:
-                    sb.AppendLine(indent + throwDeclaration);
+                    sb.AppendLineIndented(indent, throwDeclaration);
                     break;
                 case Infrastructure.ErrorHandlingStrategy.ThrowException:
-                    sb.AppendLine(indent + throwDeclaration);
+                    sb.AppendLineIndented(indent, throwDeclaration);
                     break;
                 case Infrastructure.ErrorHandlingStrategy.ReturnDefault:
-                    sb.AppendLine(indent + "return default;");
+                    sb.AppendLineIndented(indent, "return default;");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(errorHandlingStrategy), errorHandlingStrategy, null);
@@ -125,13 +145,13 @@ namespace Postman2CSharp.Core.Infrastructure
                             LogLevel.Critical => "LogCritical",
                             _ => throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null)
                         };
-                        sb.AppendLine(indent + $"_logger.{logFunction}({loggerMessage});");
+                        sb.AppendLineIndented(indent, $"_logger.{logFunction}({loggerMessage});");
                         break;
                     case Infrastructure.ErrorHandlingSinks.ConsoleWriteLine:
-                        sb.AppendLine(indent + $"Console.WriteLine({nonLoggerMessage});");
+                        sb.AppendLineIndented(indent, $"Console.WriteLine({nonLoggerMessage});");
                         break;
                     case Infrastructure.ErrorHandlingSinks.DebugWriteLine:
-                        sb.AppendLine(indent + $"Debug.WriteLine({nonLoggerMessage});");
+                        sb.AppendLineIndented(indent, $"Debug.WriteLine({nonLoggerMessage});");
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(errorHandlingSinks), errorHandlingSink, null);

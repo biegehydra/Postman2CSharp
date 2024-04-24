@@ -37,7 +37,7 @@ public static class HttpCallSerializer
         var indent = Consts.Indent(1);
         XmlComment(sb, options.XmlCommentTypes, call.Request.Description, call.Request.Url.Path, call.Request.Url.Variable, indent);
         sb.FunctionSignature(call, indent, methodParameters, options);
-        sb.AppendLine(indent + "{");
+        sb.AppendLineIndented(indent, "{");
 
         indent = Consts.Indent(2);
 
@@ -51,13 +51,13 @@ public static class HttpCallSerializer
             {
                 options.CatchExceptionTypes = new List<CatchExceptionTypes> { CatchExceptionTypes.HttpRequestException };
             }
-            sb.AppendLine(indent + "try");
-            sb.AppendLine(indent + "{");
+            sb.AppendLineIndented(indent, "try");
+            sb.AppendLineIndented(indent, "{");
 
             HttpCallBody(sb, call, constructorHasAuthHeader, 3, relativePath, options, graphQlQueriesClassName);
 
             indent = Consts.Indent(2);
-            sb.AppendLine(indent + "}");
+            sb.AppendLineIndented(indent, "}");
             foreach (var catchExceptionType in options.CatchExceptionTypes)
             {
                 Catch(sb, catchExceptionType, options.ErrorHandlingSinks, options.ErrorHandlingStrategy, options.LogLevel, indent);
@@ -65,7 +65,7 @@ public static class HttpCallSerializer
         }
 
         indent = Consts.Indent(1);
-        sb.Append(indent + "}");
+        sb.AppendIndented(indent, "}");
     }
 
 
@@ -104,11 +104,11 @@ public static class HttpCallSerializer
 
         if (queriesInSeparateFile)
         {
-            sb.AppendLine(indent + $"string query = {graphQlQueriesClassName}.{requestName};");
+            sb.AppendLineIndented(indent, $"string query = {graphQlQueriesClassName}.{requestName};");
         }
         else
         {
-            sb.AppendLine(indent + $"var query = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Query).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
+            sb.AppendLineIndented(indent, $"var query = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Query).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
         }
 
         List<string> parameters = ["query"];
@@ -118,17 +118,17 @@ public static class HttpCallSerializer
         }
         else if (!string.IsNullOrWhiteSpace(graphQl.Variables))
         {
-            sb.AppendLine(indent + $"var graphQlVariables = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Variables).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
+            sb.AppendLineIndented(indent, $"var graphQlVariables = @\"\n{HttpUtility.JavaScriptStringEncode(graphQl.Variables).Replace(@"\r\n", "\n").Replace(@"\n", "\n").Replace("\\\"", "\"\"")}\";");
             parameters.Add("graphQlVariables");
         }
-        sb.AppendLine(indent + $"var graphQlRequest = new GraphQLRequest({string.Join(", ", parameters)});");
+        sb.AppendLineIndented(indent, $"var graphQlRequest = new GraphQLRequest({string.Join(", ", parameters)});");
     }
 
     private static void Catch(StringBuilder sb, CatchExceptionTypes catchExceptionType, List<ErrorHandlingSinks> errorHandlingSinks, ErrorHandlingStrategy errorHandlingStrategy,
         LogLevel logLevel, string indent)
     {
-        sb.AppendLine(indent + $"catch ({catchExceptionType} ex)");
-        sb.AppendLine(indent + "{");
+        sb.AppendLineIndented(indent, $"catch ({catchExceptionType} ex)");
+        sb.AppendLineIndented(indent, "{");
         indent = Consts.Indent(3);
 
         sb.ErrorHandlingSinks(errorHandlingSinks, logLevel, indent);
@@ -136,7 +136,7 @@ public static class HttpCallSerializer
         sb.ErrorHandlingStrategy("throw;", errorHandlingStrategy, indent);
 
         indent = Consts.Indent(2);
-        sb.AppendLine(indent + "}");
+        sb.AppendLineIndented(indent, "}");
     }
 
     private static void HttpCallBody(StringBuilder sb, HttpCall call, bool constructorHasHeader,
@@ -181,11 +181,11 @@ public static class HttpCallSerializer
                 DataType.Text => "text/plan",
                 _ => throw new UnreachableException()
             };
-            sb.AppendLine(indent + $"var httpContent = new StringContent({parameterName}, Encoding.UTF8, \"{contentType}\")");
+            sb.AppendLineIndented(indent, $"var httpContent = new StringContent({parameterName}, Encoding.UTF8, \"{contentType}\")");
         }
         else if (call.RequestDataType is DataType.Binary)
         {
-            sb.AppendLine(indent + $"var httpContent = new StreamContent(stream);");
+            sb.AppendLineIndented(indent, $"var httpContent = new StreamContent(stream);");
         }
         else if (call.RequestDataType is DataType.GraphQl)
         {
@@ -205,7 +205,7 @@ public static class HttpCallSerializer
             {
                 if (addTokenTo == AddTokenTo.Header)
                 {
-                    sb.AppendLine(indent + $"await {OAuth2Functions.AddAccessTokenToRequest}();");
+                    sb.AppendLineIndented(indent, $"await {OAuth2Functions.AddAccessTokenToRequest}();");
                 }
             }
         }
@@ -253,7 +253,7 @@ public static class HttpCallSerializer
         }
         else if (call.RequestDataType is DataType.Binary)
         {
-            sb.AppendLine(indent + $"var httpContent = new StreamContent(stream);");
+            sb.AppendLineIndented(indent, $"var httpContent = new StreamContent(stream);");
         }
         else if (call.RequestDataType is DataType.GraphQl)
         {
@@ -266,7 +266,7 @@ public static class HttpCallSerializer
             {
                 if (addTokenTo == AddTokenTo.Header)
                 {
-                    sb.AppendLine(indent + $"await {OAuth2Functions.AddAccessTokenToRequest}();");
+                    sb.AppendLineIndented(indent, $"await {OAuth2Functions.AddAccessTokenToRequest}();");
                 }
             }
         }
@@ -280,20 +280,20 @@ public static class HttpCallSerializer
         {
             if (group.Count() == 1)
             {
-                sb.AppendLine(indent + $"if (response.StatusCode == HttpStatusCode.{(HttpStatusCode)group.First().Code})");
+                sb.AppendLineIndented(indent, $"if (response.StatusCode == HttpStatusCode.{(HttpStatusCode)group.First().Code})");
             }
             else
             {
                 var statusCodes = string.Join(" or ", group.Select(x => $"HttpStatusCode.{(HttpStatusCode)x.Code}"));
-                sb.AppendLine(indent + $"if (response.StatusCode is {statusCodes})");
+                sb.AppendLineIndented(indent, $"if (response.StatusCode is {statusCodes})");
             }
-            sb.AppendLine(indent + "{");
+            sb.AppendLineIndented(indent, "{");
             indent = Consts.Indent(intIndent + 1);
 
             ReturnIfRequestDidNotReturnEarlier(sb, group.First(), indent, options);
 
             indent = Consts.Indent(intIndent);
-            sb.AppendLine(indent + "}");
+            sb.AppendLineIndented(indent, "}");
             i++;
         }
 
@@ -303,7 +303,7 @@ public static class HttpCallSerializer
 
     private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, ApiResponse? apiResponse, string indent, ApiClientOptions options)
     {
-        sb.Append(indent + "return ");
+        sb.AppendIndented(indent, "return ");
         if (apiResponse?.ClassName != null)
         {
             if (options.JsonLibrary == JsonLibrary.SystemTextJson)
@@ -402,11 +402,11 @@ public static class HttpCallSerializer
     {
         if (httpClientCallReturnsResponse)
         {
-            sb.Append(indent + "return ");
+            sb.AppendIndented(indent, "return ");
         }
         else
         {
-            sb.Append(indent + "var response = ");
+            sb.AppendIndented(indent, "var response = ");
         }
     }
 
@@ -419,8 +419,8 @@ public static class HttpCallSerializer
             {
                 if (addTokenTo == AddTokenTo.QueryParams)
                 {
-                    sb.AppendLine(indent + "var oauthQueryParameters = new OAuth2QueryParameters();");
-                    sb.AppendLine(indent + "oauthQueryParameters.AccessToken = await GetAccessToken();");
+                    sb.AppendLineIndented(indent, "var oauthQueryParameters = new OAuth2QueryParameters();");
+                    sb.AppendLineIndented(indent, "oauthQueryParameters.AccessToken = await GetAccessToken();");
                     requestHasOAuthQueryParameters = true;
                 }
             }
@@ -429,17 +429,17 @@ public static class HttpCallSerializer
         var requestHasQueryString = false;
         if (call.QueryParameterClassName != null && requestHasOAuthQueryParameters)
         {
-            sb.AppendLine(indent + "var parametersDict = queryParameters.ToDictionary().Unique(oauthQueryParameters.ToDictionary());");
+            sb.AppendLineIndented(indent, "var parametersDict = queryParameters.ToDictionary().Unique(oauthQueryParameters.ToDictionary());");
             requestHasQueryString = true;
         }
         else if (requestHasOAuthQueryParameters)
         {
-            sb.AppendLine(indent + $"var parametersDict = oauthQueryParameters.ToDictionary();");
+            sb.AppendLineIndented(indent, $"var parametersDict = oauthQueryParameters.ToDictionary();");
             requestHasQueryString = true;
         }
         else if (call.QueryParameterClassName != null)
         {
-            sb.AppendLine(indent + $"var parametersDict = queryParameters.ToDictionary();");
+            sb.AppendLineIndented(indent, $"var parametersDict = queryParameters.ToDictionary();");
             requestHasQueryString = true;
         }
 
@@ -452,11 +452,11 @@ public static class HttpCallSerializer
                     var keyValue = auth.TryGetApiKeyConfig(ApiKeyConfig.Key, out var key) ? key : "api_key";
                     if (requestHasQueryString)
                     {
-                        sb.AppendLine(indent + $@"parametersDict.Add($""{keyValue}"", {Consts._apiKey});");
+                        sb.AppendLineIndented(indent, $@"parametersDict.Add($""{keyValue}"", {Consts._apiKey});");
                     }
                     else
                     {
-                        sb.AppendLine(indent + $@"var parametersDict = new Dictionary<string, string>() {{ {{ ""{keyValue}"", {Consts._apiKey} }} }};");
+                        sb.AppendLineIndented(indent, $@"var parametersDict = new Dictionary<string, string>() {{ {{ ""{keyValue}"", {Consts._apiKey} }} }};");
                         requestHasQueryString = true;
                     }
                 }
@@ -465,7 +465,7 @@ public static class HttpCallSerializer
 
         if (requestHasQueryString)
         {
-            sb.AppendLine(indent + $"var queryString = QueryHelpers.AddQueryString($\"{relativePath}\", parametersDict);");
+            sb.AppendLineIndented(indent, $"var queryString = QueryHelpers.AddQueryString($\"{relativePath}\", parametersDict);");
         }
 
         return requestHasQueryString;
@@ -480,15 +480,15 @@ public static class HttpCallSerializer
         }
         hasUniqueHeaders = true;
         var indent = Consts.Indent(intIndent);
-        sb.AppendLine(indent + "var headers = new Dictionary<string, string>()");
-        sb.AppendLine(indent + "{");
+        sb.AppendLineIndented(indent, "var headers = new Dictionary<string, string>()");
+        sb.AppendLineIndented(indent, "{");
         indent = Consts.Indent(intIndent + 1);
         var uniqueHeaders = call.UniqueHeaders.Where(Header.IsImportant).ToList();
         var last = uniqueHeaders.Last();
         foreach (var uniqueHeader in call.UniqueHeaders.Where(Header.IsImportant))
         {
             hasUniqueHeaders = true;
-            sb.Append(indent + $"{{ $\"{uniqueHeader.Key}\", $\"{uniqueHeader.Value}\" }}");
+            sb.AppendIndented(indent, $"{{ $\"{uniqueHeader.Key}\", $\"{uniqueHeader.Value}\" }}");
             if (uniqueHeader != last)
             {
                 sb.Append(',');
@@ -496,7 +496,7 @@ public static class HttpCallSerializer
             sb.AppendLine();
         }
         indent = Consts.Indent(intIndent);
-        sb.AppendLine(indent + "};");
+        sb.AppendLineIndented(indent, "};");
         sb.AppendLine();
     }
 }

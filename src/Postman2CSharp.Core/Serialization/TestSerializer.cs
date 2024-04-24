@@ -18,25 +18,25 @@ namespace Postman2CSharp.Core.Serialization
             sb.AppendLine($"namespace {apiclient.Name + ".Tests"}");
             sb.AppendLine("{");
             var indent = Consts.Indent(1);
-            sb.AppendLine(indent + "[TestClass]");
-            sb.AppendLine(indent + $"public class {apiclient.TestClassName}");
-            sb.AppendLine(indent + "{");
+            sb.AppendLineIndented(indent, "[TestClass]");
+            sb.AppendLineIndented(indent, $"public class {apiclient.TestClassName}");
+            sb.AppendLineIndented(indent, "{");
             indent = Consts.Indent(2);
             var _apiClient = Utils.NormalizeToCsharpPropertyName(apiclient.Name, CsharpPropertyType.Private);
-            sb.AppendLine(indent + $"private readonly {apiclient.InterfaceName} {_apiClient};");
-            sb.AppendLine(indent + "[ClassInitialize]");
-            sb.AppendLine(indent + "public void Setup()");
-            sb.AppendLine(indent + "{");
+            sb.AppendLineIndented(indent, $"private readonly {apiclient.InterfaceName} {_apiClient};");
+            sb.AppendLineIndented(indent, "[ClassInitialize]");
+            sb.AppendLineIndented(indent, "public void Setup()");
+            sb.AppendLineIndented(indent, "{");
             indent = Consts.Indent(3);
-            sb.AppendLine(indent + "// TODO: Setup");
+            sb.AppendLineIndented(indent, "// TODO: Setup");
             indent = Consts.Indent(2);
-            sb.AppendLine(indent + "}");
+            sb.AppendLineIndented(indent, "}");
             foreach (var httpCall in apiclient.HttpCalls)
             {
                 sb.AppendLine();
-                sb.AppendLine(indent + "[TestMethod]");
-                sb.AppendLine(indent + $"public async Task {httpCall.Name + "_ReturnsValidResult"}()");
-                sb.AppendLine(indent + "{");
+                sb.AppendLineIndented(indent, "[TestMethod]");
+                sb.AppendLineIndented(indent, $"public async Task {httpCall.Name + "_ReturnsValidResult"}()");
+                sb.AppendLineIndented(indent, "{");
                 indent = Consts.Indent(3);
                 List<string> parameterNames = new List<string>();
                 foreach (var httpCallMethodParameter in httpCall.MethodParameters(apiclient.Options.OutputCollectionType))
@@ -60,28 +60,28 @@ namespace Postman2CSharp.Core.Serialization
                             parameterNames.Add(httpCall.GraphQlVariablesClassName!.ToLower());
                             break;
                         case HttpCallMethodParameterType.RawText:
-                            sb.AppendLine(indent + $"var {httpCallMethodParameter.ParameterName} = \"Test Data\";");
+                            sb.AppendLineIndented(indent, $"var {httpCallMethodParameter.ParameterName} = \"Test Data\";");
                             parameterNames.Add(httpCallMethodParameter.ParameterName);
                             break;
                         case HttpCallMethodParameterType.Path:
-                            sb.AppendLine(indent + $"var {httpCallMethodParameter.ParameterName} = \"Test Data\";");
+                            sb.AppendLineIndented(indent, $"var {httpCallMethodParameter.ParameterName} = \"Test Data\";");
                             parameterNames.Add(httpCallMethodParameter.ParameterName);
                             break;
                         case HttpCallMethodParameterType.Stream:
-                            sb.AppendLine(indent + "var stream = new Stream();");
+                            sb.AppendLineIndented(indent, "var stream = new Stream();");
                             parameterNames.Add("stream");
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
                 }
-                sb.AppendLine(indent + $"var response = await {_apiClient}.{httpCall.Name}({string.Join(", ", parameterNames)})");
-                sb.AppendLine(indent + "Assert.IsNotNull(response);");
+                sb.AppendLineIndented(indent, $"var response = await {_apiClient}.{httpCall.Name}({string.Join(", ", parameterNames)})");
+                sb.AppendLineIndented(indent, "Assert.IsNotNull(response);");
                 indent = Consts.Indent(2);
-                sb.AppendLine(indent + "}");
+                sb.AppendLineIndented(indent, "}");
             }
             indent = Consts.Indent(1);
-            sb.AppendLine(indent + "}");
+            sb.AppendLineIndented(indent, "}");
             sb.AppendLine("}");
             return sb.ToString();
         }

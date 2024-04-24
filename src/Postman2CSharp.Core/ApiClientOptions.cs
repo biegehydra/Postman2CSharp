@@ -20,6 +20,7 @@ namespace Postman2CSharp.Core
         public bool AlwaysUseNullables { get; set; }
 
         public bool ExecuteWithRetry = false;
+        public bool HttpClientInConstructor = true;
 
         public List<ErrorHandlingSinks> ErrorHandlingSinks { get; set; } = new()
         {
@@ -86,6 +87,7 @@ namespace Postman2CSharp.Core
                    && options1.NewMaxDepth == options2.NewMaxDepth
                    && options1.AlwaysUseNullables == options2.AlwaysUseNullables
                    && options1.NullValueHandlingIgnore == options2.NullValueHandlingIgnore
+                   && options1.HttpClientInConstructor == options2.HttpClientInConstructor
                    && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch && allRemovedDisabledMatch;
         }
     }
