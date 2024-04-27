@@ -215,6 +215,18 @@ public async Task<{patchUserReturnType}> PatchUser(User user)
 
     public static string Miscellaneous(ApiClientOptions options)
     {
+        var constructorParameters = options.HttpClientInConstructor
+            ? "HttpClient httpClient, IConfiguration config"
+            : "IConfiguration config";
+
+        var httpClientInitialization = !options.HttpClientInConstructor
+            ? $"{Consts.Indent(2)}_httpClient = new HttpClient() \n" +
+              $"{Consts.Indent(2)}{{\n" +
+              $"{Consts.Indent(3)}BaseAddress = new Uri($\"https://someurl.com/api/\")\n" +
+              $"{Consts.Indent(2)}}}"
+            : $"{Consts.Indent(2)}_httpClient = httpClient;\n" +
+              $"{Consts.Indent(2)}_httpClient.BaseAddress = new Uri($\"https://someurl.com/api/\");";
+
         var apiClientComment = options.XmlCommentTypes.Contains(XmlCommentTypes.ApiClient)
             ? $@"/// <summary>
 /// Comment from root item in postman.
@@ -274,11 +286,10 @@ public async Task<{patchUserReturnType}> PatchUser(User user)
         return
             $@"{apiClientComment}public class ExampleApiClient : IExampleApiClient
 {{
-    private readonly HttpClient _httpClient;
-    public ExampleApiClient(HttpClient httpClient, IConfiguration config)
+    private readonly HttpClient _httpClient
+    public ExampleApiClient({constructorParameters})
     {{
-        _httpClient = httpClient;
-        _httpClient.BaseAddress = new Uri($""https://someurl.com/api/"");
+{httpClientInitialization}
     }}
 {requestComment}{pathVariableComment}
     public async Task<SearchUsersResponse> GetUsers(string id)
