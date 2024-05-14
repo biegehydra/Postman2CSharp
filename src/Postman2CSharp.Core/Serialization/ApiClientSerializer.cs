@@ -204,7 +204,7 @@ public static class ApiClientSerializer
         {
             var normalizedKey = variableUsage.CSPropertyUsage(CsharpPropertyType.Private);
             var valueLiteral = string.IsNullOrWhiteSpace(variableUsage.Value) ? "string.Empty" : $"\"{variableUsage.Value}\"";
-            sb.AppendLineIndented(indent, $"private string {normalizedKey} = {valueLiteral};");
+            sb.AppendLineIndented(indent, $"private readonly string {normalizedKey} = {valueLiteral};");
         }
 
         if (baseUrl.Contains("{_unknownBaseUrl}"))

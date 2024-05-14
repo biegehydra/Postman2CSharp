@@ -13,7 +13,7 @@
 <DriverStore @ref="_driverStore" OnNextStep="OnNextStep" OnPreviousStep="OnPreviousStep" Configuration="@AppSettings.DriverConfig">
     @if (ApiCollection?.ApiClients?.Count > 0)
     {
-        <MudTextField Class="search-query-input-control" T="string" @bind-Value:get="_searchQuery" @bind-Value:set="x => { _shouldRender = true; AppState.CachedSearchValues[ApiCollection.Id] = x; _searchQuery = x; }"
+        <MudTextField Class="search-query-input-control" T="string" @bind-Value:get="_searchQuery" @bind-Value:set="@(x => { _shouldRender = true; AppState.CachedSearchValues[ApiCollection.Id] = x; _searchQuery = x; Analytics.TrackAction("Used Search Feature"); })"
                       Style="max-width: 30em; margin-left: 20px;margin-bottom: 15px;" Clearable="true"
                       OnClearButtonClick="() => { _shouldRender = true; AppState.CachedSearchValues[ApiCollection.Id] = null; _searchQuery = null; }"
                       Immediate="true" DebounceInterval="250" Variant="Variant.Outlined" Placeholder="Search" 
@@ -34,7 +34,7 @@
                 }
             </MudHidden>
         </MudBreakpointProvider>
-        <MudTreeView T="string" Class="collection-tree-root" Hover ExpandOnClick>
+        <MudTreeView T="string" Class="collection-tree-root" Style="background: rgb(44 50 65);" Hover ExpandOnClick>
             <CascadingValue Value="this">
                 @{
                     var first = new First<ApiClient>(x => x.HttpCalls.Any(y => y.AnyClassesGenerated()));
@@ -54,6 +54,7 @@
 </DriverStore>
 
 @code {
+    [Inject] private AnalyticsInterop Analytics { get; set; } = null!;
     [Inject] private AppState AppState { get; set; } = null!;
     [Inject] private IEventAggregator EventBus { get; set; } = null!;
     [Parameter] public ApiCollection? ApiCollection { get; set; }
@@ -151,12 +152,23 @@
                                         : null;
                 _driverStore!.AddPopover(step++, model2);
             }
-            _driverStore!.AddPopover(step, new PopoverModel()
+            _driverStore!.AddPopover(step++, new PopoverModel()
             {
                 ElementSelector = ".search-query-input-control",
                 Title = "Search For Requests",
                 Description = "Enter a folder or request name to search all api clients for it.",
             });
+            if (ApiCollection?.ApiClients.Count >= 10 && ApiCollection.RootDefinition is RootDefinition.PerAuthorityPerFolder)
+            {
+                _driverStore.AddPopover(step, new PopoverModel()
+                {
+                    ElementSelector = ".collection-tree-root",
+                    Title = "That's a lot of ApiClients!",
+                        Description = $"You choose {RootDefinition.PerAuthorityPerFolder.ToString()} for 'Request Grouping' on the `Miscellaneous` step of the Stepper on the `Convert` page. This option " +
+                                      $"will usually result in the most ApiClients being generated - one for each folder in the PostmanCollection. If you were hoping for a monolithic ApiClient or just fewer ApiClients, " +
+                                      $"go back through the stepper and choose {RootDefinition.PerAuthority.ToString()} or {RootDefinition.FlattenHierarchy.ToString()} for Request Grouping."
+                });
+            }
             await Task.Delay(1000);
             await _driverStore.StartDrive();
             AppState.SiteSettings.ViewedCollectionTour = true;

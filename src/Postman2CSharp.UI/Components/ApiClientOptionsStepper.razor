@@ -406,7 +406,8 @@
             var apiCollection = new ApiCollection()
             {
                 ApiClients = apiClients,
-                CollectionInfo = _postmanCollection.Info
+                CollectionInfo = _postmanCollection.Info,
+                RootDefinition = AppState.ApiClientOptions.RootDefinition
             };
 
             await AnalyticsInterop.TrackAction("Stepper - Generate ApiClient");
@@ -416,7 +417,22 @@
         catch (Exception exception)
         {
             Snackbar?.Add($"Something went wrong. Create issue on GitHub if issue persists. Error Message: {exception.Message}", Severity.Error, configure => configure.VisibleStateDuration = 7000);
-            await AnalyticsInterop.TrackAction($"Error Generating ApiClient: {exception.Message}");
+            var message = exception.Message;
+            int analyticsCall = 1;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < message.Length && analyticsCall < 10; i++)
+            {
+                sb.Append(message[i]);
+                if (sb.Length >= 37)
+                {
+                    await AnalyticsInterop.TrackAction($"{analyticsCall++}:{sb}");
+                    sb.Clear();
+                }
+            }
+            if (sb.Length > 0)
+            {
+                await AnalyticsInterop.TrackAction($"{analyticsCall}:{sb}");
+            }
         }
     }
 

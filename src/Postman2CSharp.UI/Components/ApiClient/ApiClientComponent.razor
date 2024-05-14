@@ -244,6 +244,9 @@
     private Task CurrentCodeChanged(CodeOption arg)
     {
         _currentCode = arg;
+#pragma warning disable CS4014 
+        AnalyticsInterop.Value.TrackAction("Changed Current Code Api Client Component");
+#pragma warning restore CS4014
         return InvokeAsync(StateHasChanged);
     }
 

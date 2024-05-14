@@ -176,7 +176,8 @@ else
             var apiCollection = new ApiCollection()
             {
                 ApiClients = apiClients,
-                CollectionInfo = Collection.Info
+                CollectionInfo = Collection.Info,
+                RootDefinition = AppState.ApiClientOptions.RootDefinition
             };
             await AnalyticsInterop.TrackAction("Condensed - Generate ApiClient");
             await SuccessfulGeneration.InvokeAsync(apiCollection);
