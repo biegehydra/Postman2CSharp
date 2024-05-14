@@ -82,6 +82,7 @@
             <Input>
                 <MudCheckBox Color="Color.Primary" @bind-Checked="_dirtyApiClientOptions.HandleMultipleResponses">Handle Multiple Responses</MudCheckBox>
                 <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="_dirtyApiClientOptions.MultipleResponseHandling" Disabled="_dirtyApiClientOptions.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
+                <EnumSelectComponent TEnum="UnexpectedStatusCodeHandling" @bind-Value="_dirtyApiClientOptions.UnexpectedStatusCodeHandling" Disabled="_dirtyApiClientOptions.HandleMultipleResponses == false || _dirtyApiClientOptions.MultipleResponseHandling != MultipleResponseHandling.OneOf" Label="Unexpected Status Code Handling"></EnumSelectComponent>
             </Input>
             <Example>
                 <PrismCodeBlock Value="@StepperExamples.MultipleResponses(_dirtyApiClientOptions)" Language="PrismLanguage.CSharp" UseLineNumbers="false" DisplayType="CodeBlockDisplayType.Scroll" MaxHeight="50vh" MaxWidth="@prismWidth" />

@@ -297,8 +297,15 @@ public static class HttpCallSerializer
             i++;
         }
 
-        var errorMessage = $"throw new Exception($\"{call.Name}: Unexpected response. Status Code: {{response.StatusCode}}. Content: {{await response.Content.ReadAsStringAsync()}}\");";
-        sb.ErrorHandlingStrategy(errorMessage, options.ErrorHandlingStrategy, indent);
+        if (options.UnexpectedStatusCodeHandling == UnexpectedStatusCodeHandling.ThrowException)
+        {
+            var errorMessage = $"throw new Exception($\"{call.Name}: Unexpected response. Status Code: {{response.StatusCode}}. Content: {{await response.Content.ReadAsStringAsync()}}\");";
+            sb.ErrorHandlingStrategy(errorMessage, options.ErrorHandlingStrategy, indent);
+        }
+        else
+        {
+            sb.AppendLineIndented(indent, "return new UnexpectedStatusCodeResponse(response);");
+        }
     }
 
     private static void ReturnIfRequestDidNotReturnEarlier(StringBuilder sb, ApiResponse? apiResponse, string indent, ApiClientOptions options)

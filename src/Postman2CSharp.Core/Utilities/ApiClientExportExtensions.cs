@@ -19,8 +19,8 @@ namespace Postman2CSharp.Core.Utilities
         private static readonly List<string> ImplicitOAuth2QueryParametersNamespaces = new() { "System.Collections.Generic" };
         private static readonly List<string> ImplicitHelperExtensionNamespaces = new() { "System.Collections.Generic" };
         private static readonly List<string> ImplicitInterfacesNamespaces = new() { "System.Collections.Generic", "System.Net.Http" };
-        private static readonly List<string> NewtonsoftHttpExtensionsNamespaces = new() { "System.Text", "System.Net.Http", "System.Threading.Tasks", "Newtonsoft.Json" };
-        private static readonly List<string> HttpExtensionsNamespaces = new() { "System.Text", "System.Net.Http", "System.Threading.Tasks", "System.Text.Json" };
+        private static readonly List<string> NewtonsoftHttpExtensionsNamespaces = new() { "System.Net", "System.Text", "System.Net.Http", "System.Threading.Tasks", "Newtonsoft.Json" };
+        private static readonly List<string> HttpExtensionsNamespaces = new() { "System.Net", "System.Text", "System.Net.Http", "System.Threading.Tasks", "System.Text.Json" };
         private static readonly List<string> QueryHelperNamespaces = new() { "System.Text", "System.Text.Encodings.Web" };
         private static readonly List<string> ImplicitQueryHelperNamespaces = new() { "System", "System.Collections.Generic" };
 

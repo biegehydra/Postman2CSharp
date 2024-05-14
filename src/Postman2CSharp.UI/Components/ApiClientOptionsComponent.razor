@@ -50,6 +50,9 @@
 has no effect since only the first success response is saved when the api client is generated. Turning it off will work as intended">
             <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="_dirtyApiClientOptions.MultipleResponseHandling" Disabled="_dirtyApiClientOptions.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
         </AdvancedSettingItem>
+        <AdvancedSettingItem Size="P2CsSize" ToolTip="Will control whether to throw an exception or return an error response when handling multiple status codes and an unexpected status code is returned.">
+            <EnumSelectComponent TEnum="UnexpectedStatusCodeHandling" @bind-Value="_dirtyApiClientOptions.UnexpectedStatusCodeHandling" Disabled="_dirtyApiClientOptions.HandleMultipleResponses == false || _dirtyApiClientOptions.MultipleResponseHandling != MultipleResponseHandling.OneOf" Label="Unexpected Status Code Handling"></EnumSelectComponent>
+        </AdvancedSettingItem>
     </MudGrid>
     <MudDivider Class="my-divider" Light="true" FlexItem="true"/>
     <MudText Class="setting-section-header" Typo="Typo.h5">Error Handling</MudText>

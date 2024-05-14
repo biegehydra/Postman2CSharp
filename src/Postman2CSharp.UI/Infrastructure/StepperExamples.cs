@@ -46,14 +46,48 @@ public static async Task<T> ReadNewtonsoftJsonAsync<T>(this HttpResponseMessage 
 }}";
     }
 
+    private static string UnexpectedStatusCodeResponse = @"
+
+// modify to suit your needs
+public class UnexpectedStatusCodeResponse
+{
+    public HttpStatusCode StatusCode { get; init; }
+    public Dictionary<string, string> Headers { get; init; }
+    public string? Body { get; init; }
+
+    public UnexpectedStatusCodeResponse(HttpResponseMessage response)
+    {
+        if (response == null)
+            throw new ArgumentNullException(nameof(response));
+
+        StatusCode = response.StatusCode;
+        Headers = new Dictionary<string, string>();
+
+        foreach (var header in response.Headers)
+        {
+            Headers[header.Key] = string.Join("""", """", header.Value);
+        }
+
+        if (response.Content != null!)
+        {
+            Body = response.Content.ReadAsStringAsync().Result; // Consider async handling
+        }
+    }
+}";
+
     public static string MultipleResponses(ApiClientOptions options)
     {
         var typeParam = options.MultipleResponseHandling switch
         {
-            MultipleResponseHandling.OneOf => "OneOf<SearchUsersOKResponse, SearchUsersUnauthorizedResponse, SearchUsersForbiddenResponse, SearchUsersInternalServerErrorResponse>",
+            MultipleResponseHandling.OneOf when options.UnexpectedStatusCodeHandling == UnexpectedStatusCodeHandling.Return => $"OneOf<SearchUsersOKResponse, SearchUsersUnauthorizedResponse,\n{Consts.Indent(4)} UnexpectedStatusCodeResponse>",
+            MultipleResponseHandling.OneOf when options.UnexpectedStatusCodeHandling == UnexpectedStatusCodeHandling.ThrowException => $"OneOf<SearchUsersOKResponse, SearchUsersUnauthorizedResponse>",
             MultipleResponseHandling.Object => "object",
             _ => throw new Exception("Invalid MultipleResponseHandling")
         };
+        string unexpectedStatusCodeHandling = options.UnexpectedStatusCodeHandling == UnexpectedStatusCodeHandling.ThrowException 
+            ? "throw new Exception($\"SearchUsers: Unexpected response. Status Code: {response.StatusCode}. Content: {await response.Content.ReadAsStringAsync()}\");"
+            : "return new UnexpectedStatusCodeResponse(response);";
+        string? unexpectedStatusCodeHandlingClass = options.UnexpectedStatusCodeHandling == UnexpectedStatusCodeHandling.Return ? UnexpectedStatusCodeResponse : null;
         if (options.HandleMultipleResponses)
         {
             return 
@@ -78,11 +112,8 @@ $@"public async Task<{typeParam}> SearchUsers(SearchUsersParameters queryParamet
     {{
         return await response.ReadJsonAsync<SearchUsersInternalServerErrorResponse>();
     }}
-    else
-    {{
-        throw new Exception($""SearchUsers: Unexpected response. Status Code: {{response.StatusCode}}. Content: {{await response.Content.ReadAsStringAsync()}}"");
-    }}
-}}";
+    {unexpectedStatusCodeHandling}
+}}{unexpectedStatusCodeHandlingClass}";
         }
         else
         {

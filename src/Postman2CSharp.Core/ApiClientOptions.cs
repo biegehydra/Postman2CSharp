@@ -32,6 +32,7 @@ namespace Postman2CSharp.Core
             Infrastructure.CatchExceptionTypes.Exception
         };
         public JsonPropertyAttributeUsage AttributeUsage { get; set; } = JsonPropertyAttributeUsage.Always;
+        public UnexpectedStatusCodeHandling UnexpectedStatusCodeHandling { get; set; } = UnexpectedStatusCodeHandling.ThrowException;
         public RootDefinition RootDefinition { get; set; } = RootDefinition.PerAuthorityPerFolder;
         private int _newMaxDepth = 2;
         public int NewMaxDepth
@@ -88,6 +89,7 @@ namespace Postman2CSharp.Core
                    && options1.AlwaysUseNullables == options2.AlwaysUseNullables
                    && options1.NullValueHandlingIgnore == options2.NullValueHandlingIgnore
                    && options1.HttpClientInConstructor == options2.HttpClientInConstructor
+                   && options1.UnexpectedStatusCodeHandling == options2.UnexpectedStatusCodeHandling
                    && allSinksMatch && allCatchTypesMatch && allCommentTypesMatch && allRemovedDisabledMatch;
         }
     }

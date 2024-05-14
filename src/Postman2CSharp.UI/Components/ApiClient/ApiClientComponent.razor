@@ -69,12 +69,14 @@
                 </MudGrid>
                 <MudDivider Class="my-divider" Light="true" FlexItem="true" />
                 <MudGrid Spacing="3">
+                    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
+                        <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.HandleMultipleResponses">Handle</MudCheckBox>
+                    </AdvancedSettingItem>
                     <AdvancedSettingItem ToolTip="This will determine what the return type will be if Handle is enabled and a request has multiple response types.">
                         <EnumSelectComponent TEnum="MultipleResponseHandling" @bind-Value="SelectedApiClient.Options.MultipleResponseHandling" Disabled="SelectedApiClient.Options.HandleMultipleResponses == false" Label="Return Type"></EnumSelectComponent>
                     </AdvancedSettingItem>
-
-                    <AdvancedSettingItem ToolTip="This will determine whether the generated ApiClient will handle multiple responses, or just the first success response (if present).">
-                        <MudCheckBox Color="Color.Primary" @bind-Checked="SelectedApiClient.Options.HandleMultipleResponses">Handle</MudCheckBox>
+                    <AdvancedSettingItem ToolTip="Will control whether to throw an exception or return an error response when handling multiple status codes and an unexpected status code is returned.">
+                        <EnumSelectComponent TEnum="UnexpectedStatusCodeHandling" @bind-Value="SelectedApiClient.Options.UnexpectedStatusCodeHandling" Disabled="SelectedApiClient.Options.HandleMultipleResponses == false || SelectedApiClient.Options.MultipleResponseHandling != MultipleResponseHandling.OneOf" Label="Unexpected Status Code Handling"></EnumSelectComponent>
                     </AdvancedSettingItem>
                 </MudGrid>
                 <MudDivider Class="my-divider" Light="true" FlexItem="true" />

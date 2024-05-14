@@ -75,6 +75,10 @@ namespace Postman2CSharp.Core.Infrastructure
                     sb.Append("<OneOf<");
                     var groups = call.AllResponses.GroupBy(x => SignatureClassName(x.ClassName, x.RootWasArray, options.OutputCollectionType));
                     sb.Append(string.Join(", ", groups.Select(x => x.Key)));
+                    if (options.UnexpectedStatusCodeHandling == UnexpectedStatusCodeHandling.Return)
+                    {
+                        sb.Append(", UnexpectedStatusCodeResponse");
+                    }
                     sb.Append(">>");
                 }
                 else if (options.MultipleResponseHandling == MultipleResponseHandling.Object)

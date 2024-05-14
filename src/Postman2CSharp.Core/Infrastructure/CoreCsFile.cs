@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net;
 using Xamasoft.JsonClassGenerator.Models;
 
 
@@ -468,7 +470,33 @@ public static class HttpClientJsonExtensions
     class IgnoreResponse { }
 }
 public class EmptyRequest { }
-public class EmptyResponse { }";
+public class EmptyResponse { }
+// modify to suit your needs
+public class UnexpectedStatusCodeResponse
+{
+    public HttpStatusCode StatusCode { get; init; }
+    public Dictionary<string, string> Headers { get; init; }
+    public string? Body { get; init; }
+
+    public UnexpectedStatusCodeResponse(HttpResponseMessage response)
+    {
+        if (response == null)
+            throw new ArgumentNullException(nameof(response));
+
+        StatusCode = response.StatusCode;
+        Headers = new Dictionary<string, string>();
+
+        foreach (var header in response.Headers)
+        {
+            Headers[header.Key] = string.Join("""", """", header.Value);
+        }
+
+        if (response.Content != null!)
+        {
+            Body = response.Content.ReadAsStringAsync().Result; // Consider async handling
+        }
+    }
+}";
 
         public const string NewtonsoftHttpJsonExtensions = @"/// <summary>
 /// Extension methods for working with JSON APIs.
@@ -879,7 +907,33 @@ public static class NewtonsoftHttpClientJsonExtensions
     class IgnoreResponse { }
 }
 public class EmptyRequest { }
-public class EmptyResponse { }";
+public class EmptyResponse { }
+// modify to suit your needs
+public class UnexpectedStatusCodeResponse
+{
+    public HttpStatusCode StatusCode { get; init; }
+    public Dictionary<string, string> Headers { get; init; }
+    public string? Body { get; init; }
+
+    public UnexpectedStatusCodeResponse(HttpResponseMessage response)
+    {
+        if (response == null)
+            throw new ArgumentNullException(nameof(response));
+
+        StatusCode = response.StatusCode;
+        Headers = new Dictionary<string, string>();
+
+        foreach (var header in response.Headers)
+        {
+            Headers[header.Key] = string.Join("""", """", header.Value);
+        }
+
+        if (response.Content != null!)
+        {
+            Body = response.Content.ReadAsStringAsync().Result; // Consider async handling
+        }
+    }
+}";
 
     }
 }
